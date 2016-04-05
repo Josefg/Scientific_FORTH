@@ -1,0 +1,1056 @@
+ScieMc FORTH
+l
+Wit cpuli‘pu 6. 72
+m7 chips
+See also e7etacir
+m7 co-proceeeor iamly 66
+57m 48. 67, so
+> R
+300 also R >
+A
+Abrarnowltz. M. and Stegun. LA. 162
+absolue address 107
+adion table 34 - 35
+See also exactnlon array
+adaptive integration
+recursive version 165
+algebra
+See computer algebra
+ANSlI FORTH 12. 24
+Argand
+—plot. —dlagram. —piane 146
+arlhmetic operators 24
+array notation 105
+MW
+bounds checking 44
+FORTRAN notation 5
+assembier 52. 67
+< 1. W96 > 69
+CODE END-CODE 67
+DWORD-PTR 71
+FOOM. 74
+FOOMP. 74
+FOOMPP. 4 - 75
+FDECSTP. 80
+FlLD. 70 - 71
+FINCSTP so
+FISTP. 70 - 71
+FLO. 71
+FSTP. 71. 75
+FTST. 74
+FWAIT. 68
+FXOH. 68
+OWORD-PTR 71
+TBYTE-PTR 71
+WORD-PTR 70
+
+man 301
+
+X' 150
+
+avoidingdecleione
+B
+
+97. 271
+
+BEHEAD"
+See beheading. headedeee words
+beheading
+BEHEAD' and BEHEAD" as
+See deo BEHEAD' BEHEAD' (words)
+headerieu words
+binary search
+See table look-up
+BIOS 250
+
+Brodie. L 12
+
+CALL 8. 16. 41, 43
+Cauchy's theorem
+
+calculus oi residues 180
+CFA
+
+vectored execution 35
+chi-squared/dogree oi freedom 200
+CODE
+
+See assembler
+commenting
+
+See (. \ (words)
+
+fstack comment 43
+
+stack comments 42
+comparing numbers
+
+See = (words)
+
+relations operators 24
+comple—tima actions
+
+See : (colon) (words)
+compler
+
+compled languages 2
+
+See CREATE. ]. [ (words)
+compllng word
+
+See defining word. CREATE DOES)
+comuex conjugate
+
+See complex numbers. Hermann matrix
+complex lunctlons
+
+axponerlhl 154
+
+iogarlhm 155
+
+trigonometric 154
+
+OJUMVNobiHm—Alrlglureeerved.
+
+302
+
+complex lexicon
+
+int 150
+ARG 150
+CMPLX 149
+CONJG 149
+DX@, BX! 148
+F 'X 1 49
+FATAN2 150
+FSINCOS 150. 155
+iMAG 149
+to POLAR 150
+REAL 149
+X' 149
+X' (CODE version) 150
+X'F 149
+X‘l 149
+X + 149
+X/ 150
+W 149
+X2] 155
+X@. X! 148
+X— 1 49
+XABS 150
+X006 155
+XDROP 149
+XDUP 53. 78. 149
+XEXP 1 55
+XLOG 155
+XMODSQ 150
+XOVER 149
+XSIN 155
+XSQRT 154
+XSWAP 149
+complex numbers 144
+2x2 matrix representation 145
+— n roots of 151
+algebraic mles 145
+Cartesian representation 144, 147
+complex conjugate 146
+division 146
+multiplication 145
+multiplicative inverse 146
+polar representation 147
+real and imaginary parts 144
+roots of polynomials 144
+square roots 152 - 153
+computer algebra
+Sstack 278
+PERP 282
+TR( 277
+Tr95( 284
+
+lNDEX
+
+contour integral
+
+See adaptive numerical quadrature
+CPDUP
+
+See XDUP
+Cramer'e Me
+
+See determinants
+
+dancer
+
+See rstack
+Data structures
+DEBUG 66. 69
+
+logging output to file 257 - 258
+defining words 28
+
+See CREATE, DOES
+definite Integral 158
+
+as limiting process 159
+DERIVE
+
+Sea computer algebra
+determinants
+
+Cramer's rule 21 8
+dictionary
+differential equation
+
+numerical quadrature as 160
+differential equations
+
+See ordinary differential equations
+dimensioned data
+
+Intrinsic units 32
+division
+
+See multiplicative inverse
+documenting code
+
+See commenting; (. \ (words)
+
+91 -114
+
+self-documenting style 269
+DOER ... MAKE
+
+See also vectored execution
+DOS functions 255
+dummy words
+
+See CREATE. vectored execution
+E
+
+eigenvalue problems
+
+solution of 217
+£80 (Dahax)
+
+See escape
+“escape" instruction 66
+Euclid's algorithm
+
+GCD 166 - 167
+
+0 Jalan V. Noble 1992—” right-reserved.
+
+Scientific FORTH
+
+13. 15, 28. 35. 39. 41
+
+Eaterelmuueni
+unﬂmmw
+
+F
+
+n
+equ
+
+FastFouierTranefonanT)
+
+fetch
+
+Fast. 9. 00. W. @L etc. (words)
+187. 1a
+
+FonhlruenuntSneup
+lie-oriented FORTHs
+ﬁnite state machine (FSM)
+
+FORTH mlon
+
+determining parameters
+See'ﬂnearrxxﬂnearkaunsunuues'
+
+mum
+
+ﬂoating point arithmetic
+iloating point lexicon
+DEG— > RAD
+F.
+Ft.
+F +
+F-
+FR-
+Fl
+Fl
+FRI (synonym F\)
+FNEGATE
+FABS
+1ﬂ=(synonwmfﬂNV)
+F'NP
+F"2
+F2"
+
+F.
+F2/
+F32,
+
+F2XM1
+F4114 ("1' chip)
+
+181.184
+87
+
+104
+15
+
+12
+
+250
+269
+267
+
+183
+
+181
+
+#3 8
+d
+
+0
+
+uses see:
+
+83 83: 31688888888888
+:1
+
+F>,F-IF(
+FO<.FO-.F0>
+
+F-O
+F-i
+F-2
+
+F-L10(2) (0.3010500...)
+F-L2(10) (3.3mm...)
+
+F-L2(E) (1.442305...)
+F-uuz) (0.1105147...)
+F-Pl (3.14150...)
+
+F@ . Fl
+FDUP
+FSWAP
+FDROP
+FROT
+F—ROT
+FOVER
+S- > F
+D- > F
+F- > S
+F— > D
+
+‘5
+FUNDER
+FPLUCK
+FnX
+
+Fnﬁ
+
+FACOS
+FASI N
+FATAN
+FATANZ
+
+SINH
+COSH
+TANH
+ARCSINH
+AROCOSH
+
+FICONSTANT
+FINIT
+
+FOOMPP
+Fconsrmr
+
+omnmuneez—Mmm.
+
+33
+
+88888388 88
+
+47
+
+47, 67. 70
+47. 87. 70
+47. 87. 7O
+47, B768
+
+93
+a
+
+47, 71
+47
+47, 71
+
+gas: gasses
+888
+
+‘88: 8:38:88:
+
+\i
+‘1
+
+8293133113
+32‘.
+
+NM
+
+iioatingpolntlexicon...
+
+FMIN
+FPATAN
+FPOP
+FPREM
+FPTAN
+FPUSH
+FTRUNC
+FRNOINT
+FSORT
+
+FSBPO. FSBPt, FSBP2
+IIT chip instructions
+
+FSCALE
+
+FSI N
+
+FSGN
+FCOS
+FTAN
+
+RAD-> DEG
+
+FSTSW
+FTST
+FTSTP
+
+FY'LGZX
+FY' LG2XP1
+
+|16@. I16!
+|32@. |32!
+
+I64@. 164!
+
+F132@. R32!
+RB4@. R64!
+R80@, R80!
+
+ﬂoating point numbers
+
+testing
+
+FORmda TRANsiator
+
+<ardist>
+<assignment>
+<expression>
+<factor>
+<function>
+<id>
+<19rm>
+
+FORTH words
+
+See words
+
+ﬂﬁﬁgﬁégﬁg
+3
+
+V
+01
+
+M10
+
+2 322% d 8
+‘31 ‘1‘]
+
+74
+
+75
+
+76
+76
+
+7O
+71
+71
+
+71
+71
+71
+
+INDEX Scientiﬁc FORTH
+
+FORTRAN. MOI of
+
+See rue-based programs
+Muk ”41“
+
+software 87staclr extension 80
+function library 8. 53
+function protocol
+
+USE( 182
+
+fundamental theorem of caicdus 159
+
+G
+
+gunmaﬁirsl
+
+special gamma matrix 278
+Gaussian quadrature
+
+See numerical integration
+generic lexicon
+
+)MONTE 162
+1ARRAY 111
+2ARRAY 113
+?TYPE 113
+} 1 13
+}} 113
+binary operators 104
+G: ; 97
+See also CASE: ;C.ASE (words)
+G@. G! 97
+GB: 104
+GU: 101
+operators 100
+unary operators 101
+generic memory access
+See G@. G!
+GEnie network 12
+globally optimizing compiler
+See optimization
+GOSUB 8. 16. 43
+GOTO
+
+computed. in FORTRAN etc. 267
+See spaghetti code
+
+Gram polynomials 184. 193
+Gram-Schmidt orthogonallzation 1%
+
+hall-arias fonmlae
+
+See trigonometric functions
+Harnmerdey. MI. and Handecomb. 00.
+
+Monte Carlo Methods 15
+hashing
+
+See fade look-m
+Hennlian matrix
+
+See linear equtione
+Hewlett-Packard cdcuator 17
+HIbert matrix
+
+See l-condltioned matrix
+HMF
+
+See Abramowitz. M. and Stegun. i.A.
+
+FORTH I/O words
+3" 251
+S- > F 225. 251
+< Fii£ 251
+>FILE 253
+CLOSE-iNPUT 251
+CLOSE-OUTPUT 253
+CLOSEH 257
+CRT 257
+DUPH 256
+fle handle number 256
+FILL< FILE 253
+G# 251
+GS 251
+GET-Hi 225
+IO-STAY 257
+LOG-OFF 257
+LOG-ON 257
+MAKE-OUTPUT 253
+MAT>FILE 253
+MKFILE 256
+NR 251
+OPEN-iNPUT 251
+PORT 257
+SPUCEH 258
+auiclng fle handles 256
+VEC>FILE 253 - 254
+
+latacir 93
+typed data stack nunagar 89 - 100
+
+I-cmdtioned matrix 195
+
+lrMeeeriea 118
+Weariea 118
+mm 123
+harrnoniceeriae 117
+mm 116,128
+Weierstraee'theorem 121
+Zeno'aparwox 117
+
+lnflx 17
+Seedsopoetflx
+
+information hiding 40
+and safety 41
+
+integru of a function 158
+
+integrated Intorrmtion Technology
+802c87 and 80c387 chips 85
+
+integration
+See also adaptive integration
+Monte—Cario method 180
+numerical 157
+”Intelligent" fstaclt
+See lfstacit
+Interpolation
+See fitting functions
+'interrupt'
+See DOS functions
+inverse trigonometric functions 77
+
+J
+
+lump table
+See also axecmion array. action table
+In rue-based 270
+
+K
+
+Kelly. M. and Spies. N. 12
+
+L
+
+large arrays 106
+
+lineareqmtiona as
+detenninantal eqmtion 216
+determinants 214
+eigenvalue problems 215
+Herrnlhn matrices 216
+
+iinearaigebraiceqntiona 214
+
+OthnVNoUe1W2-me.
+
+pivotal elimination 221
+linear equations
+
+Strassen's algorithm so
+linear least-squares
+
+Gram polynomials 207
+literal 3
+local variables
+
+rstack used for 22
+Loeliger. R.
+
+Threaded Interpretive Languages
+logging screen output 254
+logic trees
+
+'dead' code 267
+loops 25
+
+BEGIN UNTIL 25
+
+BEGIN WHILE REPEAT 25
+
+endless 26
+
+indexed 26
+Lukasewcleicz
+
+See RPM 17
+M
+MACSYMA
+
+See computer algebra
+MATHEMATICA
+
+See computer algebra
+mathematics co—processor 65
+Mathews. J. and Walker. R.L.
+
+Mathematical Methods of Physics
+matrix. inverse
+
+See linear equations
+mean 59
+minimization
+
+)MINIMIZE (simplex algorithm) 210
+
+—functions of many variables 201
+
+simplex algorithm 202
+
+steepest descents 201
+monomiais 184
+Monte-Carlo method
+
+)MONTE 162
+convergence 162
+See also numerical Integration
+
+matidimensionai integrals 182
+stratified sampling 165
+uncertainty In 161
+
+1
+
+122
+
+N
+naming conventions
+
+self-documenting code 43
+nonlinear least-squares 201
+numerical Integration
+
+)INTEGRAL 185
+
+Gaussian quadrature 204
+
+See also Integration. numerical
+
+Richardson extrapolation 206
+
+trapezoidal Me 205
+0
+object oriented 64. 96
+offset
+
+See absolute address
+optimization 51
+
+peephoie 53
+ordinary differential equations 131
+
+Implicit Runge-Kutta method 136
+
+Runge-Kutta method 132
+orthogonal polynomials 196. 198
+overloading 49
+
+See “smart" operators
+P
+parameter stack 47
+pattern recognition 262
+polynomial
+
+Legendre 7 - 8
+
+Gram 184. 193
+polynomhi evaluation 50
+
+fast algorithm (iog(n) time) 186
+postfix notation 17
+Fountain. Dick 96
+Press. W.H.. eta].
+
+Numerical Recipes 160
+PRN2FILE 258
+PRNGs
+
+16-bit Integer PRNG 62
+
+random walk 60
+
+Wichman and Hll 60
+FORTH programs
+
+)MlNIMlZE 210
+
+}FFT 191
+
+OJUthNobieiasz—Ailrightsrssewed.
+
+)FIT 207
+)POLY 51
+(pseudo) random numbers 88
+chl-eqmred (1') m1 so
+GGUBS (PRNG) 57
+MorneCarlo kitsgratlon 182
+random data stmctures 81
+O
+qmdraturs
+See mm
+W (Microsoft) 169
+R
+RAD— > DEG
+See DEG->RAD (floating point ...)
+Rdston. A. 136
+random numbers
+See (pseudo) random numbers
+testing PRNGs 58
+recursion
+See also adaptive integration
+adaptive numerical Integration 171
+dhadvantages 171
+elimination of 171
+time 168 - 169
+See also Euclid's algorithm
+Fbonaccl numbers 168
+in rue-based programs 262
+potential problems 167
+RECURSE 170
+recursive algorithms 165
+sorting using (mergesort) 169
+speed of execution 167
+when not to use 168
+recursive-descent optimizer 52
+redirection
+—of MS-DOS outpm 254
+REDUCE
+See computer algebra
+reads faisi
+See transcendental equations
+ruum stack 21
+See also stack
+
+revsresPolsnnotetlonmPN) 17
+rootsofpeiynornids
+Sesdeohndamsntsitheorsmofdgsbre
+romdofferror 195
+rstsclr
+Seerstunstacir
+
+meltmmm
+SeedeoDO...LOOP(words)
+
+rue-based pregame
+
+Setack 29s
+
+skip_slponsrl 271 - 272
+
+auomatlc trandetlon tables 272
+
+deterministic FSMe 265
+
+links state machine 264
+
+formda Mama 2%
+
+FORM TRANsIator 284
+
+FORTRAN rues 281
+
+FSM: 270
+
+function library 288
+
+gramrrnr 260
+
+Mrarchy of operators 288
+
+regtlar expressions 261
+
+state transitions 270
+
+state varhbie 266. 271
+an-tirne actions
+
+See DOES > (words)
+
+Runge-Kmta
+
+See ordinary differential equations
+S
+say 14
+SCHOONSCIP
+
+See computer algebra
+segment descriptor
+
+See absolute address
+self-modifying code 28
+Shaw. Gordon 114
+signed New 24
+
+Seealso >. <, =. +LO0P (words)
+simplex algorithm 184. 201
+SMALLTALK
+
+See oblect orbnted
+"smart operators'
+
+FORTRAN 3
+srmrt operators 5
+smoothing
+
+See rating functions
+saving eqmtions 127
+mine
+
+OJuthNobietm-Alrlglasreeerved.
+
+308
+
+See recursion
+spaghetti code 39
+special constants
+math coprocessor chips 48
+stack 14.17-18.20
+See also 87stack
+See also fstack. ifstack. parameter stack.
+return stack
+state variable
+See rule-based programs
+store
+See I. Di, R32I. lL. etc. (words)
+Strassen's algorithm 87. 107
+strings 36
+See also FORTH l/O words
+structured programming 25. 38
+style
+FORTH conventions 38
+sub-programs 2
+subroutine
+word as 16. 44
+FORTH subroutines
+}POLY 51
+T
+table look-up 182
+threaded language 1
+TOS
+See stack
+trace
+gamma matrix products with y5 276
+of matrix 274
+product of gamma matrices 275
+transcendental equations 127
+binary search 127
+regda falsi 128
+trapezoidal rue
+See numerical integration
+trigonometric functions 77. 152, 184
+—Identlties 78
+typed data
+arrays 104
+COMPLEX (COMPLEX'B) 94
+DCOMPLEX (COMPLEX'16) 94
+mdtipie scalars 95
+REAL'4, REAL'8 94
+scalars 94
+variable 3
+
+iNDEX
+
+Scientific FORTH
+U
+umlsned Resort 24
+See also U<. /LOOP (words)
+V
+variables
+See also words (VARIABLE). local variables
+variance 59
+vectored execution 28
+analogy with EXTERNAL 9
+See also DOER MAKE.
+CA' x DEFINES y. USE(
+forward referencing 39. 300
+vocabulary 67
+W
+Williams, AI 109
+word
+subroutine 8. 13. 16
+FORTH words 49
+I (store) 23. 29
+< 15 - 16
+' + 16
+: (colon) 15—1 6
+$- (strlng-emlt) 37
+5" 37
+( 42
+‘ 24
+'l 24. 32
++ 24
++ LOOP 26
+. (emit) 14
+/ 24
+[LOOP 26
+N00 24
+0 < , 0 == , 0 > 24
+AS 33
+. (comma) 29
+< . =, > 24
+> R 21
+@ (fetch) 23. 29
+[ (STATE =- Interpret) 34
+\ (comment) 38. 43
+] (STATE - comple) 34
+— “minus' 24
+-ROT 20
+
+OJuthNobIetm-Alrlmtsrssenrsd.
+
+ALLOT 28 RDROP
+BEGIN 25 RECURSE
+BEi-EAD' 34 REPEAT
+IEHEAD” 57 ROLL
+Cl 'byta-uors" 23 R01’
+CG ‘byts-fstch' 23 SWAP
+CA‘ 'coda-addrass of“ 27 THEN (sample oriy)
+CASE: :CASE 288 TRACE. SSTRACE
+CONSTANT 28, 30 TYPE
+COUNT 37 U <
+CREATE 28. 28. 30 UNDER
+CREATE . DOES > 26 UNITS
+DI 23 UNTIL
+D > R 21 VARIABLE
+D@ 23 WHILE
+DDUP 22
+DECIMAL 13 z
+DEFINES 27
+DO LOOP 21 , 28
+mupum rstack within 23 2m“ M
+DOER . MAKE 44
+DOES > 26. 30
+005“ 257
+DR > 21
+DROP 19
+DUP 19 - 20
+DD? > R 21
+DVARIABLE 29
+ELSE (sample only) 25
+ENDIF (THEN) 25
+EXE 21
+EXPECT 37
+See deo "floating pont lexicon
+HEX 14
+IF (comple oriy) 25
+IMMEDIATE 270
+KEY 37
+MAX 53
+MIN 53
+MOD 24
+NUMBER 14
+oir 14
+MR 20
+PAD 37
+PICK 20
++ 1 4
+R > 21
+
+21
+

@@ -1,0 +1,937 @@
+mm FORTH M 9 — Linear Algebra
+Linear Algebra
+:ontonts
+
+§1 Simultaneous linear equations
+551 Theory of linear algebraic equations
+§§2 Eigenvalue problems
+52 Solving linear equations
+§§1 Cramer's rule
+§§2 Pivotal Elimination
+553 Testing
+§§4 Implementing pivotal elimination
+§§5 The program
+556 Timing
+53 Matrix inversion
+§§1 Linear transformations
+5552 Matrix multiplication
+§§3 Matrix inversion
+§§4 Why invert matrices, anyway?
+§§5 An example
+
+54 LU decomposition
+
+214
+214
+
+215
+218
+218
+221
+225
+227
+227
+
+242
+242
+
+243
+244
+245
+245
+
+246
+
+213
+
+214
+
+51 Simultaneous linear equations
+
+§§1 Theory oi linear algebraic equations
+
+ChapterB-LhearNgebra Sewncronr‘
+
+      
+ 
+   
+ 
+
+0 common problems in scientiﬁc programming are
+numerical solution of simultaneous linear algebraic equation
+and computing the inverse of a given square matrix. This is sue“.
+an important subject As an exercise in FORTH progr
+development we shall now write programs to solve linear equa
+tions and invert matrices.
+
+We begin with a dose of mathematics (linear algebra),
+
+then develop programs. Several actual programming session
+are reproduced in toto —mistakes and all- to give the ﬂavor 0
+program development and debugging 1n FORTH.
+
+We begin by stating the problem. Given the equations
+
+N-1
+
+2 Amrixn= m- (1)
+
+n=0
+
+—more compactly written K - i.= 5'- with known coemcielt
+matrix A"... and known inhomogeneous term bm: under what
+conditions can we ﬁnd unique values of x... that simultaneoust
+satisfy the N equations 1?
+
+The theory of simultaneous linear equations tells us that if not all.
+the bm’ s are 0, the necessary and sufﬁcient condition for so]-
+
+vability is that the determinant of the matrix A. should not be 0.
+Contrariwise, if det(‘ )= 0, a solution with x at 0 can be found
+when 5= 0.
+
+ 
+
+ 
+
+l. ﬂiedeterminant ol'anN'th-order square matixA - denotedbydct(A)or HAII - iaanumba
+wmpmedfromtheekmewhbyapplyingnﬂulamﬂhrﬁomﬁuualgebramm
+deﬁne ”All recursivelyintemsofdeterminanuolmurioesolsquaresubmauicuokaee
+
+”$52.1.
+
+lmmm
+
+Gaiters-WW 215
+
+m Elm-Ilium
+
+Many physical systems can be represented by systems of linear
+
+equat'ons. Masses on springs, pendula, electrical circuits,
+structures , and molecules are examples. Such systems often can
+oscillate sinusoidally. If the amplitude of oscillation remains
+bounded, such motions are called stable. Conversely, sometimes
+the motions of physical systems are unbounded —the amplitude
+of any small disturbance will increase exponentially with time. An
+example is a pencil balanced on its point. Exponentially growing
+motions are called -for obvious reasons - unstable.
+
+Clearly it can be vital to know whether a system is stable or
+unstable. If stable, we want to know its possible frequencies of
+free oscillation; whereas for unstable systems we want to know
+how rapidly disturbances increase in magnitude. Both these
+problems can be expressed as the question: do linear equations
+of the form
+
+K-i’= Air-if (2)
+
+have solutions? Here A is generally a complex number, mllcd the
+eigenvalue (or characteristic value) of Eq. 2, and ﬁ’is often called
+the mass matrix. Frequently K is the unit matrix I,
+
+1, m=n
+I"‘"-{0,m=tn, (3)
+
+but in any case, I must be positive-deﬁnite (we deﬁne this
+below). A non-trivial solution, x is 0, of the equation
+
+K-ii'=o (4)
+
+exists if and only if "I" = o . This fact is useful in solving eigen-
+value problems such as Eq. 2 above.
+
+ 
+
+2.
+
+eJuanvNoueiasa-Almm.
+
+216 CMpterO-LklearNgabi-a Sclenwlcronnd
+
+The secular equation (or determinantal equation)
+
+III—m=o (5)
+
+is a polynomial of degree N inl, hence has N roots (either real ori
+co.mplex) When p‘= T, these roots are called the eigenvalues
+(or‘ ‘characteristic values”) of the matrix K
+
+Eigenvalue problems arising in physical contexts usually involve
+a restricted class of matrices, called real-symmetric or Hermitiant
+
+(after the French mathematician Hermite) matrices, for which.
+
+A;,, =Am . (The superscript . denotes complex conjugation -_:
+
+see Ch. 7.) All the eigenvalues of Hermitian matrices are and:
+numbers. How do we know? We simply consider Eq. 3 and its
+complex conjugate:
+
+ 
+
+2AM x,| = 112 pm xn ; (6a)
+
+2 x:A:‘m = 1‘ 2 x: pi. ; (6b)
+Equation 6b can be rewritten (using the fact that K and ﬂare.
+Hermitian)
+
+2 MIA"... = 1' 2 x; Pm (6b')
+Multiply 6b’ by xm and 63 by x; , sum both over at and subtract:
+this gives
+
+0= (if—i) 2 x;p.,,x,. (7)
+
+However, as noted above, p is positive-deﬁnite, Le.
+
+ 
+
+3. This follows from the fundamental theorem of algebra: a polynomial equation, I
+p(z): a0 + all + azzz +.. .+ anz“ =0, of degree n (in a complex variable 2) has exactly a solutions ,
+
+WM"!
+
+Quail—WM 217
+
+lt-p-XIZ x,’,,p,,..x,,>0 (8)
+
+I.”
+for any non-zero vector4 x .Thus, Eq. 7 o A. E A, that is, l is real.
+
+ln vibration problems, the eigenvalue A usually stands for the
+square of the (angular) vibration frequency: )1 2 (oz. Thus, a posi-
+tive eigenvalue). corresponds to a (double) real value, 1w, of the
+angular frequenq. Real frequencies correspond to sinusoidal
+vibration with time-dependence sin(alr) or cos(wi).
+
+Conversely, a negative). corresponds to an imaginary frequency,
+ti al and hence to a solution that grows exponentially in time, as
+
+sin(l' (0!) = isinh(wr)
+(9)
+
+0050' air) = cosh(alt)
+
+There are many techniques for ﬁnding eigenvalues of matrices.
+If only the largest few are needed, the simplest method is itera-
+
+tion: make an initial guess x (0) and let
+
+Axol-l)
+
+,(n) =
+
+Assuming the largest eigenvalue is unique,the sequence of vec-
+
+tors xm , n = 1, 2,..., is guaranteed to converge to the vector
+corresponding to that eigenvalue, usually after just a few itera-
+lions.
+
+Ifall the eigenvalues are wanted, then the only choice is to solve
+the secular equation 5 for all N roots.
+
+52 Solving linear equations
+
+The test-and-development cycle in FORTH is short compared
+with most languages. It is usually easy to create a working
+program that subsequently can be tuned for speed, again much
+
+ 
+
+4. Fordaritywenowonitthevcaor“-°'anddyad“0'symbdsﬁ'omvectorsandmauiwe
+
+emvuouoim-me.
+
+218
+
+ChapterQ-LlnaarNgebra SclentlﬂcFORmi
+
+more rapidly than with other languages. For me this is the chief 1
+beneﬁt of the language.
+
+“I Cramer's rule
+
+Cramer’s rule is a constructive method for solving linear equa
+
+tions by computing determinants. It is completely impractical
+as a computer algorithm because it requires 0(N!) steps to solve
+N linear equations, whereas pivotal elimination (that we look at
+below) requires 0(N3) steps, a much smaller number. Neverthe—
+less Cramer’s rule is of theoretical interest because it is a closed—
+form solution.
+
+Consider a square NXN matrix A Pretend for the moment we‘
+know how to compute the determinant of an (N-1)x(N-1)'
+matrix. The determinant of A is deﬁned to be
+
+N—l
+det(A) = 2 A...,,a,,,,
+
+n-O
+
+where the amn’s are called co-factors of the matrix elementsA...
+and are in fact determinants of specially selected (N-1)x(N-1)
+sub-matrices of A. ‘
+
+The sub-matrices are chosen by striking out of A the n’th column
+and m’th row (leaving an (N-1)X(N-1) matrix). To illustrate,
+consider the 3 X3 matrix
+
+1
+A = a (11)
+1
+
+4M0
+(7)-#01
+
+and produce the co-factor of A 12:
+
+ 
+
+.21-(-1)2+'
+
+1 § 5 (12)
+1 6
+
+We also attach the factor (-l)"'+" to the determinant of the
+submatn'x when we compute a". .
+
+K's-DO
+
+A determinant changes sign when any two rows or any two
+
+columns are interchanged. Thus, a determinant with two iden-
+tical rows or columns is exactly zeros. What would happen to
+Eq. 11 if instead of putting A,“ in the sum we put A“ where
+krtm? By inspection we realize that this is the same as evaluating
+a determinant in which two rows are the same, hence we get zero.
+Thus Eq. 11 can be rewritten more generally
+
+N—l
+20AM anrn = llA ll 6km - (13)
+
+This feature of determinants lets us solve the linear equation
+A 'x = b by construction: try
+
+1 N-l
+
+xii = d—etm E: anmbm- (14)
+
+We see from Eq. 13 that Eq. 14 solves the equation. Equation 14
+also makes clear why the solution cannot be found if det(A) = 0.
+
+A determinant also vanishes when a row is a linear combination
+of any of the other rows. Suppose row 0 can be written
+
+ 
+
+5.
+
+Theonlynumberequaltoitsnegatiwiso.
+
+OJulanVNobletﬂz-Alrldusmarvcd.
+
+Chapter 9 — Linear Algebra Scientiﬁc FORTH
+
+N-l
+“or E 2 ﬁns amt;
+
+m=i
+
+that is, the O’th equation can be derived from the other N-l
+equations, hence it contains no new information. We do not really
+have N equations for N unknowns, but at most N-1 equations. The
+N unknowns therefore cannot be completely speciﬁed, and the
+determinant tells us this by vanishing.
+
+As an example, we now use Cramer’s rule to evaluate the deter-
+minant of Eq. 11. We will write
+
+||A||=Aooaoo+Amaio+Aozazo
+24
+in,“
+
+4
+mini-v
+
+The determinant of a 1 x 1 matrix is just the matrix element, hence
+
+32
+1
+
+320: 1
+
+ 
+
+ 
+
+ 
+
+em = 2-6 + (—1)-4-1 = 8
+am = —(18 — 4) = —14
+320 = (3 —2) = 1
+“A II = 1-8 + 0-(—14)+ 5-1 =13.
+How many operations does it take to evaluate a determinant? We
+
+see that a determinant of order N requires N determinants of
+order N-l to be evaluated, as well as N multiplications and N-l
+
+WWW-l
+
+Glaciers-Wm 221
+
+additions. If the addition time plus the multiplication time is r,
+then
+
+TN~N(r+T,.-,).
+
+It is easy to seem the solution to this is
+
+- Nire.
+
+" 1
+TN=leE 3" "an
+
+In other words, the time required to solve N linear equations by
+Cramer’s rule increases so rapidly with N as to render the method
+thoroughly impractical.
+
+§§2 PlvotalEllmlnatlon
+
+The algorithm we shall use for solving linear equations is elimina-
+tion, just as we were taught in high school algebra. However we
+modify it to take into account the experience of 40 years‘s solving
+linear equations on digital computers (not to mention a previous
+20 years's worth on mechanical calculators!), to minimize the
+buildup of round-off error and consequent loss of precision .
+
+The necessary additional step involves pivoting —selecting the
+largest element in a given column to normalize all the other
+
+ 
+
+6. Professors always say this, hee, heel See R. Sedgewick, Algorithm (AddisomWesky Publishing
+Company, Reading. MA 1983).
+
+5"3.‘I
+
+N! means Nx(N-1)x(N-2)x... x2x1. The base ofthe “natural" logarithmsis e =Z7182318...
+Acomputerstoresanumberwithﬁnite precision — say6-7decimalplaceswith32-bit ﬂoating-
+
+pointnumbers.'l'hisisenoughformanypurposes,upcdaﬂyinscienceandengineedngwhere
+thedataare rarely measured to betterthan 1% relative precision Suppose, however, thattwo
+numbers, about lO'zinmagnitude, are multiplied. Their productisoforder lO‘and'sknownto
+aixsigniﬁcantﬁgures.Nowaddittoathirdnumberoforderunity.’l‘heresultwillbethatthird
+number:10".l..ater,afourthnumber — alsooforderunity— issubtractedfromth'nsum'lhe
+resultwillbeanumberoforderlo‘mutnowknownonlytot'esigniﬁcantﬁgunMatrixarith—
+meticisfullofmultiplicationsandadditiouaThelessonisdear— tominimizetheﬁnevitable)
+kndwedshmassodatedwihmundvomwmwwmkcepthemayﬂudesdprodwsand
+sumsasekiseupossible.
+
+222
+
+Chapter 9 - Linear Algebra Sclermﬂc FORTH
+
+elements. This will be clearer with a concrete illustration rather
+than further description: Consider the 3 X3 system of equations:
+
+105 x0 0
+324 1:1 =4 (15)
+116 x2 2
+
+We check that the determinant is #0; in fact det(A) = 13. The ﬁrst
+step in solving these equations is to transpose rows in A and in b
+to bring the largest element in the ﬁrst column to the/loo position.
+
+Natl-a;
+
+e The x’s are not relabeled by this transposition. ,
+
+e We choose the row (n=1 ——second row) with the largest (in
+absolute value) element Ano because we are eventually going
+to divide by it, and want to minimize the accumulation of
+roundoff error in the ﬂoating point arithmetic.
+
+Transposition gives
+3 2 4 xo 4
+1 0 5 x1 = 0 (16)
+1 1 6 x2 2
+
+Now divide row 0 by the neono (in this case, 3) to get
+1 2/3 4’3 x0 V3
+1 0 5 x1 = 0 (17)
+1 1 6 X2 2
+
+Subtract row 0 times Ana from rows with n > 0
+1 2/3 4’: 10 V:
+o —2/, 11/3 x, = -Va (13)
+0 1’3 W: x, 26
+
+ 
+
+Since |An| > |A21| we do not bother to switch rows 1 and 2, but
+divide row 1 byAn =-2/3, getting
+
+cranes-mm 223
+
+l ’3 V: to V3
+0 1 -1V2 xi - 2 (19)
+0 V) IV! 12 V3
+
+ 
+
+ 
+
+ 
+
+ 
+
+We now multiply row 1 by A“ a 1/3 and subtract it from row 2,
+and also divide through by A” to get
+
+173 V3 10 V3
+0 1 -u/2 x; 8 2 (20)
+0 0 1 x; 0
+
+ 
+
+The resulting transformed system of equations now has 0’s to the
+left and below the principal diagonal, and 1's along the diagonal.
+Its solution is almost trivial, as can be seen by actually writing out
+the equations:
+
+1Xo+2/3X«| +V3X2=4/3 (21.0)
+0x0 +1x1+(—11/2)X2 = 2 (21.1)
+Oxo+0x1+1x2=0 (21.2)
+
+That is, from Eq. 21.2, x; = 0. We can back-substitute this in 21.1,
+then solve for x, to get
+
+x, = 2 — (—11/2)-(0) = 2
+
+and similarly, from 21.0 we ﬁnd
+xo=V3—2/3(2)+V3(0)=O.
+We test to, see whether this is the correct solution by direct trial:
+1-O+0-2+5-O=0
+3-0+2-2 +4-0=4
+1-O+2-2+6-O=2
+
+his works —we have indeed found the solution.
+
+cmvlioueieaa-Alrlgium.
+
+224
+
+Chapter 9 - Unear Algebra Scientiﬁc FORTH
+
+How much time is needed to perform pivotal elimination? We
+concentrate on the terms that dominate as N - on.
+
+The pivot has to be found once for each row; this takes N-k
+comparisons for the k’th row. Thus we make ~N l2 comparisons
+of 2 real numbers. (For complex matrices we compare the
+squared moduli of 2 complex numbers, requiring two multiplica-
+tions and an addition for each modulus.)
+
+We have to divide the k’th (pivot) row by the pivot, at a point in I
+the calculation when the row contains N-k elements that have not _
+been reduced to 0. We have to do this for k = 0, 1, ..., N-l, ‘
+
+requiring =N /2 divisions.
+
+The back-substitution requires 0 steps for rm, 1 multiplication
+and 1 addition for x“, 2 each for it)“, etc. That is, it requires
+
+k=0
+2 (N—l—k) =N2/2
+k=N-1
+
+multiplications and additions.
+
+The really time-consuming step is multiplying the k’th row by
+A", , j > k, and subtracting it from row j. Each such step requires
+N-k multiplications and subtractions, for j=k+1 to N-l, or
+(N -k) - (N —k— 1) multiplications and subtractions. This has to be
+repeated for k= 0 to N-2, giving approximately N3/3 multiplica-
+
+ 
+
+l
+l
+l
+i
+i}
+;
+i
+
+ 
+
+tions and subtracti30ns. In other words, the leading contribution l
+
+to the time is rN 3/3, which is a lot better than reN! as with
+Cramer’ 5 rule.
+
+Whenweog timize for speed, only the innermost loop —re uir-
+
+mg O (N13 /3) operations needs careful tuning; the O (N [2) 3
+
+operations — comparing ﬂoating point numbers, dividing by the .i
+
+pivot, and back-substituting — need not be optimized bgecause for
+large N they are overshadowed by the innermost loop .
+
+ 
+
+9.
+
+The exception to this general rule, where more complete optimization would pay, would be an
+application that requires solving many sets of equations of relatively small order.
+
+ 
+
+MM"!
+
+“3
+
+cleans—mm 225
+
+Mia
+
+Since we have worked out a speciﬁc 3 x 3 set of linear equations,
+we might as well use it for testing and debugging. Begin with
+some test words that do the following jobs:
+
+e Create matrix and vector (inhomogeneous term)
+e Initialize them to the values in the example
+
+e Display the matrix at any stage of the calculation
+e Display inhomogeneous term at any stage
+
+\ Display words
+V{ or M{{ stands torwhatanarrayputsonstack
+U: G. F. x. ;
+:.M (M{{--) FINIT DUP
+D.LEN 0 DO CR DUP
+D.LEN 0 DO DUP (--M{{ M{{ )
+J}{I}} DUP>R G@ G.
+LOOP
+LOOP DROP ;
+
+:.v (V{-~) DUP D.LEN
+0 DO on DUP l}{0} G@ G. LOOPDROP:
+
+We deﬁne a word to put ASCII numbers into matrices:
+:GEFF# BL TEXT PAD $->F;
+
+This word takes the next string10 from the input stream (set off
+by ASCII blank, BL) and uses the PIS/FORTH word $~> F to
+convert the string to ﬂoating point format and put it on the
+87stack.
+
+ 
+
+10. ‘l'heword'lEX'l‘inputsacountedstringusingtheFORTH-DstandardwordWOIlD,aad
+placesit“PADJ'hisiswhyPADappeaninthedeﬁniﬁonofGﬂ-FlAdeﬁnkionofEXT
+miditbe :‘IEX'l‘(delirniter--)WORDDUPC@1+ unswxrcuovs; Notethatall
+words prefacedwithC arebyteoperatioasbyPORTH convention.
+
+OJilthNoUetm-Mlldusleseived.
+
+Chapter 9 - Unear Algebra Sclentlﬂc FORTH
+
+GET-F# is used in the following:
+
+: <DO-VEC> ODO GET-F# DUP I0} G!
+LOOP DROP;
+
+:TAB->VEC DUP D.LEN <DO-VEC> ;
+
+:TAB->MAT DUP D.LEN DUP * <DO-VEC> ;
+
+The ﬁle EX.3 will be found in the accompanying program disk-
+ette. The explanatory notes below refer to EX.3.
+
+Notes:
+
+e The word .( emits everything up to a terminating) .
+
+e HS/FORT'I-I, because of its segmented dictionary, uses a word
+TASK to deﬁne a task-name, and FORGET-TASK to FORGET
+eve hing following the task-name. The FORTH word FOR-
+GE fails in HS/FORTH when it has to reach too deeply into
+the dictionary.
+
+e Ex.3 uses the word }row{ deﬁned below.
+
+This is what it looks like when we load EX.3:
+
+FLOAD EX.3 Loading EX.3
+ReadadimenslonSvectorand 3113 matrbtlrornatablethendispiaythem
+Now displaying vector.
+V{ .V CR
+0.0000000
+4.0000000
+2.0000000
+Now displayhg matrbc
+A{{ .M CR
+1.0000000 0.000(1)“) SIXJOOCDO
+3.0000000 2.0000000 4.0000000
+1.0000000 1.0000000 6.0000000
+say Exa FORGET-TASKto graceitﬂy FORGET these words olt
+
+WM”!
+
+Mil-Wm 227
+
+"4 WWW
+
+Now we have to deﬁne the FORTH words that will implement
+this algorithm. In pseudooode, we can express pivotal elimina-
+tion as shown in Fig. 9-1 below.
+
+ 
+
+ch
+
+ 
+
+ 
+
+ 
+
+A{{ B{ }}SOLVE (solutiontoAxsaleltinB)
+BEGIN
+
+setn=0
+
+ﬁndpivot(rowm > n)
+
+swaprowsman
+
+divide row n by pivot: A'M. =AMJAM
+
+subtract: A'... =A..—A..,.A',..
+increment n
+n N =
+UNTIL
+Back-substitute: x" = b'n — 2 Am... xm(12)
+
+m>n
+
+DONE
+
+ 
+
+ 
+
+Fig. 9-1 Pseudocode for pivotal ellmlnaa'on
+
+“5 The program
+
+Whenever we write a complex program we are faced with the
+problem “Where do we begin?” FORTH emphasizes the con-
+
+struction of components. and generally cares little which component
+we deﬁne ﬁrst.
+
+For example. we must swap two rows of a matrix. The most
+obvious way moves data:
+
+row1 - > temp
+row2 - > row1
+
+temp -> row2
+
+Although data moves are relatively fast, up to N2/2 swaps may be
+needed, each row containing N data; row-swapping is an O (N 3)
+operation which must be avoided. lndirectio setting up a list of
+row pointers and exchanging those. uses 0 (N ) time.
+
+OWVNobletm—Almm.
+
+228
+
+Chapter 9 - Llnear Algebra Scientiﬁc FOR‘n-l
+
+We anticipate computing the address of an element of A{{ in a ,
+DO loop via the phrase i
+
+A{{JI}} ( Jis row,lis col)
+
+Suppose we have an array of row pointers and a word }row{ that
+looks them up. Then the (swapped) element would be
+
+A{{ J }row{ I }}.
+
+To implement this syntax we define11
+
+:swapper (n - -) l
+CREATE 0 DO I , LOOP
+DOES> OVER + + @ ;
+\ this is a deﬁning word
+
+ 
+
+ 
+
+We would define the array of row indices via
+
+A{{ D.LEN swapper }row{ \ create array }row{
+
+We have initilized the vector }row{ by filling it with integers
+from 0 to N-l while deﬁning it.
+
+Suppose we wanted to re-initialize the currently vectored row- 5
+index array: this is accomplished via
+
+A{{ D.LEN ’}row{ reﬁll .i
+
+where
+
+ram—m. ,. . .m‘. .
+
+: reﬁll (n adr - -)
+SWAP 0 DO I 2* DDUP + !
+2 +LOOP DROP;
+
+ 
+
+11.
+
+mm“... ‘mn—Lk,ﬁ-u_ .. aims . Vannr
+
+The HS/FORTH words VAR and IS deﬁne a data structure that can be changed, like a FORTH
+VARIABLE: 0 VAR X 3 IS X but has the run-time behavior of a CONSTANT: X . 3 olt.
+
+awe-mm 22.
+
+'Ibswapthetworows
+
+:ADRS >R 2'OVER + SWAPR> 2' +;
+(amn-a+2ma+2n)
+OVAR ?SWAP \to keep track of swaps
+
+:}SWAP (amn-)DDUP -
+IF DDROP DROP \noswap - deanup
+
+ELSE ADRS DDUP (.-121 2)
+@SWAP@ (-‘12[21[1I)
+nor! SWAP 1
+
+-1 ?SWAP XOR IS ?SWAP \ "‘ ?SWAP
+THEN ;
+
+Test this with a 3-dimensional row-index array:
+
+3 swapper }row{
+
+:TEST ODOI}row{ CR. LOOP;
+3 TEST
+
+0
+
+1
+
+2 ok
+
+Now swap rows 1 and 2:
+
+'}row{ 1 2 }SWAP 3TEST
+o
+
+2
+10k
+
+and back again:
+
+'}row{ 1 2 }SWAP 3 TEST
+0
+
+1
+20k
+
+Next, we need a word to ﬁnd the pivot element in a given
+column, searching from a given n. The steps in this procedure
+are shown in Fig. 9-2 on page 230 below.
+
+We anticipate using generic operations Git deﬁned in Chapter 5
+
+to perform fetch, store and other useful manipulations on the
+matrix elements, without specifying their type until mn-time. lt
+
+eJuhnvuouoma—Almm.
+
+230 Chapter 9 — Linear Algebra
+
+Scientific FORTH
+
+ 
+
+:A{{ col# }}PIVOT
+
+N col# 1+ DO
+
+ 
+
+Yes IF
+No 1 Put larger on fstack
+set I.PIV = I
+t__l THEN
+. LOOP
+; \ exit
+
+ 
+
+ 
+
+M{{ | }{ 00““ }}I > M{{ col# }{ 00h“ }}I 7
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 9-2 Pseudocode for finding the pivot element
+
+is thus useful to have a place to store the type (other than the
+
+second cell of the array data structure). We arrange this via
+
+OVART
+
+The rest of the deﬁnition is rendered self-explanatory by the
+
+vertical commenting style (a must for long12 words):
+
+OVAR Length \Iength of matrix
+OVAR COL \currentcol#
+OVAR I.PIV
+OVAR a{{
+: INITIALIZE (M{{ -- ::--)
+IS a{{
+a type@ IS T
+a LEN@ IS Length ;
+
+\ |.PIV is used to return the result
+\ a{{ stores the adress of M{{
+
+\ initialize T
+
+\ length - > Length
+
+ 
+
+12. While Brodie (11", p.180) quotes Charles Moore. FORTH's inventor, as offering l-line deﬁni-
+tions as the goal in FORTH programming, sometimes this is just not possible.
+
+i
+
+\ a place to store data type
+
+i
+
+ 
+

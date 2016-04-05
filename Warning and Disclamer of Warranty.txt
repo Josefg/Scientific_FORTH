@@ -1,0 +1,19 @@
+
+
+Warning and Disclaimer of Warranty
+ 
+FORTH is an extremely powerful language. It gives you complete control over every part of the computer. Therefore improperly used FORTH has the capability of causing damage, both to data and to devices. (This capacity is not unique to FORTH -- recently a commercial program written in C crashed, 
+wiping out the configuration settings on my computer and leaving the machine paralyzed and unable to boot.) 
+
+Because the components of FORTH programs can be tested as they are written, FORTH systems tend to omit many safety features —particularly bounds checking— found in more conventional languages. This omission is one of the ways FORTH achieves its execution speed. (Safety features are easy to add, however: FORTH programmers often do so during the debugging stages of a project.)
+
+FORTH is easy to modify. The compiler is part of the language; FORTH systems always include an assembler for the target machine; hence FORTH dialects abound.
+
+These aspects of FORTH — great power and lack Of safety features, together with its mutability — preclude the author and publisher from being able to warrant the illustrative code and programs listed in this book. The author has used his best efforts in preparing this book, to provide code that works as intended.
+
+However, author and publisher make no warranty of any 
+kind. express or implied, with regard to these programs or 
+their suitability for any specific purpose.
+
+The author and publisher shall not be liable in any event for 
+incidental or consequential damages arising Out Of the furnishing, performance or use Of these programs and examples. 

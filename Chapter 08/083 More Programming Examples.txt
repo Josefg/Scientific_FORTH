@@ -1,0 +1,992 @@
+196
+
+Chapter 3 - More Progmmmhg Examples Scientiﬁc FOR!
+
+Orthogonal polynomials play an important role in numerical an:
+
+y%s and applied mathematics. They satisfy (Ithogmality rat
+tions of the form
+
+B _ = 1, m=n
+I,drw(x)p..(x)p..(x) — a... — {0, ,m (40)
+where the weight function w(x) is positive.
+
+For a given w(x) and interval [A,B], we can construct orthogom
+polynomials using the Gram-Schmidt orthogonalization process
+
+Denote the integral in Eq. 40 by (p, , Pm ) to save having to writ
+it many times. We start with
+
+p—l = 0 )
+-l/2
+P007) = (fi dr W(x)) = const. ,
+
+and assume the polynomials satisfy the 2-term upward recursia
+relation
+
+Pn+1(x) = (an + xbn ) pn(x) + cup..-1(x) (41)
+
+Now apply Eq. 41: assume we have calculated pn and pr, an
+want to calculate 17,“. Clearly, the orthogonality property give:
+
+(Pn+1.Pn)=(Pn+hPn-1)=(Pn:Pn-1)=0a
+
+and the assumed normalization gives
+
+(p...p..)=1-
+
+These relations yields two equations for the three unknowns, 0
+bn and C n:
+
+ 
+
+23.
+
+Polynomials can be thought of as vectors in a space of inﬁnitely many dimensions (“Hilbert'
+space). Certain polynomials are like the vectors that point in the (mutually orthogonal) direc.
+tions in ordinary 3-dlmensional space, and so are called «diagonal by analog.
+
+awe-mew” 191
+
+a. +0.0». xp.)-o
+c. + b. 02.. xp.-.) - 0
+We express a. and c, in terms orb, to get
+p...(x) = b.[(x - (pi. xp. )) p.(x)
+- 02.. xp.-. mam]
+
+We determine the remaining parameter b. by again using the
+normalization condition:
+
+(42)
+
+(pn4-1 v pn+l ) = 1
+
+In practice, we pretend b.l =1 and evaluate Eq. 42; then we cal-
+culate
+
+b. = Gm. 5.... )‘W. (43)
+
+multiply the (un-normalized) 1-3,,“ by b, , and continue.
+
+The process of successive orthogonalization guarantees that p. is
+orthogonal to all polynomials of lesser degree in the set. Why is
+this so? By construction,p.,+1.l.p.. and p,,,. Is it tp, .2 ? We
+need to ask whether
+
+(pn v (x — an)pn-2) = 0-
+
+But we know that any polynomial of degree N-l can be expressed
+as a linear combination of independent polynomials of degrees
+0, 1, . N-l. Thus
+
+n-l
+
+(at-amp“E 2 supra) (44)
+
+x-o
+and (by hypothesis) pI .L every term of the rhs of Eq. 44. hence
+it follows (by mathematical induction) that
+
+pa” J- {pn-thn-Si }.
+
+OJUMVNohletm-Almm.
+
+Were-Moro Programming!“ Scientiﬁc FORTH
+
+Let us illustrate the process for Legendre polynomials, deﬁned
+by weight w(x) = 1, interval {-1.1}:
+
+_ 1 1/2
+PO" 2 I
+
+..................................................................
+
+These are in fact the first three (normalized) Legendre polynom-
+ials, as any standard reference will conﬁrm.
+
+Now we can discuss Gram polynomials. While orthogonal poly-
+
+nomials are usually deﬁned with respect to an integral as in
+Eq. 40, we might also deﬁne orthogonality in terms of a sum, as
+in Eq. 39a. That is, suppose we deﬁne the polynomials such that.
+
+”—1 { 1, m=n
+
+kgopn(xk)pm(xk);:; E dnm = 0, matn (45)
+
+Then we can construct the Gram polynomials, calculating the
+coefficients by the algebraic steps of the Gram-Schmidt process.
+except now we evaluate sums rather than integrals. Since p..(x)
+satisﬁes 45 by construction, the coefﬁcients y, in our ﬁtting
+polynomial are simply
+
+M-l 1
+7.. = E p..(xt) fig; (46)
+k-O k
+they can be evaluated without solving any coupled linear equa
+tions, ill-conditioned or otherwise. Roundoff error thus becomes
+irrelevant.
+
+The algorithm for ﬁtting data with Gram polynomials may in
+expressed in ﬂow-diagram form:
+
+neodhpomt...x.¢mw. 1.1/0.3.
+DOn-ttoN-t (outerloop)
+Construct an , cn :
+DO k=o to M1 (inner loop)
+pn+t(xlr) = (XI: " 8n)Pn(Xu) - crpn-1(Xtr)
+
+sum = sum + (p0,,(x.)) 2w.
+
+Com = an + ft Pn+1(Xk) Wk
+LOOP (and inner loop)
+cn+1 = cn+1 /sum
+
+DO k =0 to M-1 (normalize)
+’ Pn+1(xk) = pn+1(xk)/ mm
+LOOP
+
+LOOP
+
+ 
+
+ 
+
+Fig. 8-5 Construction ofGram polynomials
+
+The required storage is 5 vectors of length M to hold xb p,(xk),
+
+p.,.1(.\:.,),f.l and Wu -:- 1/03 . We also need to store the coefficients
+an, c. and the normalizations b. —that is, 3 vectors of length
+N < <M— in case they should be needed to interpolate. The time
+involved is approximately 7M multiplications and additions for
+each n, giving 7NM. Since N can be no greater than M-l (M data
+determine at most a polynomial of degree M-l), the maximum
+possible running time is 7M2, which is much less than the time to
+solve M linear equations.
+
+In practice, we would never wish to ﬁt a polynomial of order
+
+comparable to the number of data, since this would include the
+noise as well as the signiﬁcant information
+
+emvuouoim-me.
+
+200 ChapterB-MoreProgrammthxamplee SclentlﬂcFORTH
+
+We therefore calculate a statistic called zz/(degrce of freedom)“:
+With M data points and an N’th order polynomial, there are
+M-N-l degrees of freedom. That is, we evaluate Eq. 38 for ﬁxed
+N, and divide by M-N-l. We then increase N by l and do it again
+The value of N to stop at is the one where
+
+2
+= 1ng
+”'2“ M-N-l
+
+stops decreasing (with N) and begins to increase.
+The best thing about the xﬁN statistic is we can increase N without
+having to do any extra work:
+
+2 M-1
+
+ZM,N = 2 (ft -§ l’nPn(xk))2Wk
+
+- (47)
+M-l
+
+N
+a 2 «oz — 2 (7..)2
+k=0 n=0
+
+The ﬁrst term after E in Eq. 47 is independent of N, and the
+second term is computed as we go. Thus we could turn the outel
+loop (over N) into a BEGIN WHILE REPEAT loop, in
+
+which N is incremented as long as of”; is larger than 02”“ .
+(Incidentally, Eq. 47 guarantees that as we increase N the ﬁtted
+curve deviates less and less, on the average, from the measured
+points. When N = M-l, in fact, the curve goes through the points
+But as explained above, this is a meaningless ﬁt, since all data
+contain measurement errors. A ﬁtted curve that passes closer
+than 0., to more than about 1/3 of the points is suspect.)
+
+The code for Gram polynomials is relatively easy to write using
+the techniques developed in Ch. 5. The program is displayed in
+full in Appendix 8.4.
+
+ 
+
+24. That is, “chi-squared per degree of freedom".
+
+MFOR‘M
+
+DWI-MW!!!“ 201
+
+WWW
+
+ometimes we must ﬁt data by a function that depends on
+parameters in a nonlinear manner. An example is
+
+F
+‘- 1—7777) “3’
+
+Although the dependence on the parameter F is linear, that on
+the parameters a and X is decidedly nonlinear.
+
+One way to handle a problem like ﬁtting Eq. 48 might be to
+transform the data, to make the dependence on the parameters
+linear. In some cases this is possible, but in 48 no transformation
+will render linear the dependence on all three parameters at once.
+
+Thus we are frequently confronted with having to minimize
+
+numerically a complicated function of several parameters. Let
+us denote these by 00, 01 , , BN4 , and denote their possible
+range of variation by R. Then we want to ﬁnd those values of
+{ 0}C R that minimize a positive function:
+
+12 (so, ,UN_,) 101;?" 12(00,...9N-,) (49)
+
+One way to accomplish the minimization is via calculus, using a
+method known as steepest descents. The idea is to differentiate
+the function 12 with respect to each 0,, and to set the resulting N
+equations equal to zero, solving for the N 0’s. This is generally a
+pretty tall order, hence various approximate, iterative techniques
+have been developed. The simplest just steps along in 0-space,
+along the direction of the local downhill gradient -sz, until a
+minimum is foun . Then a new gradient is computed, and a new
+minimum sought .
+
+Aside fromthe labor of computing -V12, steepest descents has
+two main drawbacks: ﬁrst, it only guarantees to ﬁnd a minimum,
+not necessarily (In minimum — if a function has several local
+
+ 
+
+25. maubywmyuemuwmdiﬁadmmbetoundinhmad,mmnm,
+
+bid, p. 1113’.
+
+Chapters-MoreProgramnIngExamuoa SclentIﬂcFOR‘m
+
+I
+
+I
+rninima, steepest descents will not necessarily ﬁnd the smallest.
+Worse, consider a function that has a minimum in the form of a
+steep-sided gulley that winds slowly downhill to a declivity —
+somewhat like a meandering river's channel. Steepest descents
+will then spend all its time bouncing up and down the banks of
+the gulley, rather than proceeding along its bottom, since thel
+steepest gradient is always nearly perpendicular to the line of thei
+channel. 1‘
+Sometimes the function 12 is so complex that its gradient is tooI
+expensive to compute. Can we ﬁnd a minimum without evaluating}
+partial derivatives? A standard way to do this is called the sins?
+plex method. The idea is to construct a simplex — a set of N +1
+distinct and non-degenerate vertices in the N-dimensional 0-
+space (“non-degenerate" means the geometrical object, formed
+by connecting the N + 1 vertices with straight lines, ha non-zero
+N-dimensional volume; for example, if N=2, the simplex is a
+triangle.)
+
+We evaluate the function to be minimized at each of the vertices,
+and sort the table of vertices by the size of 12 at each vertex, the
+best (smallest x2 ) on top, the worst at the bottom. The simplex
+algorithm then chooses a new point in 0-space by the a strategy,
+expressed as the ﬂow diagram, Fig. 8-8 on page 203 below, thd
+in action somewhat resembles the behavior of an amoeba seeking
+its food. The key word )MINIMIZE that implements the complex
+decision tree in Fig. 8-8 (given here in pseudocode) is
+
+: )MINIMIZE (n.'rter - - 87: rel.error - -)
+
+INITIALIZE
+BEGIN done? NOT NN.max < AND
+WHILE
+
+REFLECT r> =best?
+
+IF r> =2worst?
+
+IF r<worst? IF STORE.X THEN
+HALVE r<worst?
+IF STORE.X ELSE SHRINK THEN
+ELSE STOREX THEN
+ELSE DOUBLE r> =best?
+IF STOREXP ELSE STORE.X THEN
+THEN
+N 1 + IS N SORT
+REPEAT ;
+
+summer-M Wat-MW!” 203
+
+usedintheformat
+
+USE( tnarne 20 96 1.6-4 )MINIMIZE
+
+Fleshing out the details is a -by now— familiar process, so we
+leave the program perse to Appendix 85. We also include there
+a FORTRAN subroutine for the simplex algorithm, taken from
+
+ 
+
+ 
+
+ 
+
+INHIALIZE \ choose simplex? is am of param. space
+BEGIN
+Converged? NOT N N.rnax s
+WHILE
+'—- REFLECT\ worst point thru geoeenter of other points
+DONE '0") S «best-Pt) 7
+.~
+I
+Yes No l(x') z l(2worst.pl) ?
+DOUBLE '/\’
+N Y
+xx") s «bestpo ? m r ’0”) < “3”“ 7
+l .
+
+Am REPEAT .
+Store r'
+
+HALVE
+i
+f(x") < I(worst.pl) ?
+REPEAT A
+
+Store r' SHRINK
+
+REPEAT
+
+ 
+
+ 
+
+Fig. 0-3 Flow dlagram of the slmplex algorithm
+
+OJUthNohletm—Almraaervod.
+
+204
+
+Ghana 3 — More Programming Examples Scientiﬁc FORTH
+
+Numerical Recipes 26, as an example of just how indecipherable
+traditional languages can be.
+
+53 Appendices
+
+§§1 Gaussian quadrature
+
+aussian quadrature formulae are based on the following idea:
+
+if we let the points 6,, and weights wll be 2N free parameters
+(n runs from 1 to N), what values of them most accurately repre-
+sent an integral by the formula
+
+B N
+I = [A dx a(x)f(x) = E1 w,,f(§,,) ? (50)
+
+In Eq. 50 0(x) is a (known) positive function and f(x) is the
+function we want to integrate. This problem can actually be
+solved, and leads to tables of points 5,, and weight coefﬁcients
+w,, speciﬁc to a particular interval [A,B] and weight function a(x).
+Gauss-Legendre integration pertains to [-1,+1] and o(x)= 1.
+(Note any interval can be transformed into [-1, + 1].)
+
+The interval [0,00) and 0(x) = e"r leads to Gauss-Laguerre for-
+
+2
+mulae, whereas the interval (— oo,+ 00) and 0(x) = e”Jr leads to
+Gauss-Hermite formulae.
+
+Finally, we note that the more common integration formulae such
+as Simpson’s rule or the trapezoidal rule can be derived on the
+same basis as the Gauss methods, except that the points are spe-
+ciﬁed in advance to be equally spaced and to include the end-
+points of the interval. Only the weights w, can be determined as
+free ﬁtting parameters that give the best approximation to the”
+integral.
+
+For given N Gaussian formulae can be more accurate than equally-
+spaced rules, as they have twice as many parameters to play with.
+
+ 
+
+26.
+
+Press, et a1. , Numerical Recipes, laid... p. 29“.
+
+mum Owe-MW!” 206
+
+Some FORTH words for 5-point Gauss-Legendre integration:
+
+ 
+
+ 
+
+N swarm WANT ﬂ
+1. ossamroreasss FCONSTANT x1 :mm (arse--0
+it ow Pomsrmr wo soda (arse-[mew [sat/2)
+N 0.4mm FWANT wt FCNER Fm IOF' F-ROT (87:-Jab)
+% QWID WTANT W2 XDIP in” FIX) wt F' F3R+
+XDIP x1 FPEGATE rude
+:acde (arse-[mam [eat/2) Poo m F‘ F3R+
+FOVERF—leFtNDERF+; Mia“ F(X)\~2F' F$+
+:reeede (a7:abx--a+b"x) F'F+; XDUP )eFNEGATEreaede
+':F3R+(e7:abcx--a+xbc)F3RF+ F-ROT; Pot) waF' F3R+
+“2 The trapezoidal rule
+ecall (Ch. 8, §1.1) how we approximated the area under a curve
+Rby capturing it between rectangles consistently higher- and
+lower than the curve; and calculating the areas of the two sets of
+rectangles. In practice we use a better approximation: we average
+the rectangular upper and lower bounds. The errors tend to
+cancel, resulting m
+B- A w
+w ( 2y (f(A +nw) + f(A +nw+w))
+n-O
+(51)
+-ff 2drf(x)+é(¥) w3max lf”(x)|
+A<r<B
+Now the error is much smaller28 - of order w2 — so if we double
+the number of points, we ecrease the error four-fold. Yet this
+so-called trapezoidal rule requires no more effort (in terms of
+the number of function evaluations) than the rectangle rule.
+27. See, eg, Abramowitz and Stegm, HMF, p.885.
+‘28. we) istheaecondderivative ofﬂx),l.e. the ﬁrst derivative are).
+29. Calledaobecausetheeuwejkﬁsapptoﬁmatedbystraight lineaepnentsbetweensuecessive
+
+printer": +w.‘l‘husweevaluatetheareasoftrapemidsratherthanrectangles.
+
+OWVNohietm-Almmarved.
+
+Ctnpter 8 - More Programming Examples Sclentlllc FORTH
+
+“3 Richardson
+In the program )INTEGRAL in Ch.8 §1§§5.3 the word INTER.
+PO LATE performs Richardson extrapolation for the trapezoid»
+a1 "rule. The idea' is this. If we use a given rule, accurate to order
+w’I ,to calculate the integral on an interval [a,b], then presumably
+the error of using the formula on each half of the interval and
+adding the results, will be smaller by 2'". For the trapezoidal rule,
+n =2, hence we expect the error from summing two half-inter-
+vals to be 4x smaller than that from the whole interval.
+
+Thus, we can write (10 = I: , I'o = I£a+by2 , I, = ﬂaw/2 )
+I0 = Iexact + R (523)
+
+Equation 52b is only an approximation because the R that ap-
+pears in it is not exactly the same as R in Eq. 52a. We will pretend
+the two R’s are equal, however, and eliminate R from the two
+equations (8.52a,b) ending with an expression for I...“ :
+
+1...... ==1§(I’o + I. - 1.) (53)
+
+Equation 53 is exactly what appears in INTERPOLATE.
+
+MMTN
+
+Owe-MW”
+
+us MW: Orampolynomtata
+: Here is a FORTH program for implementing the algorithm
+I derived in {2552 above.
+
+WON‘PI) ‘m. H348. 2RD. CM.
+
+2” 1m.
+
+DSDXKN.IXPOP. m
+l‘Duel-47:eawagln]o[n-t]--aahw|g[n]g[n+1])
+
+“zoos 804+!) 2FXO-I. 2941. an”.
+
+1W1 1M1. DXDSWV. NR)!
+
+1%: Demo m.m1[DK]FSTP.
+
+DSOXWIBXPOP. 30m
+Ind",
+I7:aawag(n]g[n+1]~-aabwg[n+1]wxg[n+t])
+in; mm) 1m oxosuov. OSPOP.
+1 transmutation.
+} MMFSTP. DSDXMOJ.BXPCP.W
+I”db-87:anharg[n+1]vno[n+1]--aabwg[n+1])
+I;DDEC(N+1)19012MJL'.2ML
+
+2901 Hill”.
+
+DXDSWV. DSFOP.
+
+FBIDSIDQFAOD. DSIDQFSTP.
+
+DSDXWV. BXPOP. SPAM. ENDOOII
+lapel--w:aabwg[n+1]l-- a-a+wp[n+1]"2 a h)
+
+I”:A{B(C(G((Mnax}Flf
+
+‘FIISTAB’I F-o a(0}6! F-0b(0}GI;
+NILE.“ (07:--g{{tl}}) F-o F-O
+M000w(l}wy{l}G@ P'z FOUERF'
+(Brea'uaa'waﬂ‘zt
+HOT F+ HIST F+ Fat/AP
+(87:--a-s+w a’-s‘+wt"2)
+m an G! ream t/F;
+
+ 
+
+:mm'e (wrelttlilnall I'll)
+M000 r-o gunner PM slinnor LOOP;
+
+2mm (ﬂzgﬂllnuoﬂlin)
+F-0h110)01 mm
+F-o mono-(iomo-(onoor- n LOOP
+Pa(10)01;
+
+:msraseoovoce (arm 11”.-)
+F-Oe(00)0l F-o
+mono wuoioo memo F' n uOOP
+F'e(10)0l;
+
+:msz Pun ISNnax sou 13cm“ tau
+FRSTAB'. urnELrA mares seoowae.
+masecouoc- ;
+
+OVARN OVARN+1
+
+:hc.N N+1|1PBN 1+ SN-H;
+:m RWWGG R;
+:thFF lBYTESW-i:
+:ZERDL NF-OFBOIL;
+
+:STAHTJbILG
+
+(--[e{n+1)][a{n+1)][b(n+t}] 87:--a-0a{n} b{n})
+Flth F-o e{N+tO}W ZEFOL
+a{ NO} USPOSE mos? ZEDL
+M NO} DISPOSE hem ZEXDL ;
+
+:SEI’.FSTACK w{I‘0}G@x{l'0}G@ sIINfi‘rGG
+aiiNl-I'IIGO:
+
+:)@'l (linul'kx-q) HIP 0) usvose F‘Gl:
+
+:Nomuuzs (”nun")
+1/Fa(N+t)@'l F30"
+b{N+1}@'i c{N+1}@-1
+M000 FMQﬁNHli) DISPOSE F‘ GI LEDP
+m;
+mm G'T'OPCKOPUOPCK
+GPCKOPCKOPOK'W
+mmmmmm‘m
+
+Chapter 3 - More Programing Examples Sclerm‘llc FOR‘I
+
+\ GRAM “MIL LEAST-0.1m W0)
+
+Nmo smrmme
+Honour SETFSTACK
+“(NHIMDROP G(N+1) emu) A(N+t)
+Yi'olGG GIN“)
+LOOP COROP FDFOPFDFDP W;
+
+:M.WLTA (z: — oid.delu muslin)
+DELTAG@ FDJP e{N0)G@ F"2 F- F”
+MTAGI;
+
+:NOT.ENUF.G‘s? New.DELTA MN+1- S—F
+FDUP FatF-
+
+(CR .FS .' FEXTITERATDNT‘IYN Os FWTl-EM)
+(:z-dd'm-n—t urn-2)
+FFDT F\ F-RDT F/ (z: —d'l[m-n-2] d/[m-n-tl)
+FOVER FOIFFESEFNDPFDROPOTFEN:
+
+:}FIT (X{Y{S{ M‘naxM B{ C{G({ —)
+NITIALIZE 1|SN 2ISN+1
+BEGIN NOT .ENUF.G's’l NMnax AND
+WHILE NextG inc.N
+FEPEAT FINIT:
+\ ------------------------------------- endoioode
+
+:REOONSTRUCT MODOCRx{IO}G@F.y{I0}G@F.
+F=ON+11+100
+°{'°}G@GI{IJIIG@F‘F+
+LOOP F.
+
+LCXDPL
+
+§§5 Non-linear least squares: simplex method
+FORTRAN program for the simplex method is given belt
+on page 209. The FORTH version, as discussed in §2§§3
+given on pages 210 and 211.
+
+WM?”
+
+mm: mxmmmmmm
+mm m- mm - 1.0.
+: ma-oam-um-m
+um mmvm.m.m.m
+one - m H
+nan-o
+LO- 1
+mutorvmner
+"-1
+m-a
+as
+Iii-2
+N-I-t
+EMF
+no 1 1 I- LIFTS
+scrotum) m-I
+FlYmﬂtYII-QITI-Bl
+M -H
+"a!
+ESE F(Y@.GT.YM)THBI
+FGJEH "11-1
+M
+t W
+RIO!- - Z‘WMYII-OMABSWMI + ABSMI-OIII
+WLTFTGJETUFN
+
+mam FALSE 'MM Mum Iterations.‘
+
+Ila-ITS!“
+emu-1.10M
+Mil-0.
+I W
+Niel-1m
+FWD-Q1184
+no 13J- LION
+w-wwo,»
+m
+
+EMF
+.4 commas
+i emu-1.10.1
+Pam‘s-W
+m-(1.+uhw-Pm.nmm.n
+5 comes:
+Vila-mm
+mvmmea
+emu-1.1a:
+m-emmuromw
+e cornea:
+
+MI-MWW
+
+ 
+
+run-mm
+rmuxmnar
+cows-um
+Plug-emu)
+
+17 W
+veg-m
+a!
+Dona-1m
+I’m-I'M
+
+1s courses
+vise-m
+Ems
+mrmoevmma
+rmuxnmeu
+cowl-1.1004
+I’m-PRU)
+
+10 course:
+YM-YPR
+error
+mam-rm
+Paar.» - BETA'Ptl-IJ) + (1 .Em-Pam.»
+
+21 comma
+YPm-FIMM
+rmu.vm)m
+00224-1.“
+PMJ-W
+
+22 OONTNUE
+van-m
+ELSE
+oozu-uns
+raNELotnar
+oozes-1mm
+W-WHJ+PILOJI
+Pris-PR1.»
+
+a courmE
+Ym-HNKIPR)
+error
+
+24 courses
+Blur
+
+ELSE
+ooasJ-mou
+I’m-PRU)
+
+25 comm:
+wee-rm
+
+ans
+
+eer01
+
+an
+
+210
+
+\WIIZATW BYTHESMPLEXIETHCD
+\mmmstw Alan/1991
+
+TASK MBA
+\ ----------------------- WM MAW
+VARABIE < F>
+:USE( [oowusl ' CFA <F> I;
+: F00 EXECUTE@ ;
+BEI-EAD' <F>
+\ -------------------- END FUNCTm NOTATm
+\ -------------------------- DATA WES
+3 VAR Him
+0 VAR N
+0 VAR N.mlx
+
+CREATESIMPLEX{{ Ndim 4 (bytes) ' Ndim1+ (#pclnta)
+'ALLOT
+
+GREATER Ndimt+ 4 (bytes) ' ALLOT \nelduale
+
+CREATEindex MimH- 2‘ ALLOT \arruyloraem'nbledlndleea
+
+:>index (1—1') Z‘index+ @;
+
+DVARIABLEW
+
+DVARIABLE Fhaidual'
+
+DVAFIABLEEpaIlon
+
+CREATEX{ Ndlm 4(bytee)‘ ALLor \trialpoint
+CREATEXH Ndim 4(bytea)‘ ALLOT \Z'Idlrialpolnt
+CREATEY{ Ndirn 4(bytea)‘ ALLOT \geocenter
+
+:} (adn—adr+4n) 4'4»; \partolarraynotation
+2}} (adrrnn—adr+[m'NJirn+n]'4) SWAP Mim' + };
+
+\ -------------------- ENDDArasrRucrunEs
+\ ---------------------------- ACTIONWORDS
+:FESIUJALS
+Ndirn1+ 0 DO SIMPLEX{(IO}} Foo F{I} R32I
+LCDP:
+
+:<indax> Mim1+ODOlindexlr+ leP: \ﬂlindax
+
+:GIER <indox>
+Ndm1+ooo F{I>1ndox}ma@
+l1+BEGNNdlm1+ OVER
+HERO/Bil >index}Fm@ FOVERFOVB! F>
+
+FFSWAP
+|>indettOVER >index
+haxl2'+l momenta-+1
+TI-ENFDFW 1+
+RHEAT WW
+LOO’;
+
+CENTE(—) FNTMmSF
+WOMF-O
+WODO
+
+(87:—Mm)
+\Ioepwereomponents
+\uraoeoverm
+
+mums-11.1)} mm H
+LOOP FOVERF/
+
+Chapter 3 - More Programming Examples
+
+ 
+
+Scientiﬁc FORT!
+
+11mm
+
+LOOP Ponce;
+\m:mm1umumm4n
+\--enehsdedl
+
+\WII'I'Y
+
+:OGIEI CR .'We'rellniaed.' ;
+:TOOMANY CR .'Toomanyihratlona' :
+
+:V.MOVE (arcadr doatadr-) \rnovevemr
+NdimoDO OVER!) OVBIUZWIE
+LOOP DOFDP:
+:STORE (adriadr2--) O}
+SIMPLEX({ NdmlndexO}}V.MOVE
+F{Ndlrnlndex}2WVE;
+:SI'OREX Fhaldul X{ STORE;
+:STOREXP Reaidual'XH STOFE:
+
+:New.F x{ Foo Fbaidud F1321;
+:EXTRUDE (B7:aeale.laetor--)
+\exbndpaeudopod
+Murmo no DUP 1} new (87:-4.1x)
+Y{I} m FUNDEI F- (37:--e.fyxy)
+FROT FUNDER F“ (B72--yr~llx-yl‘l.o
+FFOT F+ (57:--s.ly+[x+/]ﬁ.l)
+X{l} mar
+LOOP DFCP W MI;
+
+:F=1/2 F=1FNEGATEF=1FSCAI£FPLLCI(:
+:F=2 F=1FDUPFSCALEFPIJEK;
+
+\ ---------------------- DEBUGGNGCOE
+OVARDBG
+:DEBUG-ON-tlSDBG:
+:DEBUGOFFOISDBG:
+:.V SSPACES Ndimo DO DUPI} WP.
+LOOPDFOP;
+:.M (--)
+Ndimt+ODODBGCR
+IFI. ZSPACES THEN
+SMEXﬁIIndaxon .V
+036 IF F{Ilndex} WP. Ti-EN
+LOOCR
+DBGFOR X{.V WMFJ'HEN:
+
+:.F Mmt+ ODOCR F{lh&x) WP.
+LOOP:
+
+\ ------------------ “WOODS
+
+:FEFLECT CENTER
+F-t FPEGATE \nblaebr-d
+senatummon \mn
+Exrmoe \ealeulabeM
+DEEIFCRIFELECI’M'THENM:
+
+”Poem
+
+mount:
+
+an WW'IM
+\mm
+xue-(vuove \mpon
+MVP-8 mar: (71 nausea-4
+"summon \mn
+arm \muw
+
+”FOR'W “94 .M;
+
+“VE MF-IR \mw-os
+
+musicians-110)) \vmrnpt
+m \muot)
+MFCRfHALVMi'Tl-Bd M:
+
+II“ ”((0 Mada-10)) \balpt.
+Y( VJKNE \aaveit
+M1114» 100 \uywetnr
+mono \bywnponent
+
+was >m1notr
+mo vmm amass
+P-uzP- r+ R121
+LOOP
+LOOP assume ORDER
+Decree-eman- nan .M;
+---------------------------- anacnonwoms
+
+“WWW
+HMAP >M}mF>W:
+>-hau'l 0 M;
+
+and? Min MW:
+>-wm1-m;
+
+um Hum-rimlmao
+
+no mwme
+
+POVERFOVE-I F-F2'
+
+F-l-DTF+ Fl FABS mm F>;
+.............................. aorEsrwoaos
+
+ 
+
+MI-MWW 211
+
+:m (n.~--ﬂ:w~)
+Slur-a WM! OIN \ﬂﬂse
+\Ww
+\Inenau.m,m
+\ml-Ilnn
+
+'01 NM"- < All)
+
+igiig
+
+EFLEC‘TD-hm
+F r>-m
+F KWFS'YmTl-Gi
+HALVE Km
+Parmesan-arm
+ESE mm
+HEM
+r>-b‘7
+IFSTGEXPESESTGfXW
+THE
+N1+ISN omen
+FEAT core;
+
+\ ----------------------- mamas
+:P1 (ea—s7;P)oLpo}Ra.2@mP-2
+own ms": H'F+
+2) mar-'2 F2'F2'F+
+35-FF-F‘1F2/FSWAPOSFF‘F-;
+\t1=.5'(x'x+2'y'y+4'z'z-UI"2-0'1
+
+:F‘2 (u—nzrinouPo)
+mmUPP-zumm
+F2‘F+ SSFF-P’zFZIFSWAPsS-FF‘F-
+Mp,ow1}moo}me@P/Psrmrrroos
+
+\12 -[¢r"22'y"2-u)"2-051]'ooa¢'mnulx))‘ 2
+\Uuom USE(MYFLNC 101mm
+
+FLOATS
+
+5. swnExuoonm
+<1. mum pm
+1. smuoznm
+
+5. wmonmr
+3. mm mm:
+-15$IPLEX{(12))R2!
+
+.1o.suPLE1q(2o}}m21
+1. smuzmm
+s smauzznm
+
+s. swusxuson m
+a. mum }} rear
+3. smausznm
+
+212 Ms-mwm WWI]
+
+ 
+
+”Harm—“V .4.-.“ .
+
+emvuouum-Mmmemd.
+

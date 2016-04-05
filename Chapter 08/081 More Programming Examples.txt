@@ -1,0 +1,1046 @@
+WFORTH awe—memem 157
+
+More Programming Examples
+
+Contents
+51 Numerical integration 157
+§§1 The integral of a function 158
+552 The fundamental theorem of calculus 159
+553 Monte-Carlo method 160
+554 Adaptive methods 164
+555 Adaptive integration on the real line 165
+§§6 Adaptive integration in the Argand plane 179
+52 Putting functions to data 181
+551 Fast Fourier transform 184
+§§2 Gram polynomials 193
+553 Simplex algorithm 201
+§3 Appendices 204
+§§1 Gaussian quadrature 204
+552 The trapezoidal rule 205
+§§3 Richardson extrapolation 206
+§§4 Linear least-squares: Gram polynomials 207
+§§5 Non-linear least squares: simplex method 208
+
+n this chapter we apply some of the FORTH tools we have been
+
+developing (complex arithmetic, typed data) to two standard
+problems in numerical analysis: numerical integration of a func-
+tion over a deﬁnite interval; determining the function of a given
+form that most closely fits a set of data.
+
+51 Numerlcal Integration
+
+We begin by deﬁning the deﬁnite integral of a function f(x). Then
+we discuss some methods for (numerically) approximating the
+integral. This process is called numerical integration or numeri-
+cal quadrature. Finally, we write some FORTH programs based
+on the various methods we describe.
+
+omvmim-Mmm.
+
+1 58 Chapter 3 - More Programming Examples Scientiﬁc FORTH
+
+“I The Integral ot a function
+The deﬁnite integral 1?“) dx is the area between the graph of
+the function and the x-axis as shown below in Fig. 8-1:
+
+ 
+
+ 
+
+ 
+
+ﬁrm dx
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Flg. 8-1 The Integral of a function Is the area under me curve.
+
+We estimate the integral by breaking up the area into narrow
+rectangles of width w that approximate the height of the curve at
+that point and then adding the areas of the rectanglesl. For
+rectangles of non-zero width the method gives an approximation.
+If we calculate with rectangles that consistently protrude above
+the curve (assume for simplicity the curve lies above the x-axis),
+and with rectangles that consistently lie below the curve, we
+capture the exact area between two approximations. We say that
+we have bounded the integral above and below. In mathematical
+
+language.
+
+ 
+
+l. Hareaangleﬂeshdwmehorizoutdamiuueaiscomidcredtobeupdn.
+
+(b-‘yw
+w 2 min [ﬂa+nw),ﬂa+nw+w)]
+
+ad)
+
+5 fitted: (1)
+
+(b-a)/w
+s w 2 max [ﬂa+nw),ﬂa+nw+w)]
+u-O
+It' is easy to see that each rectangle' m the upper bound IS about
+W U" (x) I too high2 on the average, hence overestimates the area
+
+by about 5w 2If" (x)|. There are (b—a)/w such rectangles, so if
+
+If '(x) I remains ﬁnite over the interval [a, b] the total discrepancy
+will be smaller than
+
+—W(b-a) max If' (X)|-
+ansb
+
+Similarly, the lower bound will be low by about the same amount.
+This means that if we halve w (by taking twice as many points),
+the accuracy of the approximation will double. The mathematical
+
+deﬁnition of f:f(x) dr is the number we get by taking the limit as
+
+the width w of the rectangles becomes arbitrarily small. We know
+that such a limit exists because the actual area has been captured
+between lower and upper bounds that shrink together as we take
+more points.
+
+552 mmmmolmlcum
+
+Suppose we think of It‘/Ix) dz as a function —eall it F(b) — of
+
+the upper limit, b. What would happen if we compared the
+area F(b) with the area F(b + Ab): We see that the difference
+between the two is (for small Ab)
+
+AFC?) = F(b+Ab) -F(b) “NON? +0((Ab)2) (2)
+
+ 
+
+2.
+
+f'(x)isthealopedthelinetangenttothecmveatthepointx.lt'ucalledtheﬂnth1vaﬂveof
+
+ﬁx).
+
+so that
+
+- 1 +Ab
+F'b = _ [b _[b
+() hm0 Ab( . dz .ﬂx)dx) (3)
+
+Equation 3 is a fancy way to say that integration and differentia-
+tion are inverse operations in the same sense as multiplication
+and division, or addition and subtraction.
+
+This fact lets us calculate a definite integral using the differential ‘
+equation routine developed in Chapter 6. We can express the
+problem in the following form: ‘
+
+Solve the differential equation
+
+(11’
+I =f(x) (4)
+fromx = a tox = b, subject to the initial condition
+
+ 
+
+F(a) = 0.
+The desired integral is F (b).
+
+The chief disadvantage of using a differential equation solver to
+evaluate a deﬁnite integral is that it gives us no error criterion
+We would have to solve the problem at least twice, with two
+. . . . . 3
+different step Slzes, to be sure the result 15 sufficxently precise .
+
+§§3 Monte-Carlo method
+The area under f(x) is exactly equal to the average heightfof
+f(x) on the interval [a, b], times the length, b—a, of the interval .
+How can we estimate]? One method is to sample f(x) at random.
+
+ 
+
+This is not strictly correct: one could use a differential equation solver of the “predictor/come-
+tor" variety, with variable step-size, to integrate Eq. 4. See, e.g., Press, er al., Numerical Recipe:
+(Cambridge University Press, Cambridge, 1986), pp. 102 if.
+
+That is, this statement deﬂnesf.
+
+Ml—MPWEW 101
+
+choosing N points in lab] with a random number generator.
+Then
+
+1 N
+7" ‘ﬁ Iglﬂxn) (5)
+and
+ﬂax) dx - (b — a)? (6)
+
+This random-sampling method is called the Monte-Carlo method
+(because of the element of chance).
+
+“3-1 UncertaintyottheMonte-Canomethod
+
+The statistical notion of variance lets us estimate the accuracy of
+the Monte-Carlo method: The variance in f(x) is
+
+W) =If:p(f)(f-r)2df
+N (7)
+=5): (run—IV
+
+n-l
+
+(here p(f )df is the probability of measuring a value off between
+f and f + df).
+
+Statistical theory says the variance in estimating 7 by random
+sampling is
+
+Vera) = ﬁvw) (8)
+
+Le, the more points we take, the better estimate offwe obtain.
+Hence the uncertainty in the integral will be of order
+
+A(Iff(x)dr) Jaw: (9)
+
+and is therefore guaranteed to decrease as W'
+
+162
+
+CMpterB—MoreProgrnnmﬂngExnmplea SclentlﬂcFORTH
+
+It is easy to see that the Monte-Carlo method converges slowly.
+
+. 1
+Smce the error decreases only as W , whereas even so crude a
+
+rule as adding up rectangles (as in §1§§1) has an error term that
+decreases as UN, what is Monte-Carlo good for?
+
+Monte-Carlo methods come into their own for multidimensional
+integrals, where they are much faster than multiple one-dimen-
+sional integration subroutines based on deterministic rules.
+
+§§3—2 A slmple Monte-Cane program
+
+Following the function protocol and naming convention devel-
+oped in Ch. 6 §1§§3.2, we invoke the integration routine via
+
+USE( Ename % L.lim 96 U.lim % err )MONTE
+
+We pass )MONTE the name Ename of the function f(x), the
+limits of integration, and the absolute precision of the answer.
+The answer should be left on the ifstack. L. Ilm, U. Ilm and err
+stand for explicit ﬂoating point numbers that are placed on the
+87stack by 965 Th.e word 96 appears explicitly because 1n a larger
+program — of which )MONTE could be but a portion— we might
+want to specify the parameters as numbers already on the 87stack.
+Since this is intended to be an illustrative program we keep the
+fstack simple by defining SCALARs to put the limits and
+precision into.
+
+3REAL'4 SCALARS A B-A E
+
+The word INITIALIZE will be responsible for storing these num-
+bers.
+
+The program uses one of the pseudo-random number generators
+(prng’s) from Ch. 3 55. We need a word to transform pm’s
+—uniformly distributed on the interval (0,1)— to prn's on the
+interval (A, B):
+
+ 
+
+‘I‘hewordﬁ‘ pusheswhatfollomintheinputstreamontotheﬂstack,assumingiteanbeinter-
+pretedasalloatingpointnumber.
+
+OJdlanVNoblefm-Mmmorved.
+
+1...»...
+
+ 
+
+Immm MLMPWEW 163
+
+:NEW.X RANDOM B-A G@ F‘ A G@ F+;
+
+The program is described by the simple ﬂow diagram of Fig. 8-2
+below:
+
+ 
+
+INITIALIZE
+
+db
+
+BEGIN
+(B-A)'sigma > E 7
+WHILE
+New.x f(x)
+N=N+1
+T. Var(f)
+REPEAT
+I = (B-A)*<f>
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 8-2 FIow diagram of Monte Carlo Integration
+
+From the ﬂow diagram we see we have to recompute f and
+Var(f' ) at each step. From Eq. 5 we see that
+
+In“ =7»: + ﬂ—xrpﬂ Iii—N
+
+and
+
+_ _ - V
+VaIN+1 = VarN + UN” IN)UI;;I+ 171s“) arN
+
+Writing the program is almost automatic:
+
+:USE( [COMPILE] ' CFA UTERAL ; IMMEDIATE
+3REAL‘4 SCALARS AV.F dd.Av.F VarF
+
+:DoAvernge (n--n+1B7:f--t)
+Av.F G@ ddAvF GI \seveoldAv
+FDUP 1+ (--n+187:--fl)
+oldAvF G@ (87:--ffddAv.F)
+
+FUNDER F-
+DUP s->F Fl F+ (87:--fAv.F)
+MFGI ; \pusway \corl'dbdow
+
+OJdIanVNmfm-Alrldnareurved.
+
+Chapter 8 - More Programming Exnrnpleo
+
+:Do.Verhnce (n--n 37:1")
+FDUP old.Av.F G@ (87:ffold.Av)
+FUNOER F— FSWAP
+Av.F G@ F- F'
+
+(37: [l-Oid.AV]‘[l~AV] )
+VarF G@ FUNDER F-
+
+DUP S->F Fl F+(87:--Var’)
+VarF G!
+:INITIAIJZE (:adr-- 87zabe --)
+IS adrf
+E G!
+FOVEFI F- B-A G! A G!
+FINIT
+F=0 VarF G!
+F=0 Av.F G!
+F=0 oId.Av.F G!
+
+o 5 COO \exerclseStImes
+
+ 
+
+I
+
+Sclendﬁc FORTH
+
+NEW)! adrf EXECUTE
+DoJNernge Do.Varhnce
+LOOP ;
+
+:NotConverged? VarF G@ FSORT
+
+B-AG@F"EG@F>;
+
+2 DEBUG DUP
+
+10 M00
+0= IF CR DUP.
+Av.F G@ F.
+VarF G@ F. THEN ;
+
+\every1oaepe
+
+:)MONTE
+
+INITIAUZE
+
+BEGIN DEBUG NotConverged?
+
+WHILE NEW.X adr.f EXECUTE
+Do.Average Dome
+
+REPEAT
+
+DROP Av.F G@ B-A G@ F';
+
+§§4 Adaptlve methods
+
+The word DEBUG is included to produce useful output every 10
+points as an aid to testing. The ﬁnal version of the program need
+not include DEBUG, of course. Also it would presumably be ‘
+prudent to BEHEAD all the internal variables.
+
+The chief virtue of the program we have just written is that it is
+easily generalized to an arbitrary number of dimensions. The
+generalization is left as an exercise.
+
+Obviously, to minimize the execution time of an integration
+subroutine requires that we minimize the number of times the 3
+function f(x) has to be evaluated. There are two aspects to this:
+
+0 First, we must evaluate f(x) only once at each point x in the
+
+interval. .
+
+TI
+
+0 Second, we evaluate f(x) more densely where it varies rapidly
+than where it varies slowly. Algorithms that can do this are
+called adaptive.
+
+To apply adaptive methods to Monte Carlo integration, we need:
+
+mafia
+
+ 
+
+an algorithm that biases the sampling method so more points are :5
+
+W
+a.
+
+?
+
+eJuunVNounm-Arngmrmmd. f‘
+
+WM?"
+
+“5
+
+Ml-MWW 1“
+
+chosen where the function varies rapidly. Techniques for doing
+this are known generically as stratified sampling6.111e difﬁculty
+of automating stratiﬁed sampling for general functions puts adap-
+tive Monte Carlo techniques beyond the scope of this book.
+
+However, adaptive methods can be applied quite easily to deter-
+ministic quadrature formulae such as the trapezoidal rule or
+Simpson’s rule. Adaptive quadrature is both interesting in its own
+right and illustrates a new class of programming techniques, so
+we pursue it in some detail.
+
+Adaptive Integration on the real line
+
+We are now going to write an adaptive program to integrate an
+arbitrary function ﬂx), specified at run- -time, over an
+arbitrary interval of the x- axis, with an absolute precision
+speciﬁed in advance. We write the integral as a function of several
+arguments, once again to be invoked following Ch. 6 §1.3.2:
+
+USE( Ename % L.lim % U.lim 96 err )INTEGRAL
+
+Now, how do we ensure that the routine takes a lot of points when
+the function f(x) is rapidly varying, but few when f(x) is smooth?
+The simplest method uses recursion7.
+
+“5-1 Dlgresslon on recursive algorithms
+
+We have so far not discussed recursion, wherein a program calls
+itself directly or indirectly (by calling a second routine that
+then calls the ﬁrst).
+
+Since there is no way to know a priori how many times a program
+will call itself, memory allocation for the arguments must be
+dynamic. That is, a recursive routine places its arguments on a
+
+ 
+
+6.
+7.
+
+.I.M. Hammersley and DC. Hanscomb, Monte Carlo Methods (Methuen, london, 1964).
+See, ¢.g., R. SedgewichAWn: (Addison-Wesley Publishing Company, Reading, MA,
+
+19113), p. as.
+
+166
+
+Chapter 11 — Mora Programing Examples Scientiﬁc FORTH
+
+stack so each invocation of the program can ﬁnd them. This is the
+method employed in recursive compiled languages such as Pascal,
+C or modern BASIC. Recursion is of course natural in FORTH
+since stacks are intrinsic to the language.
+
+We illustrate with the problem of ﬁndin the greatest common
+divisor (gcd) of two integers. Euclid devised a rapid algo-
+
+rithm for ﬁnding the gcd9 which can be expressed symbolically
+as
+
+_ u, v=0
+gcd 0‘” ‘ {gcd (v,u mod v) else (10)
+
+That is, the problem of ﬁnding the gcd of u and v can be replaced
+by the problem of ﬁnding the gcd of two much smaller numbers.
+A 1:0an word that does this 151°
+
+:GCD (uv--9cd)
+?DUP 0 > \ stopping criterion
+IF UNDER MOD RECURSE THEN ;
+
+Here is a sample of GOD in action, using TRACE11 to exhibit the
+rstack (in hex) and stack (in decimal):
+
+ 
+
+new
+
+11.
+
+An ancient Greek mathematician known for one or two other things!
+
+Sec, e.g. Sedgewick, op. cit, p. 11.
+
+Most FORTHs do not permit a word to call itself by name; the reason is that when the compiler
+tries to compile the self-reference, the deﬁnition has not yet been completed and so cannot be
+looked up in the dictionary. Instead, we use RECURSE to stand for the name of the self-calling
+word. See Note 14 below.
+
+TRACE is speciﬁc to HS/FORTH, but most dialects will support a similar operation. SSTRACE
+is a modiﬁcation that sinde-stcps through a program.
+
+MM"!
+
+MI—MWW
+
+marmosets:
+
+187
+
+m and:
+:GCO 784 48
+M 784 48 48
+0- 784 48 0
+W<8>0 784 48
+“DER 48 784 48
+MOD 48 16
+:00) 48 16
+M 4878 48 18 18
+0- 4878 48 18 0
+m<8>0 4878 48 18
+UNDER 4878 18 48 18
+MG) 4878 18 0
+.600 4878 18 0
+DUP 4878 4878 18 0 0
+= 4878 4878 18 0 6535
+OBRANCH<B>-1 4878 4876 16 0
+DROP 4878 4878 18
+EXIT 4876 16
+EMT 18
+
+Note how GCD successively calls itself, placing the same address
+(displayed in hexadecimal notation) on the rstack, until the stop-
+ping criterion is satisﬁed.
+
+Recursion can get into difﬁculties by exhausting the stack or
+rstack. Since the stack in 600 never contains more than three
+numbers, only the rstack must be worried about in this example.
+
+ecursive programming possesses an undeserved reputation
+
+or slog execution, compared with nonrecursive equivalent
+programs . Compiled languages that permit recursion —e.g.,
+BASIC, C, Pascal— generally waste time passing arguments to
+subroutines, Le. recursive routines in these languages are slowed
+by parasitic ailing overhead. FORTH does not suffer from this
+speed penalty, since it uses the stack directly.
+
+ 
+
+12. Pmenmphhhoﬂadaimedthnnmovingmeuaionahnoualwaysproduwsafmeulgo
+rithm.See,e.g.Sedgewick,ap.ciL,p.12.
+
+ammonium-Arm“.
+
+ChapterB—MoraProgmmming Exam Scientiﬁc FORTH
+
+Nevertheless, not all algorithms should be formulated recursive-
+ly. A disastrous example is the Fibonacci sequence
+
+F0 = 0, F1: 1, F“ = Fn—l '1' Fn-2 (11)
+expressed recursively in FORTH as
+
+:FIB (:n--F[n])
+DUP 0> NOT
+IF DROP o EXIT THEN
+
+IF DROP 1 EXIT THEN \n > 1
+
+1- DUP 1- (-- n-1 n-2)
+RECURSE SWAP (- - F[n-2] n-1 )
+RECURSE + ;
+
+This program is vastly slower than the nonrecursive version
+below, that uses an explicit DO loop:
+
+:FIB (:n--F[n])
+0 1 HOT (:01 n)
+DUP O> NOT
+IF DDROP EXIT THEN
+DUP 1 =
+
+IF DROP PLUCK EXIT THEN
+1 DO UNDER + LOOP PLUCK ;
+
+Why was recursion so bad for Fibonacci numbers? Suppose the
+running time for F n is T,, ; then we have
+
+T, ~ T.,_1 + T,,_2 + r (12)
+
+where r is the integer addition time. The solution of Eq. 12 is
+
+n
+r, = «Dz—‘5) — 1] (13)
+
+That is, the execution time increases exponentially with the size
+of the problem. The reason for this is simple: recursion managed
+to replace the original problem by two of nearly the same size, Le.
+recursion nearly doubled the work at each step!
+
+The preceding analysis of why recursion was bad suggests how ,
+recursion can be helpful: we should apply it whenever a given :
+
+OJUIInVNobletm-Nirigﬂsrsssrwd.
+
+ 
+
+ms-MWW 189
+
+problem can be replaced by -say- two problems of half the
+original size, that can be recombined in n or fewer operations. An
+example is mergesort, where we divide the list to be sorted into
+two roughly equal lists, sort each and then merge them:
+subroutine sort(|ist[0,n])
+
+partition' (list, 11811, 11312)
+
+sortaistl)
+
+sort(list2)
+
+mergeaisn, list2, list)
+
+In such cases the running time is
+Tn'Tv2+Tv2+ﬂ=Zruz+n (14)
+for which the solution is
+Tn~nlog1(n) (15)
+
+(In fact, the running time for mergeson is comparable with the
+fastest sorting algorithms.) Algorithms that subdivide problems
+in this way are said to be of divide and conquer type.
+
+Adaptive integration can be expressed as a divide and conquer
+
+algorithm, hence recursion can simplify the program. In pseu-
+docode (actually QuicltBasicO ) we have the program shown
+below.
+
+function simpson(f, a, b)
+
+c = (a + b)/2
+
+simpson = (1(a) + 1(b) + 4*f(c)) " (b - a) /6
+end function
+
+function integral(f, a, b. error)
+e = (a + b)/2
+oid.int = simpson(i, a, b)
+new.int = simpson(f, a, c) + simpson(1, c, b)
+it abs(oid.int - new.int) < error than
+integral = (16*new.int - oid.int) /15
+else
+integral = integral(f, a, c. error/2) +
+integral(f, c, b. error/2)
+end if
+
+endtunction
+
+emvmmpumm.
+
+170
+
+Chapter 8 — More Programming Examples Scientiﬁc FORTH
+
+Clearly, there is no obligation to use Simpson's rule on the sub-
+intervals: any favorite algorithm will do.
+
+To translate the above into FORTH, we decompose into smaller
+parts. The name of the function representing the integrand (ac-
+tually its execution address or cfa) is placed on the stack by USE( ,
+as in Ch. 8 §1.3.2 above. Thence it can be saved in a local variable
+—either on the rstack or in a VAR or VARIABLE that can be
+BEHEADed — so the corresponding phrases
+
+R@ EXECUTE \rstack
+name EXECUTE \VAFI
+name EXECUTE@ \VARIABLE
+
+evaluate the integrand. Clearly the limits and error (or tolerance)
+must be placed on a stack of some sort, so the function can call
+itself. One simple possibility is to put the arguments on the
+87stack itself. (Of course we then need a software fstack manager
+to extend the limited 87stack into memory, as discussed in
+Ch. 4 §7.) Alternatively, we could use the intelligent fstack
+(ifstack) discussed in Ch. 5 §2.5. We thus imagine the fstack to be
+as deep as necessary.
+
+The program then takes the form13 shown on p. 171 below.
+
+Note that in going from the pseudocode to FORTH we replaced
+)INTEGRAL by RECURSE inside the word )INTEGRAL The
+need for this arises from an ideosyncrasy of FORTH: normally
+words do not refer to themselves, hence a word being deﬁned is
+hidden from the dictionary search mechanism (compiler) until
+the ﬁnal ; is reached. The word RECURSE unhides the current
+name, and compiles its cfa in the proper spot“.
+
+ 
+
+13.
+
+14.
+
+For generality we do not specify the integration rule for sub-intervals, but factor it into its own
+word. If we want to change the rule, we then need redeﬁne but one component (actually two,
+since the Richardson extrapolation —see Appendix 8.C— needs to be changed also).
+
+We may deﬁne RECURSE (in reverse order) as
+2 RECURSE 7COMP LAST-CPA , ;
+: 7COMP STATE @ 0 1: ABORT“ Compile only!“ ;
+: LAST-CPA LATEST PFA CFA : IMMEDIATE
+\ These defintions are appropriate for HS/FORTH
+Note that RECURSE is called MYSELF in some dialects.
+
+ 
+
+MM"!
+
+:USE( [Wtﬂ'GAUTEML;
+MATE
+
+1100 (:da--da) DU’EXEQJTE;
+
+1W (1*- Ibu')
+\taumpuoudm
+mu» m- F21 (er-411mm)
+F-RO‘I’ rot) FSWAP rot) F+ F‘ ;
+:)Rich-dam \R-odrmJortrapnle
+as->1= Fl F+ ; (av: r1--1")
+
+DVAHABLE ERR \ place to store an
+CREATE OLD.I 10 ALLOT
+\ [lace to storeilab]
+
+ 
+
+MLMPWEW 171
+
+:MNTEGHAL (run 87: lbw—J)
+
+EM P321
+W W
+OLDJ W
+XDUP F+ F2I(87: --abc-[a+b1/2)
+FUNDEFI FSWAP (87: --ac c b)
+XDUP )htegiwr --ac c b 11)
+HP HP (87: --ac c b I1ac)
+)Intogral F+ (s7: --ac c b 11+12)
+FDUP OLDI W F-
+FDUP FABS EM 332@ F<
+IF )Rlctnrtiaon
+FPLUCK FPLUCK FPUJCK FPUJCK
+ELSE FDROP FDROP (87: --ac c b)
+ERR 832@ F2!
+F-ROT FZP (87: --ac err/‘2 cben/Z)
+RECUFISE (87:--acerr/2 I[c,b])
+F3R F3FI F311 RECURSE F+
+THEN DROP ;
+
+(87: -- lb 0)
+
+“5-2 Disadvantages of recursion in adaptive Integration
+The main advantage of the recursive adaptive integration algo-
+rithm is its ease of programming. As we shall see, the recursive
+program is much shorter than the non-recursive one. For any
+reasonable integrand, the fstack (or ifstack) depth grows only as
+the square of the logarithm of the ﬁnest subdivision, hence never
+
+gets too large.
+
+However, recursion has several disadvantages when applied to
+
+numerical quadrature:
+
+e The recursive program evaluates the function more times than
+
+necessary.
+
+0 It would be hard to nest the function )INTEGRAL for multi-
+
+dimensional integrals.
+
+Several solutions to these problems suggest themselves:
+
+0 The best, as we shall see, is to eliminate recursion from the
+
+algorithm.
+
+a We can reduce the number of function evaluations with a more
+precise quadrature formula on the sub-intervals.
+
+OWVNoUolm-me.
+
+172
+
+Chapter 11 — More Programming Examples Scientiﬁc FORTH
+
+e We can use “0 n" formulas like Gauss-Legendre, that omit
+the endpoints see Appendix 8.1).
+
+§§s-3 Adaptive Integration without recursion
+
+he chief reason to write a non-recursive program is to avoid
+
+any repeated evaluation of the integrand. That is, the optimum
+is not only the smallest number of points it, in (A, B] consistent
+with the desired precision, but to evaluate f(x) once only at each
+x... This will be worthwhile when the integrand f(x) is costly to
+evaluate.
+
+To minimize evaluations of f(x), we shall have to save values
+f(x,,) that can be re-uscd as we subdivide the intervals.
+
+The best place to store the f(x,,)’s is some kind of stack or array.
+Moreover, to make sure that a value of f(x) computed at one
+mesh size is usable at all smaller meshes, we must subdivide into
+two equal sub-intervals; and the points 1:“ must be equally spaced
+and include the end-points. Gaussian quadrature is thus out of
+the question since it invariably (because of the non-uniform
+spacings of the points) demands that previously computed f(x,,)’s
+are thrown away because they cannot be re-used.
+
+The simplest quadrature formula that satisﬁes these criteria is the
+trapezoidal rule (see Appendix 8.2). This is the formula used in
+the following program.
+
+To clarify what we are going to do, let us visualize the interval of
+integration, and mark the mesh points (where we evaluate ﬂx)
+
+mm+z
+
+5__m
+
+XIMMWWEEM
+xr1 fo
+X1 Ty lo 8
+
+summer" MI—MWW 173
+
+We now save (temporarily) lo and divide the interval in two,
+computing [’0 and I, on the halves, as shown. This will be one
+
+fundamental operation in the algorithm.
+Step 2: N - N + 1 - 2
+
+ 
+
+ 
+
+ 
+
+A l'o I, B
+I l l
+I I I
+X0 Xi X:
+
+x ttxlintaerals. Error
+"o In
+
+X. 7' 1'0 8’2
+x2 Ia I1 8/2
+
+We next compare I’o +11 with It, The results can be expressed as
+a branch in a ﬂow diagram, shown below.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Yes I No
+Accumulate: Subdivide right-most
+I“ a I”, ‘1" I’N-1 +1" interval
+N a: "-2 N = N + 1
+Move everything down
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+I I
+
+ 
+
+ 
+
+ 
+
+Fig. 8-3 SUBDMDE branch In adaptive Integration
+
+If the two integrals disagree, we subdivide again, as in Step 3 and
+Step 4 below:
+
+174
+
+Step3: N=N+1=3
+
+W" 3 - MON Programming Examples Scientiﬁc FORTH It"
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+A In I" I; —.B
+I I I J
+I I I j
+X0 X1 X2 X.
+)1 Minimal: Error
+x0 10
+x1 f1 I0 8/2
+X2 f2 I11 5/4
+x3 1, 12 5/4
+Step 4: N=N+1=4
+A 1,, I, 1', 13—.B
+I -I . . I l I
+I ..I , T T I
+X0 X1 X2 X3 X4 .3
+x tixllnteorals. Error
+x0 10
+X1 T1 '0 En
+X2 f2 '1 8/4 .
+his 1.2-- 5/8..
+X4 T4} ' I3 5/8- .
+Now suppose the last two sub-integrals (13 + 1’2) in step 4 agreed
+with their predecessor (12); we then accumulate the part com-
+puted so far, and begin again with the (leftward) remainder of the
+interval, as in Step 5:
+Step 5: N=N-2=2 I=l+(l'2+I3')'+ (l'2+l3-I2)/3
+A lo I, B
+l ' I I I
+I I I DONE
+X0 X1 X2 I
+x winteotala Error ‘
+x0 10
+X1 f1 Io 5/2
+
+The flow diagram of the algorithm now looks like Fig. 84 below: i _
+
+OJtlthNobietm—Mngilsreserved.
+
+ 
+
+mum owe-mammary. 175
+
+ 
+
+I Initialize
+
+ 
+
+® BEGIN
+Y“ N 0>
+WHILE
+01d.I = IN-l
+SUBDIVIDE Converged?
+Yes
+IF Richardson_interpoiate
+No store last 2 subintegrais
+
+N=N-2
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 84 Non—recursive adaptive quadrature
+
+and the resulting FORTH program is 15:
+
+I15. WeusethegeneralizedarraysofCh.S§3.4;A,BandEarefp I'sonthefstuLTYPEisthe
+dill—Wolf(x)lndmm
+
+ 
+
+i
+
+omvmrm-umm.
+

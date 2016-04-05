@@ -1,0 +1,1597 @@
+WFORTH awe—WW
+
+Trogramming Examples
+
+n
+
+Sentente
+
+Chapter 6 - Progremmlng Examples
+51 Inﬁnite series
+§§1 Examples of inﬁnite series
+§§2 Numerical examples of convergent series
+§§3 The inﬁnite sum program
+§2 Transcendental equations
+5551 Binary search
+§§2 Regula falsi
+53 Ordinary differential equations
+§§1 Runge—Kutta method
+§§2 An implicit Runge-Kutta formula
+
+115
+
+116
+116
+
+118
+122
+127
+127
+128
+131
+132
+136
+
+115
+
+116 Ctuptere-PrograrmiingEx-mplee ScknﬂﬂcFOR‘n
+
+This chapter illustrates how we may apply the ﬂoating poin
+extensions of FORTH, developed in preceding chapters, t4
+some standard problems in numerical analysis.
+
+51 Infinite series
+
+Frequently we must evaluate a function deﬁned by an inﬁnil
+sum
+
+ID) = 2 Cut" (1)
+
+n=0
+where x is a real number and c. is an inﬁnite sequence 0
+coefﬁcients. The extensive mathematical theory1 of such fun:
+tions can be summarized as follows: the series of terms only ha
+meaning if —for ﬁxedx — the sequence of partial sums
+
+N—l
+fn(x) = E cnxn (2)
+
+n=0
+
+has a definite limit.
+
+§§1 Examples of Inﬁnite series
+erhaps the formal deﬁnitions will seem clearer after sorn
+concrete examples. We now examine some divergent an
+convergent series.
+
+§§1—1 Divergent examples
+What does it mean to say a series diverges? Consider the seric
+whose terms are all 1's (that is, c,I = 1, x= 1):
+
+1+1+1+1+... (3)
+
+The partial sum fN is just N, and therefore increases without lint
+as more terms are added. The series diverges.
+
+ 
+
+1. The Handbook of Mathematical Function: ed. Milton Abramowitz and Irene Stegun (Dover H
+lications, Inc, New York, 1965) — henceforth abbreviated HMF- is a mine of useful informa-
+tion and references, on this as well as many other aspects of numerical analysis.
+
+cums-Wm 117
+
+A harder case is the series whose terms are alternately 1's and
+-1's:
+
+1—1+1-1+1—... (4)
+
+Depending on how the terms are grouped together, the partial
+sums can have any value. Certainly the partial sums do not settle
+down to any deﬁnite value. The series diverges.
+
+Yet a third case is the harmonic series
+
+111.1
+
+fN =1+2+3+- +. .+N. (5)
+
+It can be shown that for large N, f" is approximately log¢(N), so
+the harmonic series diverges.
+
+§§1—2 A convergent example
+Are there ever mes of inﬁnite series that do mean something?
+Obviously, or there could hardly be a theory of them! An ex-
+ample2 is c. = 1 , x = V: . Here the partial sums
+
+fo=1
+
+1
+f1-1+2
+1 1
+fz=1+§+3 (6)
+mnfN E but 1—(1/22”_2
+N-om N-om 1_V2
+
+do have a deﬁnite limit, so the series converges.
+
+ 
+
+Thisistheenmpleofho'sparadaswhereyouareatoneendofasofaandanattractiveper-
+soaoftheoppositegenderisattheotherendYoumovehalfthedistance, thenhalfthe
+remainder. Cleaﬂyuinﬁnitenumherofmoves'uneceswytoachievethedesuedpmsimity
+Maccadingtoleno, younewrgetthere. AceordingtoEq. 6,however,youdogetthereand
+inalalhtinseJohootl
+
+emvmru-Mmm.
+
+116 Chapters—Programmes SclentlﬂcFORTi
+
+552 Numerical examples of convergent series
+How do we tell whether a series has converged? As a practice
+matter, we keep adding temis to the partial sum until it rs
+longer changes, within the desired precision. Sometimes this ca
+involve a great many terms, even when the series converges.
+There exists an extensive mathematical literature on testing in
+the convergence of an inﬁnite series. Mathematicians have ale
+developed many tricks for accelerating the convergence of slowt
+converging series3. Consulting the literature in difﬁcult cases i
+strongly recommended — it can save time galore!
+
+As an heuristic exercise, let us write some simple programs in
+evaluate partial sums and see how convergence works.
+
+First we sum the terms 2'“ from Eq. 6. The ﬂow diagram is sham
+in Fig. 6-1 below.
+
+ 
+
+SETUP: N=0 SUM=1
+é BEGIN
+
+?CONTINUE ( 10 more terms?)
+WHILE
+
+    
+
+YES
+
+ 
+
+® 10 o no
+2*H = 2*‘/2
+SUM = SUM + 2*H
+n = n + 1
+
+. LOOP
+
+. REPEAT
+
+ 
+
+ 
+
+Fig. 6-1 Cornputlng2rheherdway
+
+ 
+
+3. llMF,Ch.3§6ff.
+
+WM”! Owe-WM. 119
+
+The corresponding program is
+
+15 #PLACES I setEtoiSdigrts' '
+:NEXTIERM \
+
+(n--n+1:: sum2"-n--sum' 2" M)
+
+F2! FUNDER F+ FSWAP 1+
+:SEtUP FINIT F21 F=1 0
+:EXHIBIT CR DUP .' n = '
+
+ZSPACES
+
+FOVER .'sum 2 ' F. ;
+:?CON'I1NUE CR "Another 10terms?" 7YN ;
+\WNexpectsa'y'or' n' iromthekeyooardand
+\leaves- 1-(‘true' )if“ y' is pressed, Oii'n
+:SUM SETUP
+
+BEGIN EXHIBIT ?CONTINUE
+
+WHILE 100 DO NEXTTERM LOOP
+
+REPEAT ;
+
+.
+I
+
+This is what a run looks like:
+
+FLOAD TESTSUM Loading TESTSUM ok
+SUM
+n = 0 sum = 1.00000000000000
+Another 10 terms? Y
+
+= 10 sum = 1.919902343750000
+Another 10 terms? Y
+n = 20 sum =1.99999904632568
+Another 10 terms? Y
+n = 30 sum = 1.99999999906867
+Another 10 terms? Y
+n = 40 sum = 1.99999999999909
+Another 10terms? N ok
+
+The partial sums converge rapidly to 2 (which, as we saw in §1. 1.2
+above, is the exact sum).
+
+For a second example, let us sum a standard inﬁnite series repre-
+sentation for :rr/4: We note that the function tan 1(x) (that is,
+' arctan(x) ) has the infinite series representation
+
+ 
+
+i. M, cs 4 9.42.
+
+1 20 Chapter 6 - Programming Enmpiee Sclean FORTH
+
+3 7
+tan‘l(x)=x—%+x?5-x7... (7)
+Since a 45° right triangle has equal height and base, 5the tangent
+
+of 45° is 1 (side opposite over side adjacent). That is ,
+
+a = -i _ _ l 1 _ 1 l
+4_tan (1)—1 3+5 7+9... (8)
+
+Actually the series Eq. 8 is slowly converging and therefore a poor
+way to compute 7r . But anyway, let us proceed. The ﬂow diagram
+
+is now that of Fig. 6-2 below.
+
+ 
+
+SETUP: ﬂag=1 n=1 sum=0 (--1n::--O)
+
+BEGIN
+EXHIBIT \ display n, sum
+?CONTINUE WHILE
+
+DUP S->F 1/F (--fn::--sum1/n)
+SWAP FDUP FSIGN \transfer sign
+
+ 
+
+ 
+
+F+ \sum = sum +
+
+term
+
+NEGATE \ ﬂip sign of f
+REPEAT
+
+ 
+
+ 
+
+ 
+
+Fig. e2 Computing 3/4 by the inﬁnite series for tan" (1)
+
+ 
+
+5. Since iii/4 radians is 45°.
+6. Ahettermethodwouldbetoevaluatetheseriesforx-l/ﬂwhichisthetangentofu/Gmr
+x-t/Z—l, the tangent ofn/S.)
+
+Ware—Wm 121
+The corresponding program is
+15 #PIACES I \eetEtoiSdigits
+:NEX'tTERM 12n+1--i'2n+3::sum--eum')
+DUP S-> 1/F SWAP DUP FSIGN F+
+NEGATE SWAP 2+ ;
+
+:SEtUP FINIT F20 11
+:EXHIBIT CR DUP
+."n = ' . ZSPACES
+FDUP F2‘ F2' .'4'sum .. ' F. ;
+.'Anotherterm?' ?YN ;
+
+: ?CONTINUE
+
+: PI/4 SETIUP
+BEGIN EXHIBIT
+?CONTINUE
+
+WHILE NEXITEFIM REPEAT ;
+
+Now we run the program]:
+
+FLOAD PIBY4 Loading PIBY4 0k
+
+Pl/4
+
+n -1 s‘eum - emmmw
+n-3 sun-smmum‘rv
+n - 5 4...!“ - zwmmrv
+n - 7 ”sum - smmmﬁ
+n - 9 Pain - zmmwn
+n -114§I.m - ammunnrv
+n - 13451111 - mnemonmmw
+n -154'aun - mmmmrv
+n . 17 451:» - 3.011071017117181 Moe-rm‘rY
+n - 104m - WTIQ‘IMW‘IY
+n - 21 o'er-n - 3m1m1mmm7¥
+n-as‘aun-WIWWWTV
+
+n - 254m - ammmvv
+n - 274M - urmmmm‘rv
+n - 34m - aomastmrsmm‘rv
+n - 314m - mimmmww
+n - 334'eum - sonrsmrenzmmrv
+n - Sd'aum - emaimmanmv
+n - 374m - smnmmmrv
+n - sum - 3131m194mmm7Y
+n - 414‘aum - swimmmiv
+n - ess'eum - 3191mmm71
+n - ‘54‘eum - seesiersasseaesmwmmrv
+n - 4745mm - 3.1m153253mbrm7N air
+
+The ﬁrst thing we notice is that the numbers seem to be converg-
+ing to something; however, unlike the previous series, the differ-
+ences between successive partial sums are fairly large.
+
+An inﬁnite series of terms that alterna e in sign and decrease in
+magnitude is. guaranteed to converge . The error (that is, the
+difference between a partial sum and the limit) is of the order of
+
+ 
+
+Note we have set up todisplayuratherthanxlt
+'l'h'n theuent, due to Weierstrass, is found in all standard intermediate-level calculus tests.
+
+OMMNoﬂelm-Mmm.
+
+122 Chapter 8 - Programming Examples Scientiﬁc roam
+
+the first neglected term and has the same sign. We see that for
+this case, the error in computing rt is of order 2Jn, where n is the
+number of terms in the sum. To get It to 3 signiﬁcant ﬁgures,‘
+therefore, we need about 1000 terms! This is why the series
+representation for 4tan 1( 1)‘ rs not a very good way to calculate a.
+A better way uses e. g. .,
+
+= -11 _ -1;
+7r 16tan (5) 4tan (239),
+
+which converges much faster9.
+
+§§3 The Infinite sum program
+Evaluating a function from its inﬁnite series representation
+Eq. 1 provides an illustration both of indeﬁnite loops and oi
+tests of ﬂoating point numbers. We anticipate a program struc- .
+ture something like this: "V
+
+ 
+
+BEGIN
+Calculate next term
+Not converged?
+WHILE
+Update:
+Add next term to sum
+increment n
+REPEAT
+
+To actually write the program, we begin at the end, by specifyin, 3
+how we want to invoke the function.
+
+Functions in the standard FORTH library (Ch. 3 §3) typical]
+expect a single real number on the fstack replacing it with th I
+function: x -» {(1). Since the sum is inﬁnite, we supply the coeif; 3,
+cients c. as a function of n rather than as an array. For any give,
+=f(r1), it is easy enough to write a FORTH word that evaluatd
+it and leaves the result on the appropriate stack (87stack, fstacii
+i
+9. See, e.g., .I. Mathews and 11.1.. Walker, Mathematical Methods of Physics, 2nd ed. (WA. Ben-
+jamin, Inc, New Jersey, 1970).
+
+Grams-WE” 123
+
+ifstack). For example, to evaluate the exponential via the power
+series
+
+I .2 .3
+€x=1+—l+'2—‘+'3—!+... (9)
+
+we would deﬁne the word NEXITERM as
+
+:NEX'IZTEFIM (87: termxn--term'x/[n+1]x n+1)
+F=1 F+ n-> n+1
+FROT FOVE F/ (87:--xn+1term/[n+1])
+FROT FUNDER F' F-ROT ;
+
+“3-1 Function calls In FORTRAN
+However, FORTRAN (as well as languages that emulate it)
+achieves readability by passing arguments to functions in a list. In
+fact, function names can also be passed in the argument list. 111115,
+e.g.. a general FORTRAN program to evaluate a function by
+summing an inﬁnite series could be written
+
+REAL FUNCTION XINFSUM(X. E. C)
+C
+C EVALUATE INFINITE POWER SERIES
+C
+
+EXIERNALC
+REALX.E,C
+SUM=0
+TERM-1
+N=1
+
+1 SUM==SUM+TERM
+TERM -TERM'X'C(N)
+N =N +1
+IFCFERM.LE.E)RETURN
+GOTOt
+EM)
+
+124
+
+Chapter 6 — Proonmmhg Examples Scientiﬁc FORTH
+
+where the program to evaluate the exponential would be
+
+REAL FUNCTION EXPOt)
+EXTERNAL )(INFSUM. OOEFEXP
+REAL co. XINFSUM
+
+COMMON ICBLK/OO
+
+co = 1
+
+EXP = XINFSUM(X,1.E-7,00EFEXP)
+RETURN
+
+END
+
+given the coefficient function
+
+REAL FUNCTION OOEFEXP(N)
+COMMON ICBLK/CO
+
+co = OO/N
+
+OOEFEXP = 00
+
+RETURN
+
+END
+
+§§3-2 A function erI tor FORTH
+
+We would like to extend to FORTH FORTRAN’s ability to write
+a generic series summation function, passing the variable and the
+name of the coefﬁcient function as arguments. In other words, we
+now face the task of devising the function protocol we plan to use
+throughout the rest of the book and in our future programming
+— a heavy responsibility since we do not know what form these
+future programs will take. For once we must engage in top-dawn
+programming!
+
+We want our protocol to have several features:
+s it must be telegraphic, i.e. it must immediately suggest what it
+
+is doing — a matter of choosing good names.
+
+e it must be simple to implement and easy to remember — the
+advantages of using it must not be outweighed by complexity.
+
+e it must be fast — a major drawback to FORTRAN's way ol
+doing things is the overhead in function calls.
+
+e It must be portable — it cannot depend on specific details 0
+the FORTH implementation or the machine 1t 1s running on.
+
+It is simpler to thread this particular maze in reverse: begin with
+where we want to end up, and determine what steps got us there.
+We suppose we have deﬁned a generic power series summation
+function, using the lfstack deﬁned in Ch. 5 52595:
+
+: SUMPOWERS (87zerr-- 21x --surn)
+E G! \storeerror
+FS>F DUP F>FS \gettypeofx
+DUP G=1 \x“0
+G=0 0 DUP --n=0 ::--x 10)
+adr.c EXECUTE G+ --0::--x1c[0])
+BEGIN 1+ --n::~-xx“n—13um)
+FS>F GOVER G'
+(--n87:--sum::--xx“n)
+DUPadr.c EXECUTE
+(--n::--xx“nc[n])
+3 GPICK G' F>FS
+(--n::--xx“ntermsum)
+ENUF? NOT WHILE
+G+
+REPEAT G+ CLEANUP ;
+
+AAA
+
+The words E, ENUF? and CLEANUP have straightforward
+deﬁnitions with obvious meanings; mine has not been deﬁned
+because we have yet to ﬁgure out what it will do.
+
+Manifestly, edr.c must place the execution address (“code-ﬁeld
+address" — cfa) on the stack for EXECUTE to ﬁnd. There are
+several ways to accomplish this. Clearly, we want to keep the
+variable that holds the cfa local, so it will not get confused with
+another function’s cfa. While it is straightforward to deﬁne a
+variable and then make it headerless —hence local— (via
+BEHEAD", e.g.) we would prefer to avoid defining a variable at
+all. Here is a perfect opportunity to use the return stack (rstack).
+
+We imagine that SUMPOWERS expects the cfa of the function
+c. on the stack. Then the first thing SUM.POWERS must do is
+stash the cfa somewhere convenient but local. One such place is
+the stack itself. Even easier, since SUMPOWERS does not use
+the rstack explicitly (e.g. in a DO LOOP), is to let the ﬁrst step
+in SUMPOWERS be > R. Then the code for adr.c would be
+merely R@. The ﬁnal word, after invoking CLEAN.UP (that
+drops unwanted items from the various stacks), then must be
+RDROP (for systems without it, : RDROP R > DROP ; ).
+
+owvmim-Mmm.
+
+126 Chapter 6 - Programing Enmdoc Scientiﬁc FORTH
+The revised version of SUM.POWERS is then
+: SUM.POWERS (adr.c - - 87: err - - :: x - - sum)
+> R \adr.c -> rstack
+E GI \ store error
+FS>F DUP F>FS \getx's type
+DUP G=1 \x“0
+6:0 0 DUP (--n= 0 ::--x10)
+R@ EXECUTE G+ (- -0 ::--x1 c[0])
+BEGIN 1+ (--n::--xx“n-1sum)
+(
+
+FS>F GOVER G'
+DUP R@ EXECUTE (--n::
+3 GPICK G' F>FS(--n::
+
+GOVER
+ENUF? NOT
+
+--n87: --sum:
+--xx“n O[n])
+
+WHILE G+ REPEAT
+
+- -xx“r
+
+- - x x**n term sum)
+
+G+ CLEANUP RDROP;
+
+The full program to evaluate the exponential by summing power
+series would then have the form shown below:
+
+ 
+
+\ evaluate exponential by summing series
+
+DROP FS >F
+GDROP GDROP F>FS :
+
+ELSE c G@ S->F
+F‘ FDUP c G! 1/F
+
+ 
+
+ 
+
+THEN REAL’B F>FS;
+
+REALM SCALAR E BEHEAD' c \hidethisvariahie
+
+: ENUF? (::term--) (--1) : USE( [OOMPILE] ' CFA LITERAL;
+GABS FS>F EG@ F>; IMMEDIATE
+
+:CLEAN.UP (n-- ::xx“nsum--sum) \thlsmeam'tseaddressot'
+
+\--cruc'aldef'noifunctionle)dcon
+:E“X (::x--e"x) %1.E—B
+
+\deﬁnition of SUM.POWERS iromabove \erroron87stack
+BEHEAD" E CLEANUP \hidethese def'ns USE( COEFEEXP
+REAL‘B SCALARC F=1 CG! \adr.constack
+: COEEEXP (n--) (z: --c[n]) SUMPOWERS ;
+
+DUP 1 < =
+
+IF F=1 c G! F=1 DROP
+
+ 
+
+‘1 SMFORTH
+
+MO-Wm 127
+
+52 “anecenderlalequations
+
+A transcendental equation has the form
+
+ﬂx) = 0, (10)
+
+where f(x) is a transcendental function rather than, say, a polyno-
+mial or ratio of polynomials10 (rational function).
+
+There are several standard methods for ﬁnding a (or possibly, the)
+value of x that satisﬁes this equation, i.e. a root of Eq. 10 (which
+might have many or no roots). '1?) guarantee that we ﬁnd a root
+we must know an interval of the x-axis that it certainly will be
+found in. 'Iirr'o methods that can be applied under these circum-
+stances are binomial search and regula falsl .
+
+ssr Binary search
+
+Let us look ﬁrst at binomial search, since its algorithm is euy to
+
+understand. We know some interval, It. s x 5 xx, contains a
+root because f(x) changes sign when .1: goes from xL -xn . In
+pseudocode (and FORTH ﬂow chart) the binomial search algo-
+rithm is shown in Fig. 6-3 on page 128.
+
+The method begins with upper and lower bounds on x that capture
+the root. Next we look at f(xAV) halfway between xL and xglf
+f =f(xAV) has the same sign as fL= f(xL), the new left end of the
+interval becomes X". If the signs are opposite, xAV becomes the
+new right end of the interval. The algorithm is done when left and
+right ends agree within some predetermined accuracy.
+
+Binary search has the following virtues: the time it takes to
+achieve a given accuraqr is predictable, and it is guaranteed to
+ﬁnd a captured root. Creating a FORTH program from the
+pseudocode skeleton of Fig. 6-3 is left as an exercise.
+
+ 
+
+10. Wespedaﬁumuamcendentdequﬁonsheauseomrou-ﬁndingmethodswiﬂwkakofa
+pdynomhlgwherusthemethodsdevelopedfmpdynomhkﬁﬂnmwakhthemegeurﬂ
+
+GJUIanVNohieiﬂz-Almreeuved.
+
+Were-PWW SclmtlﬂcFORTH
+
+ 
+
+INITIALIZE
+ft = f(XL) fa =11an
+
+$9 BEGIN
+
+|xL — xn| > error ?
+WHILE
+
+x=%(xL+xR), f=!(x)
+
+ 
+
+sign(f) =sign(fL) ?
+
+ 
+
+ 
+
+IF XL =X fL =f
+
+ 
+
+ELSE xn =x in =f
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+THEN
+
+ 
+
+REPEAT
+
+ 
+
+ 
+
+Flg. 6—3 Binary search algorinn for roots of f(x)
+
+§§2 Regula falsl
+Now we look at regula falsi, Latin for “rule of false approach"
+Here the basic premise is:
+
+0 Assume the root lies in the interval (x1, x3, and plot a straigli
+line between the points (XL, fL) and (XE, f . l
+
+o This line must intersect the_x-axis somewhere in the inte
+and we take that point, call It x’, as our next guess.
+
+a If x’ is to the left of the root, ad'ust the interval accordingly, an
+the same if x’ is to the right 0 the root.
+
+As Fig. 6-4 on page 129 shows, the straight line is supposed
+approximate the curve [(15). The new guess may be much closer
+
+the root than is the midpoint of the interval (which was the neat
+guess in binomial search).
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 6—4 Graphical Illustration of ragula falsl
+
+A straight line in the x-y plane has the analytic form
+y = at + b (11)
+
+where a and b are constants. The intercept of the straight line with
+the x-axis is gotten by setting y = 0 and solving for x:
+
+,=_-2
+
+x a (12)
+To determine a and b we use the two equations
+
+fl. = 01L + b
+
+(13)
+
+In = Uta + b
+
+giving
+1 _ ma
+0 2|:fL+f|l ‘l_xL(-1'L+Ia)] (14)
+
+emvuouum—me.
+
+130 Word—Programme. SclentlﬂcFORTH
+
+and thus
+
+x.=m
+fa‘fi. '
+
+(15)
+
+A FORTH ﬂow diagram for this algorithm appears in Fig. 6-5.
+
+ 
+
+<8
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+INITIALIZE
+ft=f(XL) fn=f(xi=i)
+Xoid = Xi.
+BEGIN calculate x’
+|x' — x°.d| > error
+?
+waits
+f= '(X’)
+sgn(r") = sgn(fL) ?
+IF XL =X fL =f
+
+ELSE Xn =X TR =f
+
+THEN
+
+ 
+
+REPEAT
+
+Fig. 6-5 Regula falsl algorithm for roots 0! f(x)
+
+The corresponding program is shown on page 132. 3
+
+Here is an example of the program in action:
+
+FINIT 6 #PLACESI ok \set display to 6 digits
+\ Example: f(x) = exp(-x) - x
+
+: FNA FDUP FNEGATE FEXP FR— ;
+
+\ Cleariy, the root lies between 0 and 3. (Why?)
+
+macaw me-Wsm 131
+
+USE(FNA 950. 963. 961.56 )FALSI
+\st(4) “(3) “(2) x' x' - xoid
+77???? 777??? 777??? .759452 ..291530
+777??? 77???? 7'27??? .588025 -.0326025
+777??? 777??? 7?)??? .569459 -.00362847
+77???? 77???? 77???? .567400 -.000403560
+77???? 77???? 77???? .567171 -.oooo443740
+?77??? 77???? 77???? .567146 -.0000050002
+72???? mm 77???? .567143 -.0000005544 ok
+
+The display was generated by the word .FS —placed in the
+deﬁnition of APART? for debugging— we show the top 5 of the
+eight 80x87 registers. The ?????? means the contents of that
+register are not a properly deﬁned fp number, either because of
+a mistake or because nothing was stored in them after FINIT.
+Here, since the program is obviously working, the latter explana-
+tion is the correct one.
+
+53 Ordinary differential equations
+We wish to solve the ﬁrst-order general differential equation
+
+:2 a g =ﬂxr) (16)
+
+In general we can only solve Eq. 16 approximately, starting from
+the value of x - call itxo — at some initial time to , then advancing
+the time by small increments d: =h, using the differential equa-
+tion itself to give us x(t +h) given x(t).
+
+For example, we could emand in Taylor’s series11
+
+2
+x(t+h) = x(t) + hi(t) + 52-35(1) + (17)
+
+ 
+
+11. See, e.g., um [3.6.1.
+
+132 Chapters-Program Enmplea
+
+\USE( Fname 96a 96b 98m )FALSI
+(87:--rod)
+\meeisthemmeoiaFORTl-ihnctlon
+
+\iunctionnotation
+: USE( [COMPILEl' CFA LITERAL;
+IMMEDIATE
+
+6REAL‘4 SCALARS ERR XLXRYLYR OLDX
+
+o VAR f1 \apiacetostorecia
+:SAME.SIGN? (87:xy-- --i)
+F' F0> ;
+
+:INITIAIJZE (cia--87:abe--)
+is it \storecia
+XDUP \interval hasroot?
+SAME.SIGN?
+ABORT" Even number oi rootsil !"
+XR G! XL Gl
+XL G@ it EXECUTE YL G!
+XR G@ 11 EXECUTE YRGI
+F=0 OLDX G! ;
+
+ 
+
+:X' XLG@ FRG@ (872"!)
+
+FUNDER F' (crummy!)
+
+XR G@ YL G@
+
+FUNDER ma :--yaxvynyi_xn'ytiil
+FROT F- (a7:--ynyi_m-yt-n.'yn:
+
+F-ROT F- Fl ;
+:APART'? (arr-qr --o
+
+FDUP OLDX G@ F-
+
+.FS FABS ERR G@ F>;
+
+: REVISE (87:x'--)
+
+1
+FDUP f1 EXECUTE (872--X'Y)
+
+FDUP YL G@
+
+SAMESIGN? FOVER
+
+(--f 87:--x'y' x')
+
+IF XL 6! YL G!
+
+ELSE XR G! YR G! THEN
+OLDX G! ; (-- 87: --)
+
+Sclenﬂﬂc FORTH "
+
+d
+I
+
+ 
+
+:)FALS| (cfa-- 87:abe--noa) INITIAIJZE ;
+
+and keep only the lowest order terms:
+
+x(t+h) z x(t) + hf(x(t), t) .
+
+§§1 Runge-Kutta method
+
+One stande class of methods that had fallen into disfavor bi,
+now are popular again, are the Runge-Kutta algorithms”. Tit '
+algorithms can be classiﬁed according to order n (that is, if h ,
+
+(13)
+
+i
+
+ 
+
+l
+
+the step size, the error at each step will be 00:"). The seco Er
+order Runge-Kutta algorithm is (x' E x(t+h) , x E x(t) ) ‘
+
+ 
+
+12. "MP, £25.16.
+
+Mil-WE” 133
+
+k ' him) ( 9)
+1
+
+x' ax + %(k + hﬂx+k, (+h)) + 00?).
+
+How does this work? Clearly,
+
+k + hﬂx+k,r+h) .- Mix!) + Mb, I) + ,3?! + hk %
+
+(20)
+a 2m) + #360) + 00?)
+
+Substituting 19 in 20 we now ﬁnd
+
+2
+x’ = x(t+h) = x(t) + ruin) + ”3550) ;
+
+that is, the Rur¥e-Kutta x' agrees with the Taylor's series expan-
+sion 17, to 00: ).
+
+The ﬂow chart of second-order Runge-Kutta is shown in Fig. 6.6
+below. We express the algorithm in FORTH as shown in Fig. 6-7
+on page 134 below.
+
+ 
+
+ 
+
+)RUNGE
+INITIALIZE: get h, ii, to , x0
+
+BEGIN DISPLAY
+DONE? NOT
+WHILE
+STEP
+REPEAT
+
+ 
+
+ 
+
+Fig. 6-6 2nd-order Runae-Kutta for dxldr = f(x,t)
+
+134
+
+Chapter 8 - Programming Examples
+
+Scientiﬁc Foam;
+
+ 
+
+\ STRAIGHT 2ND ORDER RUNGEmrTA
+\ SOLUTION or: FIRSTORDER DIFEQ
+\ dx/dt = i(x,t)
+
+\ See Abramowitz 8i Stegun. HMF 525.5.6
+
+\Usege:
+
+\ USE( FNB 96x0 960 96d 96h )RUNGE
+
+\
+
+\ FNB (: [t]-- 87:x--t[x,t]) evalmtesi(x.t)
+
+\ x0 = starting valueoidep. var‘abIe
+
+\ t0 =initiaItime
+
+\ ti = endtime
+
+\ h = step.size
+
+\
+
+\ k = hi(x,t), x' = x + (k +hl(x+k,t+h))/2
+
+6REAL‘4 SCALARS T T' H X TMAX K
+
+0 VAR i1 \tohoid cia
+
+: USE( [COMPILE]' CFA LITERAL;
+
+IMMEDIATE
+
+: INFI'IAUZE (:cta--87:)010tth--)
+
+ler HG! TMAXG! TG! XGl;
+
+ 
+
+ 
+
+\Theeeworda Iricremerxxait.
+:lnc.T T G@ HG@ F+ T'GI;
+
+:Inc.X X G@
+
+T i1 EXECUTE (a7:--f[x,t])
+
+H G@ F' (87:--k=hi[x,t])
+
+FDUP K G! \savek
+
+XG@ F+ (87:-- x+k)
+
+T' G@ T G!
+
+T 11 EXECUTE (87:--i[x+k,t+h])
+
+H G@ F'
+
+KG@ F+ F2/
+(87:--[k+i[x+k,t+h] 1/2)
+
+X G@ F+ X G!
+
+:DONE? TG@ TMAXG@ F); (:--f)
+
+ 
+
+o VAR exact \cia
+
+: DISPLAY exact EXECUTE
+XG@ T G@ CR F. F. F.
+
+\emit "t x exact”
+
+:)RUNGE (:cfa-- 872x010Uhn)
+BEGIN DISPLAY
+DONE? NOT
+
+ 
+
+Fig. 6—7 Explicit 2nd-order Runge-Kutta solver
+
+As an example of second-order Runge-Kutta in action, let us 50le
+numerically the equation ,
+
+5c=te
+
+(21) l
+
+with the initial condition x(t = 0) = 0 , whose exact solution is
+
+x(t) =log,(1 +%13).
+
+(22) 1
+
+t x h. t x 1..
+.0000 .0000 .0000 2.51:» 1 .0254 1 .0250
+.10000 01150 .oooaa am am 2.02:!)
+.20000 .oosoo ones 27:» 2.1101 211.
+30000 0“” come am 22113 22115
+.40000 .02177 02111 am 23023 2.325
+.50000 .04104 .04002 3.09:; 23912 2.3015
+.00000 .07040 cm 3.1m 2.4701 2.4704
+.70000 .10034 .1002!) am 2501‘!) 25033
+.30000 .15075 .15757 asses 2.0459 2.0462
+90000 .21077 .21752 3.4M 2.7270 2.7273
+1 .011!) 20% .20760 3.5% 2&1 2.305
+1 .111!) .30046 .30710 am acme 20KB
+1 2000 .45012 454$ 37% 2%92 2.9593
+1 .3000 .ssoaa .54046 am 3.0333 30%
+1.41110 .0331 6464 3.9999 3.1057 3.1M
+1.5000 .75473 .75377 4.0% 3.1700 3.17m
+1.01110 .w175 .“1 4.199 324m 32403
+1.71130 97(51 seam 42999 3.313 3.3142
+1.9000 1.0810 1.0797 4.3% 3.3m4 3.3330
+13000 1.1312 1.197 4.4999 3.4450 3.4460
+
+2.0000 1 2% 1 .2992 4.5999 3.5% 3.5099
+2.1M 1.40110 1.4070 4.6% 3.5722 35725
+22000 1.5151 1.5149 4.79% 3.63:5 3.63:3
+2.299 1.6% 1.626 4.0% 3.6%9 3.0942
+2.3999 1.7242 1.7241 4.- 3.7531 37534
+2.49% 1.0250 1.0250 5.0. 3.0111 30114
+
+ 
+
+Fig. “Second-order Runge-Kutta — results
+Thus deﬁne
+:FNB (:[T]-- 87: x--f[x,t])
+FNEGATE FEXP G@ F“2 F*
+
+: EXACT r G@ FDUP FDUP F' F3 (87:--t"3)
+3S->F F/ F=1 F+ FLN ;
+
+and say
+
+USE( EXACT IS exact ok
+USE( FNB 16 o. 96 o. as 5. 16 0.1 )RUNGE
+
+The resulting output is shown in Fig. 6-8 above.
+
+emumrm-Mmm.
+
+136 Ctnptere—ngramnthxanﬁaa SclentlﬂcFORTH
+
+“2 An Implicit Runoe-Kutta formula
+A variationl3 on straight Runge-Kutta is a so-called Implicit
+algorithml3 .For example, in the second-order formulae given
+above, supposex + k were replaced byx’:
+
+’6 = Min) (23)
+
+x’ = x + a); + hﬂx’, (+h)) + 00.3)
+
+and the resulting (transcendental) equation solved forx’ by —say- -
+regulafalsi. Since we have already written a regula falsr' program, .
+we can apply" it here to get the algorithm shown diagrammatically
+in Fig. 6- 9 below. We program 1 as shown in Fig. 6-10 on page i
+137 below.
+
+w...
+
+ 
+
+ 
+
+)RUNGE
+INITIALIZE: get h, if, to , x0
+
+BEGIN DISPLAY
+
+DONE? NOT
+WHILE
+
+k=hf(x,t)
+
+SOLVE: x' = x + k/2 +hf(x’,t+h)/2
+REPEAT
+
+ 
+
+ 
+
+ 
+
+i’
+Fig. 6-9 2nd-order impiicit Runge—Kutta for (tr/d! = f(x,t) i
+l
+l
+i
+i
+l
+l
+,
+
+ 
+
+13. See, c.g. . A. Ralston,A First Course in Numerical Analysis (McGraw-Hill Book Company, New
+York, 1965) Ch. 5. Implicit methods increase the stability of numerical solution, compared with
+explicit methods. The formula below is exact for second-order polynomials. The error is of the
+same order as the explicit formula, but the eoefﬁient may be smaller.
+
+14. m “ ?( " means “conditionally execute to next right parenthesis”.
+
+WM?" Ware—PW!” 137
+
+Now we consider the same example as previously:
+
+:FNB (:[Ti-- 07:x--f[x,t])
+FNEGATE FEXP G@ F"2 F' ;
+
+: EXACT T G@ FDUP FDUP F' F' (07: --t"3)
+F-3 F/ F=1 F+ FLN ;
+
+and say
+
+USE( EXACT IS exact ok
+USE( FNB as o. 91. o. as 5. 91. 0.1 )RUNGE ok
+
+ 
+
+FIN) )FALSI 0:- ?(FIDADFALSIFTH) XG@ F+
+7REAL'4 SCAIARS TT' H XX'TMAXK 963. FOONSTANT F—a
+OVARn \tohoidciaotiou) :INTERVAL XG@ FDUP
+:IMTIAIJZE ISﬂ KG@FsaF' F+;
+HGI TMAXGI T61 X61;
+:X' USE( X" lNTERVAL 961.56
+\‘iheaewords lneremetlxait )FALSI ;
+:lnc.T TG@ HG@ F+ T'Gl; :lnc.X kX’ XGIT'G@TGI;
+:kXG@ :DONE? TG@ TMAXG@ F>;
+T 11 EXECUTE(87:--i[)tt]) (:--o
+H G@ F‘ KG! ; (57:--k=iir{x,q) OVAR exact \cia
+:DISPLAY exactEXECUTE
+:X" (07:x'--g[x’]) XG@ TG@ CR F. F. F. ;
+1" i1 EXECUTE (07:--i[x'.t+h]) \eml'tx exact'
+HG@ F“ KG@ F+ F2] :)RUNGE (:da--87:XontIh--)
+(07:--[k+ﬁx+k,t+h] 1/2) BEGIN DISPLAY
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 6-10 lrnpllclt 2nd-order Runge-Kutta program
+
+The resulting output is shown in Fig. 6-11 on page 138.
+
+Clearly the implicit form is more accurate; whether the putative gain
+in stability justiﬁes solving a transcendental equation is unclear,
+however.
+
+138
+
+ 
+
+ChapterB-ProgrammlngExampiea Scientiﬁc-FORM:
+t X 11.,l t x X.
+00000 .00000 .00000 2.5% 1.9253 1.9255
+.10000 .(XXJ50 0003:! 2mm 2.0228 2.0230
+.20000 .00299 .m266 2.7909 2.1181 2.1183
+.30000 .(XJ945 DOM am 2.2113 2.2115
+.40000 .02173 .02111 am 2.3324 2.3.125
+.50000 .04155 .04082 3.0% 2.3914 2.315
+.60000 .07032 1353 3.1% 2.4783 2.4784
+.TWO Am .10825 3.2% 2.5632 2.5633
+.BCXJOO .15834 .15757 3.39% 2.6461 2.6462
+.90000 .21822 .21752 3.4% 2.7272 2.7273
+1.0000 .28825 .28768 3.59% 23164 2.“
+1.1000 .36762 .36718 3&9 2.8838 2."
+1.2000 .45518 .45489 3.7% 2.9595 2.596
+1.3000 .54962 .54946 3.0999 3.0336 30005 i
+1.4000 64%8 .64954 3.99% 3.1060 3.1m ‘
+1.5000 .75370 .75377 4.“ 3.1769 3.1769
+1.0000 .%O77 06191 4.19% 3.2463 3.2463
+1.7000 .m .WBS 4.2% 3.3142 3.3142
+1.&)00 1.0795 1.0797 4.3% 3.3838 3.3000
+1.9000 1.1%5 1.1897 4.49% 3.4460 3.4460
+2.0000 1.2%0 1.2992 4.5999 3.5099 3.5099
+2.1000 1.4075 1.4070 4.3:.- 3.5725 3.5725
+2.2000 1.5147 1.5149 4.7% 35340 3.6339
+2.29% 1.6202 1.6205 4.0999 3&42 3&42
+2.3999 1.7239 1.7241 4.9Q9 3.7534 3.7534
+2.4% 1.8256 1.8258 5.0% 3.8114 3.8114
+
+ 
+
+Fig. 6-11 Second order Wunge—Kutta — results
+
+Let us now compare the two algorithms for functions f(x,t) th:
+lead to singular solutions. This time we consider the equation
+
+1:1. (20'
+
+whose exact solution is
+
+x(t) = -log,(1—%t3). (25)
+
+Manifestly, 25 blows up at 1= 3"“ =1.442... We expect 111
+behavior to become apparent in the numerical solution. So we s
+
+ 
+
+OJUIanV. Noble1992-Alirightsreserved.
+
+awe-WW 139
+
+:FNB FEXP G@ F"2 F';
+([t] -- 07: x --i[x,t])
+
+:EXACT F-1 TG@ (07:--t"3)
+FDUP FDUP F’ F' F-3 Fl F+ FLN -
+
+1
+
+and say again
+
+USE( EXACT iS exact ok
+USE( FNB 96 o. 91. 0. 91. 5. 91. 0.1 )RUNGE ok
+
+The results of doing this with straight-, and then implicit Runge-
+Kutta are displayed in Fig. 6-12 (p. 140) and 6-13 (p. 141), respec-
+tively. We only show the second half of the interval (near the
+singular point) in either case.
+
+The straight Runge-Kutta algorithm, without the fancy implicit
+solution for r(t +h), appears more accurate near the singularity,
+although both methods are acceptably accurate. Does this mean
+implicit Runge-Kutta is no good? No!
+
+The implicit scheme lost accuracy through roundoff: the arith-
+metic was insufficiently precise. To take advantage of the
+method’s power, we must increase the precision beyond one part
+in 106. This requires changing all scalars to 64—bit precision
+(REAL‘S) rather than 32-bit as we have done here. The generic
+fetch/store techniques developed in Chapter 5 and used here,
+permit this change with a minimum of fuss. We leave this as an
+exercise.
+
+OJtlthNobietm—Alridaamerved.
+
+140
+
+Mud-PWW
+
+a-o
+
+1.01%
+1.02%
+1.03%
+1.04%
+1.05%
+1.0%
+1.07%
+
+X
+.13287
+138%
+.14512
+.15156
+.15&1
+.16509
+.17220
+17%5
+.18714
+.194%
+
+.21 147
+.22012
+
+238%
+247%
+257%
+.26788
+.27841
+28928
+
+.31215
+.32417
+
+.48757
+505%
+.5245
+.54458
+
+Fig 6—1281ralghtRunge-Kutta forslngularease
+
+132%
+.13888
+.14511
+.15154
+.15Q0
+.16508
+.17219
+.17%4
+.18713
+.19497
+
+21145
+22010
+
+23828
+.24782
+25767
+267%
+.27 K9
+
+.30051
+.31213
+.32415
+.33657
+.34943
+.36272
+.37648
+.3%72
+.40546
+.42073
+.4354
+.4523!
+Am
+.48755
+50584
+524%
+.54456
+
+ 
+
+1.0m
+1.0m
+1.10m
+1.11%
+1.129
+1.139
+1.14%
+1.15%
+1.1m
+1.17%
+1.109
+1.1%
+1.20%
+1.21%
+1.22%
+1.23%
+124%
+1.25%
+1.2%
+1.27%
+121m
+1.29%
+1.3%
+1.31%
+1.32%
+1.33%
+1.34%
+1.35%
+1.3M
+1.37%
+1.3a
+1.3%
+1.4M
+1.41%
+1.42%
+1.4m
+
+OJUIMVNobIetﬂ-Almw.
+
+x ”at
+W 50500
+50040 same
+mean .0057
+..171 001$
+new .$578
+.0003: .6331
+.70718 .70715
+.73461 .73458
+.m1 .m
+.79007 .79335
+.&491 .&4%
+05000 .5531
+.%287 .W
+92959 ms
+.W 95004
+
+1.00% 1 mm
+1 .0527 11527
+1 09% 1 as.
+1 .1481 1 .14&
+1 .2307 1 21118
+1 2571 1 .2572
+1 .31 7'9 1.31 m
+1 .3815 1.3837
+1 .4550 1 .4552
+1.5332 1 .5334
+1.61 % 1 .61 %
+1.7151 1 .7154
+1 .&26 1 .8231
+1 .9449 1 .9457
+2.0%5 2.1376
+2.5% 2.557
+2.4581 2.461 1
+2.71 87 2.7242
+3.07m 3%
+3.76 3.6782
+4.8831 5.1557
+
+Mao-WW
+
+1 x 11.: 1 x for
+
+.71“ .132U .132! 1.0m .54464 .54466
+.739 .13“ .13” 1.0a .515 .561!
+.7“ .14613 .14511 1.01m m .m
+.74“ .15156 .15154 1.101» .m 30057
+.75“ .1592 .15820 1.11% .631!) .6319
+.7“ .1510 .1506 1.129 55590 .66578
+.77“ .17221 .17210 1.1399 .66104 .6831
+.7“ .1756 .1754 1.14m .70729 .70715
+.7“ .16715 .18713 1.15m .73473 .73458
+.aanoo .19500 .19407 1.1m .7“ 7&129
+mm 20310 2m 1.1m 78353 19995
+.62“ 21146 .21145 1.1399 82.506 .8243
+33999 .22013 .22010 1.1m 35822 .858”
+114999 22!)? 22904 1.2099 .asaoo 39285
+.85” 23631 23828 1.21% .m 92%6
+seas .2475 24782 1229 .96w1 36804
+37999 25771 25767 1m 1.00% 1.0090
+.awaa .267. 267% 1.2499 1.0531 1.0527
+.me 27842 27839 1.25% 1.0993 1.0939
+.5“ 2K!) 2&26 1.2699 1.14% 1.1482
+91% 30055 .30051 1.2799 1.2013 1.2008
+.... .31217 .31213 1.2199 12578 12572
+.9399 .32419 .32415 1.2% 1.31% 1.316)
+949% .33m2 .3365? 1.3099 1.3645 1.3637
+35999 .3494? .34943 1.31% 1.4561 1.4552
+.9609 .36277 .36272 1.32% 1.5345 1.534
+.97999 .37653 .37646 1.33% 1.6209 1.61%
+sagas .39077 33172 1.34% 1.7171 1.7154
+.9999 .40551 .40546 1.3599 1.8252 1.8231
+1.00m .42078 42073 1.3m 1.94% 1.9457
+1.0199 Am .43654 1.3799 2.0914 20676
+1.- 45300 .4583 1.3899 2.2612 2.2557
+1.03% .4” Am 1m 2.4% 24611
+1.049 .46762 .46755 1.4099 2.7395 2.7242
+1.050 51592 50564 1.4199 3.1222 3.0664
+1.0m .52491 52463 1.42% 3.8149 3.6782
+
+ 
+
+Fig. 6—1 3 Implicit Range-Kym for singular case
+
+142
+
+Chane-WW
+
+OJUMVNounm-Almm.
+

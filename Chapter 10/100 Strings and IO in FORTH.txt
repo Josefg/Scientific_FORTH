@@ -1,0 +1,499 @@
+Wronm
+
+MIMMI/OhFORﬂ-t 249
+
+Strings and 1/0 in FORTH
+
+contents
+§1 Standard I/O in FORTH 249
+52 Standard l/O in Scientiﬁc FORTH 250
+§§1 Disk ﬁle input 251
+§§2 Disk ﬁle output 253
+53 Logging screen activity 254
+§§1 Redirection by re-vectoring 254
+552 Redirection using MS-DOS resources 255
+§§3 Redirection while DEBUGging 257
+
+This chapter describes some input and output (l/O) functions
+
+and string handling facilities needed for scientiﬁc computing.
+We will illustrate with words that capture screen output to a disk
+ﬁle, and with a word that translates a FORTRAN expression
+—entered from keyboard or read in from a ﬁle- to FORTH
+code.
+
+51 Standard I/O In FORTH
+
+One area where more conventional languages excel FORTH in
+
+convenience for the casual technical user/programmer is
+standardized I/O. FORTRAN offers all the needed functionality
+—number formatting, strings, etc.— albeit in a somewhat rigid form.
+
+BASIC, a more modern language, offers even more convenient
+built-in I/O facilities than FORTRAN.
+
+I confess I personally do not ﬁnd the practices of C or Pascal
+congenial, but most programmers seem able to live with them.
+
+FORTH possesses no standardized I/O words except for writing
+to the screen and inputting from the keyboard. Thus there are no
+
+omvmim-umw.
+
+250
+
+§2 Standard l/O in Scientific FORTH
+
+ChlptoHO—SWIMIIOMFORTH SclemlﬂcFOﬂ
+
+required words for redirecting output to printer, disk ﬁle
+plotter.
+
+FORTH lacks standard I/O functions for several reasons:
+
+   
+     
+ 
+   
+
+o Historically, FORTH incorporated its own (rather primitiv
+operating system (OS) on many machines. The aim was co
+pactness rather than so histication, so it eschewed built-in
+or BIOS ("Basic Input] utput System) functions and/or devi
+
+drivers. i
+
+e FORTH has been implemented on so many machines tha
+hardware independence in [/0 has seemed an unattainab
+goal. ‘
+
+FORTH developers have therefore deemed it better to let eaci
+programmer develop his own favorite techniques and specializes
+device drivers. The result is Bedlam.
+
+While the freedom to custom tailor U0 is very nice when
+
+unusual problems crop up, no one likes having to roll his own
+subroutines to do routine tasks (95% of all U0 is routine). .5-
+scientific FORTH dialect needs to standardize this routine 95 9‘:
+This book is intended for dialects like HS/FORTH that run under
+an operating system1 and are file oriented. Such dialects new;
+sarily contain a reasonable spectrum of words for disk, screen an
+printer I/O, equivalent to those in HS/FORTH that I will emplo:
+in this chapter.
+
+Some FORTHS are screen oriented. That is, they are designed ts
+read and write blocks of 1024 bytes, displayed as 16 lines of 64
+characers per line. This was a great idea for primitive machineii
+like the Timex/Sinclair ZX81 or Jupiter Ace, but in my opiniod
+is thoroughly inappropriate for modern work stations with sop '
+ticated displays.
+
+ 
+
+1.
+
+Such as MS-DOS, OS/Z, Pick, UniX. etc.
+
+hammers: thmwnroen-i 251
+
+I strongly recommend users of screen oriented FORTHs to up-
+date to ﬁle oriented systems. Failing that, they should consult any
+of the numerous introductory books, or articles in journals such
+as Dr Dobb ’3 Journal, for suggestions on using 1K blocks to store
+and input numbers and text.
+
+“1 Disk fl. I‘tpm
+We now tackle the problem of inputting data from disk ﬁles.
+HS/FORTH provides the words OPEN-INPUT, CLOSE-
+INPUT, < FILE, 8", G#, GS, NR, and $-> F that will sufﬁce for
+our needs . Their effects are:
+
+OPEN-INPUT \ open a ﬁle for input, whose name is a
+\ string whose address is on the stack.
+CLOSE-INPUT \ close an open input ﬁle
+
+< FILE \ get input from the open tile
+
+$' \ put a string at PAD (terminate with ')
+
+G# \ get a 16-bit number from open device
+
+GS \ get a counted string from open device
+\ (will not read past a CR-LF)
+
+NR \ skip CR-LF to next record
+
+3- > F \ convert the string at PAD to a floating
+\ point number on the 87stack.
+
+Me: Most operating systems handle sequential ﬁles by main-
+taining a pointer into the ﬁle. After a datum is read, the pointer
+is advanced. Suppose the file datﬁl has 3 numbers in it: 17, 32
+and -8. Then the phrase
+
+5' dat.ﬁl' < FILE G#
+
+will place 17 on the stack. A repetition will place the number
+32 on the stack, and a third repetition will place -8 on the stack.
+
+ 
+
+2. Voltaireonccrcmarkedthatifsuandidnotcx'utitwouldbenecessaryforGodtocreatehime
+yourFORTl-lsystemlachwordswiththesefmaimgbyallmeans,inwntthemAMS-DOS
+programmer's manual (see below) isvital forthis task.
+
+OJdianVNobiotm—Almmerved.
+
+ciuptutommuomeonm Sclanﬂk
+
+     
+    
+ 
+
+We shall use the following data ﬁle convention for arrays:
+
+e The ﬁrst number is the type of the array.
+0 The second is the order N.
+
+o the third is the number of entries— N2 for a
+(ZARRAY), Nfor avector (1ARRAY).
+
+a (fincﬁtln. more ASCII blanks (20h, 32d) separate the numbers
+I e e
+
+o The entries in a ZARRAY are stored rowwise.
+
+NM..- . .vnh.__..~—m-
+
+These conventions let one word serve for 1ARRAYs and ZARRA
+
+Coding from the top down, we plan to enter the following phras;
+to load the ﬁle:
+
+IN SUPERSEG 100 LONG REAL 1ARRAY A{
+A{ s' dataﬂl“ FILL< FILE
+
+To minimize our labor let us plan to have the word FILL < FILE ;
+close dataﬁl after reading it in. For safety we also should Cheri“ .
+whether the type and order of the array we are ﬁlling, and that (a i
+the array stored in the ﬁle are commensurate.
+
+To check whether the ﬁle is too large or ofthewrong type, we have it
+
+0 VAR FILE.TYPE
+
+O VAR FILE.LEN
+
+: READ.FILE.STATS (FILE
+G# IS FILEJYPE
+G# IS FILE.LEN ;
+
+: MAT> =FILE? (
+DUP D.TYPE OVER D.LEN (
+FILE.LEN > (
+SWAP FILEJYPE = (
+AND NOT
+ABORT‘ File bigger than array' : i
+
+ 
+
+The rest of the deﬁnition will look something like this:
+
+:COMPLEX? FILETYPE 10>; \isitcompierﬂ
+:EOR? <FlLEGSCOUNTO-;
+
+: FANR EOR?
+IF <FILE NRGSDROPTHEN \startnewrecord
+PAD 5- > F DROP ; \ convert to floating
+:FILL<FILE (A($ﬁiespec--)
+OPEN-INPUT open file for '
+MAT>-FILE? \checktypealength
+FILE.LEN O
+DODUPIO} (--A{segoﬂtype)
+COMPLEX?
+
+lF F#.NR THEN \ enter 2 #‘s
+
+F#.NR GI \puteway
+LOOP DROP
+
+CLOSE-INPUT ; \ clean up
+
+552 oiskmooutput
+
+Suppose one wants to write an array to a ﬁle. We can use
+
+A{{ s- dataﬁl" MAT> FILE
+
+01’
+
+e{ s' data.ﬁl' vec > FILE
+
+where we deﬁne4
+
+:MAT>FILE (a{{ $adr--)
+MAKE-OUTPUT \$adr = tile.spec
+>F|LE DUP D.TYPE .
+
+DUP D.LEN DUP . “2 .
+.M CLOSE-OUTPUT;
+
+ 
+
+4.
+
+WeuseMandes-omaiapteri'l‘hewords >HLEMAKE-OUTPUTandCLOSEOUTPUT
+aretheouputmlqueaoftheinputwords <FILE,etc.
+
+thlUtVNoblaim—Almmuvad.
+
+Chapterto—smngundI/omrom SclentlﬂcFOR
+
+ 
+     
+  
+ 
+ 
+
+:VEC>FILE (V( $tilespec--)
+MAKE-OUT PUT
+>F|LE D.TYPE .
+D.LEN DUP . .
+.V CLOSE-OUTPUT ;
+
+Logging screen activity
+Most FORTHs handle output to a device by vectoring thr 7
+a user variable called EMIT. This allows relatively easy on '
+put redirection. Hence, for example, everything sent to the scr
+can be echoed to the printer (in an MS-DOS system operating
+a PC-clone this is trivial: just press ctrl-PrtSc to toggle printeﬂ,
+logging on or off). i
+
+The terminal sessions reproduced in preceding chapters were
+captured by logging development sessions to disk ﬁles. This is far
+safer than logging to a memory segment or ram-disk because it
+produces a record that remains even if one’s experiments crash
+the system. Logging to the printer is also permanent, but the
+results are not easily inserted into a book!
+
+HS/FOKI'H permits (at least!) two simple methods for redirect: .
+ing output, which we now describe.
+
+1'
+l
+
+§§1 Redirection by re-vectoring
+The ﬁrst word in this set of deﬁnitions creates the logging ﬁle.
+
+: MAKE.LOG.F|LE
+CR ." Insert a formatted disk in drive A:'
+CR .' Press any key to continue, Esc to abort ...'
+KEY 27 = ABORT" ABORTED!‘
+$" AzLOGJXT' MAKE-OUTPUT ;
+
+: REOPEN.LOG.FILE
+$' AILOGTXT" OPEN-OUTPUT;
+
+:FWEMIT \awordtorepiacastandard EMIT
+DUP \duplicetacharacter
+FEMIT \emittoopenlile
+OUT 1-I \decrementtheoutputcount
+WEMIT; \emittotheCRT(thisincrementsOUT)
+
+:FCRT CFA' FWEMIT IS EMIT ; \vectornewroutine
+
+: LOG-ON FCRT \ all I/O to tile 8- CRT
+IO-STAY ; \ normally FCRT would stop
+\ after word executes.
+\ lO-STAY leaves FCRT on.
+
+:LOG-OFF CLOSE-OUTPUT IO-RESET ;
+\ IO-RESEI’ restores I/O
+\to standard device
+
+Redirection uslng MS-oos resources
+
+Aisembly language programmers familiar with MS-DOSS ver-
+ions 2.x and higher will be aware that the operating system
+includes many useful functions. Those employed here are in-
+voked by means of an “interrupt" (meaning the CPU halts what
+it was doing and performs the system function).
+
+The interrupt code to invoke functions is 21h (hex). The system
+functions are usually speciﬁed by placing the function number in
+register AH, and other needed information is placed in other
+registers. Then an INT 21 instruction is issued.
+
+For example, to create a new ﬁle (or to overwrite an old one of
+the same name), a program operating under MS-DOS would
+include the following code:
+
+MOV DX, FILESPEC ; FILESPEC is address of
+; a string ending with ASCII 0
+; containing [d:][\path\]ﬁle.ext
+
+MOV AH, SCH ; the function number of 'create'
+MOV CX, OH ; the file attribute
+INT 21 H ; now perform the interrupt
+
+ 
+
+S.
+
+O Mia'osoft Corporation, 1983-.
+
+256 Chapter IO-Strlnge and I/O In FORTH Sclendﬂc
+
+  
+    
+   
+  
+   
+  
+    
+
+Consulting the MS-DOS Programmer's Reference‘s reveals
+Function 3Ch either leaves an error code in AX (if there was
+error - depicted by having the carry ﬂag bit CF = 1); or Ie
+the ﬁle handle number (if all went well - depicted by CF = 0) in
+
+The HS/FOKI‘H word MKFILE expects the address of a counte
+string on the stack. This string contains the drive, path an
+ﬁlename of the new ﬁle. Then MKFILE performs the inte
+(using code akin to that above) to invoke the function, issues a
+error message if something went wrong, and leaves the ﬁle hand
+number on the stack if all went well.
+
+This ﬁle handle number is MS-DOS’s way to refer to the new ﬁll
+internally. All subsequent references — say to read or write — ar
+made to this number rather than to the FILESPEC (which wo _
+be much more tedious). The word MAKE-OUTPUT used about:
+contains MKFILE as a component.
+
+Now what does all this have to do with the price of bananas in the.
+Maldive Islands? One of the features of MS-DOS is to treat
+everything like a ﬁle, including the printer, CRT; serial ports, etc.
+Thus output intended for the printer can be sent to a ﬁle by
+fooling DOS into thinking the ﬁle was the printer. This can be ‘
+done by placing the file’s file handle number where the printer’s
+should be.
+
+But MS-DOS actually has functions we can use to splice two ﬁle
+handle numbers so that they are subsequently treated as a single
+ﬁle. These are Function 45h (duplicate a ﬁle handle speciﬁed in
+BX: take an already open ﬁle and return a new handle that refers
+to the same ﬁle at the same position) and Function 46h (force a i
+duplicate of a ﬁle handle speciﬁed in BX: take an already open
+ﬁle and force another handle in CX to refer to the same ﬁle at
+the same position; if the ﬁle handle speciﬁed in CX was open
+close it).
+
+ 
+
+Function 45h is used in the HS/FORI'H word DUPH, and 46h is[
+used in SPLICEH. We can combine them with the (already-
+
+ 
+
+6. Radio Shack Cat. No. 26-5403.
+
+meant" custom-remnant» 257
+
+deﬁned) printer-logging word PORT, as well as with IO-ITAY
+and CRT, to let DOS perform the redirection of output:
+
+0 VAR LOG-HANDLE
+o VAR em VARs for storing handes
+: LOG-ON 3' AzLOG. MKFILE
+\ make his, leave handler!
+IS LOG-HANDLE \ store file handles
+4 DUPH IS P-H# \ make new printer handie#
+
+\ and store it
+LOG-HANDLE
+4 SPLICEH \ splice the handle#'s
+PCRT lO-STAY ; \ redirect output to
+\printer&CRT&leaveon
+: LOG-OFF P-H# DUP
+4 SPUCEH \ splice printer back to primer
+
+LOG-HANDLE CLOSEH
+\ flush to log-file, close
+CLOSEH \ close new printer handle
+CRT ; \ go back to CRT only
+BEHEAD" LOG-HANDLE P-H# \ make VARs local
+
+“3 Redirection while DEBUGging
+
+The only problem with the logging functions deﬁned above is
+
+that they depend on an idiosyncracy of MS-DOS called the
+environment. That is, when we execute a program from within
+another using the HS/FORTH word 005' we automatically
+create a new shell and run all DOS commands under a second
+copy of the command processor, COMMANDCOM . This
+means the environment variables —speciﬁcally the handles of
+open ﬁles — will not be valid. Hence the output sent to the screen
+
+by a program being run via DOS“ will not be echoed to the log
+ﬁle.
+
+ 
+
+7. DOS'muubedeﬁnedhmachinehnguageminvoketheappropriaeDOShmbnmrough
+anotherINT‘Zlﬂall
+
+258
+
+Chapter 104W endl/OInFORTH Sclentlﬂc
+
+    
+   
+ 
+
+Tb capture screen output while DEBUGging, I resort to a utili
+published in PC Magazine called PRNZFILE . This utili .
+replaces the DOS printer-interrupt routine (INT 17h) by
+modiﬁcation that sends the output to a ﬁle instead of the printer
+The assembly language listing can be downloaded from PCMag.
+Net, and is included on the program disk as a convenience to the l
+reader. ‘
+To use this utility from within PIS/FORTH, ﬁrst say 008' < cr >
+to get into the DOS shell. A DOS prompt such as C> should
+appear. Now give the DOS commands
+
+C > prn2file Iog.ﬁl [/b8]
+
+C > ctrl-PrtSc (toggle echoing to printer) ,
+
+C > debug ( get into DEBUG) -‘
+
+...... debugging session ......
+
+-q (quit DEBUG)
+
+C > ctrl-PrtSc ( stop echoing to printer)
+
+C > prn2ﬁle (with no argument, closes Iog.til)
+(and redirects back to printer)
+
+C >type Iog.ﬁ| ( check that it has worked)
+
+C > exit ( get back to HS/FORTH)
+
+Although this is somewhat cumbersome, it does what I need, and
+I did not have to write my own.
+
+With the illustration of how to use I-IS/FORTH's MS-DOS exten«
+sions to ﬁll an array from a ﬁle, to send the contents of an array
+to a ﬁle of standard structure, and to capture programming
+sessions to a ﬁle, we have reached the end of the U0 trail.
+
+ 
+
+8.
+
+PRNZFILE. 1.0 O 1987 74'“ Communications Co. Written by Tom Kihlken.
+

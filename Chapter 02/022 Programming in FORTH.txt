@@ -1,0 +1,746 @@
+Chapter 2 — Programming In FORTH Scientiﬁc Forth
+
+This technique, a rudimentary example of vector-lug, saves
+memory and saves programming time by letting us vary some-
+thing in the middle of a definition after the deﬁnition has been
+entered in the dictionary. However, this techniqlue must be used
+with caution as it is akin to self-modifying code 7.
+
+A similar procedure lets a subroutine call itself recursively, an
+enormous help in coding certain algorithms.
+
+§§2 Deﬂnlng "defining” words
+
+The title of this section is neither a typo nor a stutter: CREATE
+ﬁnds its most important use in extending the powerful class of
+
+FORTH words called “deﬁning” words. The colon compiler“ : ”
+
+is such a word, as are VARIABLE and CONSTANT.
+
+The deﬁnition of VARIABLE is simple
+
+:VARIABLE CREATE 2 ALLOT ;
+
+Here is how we use it:
+
+VARIABLE X < cr > ok
+The inner workings of VARIABLE are these:
+
+0 CREATE makes a dictionary entry with the next name in the
+input stream — in this case, X .
+
+0 Then the number 2 is placed on the stack, and the word ALLOT
+increments the pointer that represents the current location in
+the dictionary by 2 bytes.
+
+ 
+
+Self-modifying machine code is considered a serious “no-no” by modern structured program-
+ming standards. Although it is sometimes valuable, few modern cpu's are capable of handling it
+safely. More often, because cpu's tend to use pipelining and parallelism to achieve speed, a
+piece of code might be modiﬁed in memory, but — having been pre-fetched before modiﬁca-
+tion— actually execute in unmodiﬁed form.
+
+ervm-Mmm.
+
+mz-Pwmhmu 29
+
+o This leaves a 2- e vacancy to store the value of the variable
+(that is, the next ictionary header begins 2 bytes above the end
+of the one just deﬁned).
+
+When the outer interpreter loop encounters a new VARIABLE's
+name in the input stream, that name’s address is placed on the
+stack. But this is also the location where the 2 bytes of storage
+begins. Hence when we type in X, the TOS will contain the storage
+address named X .
+
+As noted in §2.4 above, the phrase X @ (pronounced “X fetch")
+places the contents of address X on the stack, dropping the
+address in the process. Conversely, to store a value in the named
+
+location X, we use ! (“store"): thus
+
+4X! <cr>ok
+X@. <cr>4ok
+
+Double-length variables are deﬁned via DVARIABLE, whose
+deﬁnition is
+
+2 DVARIABLE CREATE 4 ALLOT ;
+
+FORTH has a method for deﬁning words initialized to contain
+
+speciﬁc values: for example, we might want to deﬁne the
+number 17 to be a word. CREATE and “ , ” (“comma") let us do
+this as follows:
+
+17 CREATE SEVENTEEN , <cr> ok
+Now test itvia
+
+SEVENTEEN @ . <cr> 170k
+
+ChapterZ—ProgranwnlngInFORTH SclentlﬂcForth
+Ngte: The word “ , ”(“comma”) puts TOS into the next 2 bytes
+of the dictionary and increments the dictionary pointer by 2.
+
+A word C, (“see-comma”) puts a byte-value into the next byte of
+the dictionary and increments the pointer by 1 byte.
+
+§§3 Run-ﬂme vs. compIIe-tlme actions
+
+In the preceding example, we were able to initialize the variable
+
+SEVENTEEN to 17 when we CREATEd it, but we still have to
+fetch it to the stack via SEVENTEEN @ whenever we want it.
+This is not quite what we had in mind: we would like to ﬁnd 17 in
+T08 when we say SEVENTEEN. The word DOES > gives us
+precisely the tool to do this.
+
+As noted above, the function of DOES > is to specify a run-time
+action for the "child” words of a deﬁning word. lConsider the
+deﬁning word CONSTANT, deﬁned' In high- -level1 8FORI'H by
+
+: CONSTANT CREATE , DOES> @ ;
+and usedas
+53 CONSTANT PRIME 0k
+
+Now test it:
+
+PRIME . <cr> 53 ok
+
+What happened?
+
+a CREATE (hidden in CONSTANT) made an entry (named 'i
+PRIME , the first word in the input stream following CON- !
+
+STANT). Then “ , " placed the TOS (the number 53) in the
+next two bytes of the dictionary.
+
+ 
+
+18. Of course CONSTANT is usually a machine—code primitive, for speed.
+
+4———.._a
+
+ma-an 31
+
+e DOES > (inside CONSTANT) then appended the actions of
+all words between it and “ ; " (the end of the deﬁnition of
+CONSTANT) to the child word(s) deﬁned by CONSTANT.
+
+e In this case, the only word between DOES > and ; was @ , so
+all FORTH constants deﬁned by CONSTANT perform the
+action of lacing their address on the stack (anything made by
+CREA does this) and fetching the contents of this address.
+
+“3-1 K”"90".
+et us make a more complex example. Suppose we had pre-
+viously deﬁned a word BOX ( n x y - - ) that draws a small
+square box of n pixels to a side centered at (x, y) on the graphics
+display. We could use this to indicate the instantaneous location
+of a moving object -— say a Klingon space-ship in a space-war
+game.
+
+So we deﬁne a deﬁning word that creates (not very realistic
+looking) space ships as squares n pixels on a side:
+
+: SPACE-SHIP CREATE . DOES>
+@-ROT (--nxy) BOX;
+: SIZE ; \ do-nothing word
+
+Now, the usage would be (SIZE is included merely as a reminder
+of what 5 means — it has no function other than to make the
+deﬁnition look like an English phrase)
+
+SIZE 5 SPACE-SHIP KLINGON <cr> OR
+7135 KLINGON <cr> 0k
+
+Of course, SPACE-SHIP is a poorly constructed deﬁning word
+because it does not do what it is intended to do. Its child-word
+KLINGON simply draws itself at (x, y).
+
+What we really want is for KLINGON to undraw itself from its old
+location, compute its new position according to a set of rules, and
+then redraw itself at its new position This sequence of operations
+would require a deﬁnition more like
+
+:OLD.POS@ (adr--adrnxy) DUP @ OVER
+2+ D@ :
+
+eJtathNobIe—Almreaervad.
+
+32
+
+Chapter 2 - Programming In FORTH Scientiﬁc Forth
+
+: SPACE-SHIP CREATE , 4 ALLOT DOES>
+OLD.POS@ UNBOX NEW.POSI
+OLD.POS@ BOX DROP ;
+
+where the needed specialized operation UNBOX would be
+deﬁned previously along with BOX.
+
+§§3—2 Dlmensloned data (with Intrinsic unlts)
+Here is another example of the power of deﬁning words and of
+the distinction between compile-time and run-time be-
+haviors.
+
+Physical problems generally work with quantities that have
+dimensions, usually expressed as mass (M), length (L) and time
+(T) or products of powers of these. Sometimes there is more than
+one system of units in common use to describe the same
+phenomena.
+
+For example, trafﬁc police reporting accidents in the United
+States or the United Kingdom might use inches, feet and yards;
+whereas Continental police would use the metric system. Rather
+than write different versions of an accident analysis program it is
+simpler to write one program and make unit conversions part of
+the grammar. This is easy in FORTH; impossible in FORTRAN,
+BASIC Pascal or C; and possible, but exceedingly cumbersome
+
+in Adam.
+
+We simply keep) all internal lengths in millimeters, say, and con-
+vert as follo :
+
+ 
+
+19.
+20.
+
+An example (and its justiﬁcation) of dimensioned data types in Ada is given by Do-While l ones,
+Dr. Dobb’r Journal, March 1987. The FORTH solution below is much simpler than the Ada version.
+This example is based on 16-bit integer arithmetic. The word '/ means “multiply the third num-
+ber on the stack by NOS, keeping 32 bits of precision, and divide by TOS". That is, the stack
+comment for '/is(sbc--a'blc).
+
+ma—Pmmronm 33
+
+:INCHES 25410 -/ ;
+
+:FEET [25412'1UTERAL 10 ‘l;
+:YARDS [25436'1LITERAL10 -/;
+:CEN‘HMETERS 10 - ;
+
+:METERS 1000 - ;
+
+The usage would be
+
+10 FEET. <cr> 30480k
+
+These are more deﬁnitions than necessary, of course, and the
+technique generates unnecessary code. A more compact ap-
+proach uses a deﬁning word, UNITS :
+
+: D, SWAP , , ; \IdoubIe—Iengthatin next ceIIs
+:UNITS CREATE D, DOES> D@ “I;
+
+Then we could make the table
+
+25410 UNITS INCHES
+25412 * 10 UNITS FEET
+254 36 " 10 UNITS YARDS
+
+10 1 UNITS CENTIMETERS
+10001 UNITS METERS
+\ Usage:
+
+10 FEET. <cr> 3048 0k
+\ 3 METERS. <cr> 300001:
+
+This is an improvement, but FORTH lets us do even better: here
+is a simple extension that allows conversion back to the input
+units, for use in output:
+
+VARIABLE <AS> \new variable
+0 <AS>I \initialize to 'F"
+:AS -1 <AS> I ; \set <AS> = "T'
+
+34 Chapter 2 — Programming In FORTH Scientiﬁc Forth
+
+:UNITS CREATE D, DOES>
+
+0@ \ get 2 #s
+
+< AS > @ \ get current val.
+IF SWAP THEN \fIip if "true'
+
+*I 0 <AS> I ; \convert. reset <AS>
+
+BEHEAD' < AS > \ make it local for security”
+
+\ unit deﬁnitions remain the same
+
+\ Usage:
+\ 10 FEET . <cr> 3048 ok
+\ 3048 AS FEET . <cr> 10 ok
+
+§§4 Advanced methods of controlllng the compiler
+FORTH includes a technique for switching from compile mode
+to interpret mode while compiling or interpreting. This is done
+
+using the words ] and [ . (Contrary to intuition, ] turns the
+compiler on, [ turns it off.)
+
+One use of ] and [ is to create an “action table” that allowzs2 us to
+choose which of several actions we would like to perform .
+
+For example, suppose we have a series of push-buttons numbered
+1-6, and a word WHAT to read them.
+
+That is, WHAT waits for input from a keypad; when button #3 is
+pushed, e.g., WHAT leaves 3 on the stack.
+
+We would like to use the word BUTTON in the following way:
+
+WHAT BUTTON
+
+ 
+
+21. Headerless words are described in ”R, p. 3251f. The word BEHEAD' is HS/FORTH’s method
+for making a normal word into a headerless one. See Ch. 5§1§§3 for further details.
+
+22. Better methods will be described in Chapter 5.
+
+ma-rwmmronm 35
+
+BUTTON can be deﬁned to choose its action from a table of
+actions called BUTTONS . We define the words as follows:
+
+CREATE BUTTONSé RING-BELL OPEN-DOOR
+ENTER LAUGH RY SELF-DESTRUCT [
+:BUTTON 1- 2" BUTTONS + @ EXECUTE;
+
+If, as before, [push #3, then the action ENTER will be executed.
+Presumably button #7 is a good one to avoid”.
+
+How does this work?
+
+0 CREATE BUTTONS makes a dictionary entry BUTTONS.
+
+e ] turns on the compiler: the previous! -deﬁned word-names
+RING-BELL, etc. are looked up in the dictionary and compiled
+into the table (as though we had begun with :), rather than
+being executed.
+
+a [ returns to interactive mode (as if it were :), so that the next
+colon deﬁnition (BUTTON) can be processed.
+
+o The table BUTTONS now contains the code-ﬁeld addresses
+(CFA’s) of the desired actions of BUTTON .
+
+e BUTTON ﬁrst uses 1- to subtract 1 from the button number
+left on the stack by WHAT (so we can use 0—based numbering
+into the table — if the ﬁrst button were #0, this would be
+unneeded).
+
+o 2" then multiplies by 2 to get the offset (from the beginning of
+BUTTONS) of the CFA representing the desired action.
+
+a BUTTONS + then adds the base address of BUTTONS to get
+the absolute address where the desired CPA is stored.
+
+a @ fetches the CFA for EXECUTE to execute.
+
+a EXECUTE executes the word corresponding to the button
+pushed. Simple!
+
+ 
+
+Z3. TIM: safety of an execution table can be increased by making the ﬁrst (that is, the zero’th) action
+WARNING, and making the ﬁrst step of BUTTON a word CHECK-DATA that maps any num-
+ber not in the range 1-6 into 0. Then a wrong button number causes a WARNING to be issued
+and the system resets.
+
+§9 Strings
+
+Chapter 2 — Programmlng In FORTH Sclendﬂc Forth
+
+You may well ask “Why bother with all this indirection, pointers,
+pointers to pointers, tables of pointers to tables of pointers, and
+the like?” Why not just have nested IF ELSE THEN con-
+structs, as in Pascal?
+
+There are three excellent reasons for using pointers:
+
+e Nested IF. . .THEN’s uickly become cumbersome and dif-
+ﬁcult to decipher (TF). ey are also am (see Ch. 11).
+
+0 Changing pointers is generally much faster than changing other
+kinds of data — for example reading in code overlays to ac-
+complish a similar task.
+
+0 The unlimited depth of indirection possible in FORTH per-
+rnits arbitrary levels of abstraction. This makes the computer
+behave more “intelligently" than might be possible with more
+restrictive languages.
+
+A similar facility with pointers gives the C language its abstrac-
+tive power, and is a major factor in its popularity.
+
+y now it should be apparent that FORTH can do anything any
+
+other language can do. One feature we need in any sort of
+programming —scientiﬁc or otherwise — is the ability to handle
+alphanumeric strings. We frequently want to print messages to
+the console, or to put captions on ﬁgures, even if we have no
+interest in major text processing.
+
+While every FORTH system must include words to handle
+strings(see, e.g., FTIL Ch. 9 ) —the very functioning of the outer
+interpreter, compiler, etc., demands this — there is little unanim-
+ity in deﬁning extensions. BASIC has particularly good string-
+handling features, so HS/FORI'H and others provide extensions
+designed to mimic BASIC’s string functions.
+
+mz-PWHFOR‘I’H 37
+
+Typical FORTH strings are Iimite to 255 characters because they
+contain a count in their ﬁrst byte . The word COUNT
+
+:COUNT DUP 1+ SWAP C@ ; (adf--nadr+1)
+
+expects the address of a counted string, and places the count and
+the address of the ﬁrst character of the string on the stack. TYPE,
+a required ’79 or ’83 word, prints the string to the console.
+
+It is straightforward to employ words that are part of the system
+(such as KEY and EXPECT) to deﬁne a word like 3“ that takes
+all characters typed at the keyboard up to a ﬁnal " (close-quote
+—not a word but a string-terminator), makes a counted string of
+them, and places the string in a buffer beginning at an address
+returned by PAD”.
+
+The word 3. ("string-emit") could then be deﬁned as
+:$. COUNT TYPE ; (adr - -)
+and would be used with 3“ like this:
+
+$' The quick brown fox" < cr> ok
+S. The quick brown fox ok
+
+Since this book in not an attempt to paraphrase FIR it is strongly
+recommended that the details of using the system words to devise
+a string lexicon be studied there.
+
+One might contemplate modifying the FIR lexicon by using a
+full 16-bit cell for the count. This would permit strings of up to
+64k bytes (using unsigned integers”), wasting 1 byte of memory
+per short ( 255 bytes) string. Although few scientiﬁc applications
+need to manipulate such long strings, the program that generated
+the index-to this book needed to read a page at a time, and thus
+to handle strings about 3—5 kbytes long.
+
+ 
+
+24. A single byte can represent positive numbers 0-255.
+25. A system variable that returns the current starting address of the “scratchpad”.
+
+26. ma. 3.
+
+38 Chapter 2 — Programming In FORTH Scientific Forth
+
+§10 FORTH programming style
+A FORTH program typically looks like this
+
+\ Example of FORTH program
+:WORD1 .. . ;
+
+:WORD2 OTHER-WORDS ;
+:WORDS YET-OTHER-WORDS ;
+
+: LAST-WORD wonon ...WORD3
+wonoz wonm ;
+LAST-WORD <cr> \run program
+
+Note: The word \ means “disregard the rest of this line”. It is a
+convenient method for commenting code.
+
+In other words, a FORTH program consists of a series of word
+definitions, culminating in a definition that invokes the whole
+shebang. This aspect gives FORTH programming a somewhat
+different ﬂavor from programming in more conventional lan-
+
+guages.
+
+Brodie notes in TF that high-level programming languages are
+considered good if they require structured, top-down program-
+ming, and wonderful if they impose information hiding. Languages
+such as FORTRAN, BASIC and assembler that permit direct
+jumps and do not impose structure, top-down design and data-
+hiding are considered primitive or bad. To what extent does
+FORTH follow the norms of good or wonderful programming
+practice?
+
+§§1 Structure
+The philosophy of “structured programming” entered the
+general consciousness in the early 1970’s. The idea was to
+make the logic of program control flow immediately apparent,
+
+O Jdian V.Nobie — All rights reserved.
+
+arms-Warm 39
+
+thereby aiding to produce correct and maintainable programs.
+The language Pascal was invented to impose by ﬁat the discipline
+of structure. To ti? end, direct jumps (GOT Os) were omitted
+from the language .
+
+FORTH programs are automatically structured because word
+deﬁnitions are nothing but subroutine calls. The language con‘
+tains no direct jump statements (that is, no GOT 0's) so it is
+impossible to write “spaghetti" code.
+
+A second aspect of structure that FORTH imposes (or at least
+encourages) is short deﬁnitions. There is little speed penalty
+incurred in breaking a long procedure into many small ones,
+unlike more conventional languages. Each of the short words has
+one entry and one exit point, and does one job. This is the beaux
+ideal of structured programming!
+
+“2 "Top-down" design
+
+ost authors of “how to program” books recommend design-
+
+ing the entire program from the general to the particular.
+This is called “top-down" programming, and embodies these
+steps:
+
+a Make an outline, ﬂow chart, data-ﬂow diagram or whatever,
+taking a broad overview of the whole problem.
+
+a Break the problem into small pieces (decompose it).
+0 Then code the individual components.
+
+The natural programming mode in FORTH is “bottom-up”
+rather than “top-down” — the most general word appears last,
+whereas the deﬁnitions necessarily progress from the primitive
+to the complex. It is possible - and sometimes vital — to invoke
+a word before it is deﬁned (“forward referencing’ ). The dic-
+tionary and threaded compiler mechanisms make this nontrivial.
+
+ 
+
+27. lronially, most programmers refuse to get along without spaghetti code, so commercial Pascal's
+now include GOTO. Only FORTH among major languages completely eschews both line labels
+and 6010;, making it the most structured language available.
+
+28. The FORmula TRANsIator in Ch. 1154 uses this method to implement its recursive structure.
+
+OWVNobIe-Aldghtsreaarved.
+
+CMptar 2 - Programming In FORTH Scientiﬁc Forth
+
+The naturalness of bottom-up programming encourages a some-
+what different approach from more familiar languages:
+
+0 In FORTH, components are speciﬁed roughly, and then 3 they
+are coded they are immediately tested, debugged, redesigned
+and improved.
+
+0 The evolution of the components guides the evolution of the
+outer levels of the program.
+
+We will observe this evolutionary style in later chapters as we
+design actual programs.
+
+§§3 Information hiding
+Information (or data) “hiding” is another doctrine of structured
+programming. It holds that no subroutine should have access
+to, or be able to alter (corruptlzg data that it does not absolutely
+require for its own functioning .
+
+Data hiding is used both to prevent unforeseen interactions
+between pieces of a large program; and to ease designing and
+debugging a large program. The program is broken into small,
+manageable chunks (“black boxes”) called modules or objects
+that communicate by sending messages to each other, but are
+otherwise mutually impenetrable. Information hiding and
+modularization are now considered so important that special
+languages —Ada, MODULA-Z, C+ + and Object Pascal— have
+been devised with it in mind.
+
+To illustrate the problem information hiding is intended to solve,
+consider a FORTRAN program that calls a subroutine
+
+ 
+
+Rather like the “cell" system in revolutionary conspiracies, where members of a cell know only
+each other but not the members of other cells. Mechanisms for receiving and transmitting mes-
+sages between cells are double-blind. Hence, if an individual is captured or is a spy, he can
+betray at most his own cell and the damage is limited.
+
+MZ-PWhFOﬁTH ‘1
+
+PROGRAM MAIN
+some lines
+
+CALL SUB1(arg1, ar92, , argn. mswer)
+some lines
+
+END
+
+SUB1(X1, , Xn, Y)
+some lines
+Y = something
+RETURN
+END
+
+There are two ways to pass the arguments from MAIN to SUBI,
+and FORTRAN can use both methods.
+
+0 Copy the arguments from where they are stored in MAIN into
+locations in the address space of SUBl (set aside for them
+during compilation). If the STATEMENTS change the values
+X1,...,Xn during execution of SUBl, the original values in the
+callin program will not be affected (because they are stored
+elsew ere and were copied during the CALL).
+
+0 Let SUBl have the addresses of the arguments where they are
+stored in MAIN. This method is dangerous because if the
+arguments are changed during execution of SUBl, they are
+changed in MAIN and are forever corrupted. If these changes
+were unintended, they can produce remarkable bugs.
+
+Although copying arguments rather than addresses seems safer,
+sometimes this is impossible either because the increased
+memory overhead may be infeasible in problems with large
+amounts of data, or because the extra overhead of subroutine calls
+may unacceptably slow execution.
+
+What has this to do with FORTH?
+
+e FORTH uses linked lists of addresses, compiled into a diction-
+ary to which all words have equal right of access.
+
+0 Since everything in FORTH is a word —constants, variables,
+numerical operations, I/O procedures- it might seem impos-
+sible to hide information in the sense described above.
+
+0 Fortunate] , word-names can be erased from the dictionary
+after their F As have been compiled into words that call them.
+(This erasure is called “beheadmg”.)
+
+emvm—Mmm.
+
+42 Chapter 2 — Programmhg in FORTH Scientiﬁc Forth
+
+e Erasing the names of variables arantees they can be neither
+accessed nor corru ted by unaut orized words (except through
+a calamity so drea ful the program crashes).
+
+§§4 Documenting and commenting FORTH code
+FORTH is sometimes accused of being a “write-only" language.
+In other words, some complain that FORTH is cryptic. I feel
+this is basically a complaint against poor documentation and ~_
+unhelpful word names, as Brodie and others have noted.
+
+Unreadability is equally a ﬂaw of poorly written FORTRAN,
+Pascal, C, etal.
+
+FORTH offers a programmer who takes the trouble a goodly
+array of tools for adequately documenting code.
+
+§§4—1 Parenthesized remarks
+The word ( —a left parenthesis followed by a space - says “dis- ‘
+regard all following text up until the next right parenthesis in
+the input stream. Thus we can intersperse explanatory remarks
+within colon deﬁnitions. This method was used to comment the
+Legendre polynomial example program in Ch. 1.
+
+§§4—2 Stack comments
+A particular form of parenthesized remark describes the effect of
+a word on the stack (or on the ﬂoating point fstack in Ch. 3). For
+example, the stack-effect cement (stack comment, for short)
+
+( adr - - n)
+would be appropriate for the word @ (“fetch”): it says @ expects I
+
+to find an address (adr) on the stack, and to leave its contents (n) .
+upon completion.
+
+The corresponding comment for i would be
+
+ 
+
+30. The right parenthesis, ) , is not a word but a delimiter.
+
+(nadr--).
+
+An fstack comment is prefaced by a double colon :2 as
+
+(::x--f[x]).
+
+Note that to replace parentheses within the comment we use
+brackets [ ] , since parentheses would be misinterpreted. Since
+the brackets appear to the right of the word ( , they cannot be
+(mis-) interpreted as the FORTH words ] or [ .
+
+With some standard conventions for names”, and standard ab-
+breviations for different types of numbers, the stack comment
+may be all the documentation needed, especially for a short word.
+
+“4-3 0'09 "0° ( \ I
+The word \ (back-slash followed by space) has gained favor as a
+method for including longer comments. It simply means “drop
+everything in the input stream until the next carriage return".
+Instructions to the user, clariﬁcations or usage examples are most
+naturally expressed in an included block of text with each line set
+
+offszby\.
+
+§§4—4 Sell-documenting code
+By eliminating ungrammatical phrases like CALL or GOSUB,
+FORTH presents the opportunity —via telegraphic names33 for
+words — to make code almost as self-documenting and
+transparent as a simple English or German sentence. Thus, for
+example, a robot control program could contain a phrase like
+
+2 TIMES LEFT EYE WINK
+
+which is clear (although it sounds like a stage direction for Brun-
+hilde to vamp Siegfried). It would even be possible without much
+
+ 
+
+See, e.g., L Brodie, 11", Ch. 5, Appendix E.
+Forthosefamiliarwithassemblylanguage,\isexactly analogousto;inassembler. But since ; is
+alreadyusedtocleseeoiondeﬁnitionsinkaH, the symbol\hasbeenusedinitspiace.
+
+The matter of naming brings to mind Mark Twain's remark that the difference between the al.
+most-right word and the right one is the difference between the lightning-bug and the lightning.
+
+cJtlthNoUe-Alrioi'ureeerved.
+
+44 Chapter 2 — Programming In FORTH Scientiﬁc Forth
+
+difﬁculty to deﬁne the words in the program so that the sequence
+could be made English-like:
+
+WINK LEFT EYE 2 TIMES .
+
+§§5 Salim
+
+Some high level languages perform automatic bounds checking
+on arrays, or automatic type checking, thereby lending them a
+spurious air of reliability. FORTH has almost no error checking
+of any sort, especially at run time. Nevertheless FORTH is a
+remarkably safe language since it fosters ﬁne-grained decomposi-
+tion into small, simple subroutines. And each subroutine can be
+checked as soon as it is defined. This combination of simplicity
+and immediacy can actually produce safer, more predictable code
+than languages like Ada, that are ostensibly designed for safety.
+
+Nonetheless, error checking —especialiy array bounds-check-
+ing— can be a good idea during debugging. FORTH lets us
+include checks in an unobtrusive manner, by placing all the safety
+mechanisms in a word or words that can be “vectored” in or out
+as desired“.
+
+ 
+
+34. See m for a more thorough discussion of vectoring. Brodie, TF, sugests a nice construct
+called DOER MAKE that can be used for graceful vectoring.
+

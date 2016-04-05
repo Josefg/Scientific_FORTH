@@ -1,0 +1,886 @@
+macaw Mil-WW 273
+
+tables to their own segment. in the same way we did with generic
+arrays in Chapter 5.
+
+53 Computer algebra
+
+One of the most revolutionary recent developments in scientiﬁc
+programming is the ability to do algebra on the computer.
+like REDUCE. SCHOONSCIP, MACSYMA.
+DERIVE and MATHEMATICA can automate tedious algebraic
+manipulations that might take hours or years by hand, in the
+process reducing the likelihood of error". The study of symbolic
+manipulation has led to rich new areas of pure mathematics .
+Here we illustrate our new tool (for compiling ﬁnite state
+automata) with a rule-based recursive program to solve a prob-
+lem that does not need much formal mathematical background.
+The resulting program executes far more rapidly on a PC than
+
+REDUCE. e.g.. on a large mainframe.
+
+551 Stating the problem
+irac y-matrices are 0“ traceless, complex matrices deﬁned
+by a set of (anti)commutation relations 6. These are
+
+WYV+YVVI=2vwv ﬂ.V=0.---.3 (1)
+where 77‘" is a matrix-valued tensor,
+p\v0 1 2 a
+O I 0 O 0
+”“51 O—l o o (2)
+2 0 O-l O
+3 O 0 O-I
+
+ 
+
+14. ll. Pavelle, M. Rothslein and J. Fitch. “Computer Algebra". Scientiﬁc-American 145, #6
+(Dec. 1%!) 136.
+
+15. See. e4. M. WMMIWWAW (Springer-Vern Berlin, 1992).
+
+16. anidtomktyoulluiw.smq.,w. BjorkenaudSD. DrelLRelaa'w‘m‘c
+Marni Mechanic (Mdinw—Hill. he. New York. 1%); also v3. Bereuetskil. EM. Lifsllitz
+INLEWWQHMM nary. PmlﬂemumOxford. 1971) p.68ﬂ.
+
+emumrm-me.
+
+274
+
+Chapter 11 - Symbolic Proorammhg Sclendﬂc FORTH
+
+The trace of a matrix is deﬁned to be the sum of its diagonal
+elements,
+
+not ) 9 £14“ . (3)
+Clearly, traces obey the distributive law
+
+T*(A + B) E Tr(A ) + Tr(3 ) (43)
+as well as a kind of commutative law,
+
+min) a mu ). (41:)
+
+From Eq. 1, 2, and 4a,b we ﬁnd
+
+Tr(AB) 2% [Tr(AB) +Tr(BA )] = Tip” +34)
+
+(5)
+
+NIH
+
+ 
+
+=12A- 'lBTr( )=- 4A B
+
+N"
+
+where the ordinary vectors A " andB form the (Lorentz-in-
+variant) “dot product”
+
+A-BEAoBo—AlBl—Asz—A383 (6)
+
+The trace of 4 gamma matrices can be obtained, analogous to
+Eq. 5, by repeated application of the algebraic laws 1-4:
+
+Tr(AB¢D) = M-BTr(¢D) — TrwA 0‘11)
+Eu-BTr(¢D)-Tr(A (103) (7) '
+E 4(A-Bc-D —A-CB-D +A-DB-c)
+
+\
+
+We include Eq. 7 for testing purposes. The factors of 4 in Eq. 5:
+and 7 do nothing useful, so we might as well suppress them in the,
+interest of a simpler program. -
+
+ 
+
+WPOMH Mtt-BMPW 275
+
+“2 Thou.
+We apply f1 rules analogous to those used in parsing a
+
+language . The rules for traces are:
+\Gemma Matrix Algebra Rules:
+\ a -> string of booth < =3
+\ / - > delineator for factors
+\ <factor> - > a]
+\ product/ - > e/b/c/d/
+\ Tr( alblprodl) - > a.b (tr( prod/) ) - tr( a/prod/b'I)
+\ b' - > mark b as permuted
+\ Tr( al) - > 0 (a single factor is traeeiess)
+
+Repeated (adjacent) factors can be combined to produce a mul-
+tiplicative constant:
+
+BREE-B; (3)
+
+recognizing such factors can shorten the ﬁnal expressions sig-
+niﬁcantly, hence the rule
+
+\ Tr( ale/prodl) - > a.a (Tr( prod/) ).
+
+In the same category, when two vectors are orthogonal,
+A -B = 0, another simpliﬁcation occurs,
+
+\PERP A8 -> A.B=O.
+\ Tr(A/B/prodl) -> -Tr(A/prod/B'/)
+
+The ability to recognize orthogonal vectors lets us ggorrectly)
+include the trace of a product times the special matrix
+
+ 
+
+l7. hisuadiﬂialhmiuuoducemeﬁutherkwlofindiredionandproduceFonhcodefm
+generatinga “compiler". See‘l'A. lvancoaudG. HunterJ. FadlAppL makes. a (1990) 15.
+18. Note: may. (op. ea.)deaae¢withaaovenu“-"sigarelative to Eq. 9.
+
+omvmlm-umm.
+
+276
+
+Chptertt-Symbollcl’roqramilnq SclentIﬂcFOﬂﬂ-Iii
+0010
+__-01 _ 0001
+Y5"yyy2y3- 1000 (9)
+0100
+
+that anticommutes with all four of the W :
+
+ysy‘ ”“520, [I =0,...,3.
+
+The fully antisymmetric tensor EM 2 - cw , etc., lets us write
+ySAB¢EiemdA”B’C‘/‘, i=F1‘ . (10)
+A complete gamma matrix package includes rules for traces contain-
+
+ing
+\ Trng( a/b/c/d/xl) - > i Tr( " /d/x/)
+
+-> [a.b,c,d] (antisymmetric product)
+\Note: "a.=".b=".c=0
+
+ 
+
+Since y-matrices often appear in expressions like (A + m Al ) it I
+will also be convenient to include the additional rules
+
+\*A/ -> [N + ms]
+\Tr(*A/X/) -> m[A](Tr(x/))+Tr(x/A/)
+
+§§3 The program
+
+We program from the bottom up, testing, adding and modifying )
+as we go. Begin with the user interface; we would like to say ‘
+
+TFl( NB/C/DI)
+
+to obtain the output:
+
+= A.BC.D-A.CB.D +A.DB.C ok
+
+MM”!
+
+own-BMW 277
+
+Evidently our program will input a string terminated by a right
+parenthesis “)”, lie, the right parsnthesis tells it to stop inputting
+This can be done with the wordI
+
+:gets ASCII) TEXT PAst 51;
+
+Since the rules are inherently recursive, we push the input string
+
+onto a stack before operations commence. What stack? Clear-
+ly we need a stack that can hold strings of “arbitrary” length. The
+strings cannot be too long because the number of terms of output,
+hence the operating time, grows with the number of factors N, in
+fact. like (gr: )1 .
+
+The pseudocode for the last word of the deﬁnition is clearly
+something like
+
+:TR( )get$ \get a $ -terminated with ")'
+setup \ push $ on $stack
+parse :
+
+'Iherealworkis donebyparse,whosepseudocodeis shownbelowin
+Fig. 11-4; note how recursion simpliﬁes the problem of matching left
+and right parentheses in the output.
+
+Next we define the underlying data structures. Recursion
+demands a stack to hold strings in various stages of decomposi-
+tion and permutation. Since the number of terms grows very
+rapidly with the number of factors, it will turn out that taking the
+trace of as many as 20 distinct factors is a matter of some weeks
+on —say— a 25 Mhz 80386 PC; that is, 14 or 16 factors are the
+largest practicable number. So if we make provision for expres-
+sions 20 factors long, that should be large enough for practical
+
+purposes”.
+
+ 
+
+l9. ThewordTEXTcanbedeﬁnedas :TEXT WORD HERE PAD 0|:
+20. Actually, 19 factorasinnewewantto ALLOT spaceinlnultiplesof 4to maintain even paragraph
+hellndaries.1‘hatis,theatringswillusembytesindudingthecount.
+
+OJtlianVNounm-Alriohtsreeerved.
+
+278
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Chpter 11 - Symbolic Programming Scientiﬁc FORTH
+(59 : parse Spop \ a/b/x/
+yes Ziactors (--ab) \x/
+b=b'? \done?
+A.B \ output
+N° length( XI) 0 > \ more?
+rearrange \ "a/x/b'l
+\ x/
+
+ 
+
+.' (' recurse .')" \Tr(x/)
+
+ 
+
+recurse \ Tr( "' a/x/b'l)
+
+ 
+
+Exit
+
+ 
+
+ 
+
+Fig. 11-4 Pseudocode/ﬂow diagram for ‘parse'
+
+How deep an the Sstack get? The algorithm expressed by the rule
+\ Tr( a/b/prodl) - > a.b ( Tr( prodl) ) - Tr( a/prod/b'l)
+
+suggests that for an expression of length n=2k, the maximum
+depth will be k + 1. Thus we should plan for a stack depth of at
+least 11, perhaps 12 for safety. Assuming factor-names up to three
+characters long, and strings of up to 20 names, we need =60
+characters per string. My ﬁrst impulse was to create a dynamic
+$stack that could accomodate strings of variable length, meaning
+that some 330 bytes of storage would be needed, at the cost of
+some complexity in keeping track of the addresses. This is a big
+improvement on 720 bytes needed for a 60-wide ﬁxed-width
+stack, of course. However, the convenience of a ﬁxed-width
+Sstack led me ultimately to set up a table (array) of 20 names,
+whose indices would act as tokens; that is, the strings that actually
+go on the Sstack would be tokenized. The memory cost of the
+table together with a 12-deep, fixed-width Sstack is thus only
+80 + 242 = 322 bytes.
+
+WM?"
+
+MM
+
+\mreararem
+
+«we 0;
+
+:m: (m0—) WTE ..]
+m> (d'-i
+
+moo (-a¢mmnl
+' 4 1+ 4' i-mm)
+
+OVER+ (—a¢ra¢r‘)
+
+m W24 (-a¢r|ﬂ‘] «4-2)
+mm i-Idrllﬂr'l It)
+KIT! EXBJJTE '
+
+ocmsrmr >0 acousmlr >3
+momma >1 measure at
+acousrmr >2 soonsrmr >5
+\aomresmem
+
+\Membtaa
+:rpa: (em-i
+GENE “OVERALLOT
+SWAPOFLL \Inithnia
+DCES> + W;
+
+:inatﬂ (mnwnw.1—)
+SVWHSWAP
+DOWI+ C! LOOP OW;
+\and-nmaleoorwionm
+
+\1-tll
+\addla-aa
+
+\smuoumm
+l-EX
+\Nouzmi ...... niconallomlympllu- ...... '
+Humo-
+?(((:81(MM—)OVBC@1+ mm»
+muo-
+?(((:8+ (mi-ma —a-d)
+Dime (4mm)
+>Rt+ OVERC®PAD+1+
+Re «move most
+a) PADOO + omxsnm moon)»
+pecan
+:1+0l (ear—l Dome 1+ smpcn
+:a. (Int-l \duutammt
+Dunn cannot Gamma+w
+0° '60” ﬂ<>
+F 911000th + Cl PAD1+CI
+ELSE anon ‘l'l-EN
+m PADR> SI:
+\aosrmasmmmo
+
+\PAFSEW
+\MINW‘Nhﬂmm
+\nsa-law+ Mulls»
+
+0W-
+
+:nrt 1818mm: human-luv
+(WM OI \MIUW
+we] Ate/1+1 W: \IneOl
+
+Mtt-SMW 279
+
+:an an ”Mutants-Inland)";
+:4W(d.-) ﬂm \dﬂ?
+rmcomr 4 CHMDCO1¢ P001 oven;
+
+GMMJM (cum-l
+\WIWIWIMIII'I
+\nso ———————————————————————
+(0) arr >0 wan >2 err >0 +0! >5 _!>1
+(1) on >0 4PM >2 an >1 +OI>5 en >1
+(2) on >0 4?“) >3 +PAD >3 +0! >5tr >2
+(3) 01" >0 OPPD >4+PND >4 +O/ >5” >3
+(4) on >0 W um» 40/ >Sarr>4
+- \mm
+18118:”) \ennmdlbenu
+1'IWIWIMAW
+1'[W]A$I1A50Iahﬂ
+rimuscusscsom
+3‘[lanu)A80I/ +Ci
+C‘IWIABCI' + Cl
+:<m> (It-IF)
+PADOi ‘(laebriot OIS‘r \ﬂidb
+
+BEGNOIMM [tannin-ear)”
+' )05-
+UNle
+
+CREATEtaeasr{m4'ALLOT0<l.W \tpbzotaea-ln
+:} (dru—adr+4ﬁ1)4'+: \compuh-scira-
+
+OVARN OVARN1
+GREATEBLF‘ manor MW \mm
+
+:undar121ND;
+:s-(Sdnm—i)
+-1~FOT m
+ROTOOWT (—satl12+1nzsa¢1+1m)
+FDTW -
+IF neon
+
+\toltoni-A] - mix] 12s on
+
+00mm >Rt+
+WERCOMFD <>
+F WMT—FUTlEAVETl-EN
+SWAP1+
+m comr-
+asuneopoorneuornei:
+:M.“ (--) \Mwm
+-1|SN1
+Monomer-taut“):-
+F IBNI LEAVETFBJ
+
+m:
+whales NNt-t-MNt-1>N1Am +
+\uanNerNi
+PADHQIIMDCII Vina-tut?
+
+mm+t+CtMI+CH
+\Wﬂlﬂ
+
+emvuouoim-me.
+
+280
+
+Im (Slur-l \dleornpoaainbtaetm
+lactation om \mallnnnlo
+CONT OER+ (-8dr+1hdr’) \ddreuaa
+>R \M‘-M+LENB)+1
+OBUFsCI \lnithullot
+OlSN \tnltN
+BEGN «no» \tnglnioopmeltacu
+
+mountable \prwantmullbieantiu
++burs \addi‘actnrhtoltanizads
+N1-1- \notintabla?
+IFPAD lactot{N}sl \putintnblo
+ATN1+l \lne.N
+Tl-EN
+DUPR@ = UNTlL \ondloop
+bnopmaoa; \eloanup
+
+\ENOPARSEWGIDS
+
+\Setaek
+
+CREATEW ZOZ)‘2+ALLOTOKLW \21orptr
+
+:Spush (“d1")
+DUPC@19>ABORT‘STHINGTOOLONGI'
+M DUP@ DUP 19> mat-dined”?
+20' 2+ 4» Si SeudHH;
+
+:spop (Sadr--)SetackDUP@1-OMAX
+DDUPSWAP!
+20'2+ + SWAP 3!;
+
+\ondsmak
+
+CREATE BwALLOTOKLW \mlminpmahils
+
+:gotS BC!) TEXT \inputaSterrnlnabdby)
+PAD -BL \deletebianlra
+PADXS $1;
+
+:1tactor (--a) \get1fa:tor.tai-> 11$
+BUFS 1+ 0@ (--a)
+
+BLFS C(XJNT 1- >11
+
+1+ X$1+F@<CWVE Vail->16
+
+R> XSCI: \adiuetoount
+:21‘aebra(--ab) \getietztaebra
+
+tractoran $1 “actor;
+OVAFlu'gn \emitmrreetalgn
+ZTAB: [sign] \maltehbla
+ASCI+ '[dgn] Ci \1lltabla
+m- '[I‘gn] 1+ Cl
+:jgn (a--) 64AM) O> ABS [sign] ﬁgnAND EMT;
+
+\Nob:anmar11prirm(')by640ﬁ (aatbltelnbiwn)
+\ a'ncaiatlaehrianm',maetbltotorlaadng'-'algn
+
+:prirnel 64 OR ;
+
+:urpr'vne 6 AM):
+
+:A8(ab-—) \emll‘dotprodlet'
+W \b'->b
+OVER «lion \O'Mdﬁ'l
+SWAPmptﬁne \ttoplaﬂtg‘J
+our MAX-MT W \uﬂlnmo
+
+fund SWAP ) I.
+
+Chapter 11 — Symbolic Programming
+
+:daan
+
+ 
+
+Scientiﬁc FORTH
+
+sec-sun imiswmis. steam;
+(UP-l
+
+\MI‘W
+CGMOVEH+MAP
+00 log mm lCl LCXN';
+
+:rlarrl'lge (ab--)
+1min \hltM
+Burns» PAD E881 \IMS->_/ll
+primal (nab)
+
+BUPHDUNT-l» C1 “1+0! \Mo M7
+“XOR (--axor84) \Isgdaimota
+3131+ Cl : ("l \M-> ”M7
+
+:aotup XStohnIna
+W01
+OISdgn
+BUBSPush:
+
+\ mood.
+:ss (soar-)owuromnswmmm
+DUPC@.aign wwvmw urprima)8..'l'
+1+ no tactor{lC@mprime} 8.
+IC@64NDO> \ptimad?
+IF ."THEN .'I'
+
+\bnnm
+\inits-taolt
+\initdenha
+\mpumlmsmssudt
+
+LOOP:
+
+:durnpsetndﬂom NOT IF EXIT Tl'EN
+My ("90401)
+wevwo= \sutnekunpm
+IF DDFOP CFlfWemptrEﬂl’THEN
+ODOIE'OVER+CR8. WW;
+
+OVAR DEBUG
+
+\ “WM
+( '(' Dis-ion:
+) ')'-1|Ssian:
+pane durum
+BUR 39°F 21-”! (--ab)
+DUPMAM) o> \b-b'?
+IF MOUTH-EN
+DDUPAB (--ab) \etnput
+X30®0> \mora?
+IF rearrange \M-"alzb'l
+BUBspuah V'M'I
+XSeIaan 13M \a/
+(. HECUﬁE).
+FECURSE
+ELSE 0W "EN:
+:mlgols \Inpuls
+W
+.' -' CR \hrbaalay
+pal-i
+
+Since the tokens are 1-byte integers smaller than 32, their 5th, 6th
+and 7th bits can serve as flags to indicate their properties. For
+example, we need to indicate whether a factor was “starred”, Le.
+
+whether it represents (A + mAl) or A , according to the rule
+\‘A/ -> (N+m[A)).
+
+Again, we need to be able to indicate a “prime", showing that a
+factor has been permuted following the rule
+
+\TI’(8/b/Pf°d/) -> lbiNPVOUO) ~"(9/P'06/b'0
+
+Thus we set bit 7 (128 OR) to indicate “star", and bit 6 (64 OR)
+to indicate “prime".
+
+We still need to indicate the leading sign. My ﬁrst impulse was to
+use bit 5, but I realized the ﬁrst factor is never permuted, hence
+its 6th bit is available to signify the sign. It is toggled by the phrase
+84 XOR. (In the Sstack pictures appearing in the Figures we
+indicate toggling by a leading “ "‘ ”.)
+
+Programming these aspects is fairly trivial so we need not dwell
+on it. The entire program appears on pages 279 and 280 above.
+
+Now we test the program:
+
+rm NB/C/D/E/Fl) =
+A.B(C.D(E.F)—C.E(D.F) + C.F(D.E))
+—A.C(D.E(B.F)—D.F(B.E) + B.D(E.F))
++A.D(E.F(B.C)—B.E(C.F) +C.E(B.F))
+-A.E(B.F(C.D)-C.F(B.D) + D.F(B.C))
++A.F(B.C(D.E)—B.D(C.E) + B.E(C.D)) ok
+
+Clearly the concept works. Our next task is to incorporate
+
+branches to take care of “starred”, as well as identical and/or
+orthogonal adjacent factors. The possible responses to the dif-
+ferent cases are presented in decision-table form in Table 11-2:
+
+To avoid excessively convoluted logic we eschew nested branch-
+ing constructs. A ﬁnite state machine would be ideal for clarity;
+however, as Table 11-2 makes clear, the logic is not really that of
+a FSM, besides which, the FSM compiler described above would
+
+OJlﬂanVNoHoim—Altigﬂamorvad.
+
+ 
+
+ 
+
+1put: a/b/x/ 'a/b/x/ al‘h/x/ a/a/x/ a/b/xl. i
+ab=0
+
+asulting "' a/x/b'l a/b/x/ a/b/XI
+
+stack: XI b/XI a/x/ x/ "' a/x/b’l
+
+iction(s)T: a.b m[a] m[b] a.a RECURSE
+
+ 
+
+(necunse) (necunsa) (necunse) (ascunse)
+
+RECURSE RECURSE RECURSE
+
+ 
+
+Note: characters shown in light typeface are EMthed.
+
+ 
+
+have to be modiﬁed to keep its state variable on the stack, since
+otherwise it could not support recursion. The resulting pseudo-
+code program is shown in Fig. 11-5. Implementing the code is now
+straightforward, so we omit the details, such as how to deﬁne
+PERP to appropriately mark the symbols. The simplest method
+is a linked list or table of some sort, that is ﬁlled by PEHP and
+consulted by the test word perps?.
+
+ow might we implement a leading factor of y5? While there
+is no difﬁculty in taking traces of the form
+
+Tr( 1'54 18 a» ...) a iTr(e,..aA"B ’c‘y‘n ...), (11)
+
+expressions with y5 between “starred” factors are more difficult.
+However, the permutation properties of traces let us write, e.g.,
+
+Tr((A +mA)(B+mB)y5¢(D+mD)E...)
+(12)
+
+ETI(YS¢(D+MD)E---(A +mi)(B+ms)).
+
+ 
+
+ 
+
+ 
+
+\ M ”“5"!
+
+ 
+
+ 
+
+ 
+
+ 
+
+ntuwwumm‘
+uhmmmmhﬁutdﬁtm
+
+«umummuuwmmsu-
+“Wm-Wuﬁmmmﬁ‘w
+
+.b‘u~>l*w
+
+Chapter 11 - Symbollc Programming Scientiﬁc FORTHI
+
+token which stands for “ " " as shown on page 276. This token is;
+marked orthogonal to all three of the vectors it represents, at the:
+time it is inserted. '
+To avoid further extending parse, probably the best scheme is to-i
+define a distinct word, TigS(, that uses the components of parsed
+to perform the above preliminary steps. Then 1195( will invokeli
+parse to do the rest of its work. i
+
+The only other signiﬁcant task is to extend the output routine to ‘
+
+a) recognize the special “ " ” token; and
+b) replace dot products like “ " .d ” by [a,b,c,d].
+
+A ﬁnal remark: one or another form of vectoring can simplify
+parse (relative to Fig. 11-5) by hiding the recursion within words
+that execute the branches. We have avoided this method here
+
+because it conceals the algorithm, a distinct pedagogical disad-
+vantage.
+
+FORmula TRANslator
+
+That prehistoric language FORTRAN -despite its manifold
+deﬁciencies relative to FORTH — contains a useful and widely
+imitated invention that helps maintain its popularity despite come
+petition from more modern languages: This is the FORmula
+TRANslator from which the name FORTRAN derives.
+
+FORTH’s lack of FORmula TRANslator is keenly felt. Years of
+scientiﬁc FORTH programming have not entirely eliminated my
+habit of ﬁrst writing a pseudo-FORI'RAN version of a new algo-
+rithm before reexpressing it in FORTH. Sometimes I will even
+write a test program in QuickBASIC‘D before re- coding it in
+FORTH for speed and power, just to avoid worry about getting
+the arithmetic expressions correct.
+
+l
+imam
+
+awn-BMW 285
+
+III mum
+
+A FORmula TRANslator provides a nice illustration of rule-
+
+d programming. To maintain portability, we employ the
+standard FORTH kernel, omitting special HS/FORTH words as
+well as CODE words.
+
+In principle we could provide a true compiler that translates
+formulae to machine code (or anng, to assembler). But unless
+we use p-code or some such artiﬁce we would lose all hope of
+portability. Thus, we take instead the simpler course of translating
+FORTRAN formulae to FORTH according to the rules
+
+\NUMBERS:
+
+\ <int> -> -| 0} {digit digit"8}
+
+\ <exp't> -> dDeEI{& | 0} {digit digit"2}| 0}
+\<fp#> -> -|O} dig | Q} . dig" <exp't>
+\FORMULAS:
+
+\ <assignment> -> <subject> = <expression>
+
+\ <id> -> letter {ietter|digit}"6
+
+\<subjec1> -> <id>{<id|ist>10}
+
+\<idiist> ->(<id> {,<id> ")
+
+\<arglist> ->(<expr'n> {,<expr’n> }")
+\<function> -> <id> <arglist>
+
+\<expression> -> <terrn> | < term> at <expr'n>
+\<term> _> <factor> | <tactor> 96 <term>
+\<factor> -> <id>| <tp#>| (<expr'n>) |
+
+-> <factor> “ <iactor>
+
+Clearly, the FORTH FORmula TRANslator could become the
+kernel of a more complete FORTRAN- >FORTH ﬁlter by ad-
+ding to the above rules for formulae the following rules for loops
+and conditionals:
+
+\DOLOOPS:
+
+\<label> -> <integer>
+\<lim> -> <integer>|<id>}
+\<step> -> ,<lim>|O}
+
+\<do> -> DO<label><id>=<iim>,<lim><step>
+
+ 
+
+21. thodeformmiﬁdaLgeneﬁcmachinewhoaewdembemppedeasﬂyouothein-
+slructionsetofarealcoanputer.
+
+288 cr-ptom -Symbollc Progunmlng SclenﬂﬂcFORTHQl
+
+\ BRANCHING STRUCTURES:
+\ < logical expr > - > <factor > .op. < factor >
+\<il0> -> IF(<Ioglcalexpr>)<assignment>
+<if1 > -> IF(< logical expr>)THEN
+{< statement > } "
+END IF
+
+<if2> -> lF(<Iogical expr>)THEN
+{ < statement > } "
+ELSE
+{ < statement > } "
+END IF
+
+ 
+
+A
+3
+v
+
+- > IF ( < logical expr > )THEN
+{ < statement >} "
+ELSEIF( < logical expr >)
+{ < statement > } A
+END IF
+
+///////////////
+
+§§2 Details of the Problem
+The general principles of compiler writing are of course well
+understood and have been described extensively elsewhere. ..
+Several computer science texts expound programs for formula ‘
+evaluators . Once we have our translator, we can easily make it
+an evaluator by compiling the FORTH as a single word, then
+invoking it.
+
+ 
+
+Let us proceed by translating a FORTRAN formula into FORTH
+code by hand. For simplicity, ignore integer arithmetic and as-
+sume all literals will be placed on the intelligent ﬂoating point
+stack (ifstack). Similarly assume all variable names in the pro- ,
+gram refer to SCALARs (see Ch. 5). A word that has become
+fairly standard is 96, which interprets a following number asE
+ﬂoating point, and places it on the fstack. With these conventions,
+we see that we shall want to translate an expression like
+
+ 
+
+22. See, e.g., R.L. Kruse, Data Structure: and Program Design, 2nd Ed. (Prentice-Hall. Inc.,
+Englcwood Cliffs, NJ, 1987).
+
+A - -15.3€7'EXP(7/X) + Z/(W-SINUHETA'Pl/lmyﬂ
+into (generic) FORTH something like this:
+
+964 REAL’B >FS
+96 1M REAL'B >FS
+Pl G\
+
+THEl’A >FS G‘
+GSIN G
+
+W >FS G -
+
+Z >FS G\
+
+X >FS
+
+967 REAL'B G\
+GEXP
+
+96 45.357 REAL‘B >FS
+Gt
+
+G+
+
+A FS>
+
+Begin with the user interface. We will deﬁne a word, F' , that
+will accept a terminated string and attempt to translate it to
+FORTH. That is, we might say
+
+F- A = -15,3E7*EXP(7/X) +Z/(W-SIN(THETA'PI/180)/4)'
+
+and obtain the output (actual output from the working program!)
+
+96 -15.3E7 REALM F>FS 96 7 REAL‘B F>FS
+X>FS G/ GEXP G* Z>FS W>FS
+THETA >FS Pl >FS G‘ 96 180 REAL‘B F>FS
+G/ GSIN 96 4REAL‘8 F>FS G/ GNEGATE
+G-l-G/ G+ AFS> 0k
+
+Although the second version differs somewhat from the hand
+translation, the two are functionally equivalent.
+
+We would also like to have the possibility of compiling the emitted
+FORTH words, if F' appears within a colon deﬁnition, as in
+
+: do.B F' B = 39.37/ATAN(X“W) + 7"Z/X' ;
+
+FORTRAN expression obeys the rules of algebra in a general-
+y obvious fashion. Parentheses can be used to eliminate all
+ambiguity and force a deﬁnite order on the evaluation of terms
+
+esuuvuouoiaaa-Mmm.
+
