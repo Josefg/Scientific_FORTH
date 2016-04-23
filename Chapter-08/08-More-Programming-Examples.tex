@@ -1,0 +1,3507 @@
+WFORTH awe—memem 157
+
+More Programming Examples
+
+Contents
+51 Numerical integration 157
+§§1 The integral of a function 158
+552 The fundamental theorem of calculus 159
+553 Monte-Carlo method 160
+554 Adaptive methods 164
+555 Adaptive integration on the real line 165
+§§6 Adaptive integration in the Argand plane 179
+52 Putting functions to data 181
+551 Fast Fourier transform 184
+§§2 Gram polynomials 193
+553 Simplex algorithm 201
+§3 Appendices 204
+§§1 Gaussian quadrature 204
+552 The trapezoidal rule 205
+§§3 Richardson extrapolation 206
+§§4 Linear least-squares: Gram polynomials 207
+§§5 Non-linear least squares: simplex method 208
+
+n this chapter we apply some of the FORTH tools we have been
+
+developing (complex arithmetic, typed data) to two standard
+problems in numerical analysis: numerical integration of a func-
+tion over a deﬁnite interval; determining the function of a given
+form that most closely fits a set of data.
+
+51 Numerlcal Integration
+
+We begin by deﬁning the deﬁnite integral of a function f(x). Then
+we discuss some methods for (numerically) approximating the
+integral. This process is called numerical integration or numeri-
+cal quadrature. Finally, we write some FORTH programs based
+on the various methods we describe.
+
+omvmim-Mmm.
+
+1 58 Chapter 3 - More Programming Examples Scientiﬁc FORTH
+
+“I The Integral ot a function
+The deﬁnite integral 1?“) dx is the area between the graph of
+the function and the x-axis as shown below in Fig. 8-1:
+
+ 
+
+ 
+
+ 
+
+ﬁrm dx
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Flg. 8-1 The Integral of a function Is the area under me curve.
+
+We estimate the integral by breaking up the area into narrow
+rectangles of width w that approximate the height of the curve at
+that point and then adding the areas of the rectanglesl. For
+rectangles of non-zero width the method gives an approximation.
+If we calculate with rectangles that consistently protrude above
+the curve (assume for simplicity the curve lies above the x-axis),
+and with rectangles that consistently lie below the curve, we
+capture the exact area between two approximations. We say that
+we have bounded the integral above and below. In mathematical
+
+language.
+
+ 
+
+l. Hareaangleﬂeshdwmehorizoutdamiuueaiscomidcredtobeupdn.
+
+(b-‘yw
+w 2 min [ﬂa+nw),ﬂa+nw+w)]
+
+ad)
+
+5 fitted: (1)
+
+(b-a)/w
+s w 2 max [ﬂa+nw),ﬂa+nw+w)]
+u-O
+It' is easy to see that each rectangle' m the upper bound IS about
+W U" (x) I too high2 on the average, hence overestimates the area
+
+by about 5w 2If" (x)|. There are (b—a)/w such rectangles, so if
+
+If '(x) I remains ﬁnite over the interval [a, b] the total discrepancy
+will be smaller than
+
+—W(b-a) max If' (X)|-
+ansb
+
+Similarly, the lower bound will be low by about the same amount.
+This means that if we halve w (by taking twice as many points),
+the accuracy of the approximation will double. The mathematical
+
+deﬁnition of f:f(x) dr is the number we get by taking the limit as
+
+the width w of the rectangles becomes arbitrarily small. We know
+that such a limit exists because the actual area has been captured
+between lower and upper bounds that shrink together as we take
+more points.
+
+552 mmmmolmlcum
+
+Suppose we think of It‘/Ix) dz as a function —eall it F(b) — of
+
+the upper limit, b. What would happen if we compared the
+area F(b) with the area F(b + Ab): We see that the difference
+between the two is (for small Ab)
+
+AFC?) = F(b+Ab) -F(b) “NON? +0((Ab)2) (2)
+
+ 
+
+2.
+
+f'(x)isthealopedthelinetangenttothecmveatthepointx.lt'ucalledtheﬂnth1vaﬂveof
+
+ﬁx).
+
+so that
+
+- 1 +Ab
+F'b = _ [b _[b
+() hm0 Ab( . dz .ﬂx)dx) (3)
+
+Equation 3 is a fancy way to say that integration and differentia-
+tion are inverse operations in the same sense as multiplication
+and division, or addition and subtraction.
+
+This fact lets us calculate a definite integral using the differential ‘
+equation routine developed in Chapter 6. We can express the
+problem in the following form: ‘
+
+Solve the differential equation
+
+(11’
+I =f(x) (4)
+fromx = a tox = b, subject to the initial condition
+
+ 
+
+F(a) = 0.
+The desired integral is F (b).
+
+The chief disadvantage of using a differential equation solver to
+evaluate a deﬁnite integral is that it gives us no error criterion
+We would have to solve the problem at least twice, with two
+. . . . . 3
+different step Slzes, to be sure the result 15 sufficxently precise .
+
+§§3 Monte-Carlo method
+The area under f(x) is exactly equal to the average heightfof
+f(x) on the interval [a, b], times the length, b—a, of the interval .
+How can we estimate]? One method is to sample f(x) at random.
+
+ 
+
+This is not strictly correct: one could use a differential equation solver of the “predictor/come-
+tor" variety, with variable step-size, to integrate Eq. 4. See, e.g., Press, er al., Numerical Recipe:
+(Cambridge University Press, Cambridge, 1986), pp. 102 if.
+
+That is, this statement deﬂnesf.
+
+Ml—MPWEW 101
+
+choosing N points in lab] with a random number generator.
+Then
+
+1 N
+7" ‘ﬁ Iglﬂxn) (5)
+and
+ﬂax) dx - (b — a)? (6)
+
+This random-sampling method is called the Monte-Carlo method
+(because of the element of chance).
+
+“3-1 UncertaintyottheMonte-Canomethod
+
+The statistical notion of variance lets us estimate the accuracy of
+the Monte-Carlo method: The variance in f(x) is
+
+W) =If:p(f)(f-r)2df
+N (7)
+=5): (run—IV
+
+n-l
+
+(here p(f )df is the probability of measuring a value off between
+f and f + df).
+
+Statistical theory says the variance in estimating 7 by random
+sampling is
+
+Vera) = ﬁvw) (8)
+
+Le, the more points we take, the better estimate offwe obtain.
+Hence the uncertainty in the integral will be of order
+
+A(Iff(x)dr) Jaw: (9)
+
+and is therefore guaranteed to decrease as W'
+
+162
+
+CMpterB—MoreProgrnnmﬂngExnmplea SclentlﬂcFORTH
+
+It is easy to see that the Monte-Carlo method converges slowly.
+
+. 1
+Smce the error decreases only as W , whereas even so crude a
+
+rule as adding up rectangles (as in §1§§1) has an error term that
+decreases as UN, what is Monte-Carlo good for?
+
+Monte-Carlo methods come into their own for multidimensional
+integrals, where they are much faster than multiple one-dimen-
+sional integration subroutines based on deterministic rules.
+
+§§3—2 A slmple Monte-Cane program
+
+Following the function protocol and naming convention devel-
+oped in Ch. 6 §1§§3.2, we invoke the integration routine via
+
+USE( Ename % L.lim 96 U.lim % err )MONTE
+
+We pass )MONTE the name Ename of the function f(x), the
+limits of integration, and the absolute precision of the answer.
+The answer should be left on the ifstack. L. Ilm, U. Ilm and err
+stand for explicit ﬂoating point numbers that are placed on the
+87stack by 965 Th.e word 96 appears explicitly because 1n a larger
+program — of which )MONTE could be but a portion— we might
+want to specify the parameters as numbers already on the 87stack.
+Since this is intended to be an illustrative program we keep the
+fstack simple by defining SCALARs to put the limits and
+precision into.
+
+3REAL'4 SCALARS A B-A E
+
+The word INITIALIZE will be responsible for storing these num-
+bers.
+
+The program uses one of the pseudo-random number generators
+(prng’s) from Ch. 3 55. We need a word to transform pm’s
+—uniformly distributed on the interval (0,1)— to prn's on the
+interval (A, B):
+
+ 
+
+‘I‘hewordﬁ‘ pusheswhatfollomintheinputstreamontotheﬂstack,assumingiteanbeinter-
+pretedasalloatingpointnumber.
+
+OJdlanVNoblefm-Mmmorved.
+
+1...»...
+
+ 
+
+Immm MLMPWEW 163
+
+:NEW.X RANDOM B-A G@ F‘ A G@ F+;
+
+The program is described by the simple ﬂow diagram of Fig. 8-2
+below:
+
+ 
+
+INITIALIZE
+
+db
+
+BEGIN
+(B-A)'sigma > E 7
+WHILE
+New.x f(x)
+N=N+1
+T. Var(f)
+REPEAT
+I = (B-A)*<f>
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 8-2 FIow diagram of Monte Carlo Integration
+
+From the ﬂow diagram we see we have to recompute f and
+Var(f' ) at each step. From Eq. 5 we see that
+
+In“ =7»: + ﬂ—xrpﬂ Iii—N
+
+and
+
+_ _ - V
+VaIN+1 = VarN + UN” IN)UI;;I+ 171s“) arN
+
+Writing the program is almost automatic:
+
+:USE( [COMPILE] ' CFA UTERAL ; IMMEDIATE
+3REAL‘4 SCALARS AV.F dd.Av.F VarF
+
+:DoAvernge (n--n+1B7:f--t)
+Av.F G@ ddAvF GI \seveoldAv
+FDUP 1+ (--n+187:--fl)
+oldAvF G@ (87:--ffddAv.F)
+
+FUNDER F-
+DUP s->F Fl F+ (87:--fAv.F)
+MFGI ; \pusway \corl'dbdow
+
+OJdIanVNmfm-Alrldnareurved.
+
+Chapter 8 - More Programming Exnrnpleo
+
+:Do.Verhnce (n--n 37:1")
+FDUP old.Av.F G@ (87:ffold.Av)
+FUNOER F— FSWAP
+Av.F G@ F- F'
+
+(37: [l-Oid.AV]‘[l~AV] )
+VarF G@ FUNDER F-
+
+DUP S->F Fl F+(87:--Var’)
+VarF G!
+:INITIAIJZE (:adr-- 87zabe --)
+IS adrf
+E G!
+FOVEFI F- B-A G! A G!
+FINIT
+F=0 VarF G!
+F=0 Av.F G!
+F=0 oId.Av.F G!
+
+o 5 COO \exerclseStImes
+
+ 
+
+I
+
+Sclendﬁc FORTH
+
+NEW)! adrf EXECUTE
+DoJNernge Do.Varhnce
+LOOP ;
+
+:NotConverged? VarF G@ FSORT
+
+B-AG@F"EG@F>;
+
+2 DEBUG DUP
+
+10 M00
+0= IF CR DUP.
+Av.F G@ F.
+VarF G@ F. THEN ;
+
+\every1oaepe
+
+:)MONTE
+
+INITIAUZE
+
+BEGIN DEBUG NotConverged?
+
+WHILE NEW.X adr.f EXECUTE
+Do.Average Dome
+
+REPEAT
+
+DROP Av.F G@ B-A G@ F';
+
+§§4 Adaptlve methods
+
+The word DEBUG is included to produce useful output every 10
+points as an aid to testing. The ﬁnal version of the program need
+not include DEBUG, of course. Also it would presumably be ‘
+prudent to BEHEAD all the internal variables.
+
+The chief virtue of the program we have just written is that it is
+easily generalized to an arbitrary number of dimensions. The
+generalization is left as an exercise.
+
+Obviously, to minimize the execution time of an integration
+subroutine requires that we minimize the number of times the 3
+function f(x) has to be evaluated. There are two aspects to this:
+
+0 First, we must evaluate f(x) only once at each point x in the
+
+interval. .
+
+TI
+
+0 Second, we evaluate f(x) more densely where it varies rapidly
+than where it varies slowly. Algorithms that can do this are
+called adaptive.
+
+To apply adaptive methods to Monte Carlo integration, we need:
+
+mafia
+
+ 
+
+an algorithm that biases the sampling method so more points are :5
+
+W
+a.
+
+?
+
+eJuunVNounm-Arngmrmmd. f‘
+
+WM?"
+
+“5
+
+Ml-MWW 1“
+
+chosen where the function varies rapidly. Techniques for doing
+this are known generically as stratified sampling6.111e difﬁculty
+of automating stratiﬁed sampling for general functions puts adap-
+tive Monte Carlo techniques beyond the scope of this book.
+
+However, adaptive methods can be applied quite easily to deter-
+ministic quadrature formulae such as the trapezoidal rule or
+Simpson’s rule. Adaptive quadrature is both interesting in its own
+right and illustrates a new class of programming techniques, so
+we pursue it in some detail.
+
+Adaptive Integration on the real line
+
+We are now going to write an adaptive program to integrate an
+arbitrary function ﬂx), specified at run- -time, over an
+arbitrary interval of the x- axis, with an absolute precision
+speciﬁed in advance. We write the integral as a function of several
+arguments, once again to be invoked following Ch. 6 §1.3.2:
+
+USE( Ename % L.lim % U.lim 96 err )INTEGRAL
+
+Now, how do we ensure that the routine takes a lot of points when
+the function f(x) is rapidly varying, but few when f(x) is smooth?
+The simplest method uses recursion7.
+
+“5-1 Dlgresslon on recursive algorithms
+
+We have so far not discussed recursion, wherein a program calls
+itself directly or indirectly (by calling a second routine that
+then calls the ﬁrst).
+
+Since there is no way to know a priori how many times a program
+will call itself, memory allocation for the arguments must be
+dynamic. That is, a recursive routine places its arguments on a
+
+ 
+
+6.
+7.
+
+.I.M. Hammersley and DC. Hanscomb, Monte Carlo Methods (Methuen, london, 1964).
+See, ¢.g., R. SedgewichAWn: (Addison-Wesley Publishing Company, Reading, MA,
+
+19113), p. as.
+
+166
+
+Chapter 11 — Mora Programing Examples Scientiﬁc FORTH
+
+stack so each invocation of the program can ﬁnd them. This is the
+method employed in recursive compiled languages such as Pascal,
+C or modern BASIC. Recursion is of course natural in FORTH
+since stacks are intrinsic to the language.
+
+We illustrate with the problem of ﬁndin the greatest common
+divisor (gcd) of two integers. Euclid devised a rapid algo-
+
+rithm for ﬁnding the gcd9 which can be expressed symbolically
+as
+
+_ u, v=0
+gcd 0‘” ‘ {gcd (v,u mod v) else (10)
+
+That is, the problem of ﬁnding the gcd of u and v can be replaced
+by the problem of ﬁnding the gcd of two much smaller numbers.
+A 1:0an word that does this 151°
+
+:GCD (uv--9cd)
+?DUP 0 > \ stopping criterion
+IF UNDER MOD RECURSE THEN ;
+
+Here is a sample of GOD in action, using TRACE11 to exhibit the
+rstack (in hex) and stack (in decimal):
+
+ 
+
+new
+
+11.
+
+An ancient Greek mathematician known for one or two other things!
+
+Sec, e.g. Sedgewick, op. cit, p. 11.
+
+Most FORTHs do not permit a word to call itself by name; the reason is that when the compiler
+tries to compile the self-reference, the deﬁnition has not yet been completed and so cannot be
+looked up in the dictionary. Instead, we use RECURSE to stand for the name of the self-calling
+word. See Note 14 below.
+
+TRACE is speciﬁc to HS/FORTH, but most dialects will support a similar operation. SSTRACE
+is a modiﬁcation that sinde-stcps through a program.
+
+MM"!
+
+MI—MWW
+
+marmosets:
+
+187
+
+m and:
+:GCO 784 48
+M 784 48 48
+0- 784 48 0
+W<8>0 784 48
+“DER 48 784 48
+MOD 48 16
+:00) 48 16
+M 4878 48 18 18
+0- 4878 48 18 0
+m<8>0 4878 48 18
+UNDER 4878 18 48 18
+MG) 4878 18 0
+.600 4878 18 0
+DUP 4878 4878 18 0 0
+= 4878 4878 18 0 6535
+OBRANCH<B>-1 4878 4876 16 0
+DROP 4878 4878 18
+EXIT 4876 16
+EMT 18
+
+Note how GCD successively calls itself, placing the same address
+(displayed in hexadecimal notation) on the rstack, until the stop-
+ping criterion is satisﬁed.
+
+Recursion can get into difﬁculties by exhausting the stack or
+rstack. Since the stack in 600 never contains more than three
+numbers, only the rstack must be worried about in this example.
+
+ecursive programming possesses an undeserved reputation
+
+or slog execution, compared with nonrecursive equivalent
+programs . Compiled languages that permit recursion —e.g.,
+BASIC, C, Pascal— generally waste time passing arguments to
+subroutines, Le. recursive routines in these languages are slowed
+by parasitic ailing overhead. FORTH does not suffer from this
+speed penalty, since it uses the stack directly.
+
+ 
+
+12. Pmenmphhhoﬂadaimedthnnmovingmeuaionahnoualwaysproduwsafmeulgo
+rithm.See,e.g.Sedgewick,ap.ciL,p.12.
+
+ammonium-Arm“.
+
+ChapterB—MoraProgmmming Exam Scientiﬁc FORTH
+
+Nevertheless, not all algorithms should be formulated recursive-
+ly. A disastrous example is the Fibonacci sequence
+
+F0 = 0, F1: 1, F“ = Fn—l '1' Fn-2 (11)
+expressed recursively in FORTH as
+
+:FIB (:n--F[n])
+DUP 0> NOT
+IF DROP o EXIT THEN
+
+IF DROP 1 EXIT THEN \n > 1
+
+1- DUP 1- (-- n-1 n-2)
+RECURSE SWAP (- - F[n-2] n-1 )
+RECURSE + ;
+
+This program is vastly slower than the nonrecursive version
+below, that uses an explicit DO loop:
+
+:FIB (:n--F[n])
+0 1 HOT (:01 n)
+DUP O> NOT
+IF DDROP EXIT THEN
+DUP 1 =
+
+IF DROP PLUCK EXIT THEN
+1 DO UNDER + LOOP PLUCK ;
+
+Why was recursion so bad for Fibonacci numbers? Suppose the
+running time for F n is T,, ; then we have
+
+T, ~ T.,_1 + T,,_2 + r (12)
+
+where r is the integer addition time. The solution of Eq. 12 is
+
+n
+r, = «Dz—‘5) — 1] (13)
+
+That is, the execution time increases exponentially with the size
+of the problem. The reason for this is simple: recursion managed
+to replace the original problem by two of nearly the same size, Le.
+recursion nearly doubled the work at each step!
+
+The preceding analysis of why recursion was bad suggests how ,
+recursion can be helpful: we should apply it whenever a given :
+
+OJUIInVNobletm-Nirigﬂsrsssrwd.
+
+ 
+
+ms-MWW 189
+
+problem can be replaced by -say- two problems of half the
+original size, that can be recombined in n or fewer operations. An
+example is mergesort, where we divide the list to be sorted into
+two roughly equal lists, sort each and then merge them:
+subroutine sort(|ist[0,n])
+
+partition' (list, 11811, 11312)
+
+sortaistl)
+
+sort(list2)
+
+mergeaisn, list2, list)
+
+In such cases the running time is
+Tn'Tv2+Tv2+ﬂ=Zruz+n (14)
+for which the solution is
+Tn~nlog1(n) (15)
+
+(In fact, the running time for mergeson is comparable with the
+fastest sorting algorithms.) Algorithms that subdivide problems
+in this way are said to be of divide and conquer type.
+
+Adaptive integration can be expressed as a divide and conquer
+
+algorithm, hence recursion can simplify the program. In pseu-
+docode (actually QuicltBasicO ) we have the program shown
+below.
+
+function simpson(f, a, b)
+
+c = (a + b)/2
+
+simpson = (1(a) + 1(b) + 4*f(c)) " (b - a) /6
+end function
+
+function integral(f, a, b. error)
+e = (a + b)/2
+oid.int = simpson(i, a, b)
+new.int = simpson(f, a, c) + simpson(1, c, b)
+it abs(oid.int - new.int) < error than
+integral = (16*new.int - oid.int) /15
+else
+integral = integral(f, a, c. error/2) +
+integral(f, c, b. error/2)
+end if
+
+endtunction
+
+emvmmpumm.
+
+170
+
+Chapter 8 — More Programming Examples Scientiﬁc FORTH
+
+Clearly, there is no obligation to use Simpson's rule on the sub-
+intervals: any favorite algorithm will do.
+
+To translate the above into FORTH, we decompose into smaller
+parts. The name of the function representing the integrand (ac-
+tually its execution address or cfa) is placed on the stack by USE( ,
+as in Ch. 8 §1.3.2 above. Thence it can be saved in a local variable
+—either on the rstack or in a VAR or VARIABLE that can be
+BEHEADed — so the corresponding phrases
+
+R@ EXECUTE \rstack
+name EXECUTE \VAFI
+name EXECUTE@ \VARIABLE
+
+evaluate the integrand. Clearly the limits and error (or tolerance)
+must be placed on a stack of some sort, so the function can call
+itself. One simple possibility is to put the arguments on the
+87stack itself. (Of course we then need a software fstack manager
+to extend the limited 87stack into memory, as discussed in
+Ch. 4 §7.) Alternatively, we could use the intelligent fstack
+(ifstack) discussed in Ch. 5 §2.5. We thus imagine the fstack to be
+as deep as necessary.
+
+The program then takes the form13 shown on p. 171 below.
+
+Note that in going from the pseudocode to FORTH we replaced
+)INTEGRAL by RECURSE inside the word )INTEGRAL The
+need for this arises from an ideosyncrasy of FORTH: normally
+words do not refer to themselves, hence a word being deﬁned is
+hidden from the dictionary search mechanism (compiler) until
+the ﬁnal ; is reached. The word RECURSE unhides the current
+name, and compiles its cfa in the proper spot“.
+
+ 
+
+13.
+
+14.
+
+For generality we do not specify the integration rule for sub-intervals, but factor it into its own
+word. If we want to change the rule, we then need redeﬁne but one component (actually two,
+since the Richardson extrapolation —see Appendix 8.C— needs to be changed also).
+
+We may deﬁne RECURSE (in reverse order) as
+2 RECURSE 7COMP LAST-CPA , ;
+: 7COMP STATE @ 0 1: ABORT“ Compile only!“ ;
+: LAST-CPA LATEST PFA CFA : IMMEDIATE
+\ These defintions are appropriate for HS/FORTH
+Note that RECURSE is called MYSELF in some dialects.
+
+ 
+
+MM"!
+
+:USE( [Wtﬂ'GAUTEML;
+MATE
+
+1100 (:da--da) DU’EXEQJTE;
+
+1W (1*- Ibu')
+\taumpuoudm
+mu» m- F21 (er-411mm)
+F-RO‘I’ rot) FSWAP rot) F+ F‘ ;
+:)Rich-dam \R-odrmJortrapnle
+as->1= Fl F+ ; (av: r1--1")
+
+DVAHABLE ERR \ place to store an
+CREATE OLD.I 10 ALLOT
+\ [lace to storeilab]
+
+ 
+
+MLMPWEW 171
+
+:MNTEGHAL (run 87: lbw—J)
+
+EM P321
+W W
+OLDJ W
+XDUP F+ F2I(87: --abc-[a+b1/2)
+FUNDEFI FSWAP (87: --ac c b)
+XDUP )htegiwr --ac c b 11)
+HP HP (87: --ac c b I1ac)
+)Intogral F+ (s7: --ac c b 11+12)
+FDUP OLDI W F-
+FDUP FABS EM 332@ F<
+IF )Rlctnrtiaon
+FPLUCK FPLUCK FPUJCK FPUJCK
+ELSE FDROP FDROP (87: --ac c b)
+ERR 832@ F2!
+F-ROT FZP (87: --ac err/‘2 cben/Z)
+RECUFISE (87:--acerr/2 I[c,b])
+F3R F3FI F311 RECURSE F+
+THEN DROP ;
+
+(87: -- lb 0)
+
+“5-2 Disadvantages of recursion in adaptive Integration
+The main advantage of the recursive adaptive integration algo-
+rithm is its ease of programming. As we shall see, the recursive
+program is much shorter than the non-recursive one. For any
+reasonable integrand, the fstack (or ifstack) depth grows only as
+the square of the logarithm of the ﬁnest subdivision, hence never
+
+gets too large.
+
+However, recursion has several disadvantages when applied to
+
+numerical quadrature:
+
+e The recursive program evaluates the function more times than
+
+necessary.
+
+0 It would be hard to nest the function )INTEGRAL for multi-
+
+dimensional integrals.
+
+Several solutions to these problems suggest themselves:
+
+0 The best, as we shall see, is to eliminate recursion from the
+
+algorithm.
+
+a We can reduce the number of function evaluations with a more
+precise quadrature formula on the sub-intervals.
+
+OWVNoUolm-me.
+
+172
+
+Chapter 11 — More Programming Examples Scientiﬁc FORTH
+
+e We can use “0 n" formulas like Gauss-Legendre, that omit
+the endpoints see Appendix 8.1).
+
+§§s-3 Adaptive Integration without recursion
+
+he chief reason to write a non-recursive program is to avoid
+
+any repeated evaluation of the integrand. That is, the optimum
+is not only the smallest number of points it, in (A, B] consistent
+with the desired precision, but to evaluate f(x) once only at each
+x... This will be worthwhile when the integrand f(x) is costly to
+evaluate.
+
+To minimize evaluations of f(x), we shall have to save values
+f(x,,) that can be re-uscd as we subdivide the intervals.
+
+The best place to store the f(x,,)’s is some kind of stack or array.
+Moreover, to make sure that a value of f(x) computed at one
+mesh size is usable at all smaller meshes, we must subdivide into
+two equal sub-intervals; and the points 1:“ must be equally spaced
+and include the end-points. Gaussian quadrature is thus out of
+the question since it invariably (because of the non-uniform
+spacings of the points) demands that previously computed f(x,,)’s
+are thrown away because they cannot be re-used.
+
+The simplest quadrature formula that satisﬁes these criteria is the
+trapezoidal rule (see Appendix 8.2). This is the formula used in
+the following program.
+
+To clarify what we are going to do, let us visualize the interval of
+integration, and mark the mesh points (where we evaluate ﬂx)
+
+mm+z
+
+5__m
+
+XIMMWWEEM
+xr1 fo
+X1 Ty lo 8
+
+summer" MI—MWW 173
+
+We now save (temporarily) lo and divide the interval in two,
+computing [’0 and I, on the halves, as shown. This will be one
+
+fundamental operation in the algorithm.
+Step 2: N - N + 1 - 2
+
+ 
+
+ 
+
+ 
+
+A l'o I, B
+I l l
+I I I
+X0 Xi X:
+
+x ttxlintaerals. Error
+"o In
+
+X. 7' 1'0 8’2
+x2 Ia I1 8/2
+
+We next compare I’o +11 with It, The results can be expressed as
+a branch in a ﬂow diagram, shown below.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Yes I No
+Accumulate: Subdivide right-most
+I“ a I”, ‘1" I’N-1 +1" interval
+N a: "-2 N = N + 1
+Move everything down
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+I I
+
+ 
+
+ 
+
+ 
+
+Fig. 8-3 SUBDMDE branch In adaptive Integration
+
+If the two integrals disagree, we subdivide again, as in Step 3 and
+Step 4 below:
+
+174
+
+Step3: N=N+1=3
+
+W" 3 - MON Programming Examples Scientiﬁc FORTH It"
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+A In I" I; —.B
+I I I J
+I I I j
+X0 X1 X2 X.
+)1 Minimal: Error
+x0 10
+x1 f1 I0 8/2
+X2 f2 I11 5/4
+x3 1, 12 5/4
+Step 4: N=N+1=4
+A 1,, I, 1', 13—.B
+I -I . . I l I
+I ..I , T T I
+X0 X1 X2 X3 X4 .3
+x tixllnteorals. Error
+x0 10
+X1 T1 '0 En
+X2 f2 '1 8/4 .
+his 1.2-- 5/8..
+X4 T4} ' I3 5/8- .
+Now suppose the last two sub-integrals (13 + 1’2) in step 4 agreed
+with their predecessor (12); we then accumulate the part com-
+puted so far, and begin again with the (leftward) remainder of the
+interval, as in Step 5:
+Step 5: N=N-2=2 I=l+(l'2+I3')'+ (l'2+l3-I2)/3
+A lo I, B
+l ' I I I
+I I I DONE
+X0 X1 X2 I
+x winteotala Error ‘
+x0 10
+X1 f1 Io 5/2
+
+The flow diagram of the algorithm now looks like Fig. 84 below: i _
+
+OJtlthNobietm—Mngilsreserved.
+
+ 
+
+mum owe-mammary. 175
+
+ 
+
+I Initialize
+
+ 
+
+® BEGIN
+Y“ N 0>
+WHILE
+01d.I = IN-l
+SUBDIVIDE Converged?
+Yes
+IF Richardson_interpoiate
+No store last 2 subintegrais
+
+N=N-2
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 84 Non—recursive adaptive quadrature
+
+and the resulting FORTH program is 15:
+
+I15. WeusethegeneralizedarraysofCh.S§3.4;A,BandEarefp I'sonthefstuLTYPEisthe
+dill—Wolf(x)lndmm
+
+ 
+
+i
+
+omvmrm-umm.
+
+176 Channﬂ-MorePrognmthnm
+
+\ COPYRIGHT 1991 JUUAN v. NOBLE
+TASK IN1EGRAL
+FIND CP@L o= ?( FLOAD COMPLEX)
+\ deﬁne data-type tokens 11 not already
+FIND REAL-4 o = 7(((
+
+o CONSTANT REAL-4
+
+1 CONSTANT REAL'B
+
+2 CONSTANT COMPLEX
+
+a CONSTANT DCOMPLEX )))
+
+FIND 1ARRAY 0= ?(FLOAD MATRIXHSF )
+\function usage
+:USE( [OOMPILE] ' CFA ; IMMEDIATE
+
+\ BEHEADing starts here
+0 VAR N
+
+:inc.N N1+ ISN;
+:dec.N N2- ISN;
+
+OVAR type
+
+\ deﬁne “stack"
+20 LONG REAL-a 1ARRAY X{
+20 LONG REALM 1ARRAY E{
+20 LONG DCOMPLEX 1ARRAY F{
+20 LONG DCOMPLEX 1ARRAY 1{
+
+2 DCOMPIEXSCALARS old.| ﬂmIJ
+:)imegral (n--)\trapezoidal n19
+X{ OVER } G@L
+X{ OVER 1- } G@L
+F- F2/
+F{ OVER } G@L
+F{ OVER 1-} G@L
+typez AND
+IF X+ FROT X‘F
+ELSE F+ F' THEN
+I{ SWAP 1- } GlL ;
+0VARI.mme
+: f(x) tname EXECUTE ;
+
+ 
+
+samronm
+:INI‘HNJZE
+
+IStype\m1ype
+typoF{l
+type|{ l\oettypesforfma|on
+type 'oldJ!
+typo 'ﬂrﬂ.” \andﬂewaKs)
+type 1 AND X{!
+
+\Satypeforhdep.var.
+E{0} G!L \storeenot
+x{1}G!L \storeB
+X{O} G!L \sloraA
+IS name \!claoff(x)
+
+X{O}G@L 1(x) F{O} G!L
+X{1}G@L f(x) P{1}G1L
+
+1ISN
+
+N)integrd
+
+typezAND IF F=0 THEN
+F=0 ﬁnall G!L
+
+FINrT ;
+
+:E/2 E{N1-} G@L F2! E{N1-} G!L:
+
+:}move.down (adrn--)
+
+} #BYI'ES >R (usegoﬁ)
+DDUP R@ +
+(--s.seg S.oﬂ d.sag doll)
+R> CMOVEL ;
+: MOVEDOWN
+
+E{ N 1— }move.down
+X{ N }move.down
+F{ N }mova.dcmn ;
+
+:new.X (87:--x')
+X{N}G@L X{N1-}G@L
+F+ F2! FDUP X{N} G!L ;
+
+\Conl’d.
+
+MM"!
+
+\NTEGﬂALm'd
+\mm
+:0F.1> IFFSWAP E.Tl-ENE.:
+:FO. DLP>R G@L R> 0F. ;
+:.8TAO<S CR ."N"
+OCTAB ."X'
+19cm .~Ro{Poor
+31CTAB."Im{F(X)]"
+«cm ."Rem"
+57CTAB."|m[I]"
+71CTAB."E"
+N2+ 000 OR I.
+3CTAB X{I}F@.
+tecTAB F{I} F@.
+42CTAB |{l} F@.
+escrAa E{I} F@.
+LOOP
+CR SSPACES."dd.I =" dd.l F@.
+
+SSPACES ."MJ =“WJ F@. CR ;
+
+USE: <MBUG> NEXT.STACKS :GASE
+DVAR (DEBUG)
+:W
+
+:DasUG (DEBUG) <DEBUG>;
+
+:SUBDMDE
+N19> ABORT‘Toonanyubdeom!"
+EIZ MOVEDOWN
+I{N1-} DROP ddl #BYTES CMOVEL
+nan for) F{N}GIL
+N)htemi N1+)negtu;
+
+Ml-MPWW
+
+1IS(DBUG)5#PLACESI :
+:EBUG-CFF OIS (DEBUG) 7#PLACES! ;
+
+ 
+
+177
+
+:CCNVERGED? (C7:--l[N]H'[N-1H[N—1]z--n
+'(MGOLHM-mot unmet
+type 2 Am
+IF CP- CP+ CPDUP CPAas
+ELSE F- F+ FDUP FABS
+THEN
+E{Nt-)G@L Fr F<;
+
+CASE: 9'! CP'F F' :CASE
+4S->F 38->F Fl FWNSTANT Fad/3
+
+:INTERPOMTE (G7: I[N] +I'[N—1]4[N-1]- -)
+F-4/3 type 2/ 9'!
+old.l G@L N.IG@L
+typeZAND
+IF CP+ CP+
+ELSE F+ F+
+W.IG!L ;
+\BEHEADhgendshera
+
+THEN
+
+:)INI'EGRAL (37: A B ERR - - I[A.B])
+INI'HNJZE
+BEGIN N0>
+WHILE SUBDMDE DEBUG
+CONVERGED? th
+IF INTERPOLATE dec.N
+ELSE typezAND IF FDROP
+THEN FDROP
+THEN
+REPEAT WA G@L :
+BEHEAD" N INTERPOLATE \oﬂw
+\USE(F.name%A%B%E type)lNTEGRAL
+
+The nonrecursive program obviously requires much more code
+than the recursive version. This is the chief disadvantage of a
+
+nonrecursive method
+
+ 
+
+11‘. The memory usage is shout the same: the recursive method pushes limits, etc. onto the (suck.
+
+emvNounm—Almw.
+
+“5-4 Example of )INTEGRAL IN USE
+
+Chapter 3 - More Programming Exampteo Scientiﬁc FOR? ,
+
+   
+  
+
+he debugging code (“DEBUG-ON") lets us track the executio
+of the program by exhibiting the simulated stacks. Here is a
+2
+
+example, fdr t/f:
+1
+USE( FSQRT 96 1. 96 2. 96 1.5-3 REAL'4 )INTEGRAL E
+
+0 LMH'D 1.0000E+oo 5.5618501 50113504
+1 1.5m-H'D 12247E+w 8.5973501 5.0mm
+2 zoomsmo 1.41425+m 1.433501 125M504
+old.l=1.m71E+w ﬁnalJ = omooE+oo
+
+0 1.ooooE+oo tm-H'D 5.5618E01 50000an
+1 1.5m+m 12247504!) 3.1845E01 250001504
+2 1.7503544!) 1.32%E+CD 3.4213501 ZSGDE04
+3 2.ooooe+oo 1.4142£+m 1.7m01 12513504
+oldJ = 6.$73501 ﬁnalJ = o.omoE+oo
+
+O LOWEH'D LMHD 5.5618501 sonooeoa
+1 1.5GDE+CIJ 1.2247E+CD 3.1845501 25000604
+2 1.7EKDE+m 1323500 1.6825501 125W504
+3 1.8750E+(XJ 1.3ME+(D 1.7m501 1mm
+
+4 zooooE+oo 1.414ZE+m o.ooooE+oo o.ooooE+oo
+
+old] = 3.4213501 ﬁnall = oamE+oo
+
+O IQIDEH'D 1QIDE+CD 5.5618501 sooooem
+1 1.5m+(0 12247E+m 1.5&1501 1M“
+2 1.650900 12747E+m 1.6M01 12500604
+3 1.75mE+CD 1.3235H'D 1.7ME01 1.2511504
+oldJ = 3.1845E0‘I ﬁnal! = 3.42%E01
+
+ 
+
+I E N X F I E
+
+O 1.m+m tm+m 2.6475501 251111504
+1 12500E+oo 1.11&£+m 2.9284501 2mm
+2 1.5GDE+W 12247E+m 1.625501 1.251504
+old.| = 5.5818501 fin-LI = 8.EB7E01
+
+O tm+m 1.m+m 2.8475E01 M414
+1 1.25an+oD 1.11wE+w 1.4316501 tzsmeoa
+2 Lam-HI) 1.1723E+oo 1.4mm 1mm
+3 1.m5+m 12247E+m 1.7m01 1mm
+old.| = 2.9234501 ﬁnllJ = 6.m01
+
+o1.ooaoE+ao 1.0000E+0012579E01 1251504
+1 1.1250544!) tmE-HD 1.3616501 1.231204
+2 12500E+oo 1.11wE+CD 1.4mm 12mm
+oldJ = 2.6475501 ﬁnalJ = 9.5ME01
+1.21&E+m 0k
+
+\
+
+ 
+
+dx1/'=§ (23/2—1)
+
+dSN
+
+ 
+
+ 
+
+ 
+
+ 
+
+Notice that, although t/f is perfectly ﬁnite atx = 0, its ﬁrst derivav
+tive is not. This is not a problem in the above case, because the:
+lower limit is 1.0.
+
+It is an instructive exercise to run the above example with the'
+limits (0.0, 1.0). The adaptive routine spends many iterations:
+approachingx = 0 (25 in the range [0,, 0.0625] vs. 25 in the ranger:
+[0.0625, 1.0] ). This is a concrete example of how an adaptive-1
+routine will unerringly locate the (integrable) singularities of at
+function by spending lots of time near them. The best answer to:
+this problem is to separate out the bad parts of a function by hand...
+if possible, and integrate them by some other algorithm that take
+the singularities into account. By the same token, one shoul
+always integrate up to, but not through, a discontinuity in f(x).
+
+WFORTH MI-mwem 179
+
+"6 mmmmmm
+
+We often want to evaluate the complex integral
+
+1 - +1 «21.1: (16)
+
+where I‘ is a contour (simple, closed, piecewise tinuous curve)
+in the complex z-plane, and 1(2) is an analytic1 function of z.
+
+The easiest way to evaluate 16 is to parameterize 2 as a function
+of a real variable t ; as 1 runs from A to B, z(t) traces out the
+contour. For example, the parameten'zation
+
+z(t) = 20 + R cos(t) + iR sin(t) , 05152: (17)
+
+traces out a (closed) circle of radius R centered at 2 =20
+
+We assume that the derivative 2(t) E E can be deﬁned; then the
+
+dt
+integral 16 can be re-written as one over a real interval, with a
+complex integrand:
+I = Ii 2(1)f(z(1)) d: (18)
+
+Now our previously deﬁned adaptive function )INTEGRAL can
+be applied directly, with Emma the name of a complex funcan
+
+:0) = 2(t)f(z(r)). (19)
+of the real variable I.
+
+Here is an example of complex integration: we integrate the
+
+function ﬂz) = el/z around the unit circle in the counter-clock-
+wise (positive) direction.
+
+ 
+
+7. “Analytic"meanstheordinaryderivativedf(z)/dzeidsts.Consultanygoodtenonthetheoryof
+Wdampkxvariable.
+
+OJUUIVNOUOIM-Almm.
+
+160
+
+The calculus of residues (Cauchy's theorem) gives
+
+é 4n” = 2771'
+Iz|=1
+
+We parameterize the unit circle as z(t)- — cos(27rt) + i sin(2.m
+hence z(t) = 27tiz(t), and we might as well evaluate
+
+I; dtz(t) 21/2“) E 1.
+
+For reasons of space, we exhibit only the ﬁrst and last few iterationst
+
+ChapterO-MoraProgrammIngEnmpIoa
+
+semmmeronn
+
+(20)
+
+(21)
+
+ 
+
+I
+
+FIND FSINCOS O= ?( FLOAD TRIG) E.
+
+:20) F: PI
+
+Ft
+
+F2* FSINCOS; (07:1 - -4
+
+:)(EXP FSINCOS FROT FEXP X*F; g
+(87. xy--e "xcos[y] e "xsixn[y])
+:G(T) Z(T) XDUP 1/X XEXP ,
+
+USE( G(T) % 0 %1 % 1.52 COMPLEX )INTEGRAL X. '
+
+DEBUG- ON
+N x F 1 E
+0 0.0000 27102 0.0000 .50100 0.0000 0010900
+1 .50000 -.3s707 0.0000 .50700 0.0000 mm
+
+2 1.011113 2.7182 0.0000 .00000 .00000 .0000000
+old.l = 2.7162 0.0000 ﬁnaIJ = OIXID 0.0000
+
+N X F l E
+0 0.0000 2.7182 0.0000 .50700
+1 .SOGD -.$787 00000
+
+0.0000 0040900
+00190 .067537 .WW
+2 75¢!” .84147 -.54030 .44496 -.007537 0024099
+3 1.0000 2.7182 0.0m0 011100 .00000 .0000000
+oIdJ = 587% 0.0000 ﬁnaIJ = OIXXD 0.0000
+
+N X F I E
+
+0 0me 2.7182 0.0111) 567% 0.0000 0049000
+
+1 ﬁlm-.5767 0.0000 .(591U-IE7537 £1124“
+2 .7501) 34147-5403 .17“ -.oaasaz 0012400
+3 .873!) 20219-15662 29020 4100014 001249
+4 1.0000 2.7162 0.0000 .00000 000000 01110000
+oId.I = .444” -.N7537 1Inll.l - 0.0000 0.00:»
+
+N X F I E
+
+0 0.0000 2.7162 0.0000 .5673) 0.0111) mm
+
+1 SC!!!) 23787 0.0000 .W1U aWS'ST mean
+2 .7511!) 34147-5401) .17” -.043002 .0012“
+3 .875” 20210-15002 .1413) 413745 .00002400
+4 00750 2519-0253 Team-name .tmezm
+5 1mm 2.7162 0.01110 .ooamo .ootnoo .amm
+Didi - maze-omens MALI - 0.0000 0.01110
+
+ 
+
+N X F I E
+
+0 0.0011) 2.7162 00000 56760 0.0000 noun
+
+1 .50000-36707000113 .W1Q 457537 .112“ >'
+2 .75000 54147-5461) .1790 mean .0312“
+
+3 .8751!) 2.0219-.15& .14190-m5745 .m
+4 33750 251$-.m .m1M-.m 00001240
+5 .3875 2.6% -.00:10577 .06414 -.000055 11113120
+6 MIX!) 27182 0.0000 .000000 .0000000 1111!!!!)
+oId.| = Aw-IXDTBMZ ﬁne“ = 0.0000 0.00m
+
+N X F I E
+
+0 0.01110 2.7162 0.0000 .5373) 0.0000 mama
+
+1 50000-30707 0.0000 .050190-007537 mama
+2 .75CKD .84147 -.s4m0 176$ -.oaaaa2 011249
+
+3 .8751!) 2.0219-.15W 14190-000745: .m
+4 .ﬂ750 asm-mszza £0102 -.(ID4467 #1312“
+5 .m 2.6% -.ooaasn 04197-101“ .IXXMW
+6 .W 27052 010020 .042371 -.ommaa .tm1sa‘z4
+7 1.0000 2.7162 0.0011) 0.0003 0.001!) 11mm
+
+old.| s .004137-mm52405 ﬁnil = noun 001m
+
+x F 1 E
+
+0.0000 27102 00000 .50700 0.01100 0010000
+.50000 -.30707 0.0000 000100 -.oe7rm mum
+75000 54147-54000 .1701: -.0m2 001249
+07000 2.0210-.15002 .14100 -.0m745 00002000 5
+4 00750 20100-02022 .010000-.000a:10.00015024
+
+0 30312 20000.011000041173-000112000010024
+
+0 00075 2005-.00000001571-0011110001010024
+0th - .001022-.000«007 mu - owns-mm
+
+N
+0
+1
+
+2
+3
+
+N X F I E
+
+0 cm 2.718 can: mm mm .0312.
+
+1 12m 2.0210 .1092 .1075! .0164" .m
+
+I .167” 1.41” m M711 01m ammo
+
+I 21675 1.1ﬂ4 .aaaan m .0157” ammo
+
+4 m .4147 54GB mm 0010070 0mm
+
+“I - m mum Hill - 51W—m
+
+N X F I E
+
+0 cm 2.71” 0.00:!) as: £1.13. .m12“
+1 .12” 2.0216 .15” mum 01101200
+I .1” 1.7232 ms .04“ m.m1240
+3 .10700 1.4M 3073 name 01578 01101240
+ddl - .1079 916479 W1 - .3374 4mm
+
+N X F l E
+
+0 0m 2.7162 om ﬁlm 00073421100de
+1 .0023!) 2.51” 0329.141” 1157453 0003200
+2 .12“ 2.0210 .1532 04011: 00300300001249
+ddl - 29m 0mm ﬁn.” - .ﬂ13-1X55266
+
+N X F l E
+
+0 0001:) 2.71& cm am mam
+1 mama 2.51“ mm 075m @133 00001240
+2 M749 mmntmsrmasm .m1249
+3 .125!) 2.0219 .15” moms 015/26 .m12ﬂ
+dﬂl - .141” ”7453 fnlll - $13 415528
+
+N X F l E
+
+0 0.0000 2.7182 00000 .1623 manuam
+
+1 10m 251” m manna: M1249
+2 mac 2.254 “75 134633.101“ .CXDIM
+3 .1” 2.1032 .11“ “11.121“ 00015024
+
+4 .1253 2.0219 .1902 m7m76 “1&4
+de - M457 .0113!» Mall I miss-.maaa
+
+52 Fltﬁng functions to data
+
+ 
+
+N X F I E
+
+0 cm 2.71” cm .1“ .W.m
+1 M2510 .mm .mumm
+2 07.182419047044m .mmcmstm
+3 mommm.tm1m.mm
+de - 075m 011“? Md! - .m-mtam
+
+N X F l E
+
+0 cm 27102001» new .m ammo
+
+1 m1- 2.” W 1mm .M #1312“
+2 W251“ .mm .MYLGXMW
+ddl - .1” names: “I - ham-.m
+
+N X F I E
+
+0 00000 2.719 001m “4137 .m £11312“
+
+1 mtao zen W7 .041173 M1247 00310024
+2 0465752” .011“ mam.m.antasas
+3 138132.510. 1330002110 .M‘Iﬂﬁ
+
+oIdJ - 001022 .W “J - mas-00040523
+
+N X F I E
+
+0 00cm 2.7182 0.01113042371 m1 .CID1!£24
+
+1 015% 27W m2 .041” 0001200 an 5624
+
+2 .6313) 2.6” .W .osam m .m15ﬂ4
+oId.l - M4137 .m “J - 31$B<m6373
+.0001» 90000001 oIr
+
+\
+
+ 
+
+Note:
+answer = 1
+
+ 
+
+ 
+
+ 
+
+One of the, most important applications of numerical analysis is
+the representation of numerical data in functional form. This
+includes ﬁtting, smoothing, filtering, interpolating, etc.
+
+A typical example is the problem of table lookup: a program re-
+quires values of some mathematical function —sin(x), say — for
+arbitrary values of x. The function is moderately or extremely
+time-consuming to compute directly. According to the Intel tim-
+
+oJuthNobIolm—Mmmarvod.
+
+162
+
+CMptarB-MoreProgmmnIngExamdac ScbnllﬂcFOR
+
+ 
+   
+  
+   
+
+ings for the 801187 chip, this operation should take about 8 tim
+longer than a floating point multiply. In some real-time app '
+tions this may be too slow.
+
+There are several ways to speed up the computation of a functit
+They are all based on compact representations of the fun '
+-—either in tabular form or as coefﬁcients of functions that a
+faster to evaluate. For example, we might represent sin(x) by'
+simple polynomial1
+
+sin(x) ~x (0.994108 - 0.1472021) , (22) 1
+
+,_
+I
+accurate to better than 1% over the range -% S x 5 g , thg'
+
+requires but 3 multiplications and an addition to evaluate.
+would be twice as fast as calculating sin(x) on the 80x87 chip1 .2
+
+To achieve substantially greater speed requires table look-It]:
+
+To locate data in an ordered table, we might employ binar3
+search: that is, look at the x-value halfway down the table and se
+if the desired value is greater or less than that. On the averag.
+log2(N) comparisons are required, where N is the length of tla
+table. For a table with 1% precision, we might need 128 entriet
+i.e. seven comparisons.
+
+ 
+
+Binary search is unacceptably slow — is there a faster methodl
+In fact, assuming an ordered table of equally-spaced abscissae tlu
+fastest way to locate the desired x-value is hashing, a method it!
+computing the address rather than ﬁnding it using comparisom
+Suppose, as before, we need 1% accuracy, i.e. a 128-point tablr’
+with x in the range [0,:1/2]. To look up a value, we multiply: in
+256/77 5 81.5, truncate to an integer and quadruple it to get 1
+(4-byte) ﬂoating point address. These operations —includi1§
+fetch to the 87stack— take about 1.5-2 fp multiply times, hencl
+the speedup is 4-fold.
+
+curl—MW!” 163
+
+The speedup factor does not seem like much, especially for a
+function such as sin(.r) that is built into the fast co-processor.
+However, if we were speaking of a function that is considerably
+slower to evaluate (for example one requiring evaluation of an
+integral or solution of a differential equation) bashed table
+lookup with interpolation can be several orders of magnitude
+faster than direct evaluation.
+
+e now consider how to represent data by mathematical func-
+tions. This can be useful in several contexts:
+
+o The theoretical form of the function, but with unknown param-
+eters, may be known. One might like to determine the param-
+eters from the data. For example, one mi t have a lot of data
+on pendulums: their periods, masses, imensions, etc. The
+penod of a pendulum IS given, theoretically, by
+
+1/2
+- a L&
+r—(g) f(r’ ."") (23)
+
+where Lis the length of the string, g the acceleration of gravity,
+and f is some function of ratios of typical lengths, masses and
+other factors in the problem. In order to determine g accurate-
+ly, one generally ﬁts a function of all the measured factors, and
+tries to minirmze its deviation from the measured periods.
+That is, one might try
+
+1/2
+21 1'11 mbob
+7n: (Tl-1') 1+a—L‘+ﬂ( . ) +... (24)
+
+for the n'th set of observations, with g, (2, ﬂ, the unknown
+parameters to be determined.
+
+0 Sometimes one knows that a phenomenon is basically smooth-
+ly varying; so that the wiggles and deviations in observations
+are noise or otherwise umnteresting. How can we ﬁlter out the
+noise without losing the signiﬁcant part of the data? Several
+methods have been developed for this gurpose, based on the
+same principle: the data are represente as a sum of functions
+from a complete set of functions, with unknown coefﬁcients.
+That is, if 90.,(x) are the functions, we say (y. are the data)
+
+C
+
+Ya E 2 C. plan) (25)
+
+m-o
+
+OJLIHnVNobIatm—Alnoﬂaroaarvod.
+
+Chapters-MoreProgrammlng Examples Schnﬁnc FORT
+
+Such representations are theoretically possible under gene
+conditions. Then to ﬁlter we keep on] a ﬁnite sum, retainin
+the ﬁrst N (usually simplest and smoot est) functions from th
+set. An example of a complete set is monomials, ¢,(x) = x m
+Another is sinusoidal (trigonometric) functions,
+
+sin(2:rm.r), cos(27rmx), 0 s x s 1,
+
+used in Fourier-series representation. Gram polynomials, dis
+cussed below, comprise a third useful complete set.
+
+The representation in Eq. 25 is called linear because the urts
+
+known coefﬁcients cm appear to their ﬁrst power. Thus, if a”
+the data were to double, we see immediately that the cm's would
+have to be multiplied by the same factor, 2. Sometimes, as in the
+example of the measurement of g above, the unknown paratr~
+eters appear in more complicated fashion. The problem of ﬁtting
+with these more general functional forms is called nonlinear fon
+obvious reasons. The simplex algorithm of Ch. 8 §2.3 below is an
+example of a nonlinear ﬁtting procedure.
+
+ 
+
+We are now going to write programs to ﬁt both linear and non—
+linear functions to data. The ﬁrst and conceptually simplest oﬂ
+these is the Fourier transform, namely representing a function as
+a sum of sines and cosines.
+
+§§1 Fast Fourier transform
+What is a Fourier transform? Suppose we have a function thati
+is periodic on the interval 0 s x 5 2m
+
+f(x + 2:) = to);
+
+Then under fairly general conditions the function can be ex~
+pressed in the form
+
+f(x) = a0 + E (a, cos(n.r) + b, 5111011)) (26)
+
+11-1
+
+Another way to write Eq. 26 is
+
+f(x) -:§c.ew. (27)
+
+In either way of writing, the c,, are called Fourier coefficients of
+the function f(x). booking, e.g., at Eq. 27, we see that the or-
+thogonality of the sinusoidal functions leads to the expression
+
+1 _ .
+c..=gf3'f(x)e "“411. (28)
+Evaluatin£ Eq. 28 numerically requires —for given n- at least
+2n pomts Naively, for each n = 0 to N-l we have to do a sum
+2N
+
+~ 2 f1. e—mk/N
+
+k-l
+
+C11
+
+which means carrying out 2N2 complex multiplications.
+
+The fast Fourier transform (FFT) was discovered by Runge and
+Konig, rediscovered by Danielzslon and Lanaos and m—redis-
+covered by Cooley and Tukeyn. The FFI‘ algorithm can be
+expressed as three steps.
+
+0 Discretize the interval, Le. evaluate f(x) only for
+k
+27: N , 0 S x S N 1.
+Call f(x.,) = f.,.
+0 Express the Fourier coefﬁcients as
+N —1
+= 2 r. (2.....- ”". (29)
+11-0
+0 With w, = e"2"“"'/N , Eq. 29 is an N-l’st degree polynomial in
+w, . We evaluate the polynomial using a fast algorithm.
+
+ 
+
+20. to prevent aliasing.
+21. See, e.g., DE. Knuth, Thain of Computerhogmnmting v. 2 (Addison-Wesley Publishing Co.,
+Reading, MA, 1981) p. 642.
+
+OJtlthNohlotm—Alrlgﬂamennd.
+
+Chapter 0 - More Programming Examples Scientific FORD-Ir
+
+To evaluate rapidly the polynomial
+
+N-l
+c. = P. (w.) a 2 1.011.)"
+
+k-O
+we divide it into two polynomials of order N/Z, dividing each of]
+those 1n two, etc. This procedure' IS efﬁcient only for N= 2 ,with,
+v an integer, so this IS the case we attack.
+
+How does dividing a polynomial in two help us? If we segregate:
+the odd from the even powers, we have, symbolically,
+
+Paw) = EN/2(W2) + w omw’) . (30)
+
+ 
+
+Suppose the time to evaluate PN(w) is TN. Then, clearly,
+
+..4._-..~.<-Aanv- .. ‘1
+
+TN = A '1' ”w; (31)
+
+where .1 is the time to segregate the coefﬁcients into odd and even.
+plus the time for 2 multiplications and a division. The solution of’
+Eq. 31is 1(N-1). That is, it takes 0(N) time to evaluate a poly-
+nomial.
+
+However, the discreteness of the Fourier transform helps us here.
+The reason is this: to evaluate the transform, we have to evaluate
+
+PN (W) for N values of w, . But wﬁ takes on only N/Z values as 11
+takes on N values. Thus to evaluate the Fourier transform for all
+N values of n, we can evaluate the two polynomials of order NB
+for half as many points.
+
+Suppose we evaluated the polynomials the old-fashioned way: it
+would take 2(N/2)= -N multiplications to do both, but we need do
+this only N/Z times, and N more (to combine them) so we have
+N 2/2 + N rather than N2. We have gained a factor 2. Obviously 1t~‘
+pays to repeat the procedure, dividing each of the sub-polyno~
+mials in two again, until only monomials are left.
+
+Symbolically, the number of multiplications needed to evaluate,
+a polynomial for N (discrete) values of w is s
+
+1,. = N1 + 21",, (32) §
+
+ 
+
+MO-MPWEW 107
+
+whose solution is
+
+1,, - AN 103,01) . (33)
+
+Although the FFT algorithm can be programmed recursively, it
+almost never is. "lb see why, imagine how the coefﬁcients would
+be re-shufﬂed by Eq. 30: we work out the case for 16 coefﬁcients,
+exhibiting them in Table 8-1 below, writing only the indices:
+
+Table 8-1 Blt-reverad tor reordering discrete data
+
+ 
+
+Stan Stqﬁ Stop2 SW3 Bho Bhg
+0 0 0 0 (XXX) (XXX)
+1 2 4 6 (XXII “XX!
+2 4 6 4 N10 0100
+3 6 12 12 (D11 1100
+4 B 2 2 0100 NIO
+5 10 6 10 0101 1010
+6 12 10 6 0110 0110
+7 14 14 14 0111 1110
+0 1 1 1 1000 (”01
+9 3 5 9 1001 1001
+10 5 9 5 1010 0101
+11 7 13 13 1011 1101
+12 9 3 3 1100 (1)11
+13 11 7 11 1101 1011
+14 13 11 7 1110 0111
+15 15 15 15 1111 1111
+
+ 
+
+ 
+
+The crucial columns are “Start” and “Step 3". Unfortunately, they
+are written in decimal notation, which conceals a fact that be-
+comes glaringly obvious in binary notation. So we re-write them
+in binary in the columns Bino and Bin, —and see that the ﬁnal
+order can be obtained from the initial order simply by reversing
+the order of the bits, from left to right!
+
+standard FORTRAN program for complex FFI‘ is shown below.
+e shall simply translate the FORTRAN into FORTH as ex-
+peditiously as possible, using some of FOR'IH's simpliﬁcations.
+
+ne such improvement is a word to reverse the bits in a given
+integer. Note how clumsily this was done in the FORTRAN
+
+OJtlthNoUotm-Aldﬂttamorwd.
+
+188
+
+sumounre Foum (DATA. NN. ISIGN)
+NunHueudunnnmdﬁl*nmbquau
+
+ISBN EETEFNI'ESWl-EH'EHTl-EFFT
+ISFWAHDORBAOKWAH)
+
+0000000
+
+DATA Is TT-E ((1)111le ARRAY GDISCRETE N’U‘I’
+CDMPLEX w, WP. TEMP, DATA(N)
+DEAL'B TFETA
+J =0
+00 11 |= 0,N-1
+IF (J.GT.I) THEN
+TEMP= DATA“)
+DATA(J) =DATA(I)
+DATAtI) =TEMP
+ENDIF
+M: NR
+1 IF ((M.GE1)AND.(J.GT.M)) THEN
+J=J—M
+M= W2
+60 T0 1
+ENDtF
+J = J + M
+11 CONTINUE
+
+\boainmmnu
+
+\endbitrwerul
+
+Chapter 3 - More Programming Examples
+
+ 
+
+Scientiﬁc FORTH
+
+WAX-1 \mmm
+2 F(MGT.MIMT|-EN
+STE-m \Mumm
+
+THEM-ammmmm
+WP-CEXPO'HEI’A)
+w- Window)
+0013 M- 1.1mm
+no 121- M.N.ISTEP
+J=1+MMAX
+TEMP=DATA(J)'W
+mm» =DATA(l)-TEAP
+mm» = 0mm) new
+12 oomwue \end lnnerloop
+c
+
+\mbov
+\lmerloop
+\utII-Ntlrnu
+
+W=W‘WP \tng m
+
+C
+
+13 CONTINUE
+MMAX=ISTEP
+GOT02
+BJDIF
+
+FETUFN
+
+\endoubrloop
+
+\endMeleon—Unazoeudon
+
+program. Since practically every microprocessor permits right-
+shifting a register one bit at a time and feeding the overﬂow into
+another register from the right, 3.11 can be programmed easily in
+machine code for speed. Our fast bit-reversal procedure 8.11 may
+be represented pictorially as in Fig. 8-5 below.
+
+ 
+
+Initial number: Reg A
+:1001101110100011-1
+
+    
+ 
+
+ 
+
+ 
+
+Stepv
+III a
+
+ 
+
+Step 1
+
+Bit-reversed number: Reg 3
+
+1100010111011001
+
+Bit overﬂow
+
+”1W1“1“6°’ii1“6‘1o°66‘i ‘
+
+'#AWA“V’»Y~V¢WIMWW“‘<%MVWW ‘.
+
+Inltlel number: Reg B
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 8—5 Pictorial representation of bitmrsel
+
+DWI—WWW 1”
+
+Bit-reversal can be accomplished in high-level FORTH via
+
+:B.R (n--n') \reverseorderoibits
+OSWAP (--On) \eetupstack
+N.BITSODO
+
+DUP1AND \pickout1'sbit
+
+ROT2'+ \leftshift1,edd1'sbit
+
+SWAP2/ \rightoshittn
+LOOPDROP;
+
+I Note: N.BITS is a VAR, previously set to v = log2(N)
+
+We will use 3.8 to re-order the actual data array (even though
+this is slightly more time-consuming than setting up a list of
+scrambled pointers. leaving the data alone). We forego indirec-
+tion for two reasons: ﬁrst, we have to divide by N (N steps) when
+inverse-transforming, so we might as well combine this with
+bit-reversal; second, there are N steps in rearranging and dividing
+by N the input vector, whereas the FFT itself takes Nlog2(N)
+steps, Le. the execution time for the preliminary N steps is unim-
+portant.
+
+Now, how do we go about evaluating the sub-polynomials to get
+the answer? First, let us write the polynomials (for our case
+N = 16) corresponding to taking the (bit-reversed) addresses off
+the stack in succession, as in Fig. 8-6 below.
+
+ 
+
+ 
+
+:12; i 5233* w... + ...
+w5(t,, + M 1,3)
+30‘ + 5f” : >co + we,
+fa + 114 4
+Min + M 1,0; ”2“” + w 8")
+w‘(r. + w’ in)
+M0,, + M r. )1
+
+>w‘(b, + wing)
+w‘(a1 + w‘as)
+
+) w°(bo + w’bz)
+
+w°(a° + w‘a.)
+
+ 
+
+ 
+
+ 
+
+J
+
+ 
+
+ 
+
+Flgjel’heorderolevalwtlnqe 16m. FFT
+
+cmvmrm-umm.
+
+190 mus—Mmrrogmmnmanm SclentIﬂcFORTr/s
+
+ 
+  
+
+We see that w? (for N=16) has only two possible values, :1.
+
+Thus we must evaluate not 16 x 8 terms like 1’, + w8 fm , but only
+2X8. Similarly, we do not need to evaluate 16X4 terms of form
+f, + 1941',“ , but only 4X4, since there are only 4 possible values
+of w:. Thus the total number of multiplications is
+
+=5ﬁﬁeﬁﬁxwiﬁ
+
+2x8 + 4x4 + 8x2 + 16x1 = 64 a16logz16,
+
+is!
+
+as advertised. This is far fewer than 16X16 =256, and the ratio
+
+improves with N — for example a 1024 point FFT is 100 times
+faster than a slow FT.
+
+We list the FFI‘ program on page 191 below. Since }FFT trans '
+forms a one-dimensional array we retain the curly braces notation I
+introduced in Ch. 5. We want to say something like
+
+new.
+
+V{ n.pts FORWARD }FFT
+
+where V{ is the name of the (complex) array to be transformed,
+n.pts (a power of 2) is the size of the array, and the ﬂag-setting ; '
+words FORWARD or INVERSE determine whether we are
+taking a PET or inverting one.
+
+Now we test the program. Table 8—2 on page 192 contains the L"
+
+weekly stock prices of IBM stock, for the year 1983 (the 52
+values have been made complex numbers by adding 01', and the
+table padded out to 64 entries (the nearest power of 2) with
+complex zeros)22 .T'he ﬁrst two entries (2,64) are the type and
+length of the ﬁle. (The ﬁle reads from left to right.)
+
+We FFl‘ Table 8- 2 using the phrase IBM{ 64 DIRECT }FFT. The
+power spectrum of the resulting FFI‘ (Table 8-3) is shown in
+Fig. 8- 7 on page 192 below.
+
+ 
+
+22. This example is taken from the article “FORTH and the Fast Fourier Transform" by Joe
+Barnhart, Dr. Dabb's Journal, September 1984, p. 34.
+
+ 
+
+OJtllnnVNoble1m—Nldghuruorvod.
+
+ 
+
+”FORTH
+
+\WMMW
+Kw:mmmmrmnm
+.rAaxm
+\mmmammww
+
+MCs o-rmmooowrsx)
+
+I'D THY O-‘HHDIDMATMHBFD
+Mom o-rinvonaorm)
+norm o-‘NFLOAD‘I'Ml
+
+\IMM
+
+m
+\‘I..---------.---...-...-I
+(mm
+
+: oooeeaememanoooe
+
+: moan-4.21111) oswAP (momma
+3am NC»
+was SH! MPH) 9V» REPEAT:
+
+:CIN N$>FCJF:
+
+15W 1150mm
+
+; F ONOSWAP UN CPSNAP TIEN:
+(era-mm
+
+\u-ncu-------------.--nun-u
+
+\byblmml
+
+PM!!!
+
+'2“ (mm) \memdbh
+- new» (-—0n) \ltipdnk
+
+1' NSTSOWMIADD \MMI'IUI
+
+mew \Mmlﬂmi‘eﬂ
+MP2] \ﬂ-m
+' mm;
+
+11521133501511:
+Mono 13.11 ISLR
+1 LRI<IOT (LR>-17)
+“unmanned WEE
+1(1A}o11.1(1}oitniat
+
+(“Wﬂm
+
+01.1.0-”me
+
+ 
+
+191
+
+\-.--...--.--...-.--------.
+\mdnw
+01204 ”10.160113”.
+IFW.1W.3FLD,
+1WJMJFWJWW
+(Chop-H 1H2)
+
+:Tl-ETA F-HMSoFF/ m M;
+
+mmwwmmoaw
+:mmo mmseommocnc-i;
+
+:reww (arm-4')» 0170 c-;
+OVARISTEP
+
+zoomwov
+00 m1 + 19111
+cm 111111001- 0' 1(1) eat
+WHO-<1» 1(1)01L1(111}GIL
+1819 +L00";
+
+:}H-‘T (uknn) ISN ISM
+
+”SW
+
+NLGZISMBTS
+
+FNT
+
+BITRBIERSE
+
+BEGN
+NM >
+
+was
+NTJ'FIGMMAXTISISTEP
+W000
+
+NImDNELW WWW
+
+w
+ISTEPISMMAX
+
+RE’EATCPWP:
+
+:mnooormamcmscal. F. w;
+\mmdFF-‘T \mddmm
+\-I-I----.---.----3-----.I-
+\Inmeb
+
+“WWMMAYM
+:NTA Aﬂ'BMBfmFILCImE-IPUT:
+NI'TA
+MMWCI'WFT
+
+\dﬂd-nmeb
+
+\-.--m-u-u-n-u-n-u-n-u-u-u-
+
+ow do we know the FFI‘ program actually worked? The
+simplest method is to inverse-transform the transform, and
+
+compare with the input ﬁle. The FFI' and inverse FFT are given.
+
+respectively, in Tables 8-3 and 8-4 on page 193 below. Within
+roundoff error, Table 8-4 agrees with Table 8-2 on page 192.
+
+emvmuueea-Almw.
+
+Chapter 8 - More Programming Examples Scienﬁfic FORTH
+
+Table 6-2 Weekly IBM common stock prices, 1983
+
+ 
+
+2 84
+
+5.63 0.0 9.13 0.0 91.- 0.0 07.5 0.0
+97.38 0.0 5.38 0.0 case 0.0 mm 0.0
+11125 0.0 1&75 0.0 ﬂ.ﬂ 0.0 1&13 0.0
+101$! 0.0 mas 0.0 110.13 0.0 117.5 0.0
+117.00 0.0 117.63 0.0 116.3 0.0 110.5 0.0
+113.11) 0.0 mm 0.0 114.5 0.0 121.13 0.0
+123m 0.0 121.“) 0.0 121.50 0.0 15.13 0.0
+124.38 0.0 15.38 0.0 119.75 0.0 118.50 0.0
+15.5) 0.0 117.83 0.0 119.75 0.0 12.5 0.0
+15.13 0.0 15.5 0.0 15.38 0.0 1325 0.0
+131.75 0.0 127.00 0.0 15.1.!) 0.0 1&5 0.0
+15.88 0.0 1235) 0.0 121.00 0.0 117.88 0.0
+12.25 0.0 120.88 0.0 15.5 0.0 122.00 0.0
+
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+6000
+5400
+4800
+4200
+3600
+r 3000
+- 2400
+- 1800
+- 1200
+. 600
+
+L4._i
+
+AALALA
+
+       
+
+ 
+
+     
+
+8 43,
+
+0.0 5.4 10.8 16.2 21.6 27.0 32.4 37. 2 48.6 54.0
+
+ 
+
+ 
+
+Fig. 8-7 Power spectrum of FFT of 1983 IBM prices (from Table 63)
+
+i
+
+ 
+
+ 
+
+MNFFTdiBMweekiyetockpricu, 100:1
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+0 man 0m 02 01.11.00.113!!!» 107.m.1s1m40 40 72mm 10.171040
+1.1.100- mm as amum 1727040402 01001004 40 nmmam
+207400417 m 34 unnunm 10.134201 117m 01 140.1040104107007
+0 011000114 54.40010 3 nmm 1011002031 71.4224u s1 ummmm
+4 02741342 17701110 a ammou 2007” 24.00.74 02 40.01m14740120
+3 12021042011301” 37 40102017314041442 21104070107340“ 0:1 40.470211042121100
+um 9001013 3 1010021an mum 02.311140 04 00270041331000
+700020402 name a swam 2044172011077001 00 10110401411900
+0 1924a 200.01” 40 10771701044100" 2410771731 34.411177 :0 11124342001000
+0 10110401 12015400 41 44.17me1107731 200073002 am 57 00.012040222027100
+10012700414111.3103 42 mama-0201:1040 20102011210211.2001 00 .170m000013
+1140.47sa1 0.4212000 4:1 10407913154041 27mm": 14.041442 00 13210120000304
+‘ 1240mm 147.4513 44 07.301104242501174 20:0.700000 00.411000 :1 02740042177011 10
+13045024001521202 40 11003017142402 2001700004 25.042037 01 30000314004010
+1414010401 04.107037 40 «imam-11700700 3000170007 02:14am a 41742041740110.0422
+mammam 47 47.114040201001004 31 13.411000744057210 0:1 Jason-0am
+Table 8-4 Reconstructed IBM prices (inverse FFT)
+o 000:!) 00000 :12 12250 0.11110 10117.00-000000000 40 1225 000000000
+1 00.120 000100705 30 11702-110000245 17 117.02-000000510 40 12007 0011100132
+2 04020 0000011023 31 110.75 000000140 10 11s.so-.000000110 so 12300000000002
+3 07070 1100000227 :15 12224000000070 10110.02000001375 51 1213-0000000“
+4 07000 0000000011 :10 1201000100005 20111000000010" :2 .000012004-mmo1070
+5 00.370411100011302 37 12002 0000007110 21 114.00 000000075 00 -.000001277-0000014:14
+e m m1a7 a 1203 001000051 22 1142; 000000070 54 -mcmzm-ma:o1224
+7 1003 000002150 :10 1325-000101001 23 121.12 000000017 55 -.00m05000-.000000015
+0 10254110000000 4o 131.70-000000000 24 1Z1000000001m 50 00000010120011an
+0 10070 000000700 41 12700-001000073 25 12100 0110001130 57 -.000002005-000001000
+10 0030 -.0m0m271 42 120.00 000000401 20 121.50-01mo1400 50 4100010040 100001300
+11 10212-01mmra 40 12224-000001011 27 120.12 003012022 so -.000m5020-m0001711
+12 10102 1110000010 44 1307 0000000111 20 124.37 .000000027 :1 -.m0000010-.mm00m7
+13 100 001000043 45 121.50 mm 20 120.30 000001201 01 -.0000_:1-000001500
+14 110.1:1-m1010 40 121.00 000001007 :10 110.75-001000010 02 -.000000121 000000200
+115 nus-0.0.7 47 11707 00001104 31 11040 000000573 03 -.0000m713 000010000
+
+ 
+
+ 
+
+ 
+
+§§2 Gram polynomials
+Gram polynomials are useful in ﬁtting data by the linear least-
+squares method. The usual method is based on the following
+question: What is the “best" polynomial,
+
+N
+P1111) = 207. r". (34)
+
+omvmunm-umm.
+
+Cl'teptere—MoreProgrammingExamplee Sclendiic FORTH ,
+
+(of order N) that I can use to ﬁt some set of M pairs of data points, 1
+
+1
+
+{1"}, k=0, 1, ,M—1 1
+k
+
+(with M > N) where f(x) is measured at M distinct values of the
+independent variable x ?
+
+The usual answer, found by Gauss, is to minimize the squares of
+the deviations (at the points xk ) of the ﬁtting function PN (x) from
+the data — possibly weighted by the uncertainties of the data That
+is, we want to minimize the statistic
+
+2 M—1 N
+X = 2 (ft _ 2 1’11in
+k=0
+
+2 1
+“=0 ) 2 (35)
+
+with repect to the N + 1 parameters yl| .
+From the differential calculus we know that a function’g ﬁrst
+derivative vanishes at a minimum, hence we differentiate x with
+
+respect to each yn independently, and set the results equal to
+zero. This yields N + 1 linear equations in N + 1 unknowns:
+
+2 Anm 7m =ﬂn 1 "=011, , N (36)
+
+where (the symbol 9 means “is deﬁned by”)
+
+A M_1 71+m 1
+Anm = 20 (x11 ; (37a)
+' k
+and
+A ”'1 1
+ﬁn = ongfk— (37b)
+
+In Chapter 9 we develop methods for solving linear equations.
+Unfortunately, they cannot be applied to Eq. 36 for N 2 9 be-
+cause the matrixAm approximates a Hilbert matrix,
+
+ 
+
+const.
+H“ - n+m+1 ’
+
+MI-MWW 195
+
+a particularly virulent example of an exponentially ill-
+eondltlonetl matrlx. That is. the roundofl' error in solving 36
+grows exponentially with N, and is generally unacceptable We
+
+can avoid roundolf problems by expanding' in polynomials rather
+than monomials:
+
+2 g 2 i
+z E. (1. lg) 7.12.0.1) of 138)
+The matrix then becomes
+14— 1
+=20 pn(xk)pm(xk)_ of (39a)
+and the inhomogeneous term is now
+M-1 1
+ﬁn = 2 17110:)ka (39b)
+k-o 1:
+
+5 there any choice of the polynomials p,,(x) that will eliminate
+roundoﬁ'? The best kinds of linear equations are those with
+nearly diagonal matrices. We note the sum in Eq. 39a is nearly an
+integral, if M is large. If we choose the polynomials so they are
+orthogonal with respect to the weight function
+W(x) =ﬁ01x. - x) 0(x — ..-),
+k
+
+where
+
+0, <0
+0(x)={1:20
+
+thenA“, will be nearly diagonal, and well-conditioned.
+
+196
+
+Chapter 3 - More Progmmmhg Examples Scientiﬁc FOR!
+
+Orthogonal polynomials play an important role in numerical an:
+
+y%s and applied mathematics. They satisfy (Ithogmality rat
+tions of the form
+
+B _ = 1, m=n
+I,drw(x)p..(x)p..(x) — a... — {0, ,m (40)
+where the weight function w(x) is positive.
+
+For a given w(x) and interval [A,B], we can construct orthogom
+polynomials using the Gram-Schmidt orthogonalization process
+
+Denote the integral in Eq. 40 by (p, , Pm ) to save having to writ
+it many times. We start with
+
+p—l = 0 )
+-l/2
+P007) = (fi dr W(x)) = const. ,
+
+and assume the polynomials satisfy the 2-term upward recursia
+relation
+
+Pn+1(x) = (an + xbn ) pn(x) + cup..-1(x) (41)
+
+Now apply Eq. 41: assume we have calculated pn and pr, an
+want to calculate 17,“. Clearly, the orthogonality property give:
+
+(Pn+1.Pn)=(Pn+hPn-1)=(Pn:Pn-1)=0a
+
+and the assumed normalization gives
+
+(p...p..)=1-
+
+These relations yields two equations for the three unknowns, 0
+bn and C n:
+
+ 
+
+23.
+
+Polynomials can be thought of as vectors in a space of inﬁnitely many dimensions (“Hilbert'
+space). Certain polynomials are like the vectors that point in the (mutually orthogonal) direc.
+tions in ordinary 3-dlmensional space, and so are called «diagonal by analog.
+
+awe-mew” 191
+
+a. +0.0». xp.)-o
+c. + b. 02.. xp.-.) - 0
+We express a. and c, in terms orb, to get
+p...(x) = b.[(x - (pi. xp. )) p.(x)
+- 02.. xp.-. mam]
+
+We determine the remaining parameter b. by again using the
+normalization condition:
+
+(42)
+
+(pn4-1 v pn+l ) = 1
+
+In practice, we pretend b.l =1 and evaluate Eq. 42; then we cal-
+culate
+
+b. = Gm. 5.... )‘W. (43)
+
+multiply the (un-normalized) 1-3,,“ by b, , and continue.
+
+The process of successive orthogonalization guarantees that p. is
+orthogonal to all polynomials of lesser degree in the set. Why is
+this so? By construction,p.,+1.l.p.. and p,,,. Is it tp, .2 ? We
+need to ask whether
+
+(pn v (x — an)pn-2) = 0-
+
+But we know that any polynomial of degree N-l can be expressed
+as a linear combination of independent polynomials of degrees
+0, 1, . N-l. Thus
+
+n-l
+
+(at-amp“E 2 supra) (44)
+
+x-o
+and (by hypothesis) pI .L every term of the rhs of Eq. 44. hence
+it follows (by mathematical induction) that
+
+pa” J- {pn-thn-Si }.
+
+OJUMVNohletm-Almm.
+
+Were-Moro Programming!“ Scientiﬁc FORTH
+
+Let us illustrate the process for Legendre polynomials, deﬁned
+by weight w(x) = 1, interval {-1.1}:
+
+_ 1 1/2
+PO" 2 I
+
+..................................................................
+
+These are in fact the first three (normalized) Legendre polynom-
+ials, as any standard reference will conﬁrm.
+
+Now we can discuss Gram polynomials. While orthogonal poly-
+
+nomials are usually deﬁned with respect to an integral as in
+Eq. 40, we might also deﬁne orthogonality in terms of a sum, as
+in Eq. 39a. That is, suppose we deﬁne the polynomials such that.
+
+”—1 { 1, m=n
+
+kgopn(xk)pm(xk);:; E dnm = 0, matn (45)
+
+Then we can construct the Gram polynomials, calculating the
+coefficients by the algebraic steps of the Gram-Schmidt process.
+except now we evaluate sums rather than integrals. Since p..(x)
+satisﬁes 45 by construction, the coefﬁcients y, in our ﬁtting
+polynomial are simply
+
+M-l 1
+7.. = E p..(xt) fig; (46)
+k-O k
+they can be evaluated without solving any coupled linear equa
+tions, ill-conditioned or otherwise. Roundoff error thus becomes
+irrelevant.
+
+The algorithm for ﬁtting data with Gram polynomials may in
+expressed in ﬂow-diagram form:
+
+neodhpomt...x.¢mw. 1.1/0.3.
+DOn-ttoN-t (outerloop)
+Construct an , cn :
+DO k=o to M1 (inner loop)
+pn+t(xlr) = (XI: " 8n)Pn(Xu) - crpn-1(Xtr)
+
+sum = sum + (p0,,(x.)) 2w.
+
+Com = an + ft Pn+1(Xk) Wk
+LOOP (and inner loop)
+cn+1 = cn+1 /sum
+
+DO k =0 to M-1 (normalize)
+’ Pn+1(xk) = pn+1(xk)/ mm
+LOOP
+
+LOOP
+
+ 
+
+ 
+
+Fig. 8-5 Construction ofGram polynomials
+
+The required storage is 5 vectors of length M to hold xb p,(xk),
+
+p.,.1(.\:.,),f.l and Wu -:- 1/03 . We also need to store the coefficients
+an, c. and the normalizations b. —that is, 3 vectors of length
+N < <M— in case they should be needed to interpolate. The time
+involved is approximately 7M multiplications and additions for
+each n, giving 7NM. Since N can be no greater than M-l (M data
+determine at most a polynomial of degree M-l), the maximum
+possible running time is 7M2, which is much less than the time to
+solve M linear equations.
+
+In practice, we would never wish to ﬁt a polynomial of order
+
+comparable to the number of data, since this would include the
+noise as well as the signiﬁcant information
+
+emvuouoim-me.
+
+200 ChapterB-MoreProgrammthxamplee SclentlﬂcFORTH
+
+We therefore calculate a statistic called zz/(degrce of freedom)“:
+With M data points and an N’th order polynomial, there are
+M-N-l degrees of freedom. That is, we evaluate Eq. 38 for ﬁxed
+N, and divide by M-N-l. We then increase N by l and do it again
+The value of N to stop at is the one where
+
+2
+= 1ng
+”'2“ M-N-l
+
+stops decreasing (with N) and begins to increase.
+The best thing about the xﬁN statistic is we can increase N without
+having to do any extra work:
+
+2 M-1
+
+ZM,N = 2 (ft -§ l’nPn(xk))2Wk
+
+- (47)
+M-l
+
+N
+a 2 «oz — 2 (7..)2
+k=0 n=0
+
+The ﬁrst term after E in Eq. 47 is independent of N, and the
+second term is computed as we go. Thus we could turn the outel
+loop (over N) into a BEGIN WHILE REPEAT loop, in
+
+which N is incremented as long as of”; is larger than 02”“ .
+(Incidentally, Eq. 47 guarantees that as we increase N the ﬁtted
+curve deviates less and less, on the average, from the measured
+points. When N = M-l, in fact, the curve goes through the points
+But as explained above, this is a meaningless ﬁt, since all data
+contain measurement errors. A ﬁtted curve that passes closer
+than 0., to more than about 1/3 of the points is suspect.)
+
+The code for Gram polynomials is relatively easy to write using
+the techniques developed in Ch. 5. The program is displayed in
+full in Appendix 8.4.
+
+ 
+
+24. That is, “chi-squared per degree of freedom".
+
+MFOR‘M
+
+DWI-MW!!!“ 201
+
+WWW
+
+ometimes we must ﬁt data by a function that depends on
+parameters in a nonlinear manner. An example is
+
+F
+‘- 1—7777) “3’
+
+Although the dependence on the parameter F is linear, that on
+the parameters a and X is decidedly nonlinear.
+
+One way to handle a problem like ﬁtting Eq. 48 might be to
+transform the data, to make the dependence on the parameters
+linear. In some cases this is possible, but in 48 no transformation
+will render linear the dependence on all three parameters at once.
+
+Thus we are frequently confronted with having to minimize
+
+numerically a complicated function of several parameters. Let
+us denote these by 00, 01 , , BN4 , and denote their possible
+range of variation by R. Then we want to ﬁnd those values of
+{ 0}C R that minimize a positive function:
+
+12 (so, ,UN_,) 101;?" 12(00,...9N-,) (49)
+
+One way to accomplish the minimization is via calculus, using a
+method known as steepest descents. The idea is to differentiate
+the function 12 with respect to each 0,, and to set the resulting N
+equations equal to zero, solving for the N 0’s. This is generally a
+pretty tall order, hence various approximate, iterative techniques
+have been developed. The simplest just steps along in 0-space,
+along the direction of the local downhill gradient -sz, until a
+minimum is foun . Then a new gradient is computed, and a new
+minimum sought .
+
+Aside fromthe labor of computing -V12, steepest descents has
+two main drawbacks: ﬁrst, it only guarantees to ﬁnd a minimum,
+not necessarily (In minimum — if a function has several local
+
+ 
+
+25. maubywmyuemuwmdiﬁadmmbetoundinhmad,mmnm,
+
+bid, p. 1113’.
+
+Chapters-MoreProgramnIngExamuoa SclentIﬂcFOR‘m
+
+I
+
+I
+rninima, steepest descents will not necessarily ﬁnd the smallest.
+Worse, consider a function that has a minimum in the form of a
+steep-sided gulley that winds slowly downhill to a declivity —
+somewhat like a meandering river's channel. Steepest descents
+will then spend all its time bouncing up and down the banks of
+the gulley, rather than proceeding along its bottom, since thel
+steepest gradient is always nearly perpendicular to the line of thei
+channel. 1‘
+Sometimes the function 12 is so complex that its gradient is tooI
+expensive to compute. Can we ﬁnd a minimum without evaluating}
+partial derivatives? A standard way to do this is called the sins?
+plex method. The idea is to construct a simplex — a set of N +1
+distinct and non-degenerate vertices in the N-dimensional 0-
+space (“non-degenerate" means the geometrical object, formed
+by connecting the N + 1 vertices with straight lines, ha non-zero
+N-dimensional volume; for example, if N=2, the simplex is a
+triangle.)
+
+We evaluate the function to be minimized at each of the vertices,
+and sort the table of vertices by the size of 12 at each vertex, the
+best (smallest x2 ) on top, the worst at the bottom. The simplex
+algorithm then chooses a new point in 0-space by the a strategy,
+expressed as the ﬂow diagram, Fig. 8-8 on page 203 below, thd
+in action somewhat resembles the behavior of an amoeba seeking
+its food. The key word )MINIMIZE that implements the complex
+decision tree in Fig. 8-8 (given here in pseudocode) is
+
+: )MINIMIZE (n.'rter - - 87: rel.error - -)
+
+INITIALIZE
+BEGIN done? NOT NN.max < AND
+WHILE
+
+REFLECT r> =best?
+
+IF r> =2worst?
+
+IF r<worst? IF STORE.X THEN
+HALVE r<worst?
+IF STORE.X ELSE SHRINK THEN
+ELSE STOREX THEN
+ELSE DOUBLE r> =best?
+IF STOREXP ELSE STORE.X THEN
+THEN
+N 1 + IS N SORT
+REPEAT ;
+
+summer-M Wat-MW!” 203
+
+usedintheformat
+
+USE( tnarne 20 96 1.6-4 )MINIMIZE
+
+Fleshing out the details is a -by now— familiar process, so we
+leave the program perse to Appendix 85. We also include there
+a FORTRAN subroutine for the simplex algorithm, taken from
+
+ 
+
+ 
+
+ 
+
+INHIALIZE \ choose simplex? is am of param. space
+BEGIN
+Converged? NOT N N.rnax s
+WHILE
+'—- REFLECT\ worst point thru geoeenter of other points
+DONE '0") S «best-Pt) 7
+.~
+I
+Yes No l(x') z l(2worst.pl) ?
+DOUBLE '/\’
+N Y
+xx") s «bestpo ? m r ’0”) < “3”“ 7
+l .
+
+Am REPEAT .
+Store r'
+
+HALVE
+i
+f(x") < I(worst.pl) ?
+REPEAT A
+
+Store r' SHRINK
+
+REPEAT
+
+ 
+
+ 
+
+Fig. 0-3 Flow dlagram of the slmplex algorithm
+
+OJUthNohletm—Almraaervod.
+
+204
+
+Ghana 3 — More Programming Examples Scientiﬁc FORTH
+
+Numerical Recipes 26, as an example of just how indecipherable
+traditional languages can be.
+
+53 Appendices
+
+§§1 Gaussian quadrature
+
+aussian quadrature formulae are based on the following idea:
+
+if we let the points 6,, and weights wll be 2N free parameters
+(n runs from 1 to N), what values of them most accurately repre-
+sent an integral by the formula
+
+B N
+I = [A dx a(x)f(x) = E1 w,,f(§,,) ? (50)
+
+In Eq. 50 0(x) is a (known) positive function and f(x) is the
+function we want to integrate. This problem can actually be
+solved, and leads to tables of points 5,, and weight coefﬁcients
+w,, speciﬁc to a particular interval [A,B] and weight function a(x).
+Gauss-Legendre integration pertains to [-1,+1] and o(x)= 1.
+(Note any interval can be transformed into [-1, + 1].)
+
+The interval [0,00) and 0(x) = e"r leads to Gauss-Laguerre for-
+
+2
+mulae, whereas the interval (— oo,+ 00) and 0(x) = e”Jr leads to
+Gauss-Hermite formulae.
+
+Finally, we note that the more common integration formulae such
+as Simpson’s rule or the trapezoidal rule can be derived on the
+same basis as the Gauss methods, except that the points are spe-
+ciﬁed in advance to be equally spaced and to include the end-
+points of the interval. Only the weights w, can be determined as
+free ﬁtting parameters that give the best approximation to the”
+integral.
+
+For given N Gaussian formulae can be more accurate than equally-
+spaced rules, as they have twice as many parameters to play with.
+
+ 
+
+26.
+
+Press, et a1. , Numerical Recipes, laid... p. 29“.
+
+mum Owe-MW!” 206
+
+Some FORTH words for 5-point Gauss-Legendre integration:
+
+ 
+
+ 
+
+N swarm WANT ﬂ
+1. ossamroreasss FCONSTANT x1 :mm (arse--0
+it ow Pomsrmr wo soda (arse-[mew [sat/2)
+N 0.4mm FWANT wt FCNER Fm IOF' F-ROT (87:-Jab)
+% QWID WTANT W2 XDIP in” FIX) wt F' F3R+
+XDIP x1 FPEGATE rude
+:acde (arse-[mam [eat/2) Poo m F‘ F3R+
+FOVERF—leFtNDERF+; Mia“ F(X)\~2F' F$+
+:reeede (a7:abx--a+b"x) F'F+; XDUP )eFNEGATEreaede
+':F3R+(e7:abcx--a+xbc)F3RF+ F-ROT; Pot) waF' F3R+
+“2 The trapezoidal rule
+ecall (Ch. 8, §1.1) how we approximated the area under a curve
+Rby capturing it between rectangles consistently higher- and
+lower than the curve; and calculating the areas of the two sets of
+rectangles. In practice we use a better approximation: we average
+the rectangular upper and lower bounds. The errors tend to
+cancel, resulting m
+B- A w
+w ( 2y (f(A +nw) + f(A +nw+w))
+n-O
+(51)
+-ff 2drf(x)+é(¥) w3max lf”(x)|
+A<r<B
+Now the error is much smaller28 - of order w2 — so if we double
+the number of points, we ecrease the error four-fold. Yet this
+so-called trapezoidal rule requires no more effort (in terms of
+the number of function evaluations) than the rectangle rule.
+27. See, eg, Abramowitz and Stegm, HMF, p.885.
+‘28. we) istheaecondderivative ofﬂx),l.e. the ﬁrst derivative are).
+29. Calledaobecausetheeuwejkﬁsapptoﬁmatedbystraight lineaepnentsbetweensuecessive
+
+printer": +w.‘l‘husweevaluatetheareasoftrapemidsratherthanrectangles.
+
+OWVNohietm-Almmarved.
+
+Ctnpter 8 - More Programming Examples Sclentlllc FORTH
+
+“3 Richardson
+In the program )INTEGRAL in Ch.8 §1§§5.3 the word INTER.
+PO LATE performs Richardson extrapolation for the trapezoid»
+a1 "rule. The idea' is this. If we use a given rule, accurate to order
+w’I ,to calculate the integral on an interval [a,b], then presumably
+the error of using the formula on each half of the interval and
+adding the results, will be smaller by 2'". For the trapezoidal rule,
+n =2, hence we expect the error from summing two half-inter-
+vals to be 4x smaller than that from the whole interval.
+
+Thus, we can write (10 = I: , I'o = I£a+by2 , I, = ﬂaw/2 )
+I0 = Iexact + R (523)
+
+Equation 52b is only an approximation because the R that ap-
+pears in it is not exactly the same as R in Eq. 52a. We will pretend
+the two R’s are equal, however, and eliminate R from the two
+equations (8.52a,b) ending with an expression for I...“ :
+
+1...... ==1§(I’o + I. - 1.) (53)
+
+Equation 53 is exactly what appears in INTERPOLATE.
+
+MMTN
+
+Owe-MW”
+
+us MW: Orampolynomtata
+: Here is a FORTH program for implementing the algorithm
+I derived in {2552 above.
+
+WON‘PI) ‘m. H348. 2RD. CM.
+
+2” 1m.
+
+DSDXKN.IXPOP. m
+l‘Duel-47:eawagln]o[n-t]--aahw|g[n]g[n+1])
+
+“zoos 804+!) 2FXO-I. 2941. an”.
+
+1W1 1M1. DXDSWV. NR)!
+
+1%: Demo m.m1[DK]FSTP.
+
+DSOXWIBXPOP. 30m
+Ind",
+I7:aawag(n]g[n+1]~-aabwg[n+1]wxg[n+t])
+in; mm) 1m oxosuov. OSPOP.
+1 transmutation.
+} MMFSTP. DSDXMOJ.BXPCP.W
+I”db-87:anharg[n+1]vno[n+1]--aabwg[n+1])
+I;DDEC(N+1)19012MJL'.2ML
+
+2901 Hill”.
+
+DXDSWV. DSFOP.
+
+FBIDSIDQFAOD. DSIDQFSTP.
+
+DSDXWV. BXPOP. SPAM. ENDOOII
+lapel--w:aabwg[n+1]l-- a-a+wp[n+1]"2 a h)
+
+I”:A{B(C(G((Mnax}Flf
+
+‘FIISTAB’I F-o a(0}6! F-0b(0}GI;
+NILE.“ (07:--g{{tl}}) F-o F-O
+M000w(l}wy{l}G@ P'z FOUERF'
+(Brea'uaa'waﬂ‘zt
+HOT F+ HIST F+ Fat/AP
+(87:--a-s+w a’-s‘+wt"2)
+m an G! ream t/F;
+
+ 
+
+:mm'e (wrelttlilnall I'll)
+M000 r-o gunner PM slinnor LOOP;
+
+2mm (ﬂzgﬂllnuoﬂlin)
+F-0h110)01 mm
+F-o mono-(iomo-(onoor- n LOOP
+Pa(10)01;
+
+:msraseoovoce (arm 11”.-)
+F-Oe(00)0l F-o
+mono wuoioo memo F' n uOOP
+F'e(10)0l;
+
+:msz Pun ISNnax sou 13cm“ tau
+FRSTAB'. urnELrA mares seoowae.
+masecouoc- ;
+
+OVARN OVARN+1
+
+:hc.N N+1|1PBN 1+ SN-H;
+:m RWWGG R;
+:thFF lBYTESW-i:
+:ZERDL NF-OFBOIL;
+
+:STAHTJbILG
+
+(--[e{n+1)][a{n+1)][b(n+t}] 87:--a-0a{n} b{n})
+Flth F-o e{N+tO}W ZEFOL
+a{ NO} USPOSE mos? ZEDL
+M NO} DISPOSE hem ZEXDL ;
+
+:SEI’.FSTACK w{I‘0}G@x{l'0}G@ sIINfi‘rGG
+aiiNl-I'IIGO:
+
+:)@'l (linul'kx-q) HIP 0) usvose F‘Gl:
+
+:Nomuuzs (”nun")
+1/Fa(N+t)@'l F30"
+b{N+1}@'i c{N+1}@-1
+M000 FMQﬁNHli) DISPOSE F‘ GI LEDP
+m;
+mm G'T'OPCKOPUOPCK
+GPCKOPCKOPOK'W
+mmmmmm‘m
+
+Chapter 3 - More Programing Examples Sclerm‘llc FOR‘I
+
+\ GRAM “MIL LEAST-0.1m W0)
+
+Nmo smrmme
+Honour SETFSTACK
+“(NHIMDROP G(N+1) emu) A(N+t)
+Yi'olGG GIN“)
+LOOP COROP FDFOPFDFDP W;
+
+:M.WLTA (z: — oid.delu muslin)
+DELTAG@ FDJP e{N0)G@ F"2 F- F”
+MTAGI;
+
+:NOT.ENUF.G‘s? New.DELTA MN+1- S—F
+FDUP FatF-
+
+(CR .FS .' FEXTITERATDNT‘IYN Os FWTl-EM)
+(:z-dd'm-n—t urn-2)
+FFDT F\ F-RDT F/ (z: —d'l[m-n-2] d/[m-n-tl)
+FOVER FOIFFESEFNDPFDROPOTFEN:
+
+:}FIT (X{Y{S{ M‘naxM B{ C{G({ —)
+NITIALIZE 1|SN 2ISN+1
+BEGIN NOT .ENUF.G's’l NMnax AND
+WHILE NextG inc.N
+FEPEAT FINIT:
+\ ------------------------------------- endoioode
+
+:REOONSTRUCT MODOCRx{IO}G@F.y{I0}G@F.
+F=ON+11+100
+°{'°}G@GI{IJIIG@F‘F+
+LOOP F.
+
+LCXDPL
+
+§§5 Non-linear least squares: simplex method
+FORTRAN program for the simplex method is given belt
+on page 209. The FORTH version, as discussed in §2§§3
+given on pages 210 and 211.
+
+WM?”
+
+mm: mxmmmmmm
+mm m- mm - 1.0.
+: ma-oam-um-m
+um mmvm.m.m.m
+one - m H
+nan-o
+LO- 1
+mutorvmner
+"-1
+m-a
+as
+Iii-2
+N-I-t
+EMF
+no 1 1 I- LIFTS
+scrotum) m-I
+FlYmﬂtYII-QITI-Bl
+M -H
+"a!
+ESE F(Y@.GT.YM)THBI
+FGJEH "11-1
+M
+t W
+RIO!- - Z‘WMYII-OMABSWMI + ABSMI-OIII
+WLTFTGJETUFN
+
+mam FALSE 'MM Mum Iterations.‘
+
+Ila-ITS!“
+emu-1.10M
+Mil-0.
+I W
+Niel-1m
+FWD-Q1184
+no 13J- LION
+w-wwo,»
+m
+
+EMF
+.4 commas
+i emu-1.10.1
+Pam‘s-W
+m-(1.+uhw-Pm.nmm.n
+5 comes:
+Vila-mm
+mvmmea
+emu-1.1a:
+m-emmuromw
+e cornea:
+
+MI-MWW
+
+ 
+
+run-mm
+rmuxmnar
+cows-um
+Plug-emu)
+
+17 W
+veg-m
+a!
+Dona-1m
+I’m-I'M
+
+1s courses
+vise-m
+Ems
+mrmoevmma
+rmuxnmeu
+cowl-1.1004
+I’m-PRU)
+
+10 course:
+YM-YPR
+error
+mam-rm
+Paar.» - BETA'Ptl-IJ) + (1 .Em-Pam.»
+
+21 comma
+YPm-FIMM
+rmu.vm)m
+00224-1.“
+PMJ-W
+
+22 OONTNUE
+van-m
+ELSE
+oozu-uns
+raNELotnar
+oozes-1mm
+W-WHJ+PILOJI
+Pris-PR1.»
+
+a courmE
+Ym-HNKIPR)
+error
+
+24 courses
+Blur
+
+ELSE
+ooasJ-mou
+I’m-PRU)
+
+25 comm:
+wee-rm
+
+ans
+
+eer01
+
+an
+
+210
+
+\WIIZATW BYTHESMPLEXIETHCD
+\mmmstw Alan/1991
+
+TASK MBA
+\ ----------------------- WM MAW
+VARABIE < F>
+:USE( [oowusl ' CFA <F> I;
+: F00 EXECUTE@ ;
+BEI-EAD' <F>
+\ -------------------- END FUNCTm NOTATm
+\ -------------------------- DATA WES
+3 VAR Him
+0 VAR N
+0 VAR N.mlx
+
+CREATESIMPLEX{{ Ndim 4 (bytes) ' Ndim1+ (#pclnta)
+'ALLOT
+
+GREATER Ndimt+ 4 (bytes) ' ALLOT \nelduale
+
+CREATEindex MimH- 2‘ ALLOT \arruyloraem'nbledlndleea
+
+:>index (1—1') Z‘index+ @;
+
+DVARIABLEW
+
+DVARIABLE Fhaidual'
+
+DVAFIABLEEpaIlon
+
+CREATEX{ Ndlm 4(bytee)‘ ALLor \trialpoint
+CREATEXH Ndim 4(bytea)‘ ALLOT \Z'Idlrialpolnt
+CREATEY{ Ndirn 4(bytea)‘ ALLOT \geocenter
+
+:} (adn—adr+4n) 4'4»; \partolarraynotation
+2}} (adrrnn—adr+[m'NJirn+n]'4) SWAP Mim' + };
+
+\ -------------------- ENDDArasrRucrunEs
+\ ---------------------------- ACTIONWORDS
+:FESIUJALS
+Ndirn1+ 0 DO SIMPLEX{(IO}} Foo F{I} R32I
+LCDP:
+
+:<indax> Mim1+ODOlindexlr+ leP: \ﬂlindax
+
+:GIER <indox>
+Ndm1+ooo F{I>1ndox}ma@
+l1+BEGNNdlm1+ OVER
+HERO/Bil >index}Fm@ FOVERFOVB! F>
+
+FFSWAP
+|>indettOVER >index
+haxl2'+l momenta-+1
+TI-ENFDFW 1+
+RHEAT WW
+LOO’;
+
+CENTE(—) FNTMmSF
+WOMF-O
+WODO
+
+(87:—Mm)
+\Ioepwereomponents
+\uraoeoverm
+
+mums-11.1)} mm H
+LOOP FOVERF/
+
+Chapter 3 - More Programming Examples
+
+ 
+
+Scientiﬁc FORT!
+
+11mm
+
+LOOP Ponce;
+\m:mm1umumm4n
+\--enehsdedl
+
+\WII'I'Y
+
+:OGIEI CR .'We'rellniaed.' ;
+:TOOMANY CR .'Toomanyihratlona' :
+
+:V.MOVE (arcadr doatadr-) \rnovevemr
+NdimoDO OVER!) OVBIUZWIE
+LOOP DOFDP:
+:STORE (adriadr2--) O}
+SIMPLEX({ NdmlndexO}}V.MOVE
+F{Ndlrnlndex}2WVE;
+:SI'OREX Fhaldul X{ STORE;
+:STOREXP Reaidual'XH STOFE:
+
+:New.F x{ Foo Fbaidud F1321;
+:EXTRUDE (B7:aeale.laetor--)
+\exbndpaeudopod
+Murmo no DUP 1} new (87:-4.1x)
+Y{I} m FUNDEI F- (37:--e.fyxy)
+FROT FUNDER F“ (B72--yr~llx-yl‘l.o
+FFOT F+ (57:--s.ly+[x+/]ﬁ.l)
+X{l} mar
+LOOP DFCP W MI;
+
+:F=1/2 F=1FNEGATEF=1FSCAI£FPLLCI(:
+:F=2 F=1FDUPFSCALEFPIJEK;
+
+\ ---------------------- DEBUGGNGCOE
+OVARDBG
+:DEBUG-ON-tlSDBG:
+:DEBUGOFFOISDBG:
+:.V SSPACES Ndimo DO DUPI} WP.
+LOOPDFOP;
+:.M (--)
+Ndimt+ODODBGCR
+IFI. ZSPACES THEN
+SMEXﬁIIndaxon .V
+036 IF F{Ilndex} WP. Ti-EN
+LOOCR
+DBGFOR X{.V WMFJ'HEN:
+
+:.F Mmt+ ODOCR F{lh&x) WP.
+LOOP:
+
+\ ------------------ “WOODS
+
+:FEFLECT CENTER
+F-t FPEGATE \nblaebr-d
+senatummon \mn
+Exrmoe \ealeulabeM
+DEEIFCRIFELECI’M'THENM:
+
+”Poem
+
+mount:
+
+an WW'IM
+\mm
+xue-(vuove \mpon
+MVP-8 mar: (71 nausea-4
+"summon \mn
+arm \muw
+
+”FOR'W “94 .M;
+
+“VE MF-IR \mw-os
+
+musicians-110)) \vmrnpt
+m \muot)
+MFCRfHALVMi'Tl-Bd M:
+
+II“ ”((0 Mada-10)) \balpt.
+Y( VJKNE \aaveit
+M1114» 100 \uywetnr
+mono \bywnponent
+
+was >m1notr
+mo vmm amass
+P-uzP- r+ R121
+LOOP
+LOOP assume ORDER
+Decree-eman- nan .M;
+---------------------------- anacnonwoms
+
+“WWW
+HMAP >M}mF>W:
+>-hau'l 0 M;
+
+and? Min MW:
+>-wm1-m;
+
+um Hum-rimlmao
+
+no mwme
+
+POVERFOVE-I F-F2'
+
+F-l-DTF+ Fl FABS mm F>;
+.............................. aorEsrwoaos
+
+ 
+
+MI-MWW 211
+
+:m (n.~--ﬂ:w~)
+Slur-a WM! OIN \ﬂﬂse
+\Ww
+\Inenau.m,m
+\ml-Ilnn
+
+'01 NM"- < All)
+
+igiig
+
+EFLEC‘TD-hm
+F r>-m
+F KWFS'YmTl-Gi
+HALVE Km
+Parmesan-arm
+ESE mm
+HEM
+r>-b‘7
+IFSTGEXPESESTGfXW
+THE
+N1+ISN omen
+FEAT core;
+
+\ ----------------------- mamas
+:P1 (ea—s7;P)oLpo}Ra.2@mP-2
+own ms": H'F+
+2) mar-'2 F2'F2'F+
+35-FF-F‘1F2/FSWAPOSFF‘F-;
+\t1=.5'(x'x+2'y'y+4'z'z-UI"2-0'1
+
+:F‘2 (u—nzrinouPo)
+mmUPP-zumm
+F2‘F+ SSFF-P’zFZIFSWAPsS-FF‘F-
+Mp,ow1}moo}me@P/Psrmrrroos
+
+\12 -[¢r"22'y"2-u)"2-051]'ooa¢'mnulx))‘ 2
+\Uuom USE(MYFLNC 101mm
+
+FLOATS
+
+5. swnExuoonm
+<1. mum pm
+1. smuoznm
+
+5. wmonmr
+3. mm mm:
+-15$IPLEX{(12))R2!
+
+.1o.suPLE1q(2o}}m21
+1. smuzmm
+s smauzznm
+
+s. swusxuson m
+a. mum }} rear
+3. smausznm
+
+212 Ms-mwm WWI]
+
+ 
+
+”Harm—“V .4.-.“ .
+
+emvuouum-Mmmemd.
+
