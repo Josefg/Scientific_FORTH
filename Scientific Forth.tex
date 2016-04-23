@@ -1,4 +1,18 @@
 \documentclass{book}
+
+% Julian called out Helvetica font for code
+\usepackage{helvet}
+\usepackage{listings}
+    \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
+            basicstyle=\ttfamily }
+% Extend the footnote line across the page
+\makeatletter
+\renewcommand\footnoterule{%
+  \kern-3\p@
+  \hrule\@width \textwidth
+  \kern2.6\p@}
+\makeatother
+
 \let\cleardoublepage\clearpage
 
 \begin{document}

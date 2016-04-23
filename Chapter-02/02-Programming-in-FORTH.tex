@@ -1,24 +1,22 @@
 ﻿\chapter{Programming in FORTH}
 
-This chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. Chapter 2 is not a programmer’s manual!
+This chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
 
-Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \footnote{L. Brodie, Starring FORTH, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as SF.} and \textit{Thinking FORTH} \footnote{L. Brodie, Thinking FORTH (Prentice-Hall, NJ 1984), referred to hereafter as Tl".} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \footnote{M. Kelly and N. Spies, FOR TH: a Tea and Reference (Prentice-Hall, NJ , 1986), referred to hereafter as FTR.} by M.Kelly and N.Spies. I strongly recommend reading FTR or SF (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
+Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \footnote{L. Brodie, \textit{Starting FORTH}, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as \textbf{SF}.} and \textit{Thinking FORTH} \footnote{L. Brodie, \textit{Thinking FORTH} (Prentice-Hall, NJ 1984), referred to hereafter as \textbf{TF}.} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \footnote{M. Kelly and N. Spies, FORTH: a Tea and Reference (Prentice-Hall, NJ , 1986), referred to hereafter as \textbf{FTR}.} by M.Kelly and N.Spies. I strongly recommend reading \textbf{FTR} or \textbf{SF} (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
 
 The (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
 
-fiG publishes a journal \textit{Forth Dimensions} whose object is the exchange of programming ideas and clever tricks.
+FIG publishes a journal \textit{Forth Dimensions} whose object is the exchange of programming ideas and clever tricks.
 
 The Association for Computing Machinery (11 West 42nd St., New York, NY 10036) maintains a Special Interest Group on FORTH (SIGForth).
 
-The Institute for Applied FORTH Research (Rochester, NY) publishes the refereed Journal of FORTH Application and Research, that serves as a vehicle for more scholarly and theoretical
-papers dealing with FORTH.
+The Institute for Applied FORTH Research (Rochester, NY) publishes the refereed \textit{Journal of FORTH Application and Research}, that serves as a vehicle for more scholarly and theoretical papers dealing with FORTH.
 
 finally, an attempt to codify and standardize FORTH is underway, so by the time this book appears the first draft of an ANS FORTH and extensions may exist.
 
 \section{The structure of FORTH}
 
-The "atom" of FORTH is sword — a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the dictionary. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces. ASCII "at, the standard FORTH delimiter.} in the dictionary the interpreter immediately
-executes that word.
+The "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces. ASCII "at, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
 
 Input? Yes
 No Interpret
@@ -30,33 +28,36 @@ number? Yes NUMBER
 ERROR
 fig. 2-1 Overview of FORTH outer interpreter
 
-In general, because FORTH is interpretive as well as compiled, the best way to study something new is in front of a computer running FORTH. Therefore we explain with illustrations, expecting the reader to try them out.
+In general, because FORTH is interpretive as well as compiled, the best way to study something new is in front of a computer running FORTH. Therefore we explain with illustrations, expecting the reader to try them out. \\
 
-In what follows, anything the user types in will be set in Helvetica, such as DECIMAL below.
+In what follows, anything the user types in will be set in \lstinline$Helvetica$, such as \lstinline$DECIMAL$ below. \\
 
-Machine responses appear in ordinary type.
+Machine responses appear in ordinary type. \\ 
 
 We now give a trivial illustration:
 
+\begin{lstlisting}
 DECIMAL <cr> ok
+\end{lstlisting}
 
-Notes:
+\underline{\textbf{Notes}}:
 \begin{itemize}
-  \item < cr > means "the user pushes the ENTER or <= button".
+  \item \lstinline$<cr>$ means "the user pushes the ENTER or <= button".
   \item ok is what FORTH says in response to an input line, if nothing has gone wrong.
   \item DECIMAL is an instruction to use base 10 arithmetic. FORTH will use any base on tell it, within reason, but usually only DECIMAL and HEX (hexadecimal) are predefined.
 \end{itemize}
 
-When the outer interpreter (see fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \textbf{NUMBER}.
+When the outer interpreter (see fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \textbf{\lstinline$NUMBER$}. \\
 
 It places the number in a special memory location called "the top of the stack" (TOS)  \footnote{We will explain about the stack in §2.3.}
-
+\begin{lstlisting}
 2 17 +. <cr> 19 ok
+\end{lstlisting}
 
-Notes:
+\underline{\textbf{Notes}}:
 \begin{itemize}
-  \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. " + " is a word and so is "." so they are \textbf{EXECUTE}d.
-  \item + adds 2 to 17 and leaves 19 on the stack.
+  \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. " \lstinline$+$ " is a word and so is " \lstinline$.$ " so they are \textbf{\lstinline$EXECUTE$}d.
+  \item \lstinline$+$ adds 2 to 17 and leaves 19 on the stack.
   \item The word . (called "emit") removes 19 from the stack and displays it on the screen.
 \end{itemize}
 
@@ -337,24 +338,28 @@ CA' * DefinES DUMMY
 The second line translates as ``The code address of * defines \textbf{DUMMY}". Entry of the above phrase would let \textbf{DUMMY} perform the job of * just by saying \textbf{DUMMY}. That is, FORTH lets us first define a dummy word, and then give it any other word’s meaning \footnote{This usage is a non-standard construct of HS/FORTH.}.
 
 Here is one use of this power: Suppose we have to define two words that are alike except for some piece in the middle:
-
-: *WORD  WORD1 WORD2 * WORD3 WORD4 ;
+\begin{lstlisting}
+: *WORD  WORD1 WORD2 *  WORD3 WORD4 ;
 : */WORD WORD1 WORD2 */ WORD3 WORD4 ;
+\end{lstlisting}
 
 we could get away with 1 word, together with \textbf{DUMMY} fromabove,
 
-: *\_or\_*/WORD
-	WORD1 WORD2
-	DUMMY
-	WORD3 WORD4 ;
-	
+\begin{lstlisting}
+: *_or_*/WORD
+    WORD1 WORD2
+    DUMMY
+    WORD3 WORD4 ;
+\end{lstlisting}
 by saying
-
-CA' * DefinES DUMMY *\_or\_*/WORD
+\begin{lstlisting}
+CA' * DefinES DUMMY *_or_*/WORD
+\end{lstlisting}
 
 or
-
-CA' */ DefinES DUMMY *\_or\_*/WORD .
+\begin{lstlisting}
+CA' */ DefinES DUMMY *_or_*/WORD .
+\end{lstlisting}
 
 This technique, a rudimentary example of vector-lug, saves memory and saves programming time by letting us vary something in the middle of a definition \textit{after the definition has been entered in the dictionary}. However, this techniqlue must be used with caution as it is akin to self-modifying code\footnote{Self-modifying machine code is considered a serious "no-no" by modern structured programming standards. Although it is sometimes valuable, few modern cpu's are capable of handling it safely. More often, because cpu's tend to use pipelining and parallelism to achieve speed, a piece of code might be modified in memory, but — having been pre-f\textit{etc}hed before modification — actually execute in unmodified form.}
 
@@ -365,48 +370,47 @@ A similar procedure lets a subroutine call itself recursively, an enormous help 
 
 The title of this section is neither a typo nor a stutter: \textbf{CREATE} finds its most important use in extending the powerful class of FORTH words called "defining" words. The colon compiler ":" is such a word, as are VARIABLE and CONSTANT. The definition of VARIABLE is simple
 
-\begin{verbatim}
+\begin{lstlisting}
 :VARIABLE CREATE 2 ALLOT ;
-\end{verbatim}
+\end{lstlisting}
 
 Here is how we use it:
-\begin{verbatim}
+\begin{lstlisting}
 VARIABLE X <cr> ok
-\end{verbatim}
+\end{lstlisting}
 
 The inner workings of VARIABLE are these:
 \begin{itemize}
     \item CREATE makes a dictionary entry with the next name in the input stream — in this case, X.
-    \item Then the number 2 is placed on the stack, and the word ALLOT
-increments the pointer that represents the current location in the dictionary by 2 bytes.
+    \item Then the number 2 is placed on the stack, and the word ALLOT increments the pointer that represents the current location in the dictionary by 2 bytes.
     \item This leaves a 2- e vacancy to store the value of the variable (that is, the next ictionary header begins 2 bytes above the end of the one just defined).
 \end{itemize}
 
 When the outer interpreter loop encounters a new VARIABLE's name in the input stream, that name’s address is placed on the stack. But this is also the location where the 2 bytes of storage begins. Hence when we type in X, the TOS will contain the storage address named X.
 
 As noted in §2.4 above, the phrase X @ (pronounced "X f\textit{etc}h") places the contents of address X on the stack, dropping the address in the process. Conversely, to store a value in the named location X, we use ! ("store"): thus
-\begin{verbatim}
+\begin{lstlisting}
 4 X ! <cr> ok
 X @ . <cr> ok
-\end{verbatim}
+\end{lstlisting}
 
 Double-length variables are defined via DVARIABLE, whose definition is
 
-\begin{verbatim}
+\begin{lstlisting}
 2 DVARIABLE CREATE 4 ALLOT ;
-\end{verbatim}
+\end{lstlisting}
 
 FORTH has a method for defining words initialized to contain specific values: for example, we might want to define the number 17 to be a word. CREATE and "," ("comma") let us do this as follows:
 
-\begin{verbatim}
+\begin{lstlisting}
 17 CREATE SEVENTEEN , <cr> ok
-\end{verbatim}
+\end{lstlisting}
 
 Now test it \textit{via}
 
-\begin{verbatim}
+\begin{lstlisting}
 SEVENTEEN @ . <cr> 17 ok
-\end{verbatim}
+\end{lstlisting}
 
 \underline{\textbf{Note}}: The word "," ("comma") puts TOS into the next 2 bytes of the dictionary and increments the dictionary pointer by 2.
 
@@ -414,28 +418,28 @@ A word C, ("see-comma") puts a byte-value into the next byte of the dictionary a
 
 \subsection{Run-time vs. compile-time actions}
 
-In the preceding example, we were able to initialize the variable SEVENTEEN to 17 when we CREATEd it, but we still have to f\textit{etc}h it to the stack via SEVENTEEN @ whenever we want it. This is not quite what we had in mind: we would like to find 17 in T0S when we say SEVENTEEN. The word DOES> gives us precisely the tool to do this.
+In the preceding example, we were able to initialize the variable SEVENTEEN to 17 when we CREATEd it, but we still have to fetch it to the stack via SEVENTEEN @ whenever we want it. This is not quite what we had in mind: we would like to find 17 in T0S when we say SEVENTEEN. The word DOES> gives us precisely the tool to do this.
 
 As noted above, the function of DOES> is to specify a run-time action for the "child" words of a defining word. Consider the defining word CONSTANT, defined in high-level\footnote{Of course CONSTANT is usually a machine—code primitive, for speed.} FORTH by
 
-\begin{verbatim}
+\begin{lstlisting}
 : CONSTANT CREATE , DOES> @ ;
-\end{verbatim}
+\end{lstlisting}
 and used as
-\begin{verbatim}
+\begin{lstlisting}
 53 CONSTANT PRIME ok
-\end{verbatim}
+\end{lstlisting}
 
 Now test it:
-\begin{verbatim}
+\begin{lstlisting}
 PRIME . <cr> 53 ok
-\end{verbatim}
+\end{lstlisting}
 
 What happened?
 \begin{itemize}
     \item CREATE (hidden in CONSTANT) made an entry (named PRIME , the first word in the input stream following CONSTANT). Then "," placed the TOS (the number 53) in the next two bytes of the dictionary.
     \item DOES> (inside CONSTANT) then appended the actions of all words between it and ";" (the end of the definition of CONSTANT) to the child word(s) defined by CONSTANT.
-    \item In this case, the only word between DOES> and ; was @ , so all FORTH constants defined by CONSTANT perform the action of placing their address on the stack (anything made by CREATE does this) and f\textit{etc}hing the contents of this address.
+    \item In this case, the only word between DOES> and ; was @ , so all FORTH constants defined by CONSTANT perform the action of placing their address on the stack (anything made by CREATE does this) and fetching the contents of this address.
 \end{itemize}
 
 \subsubsection{Klingons}
@@ -443,30 +447,30 @@ Let us make a more complex example. Suppose we had previously defined a word BOX
 
 So we define a defining word that creates (not very realistic looking) space ships as squares n pixels on a side:
 
-\begin{verbatim}
+\begin{lstlisting}
 : SPACE-SHIP CREATE . DOES>
 @-ROT (--nxy) BOX;
 : SIZE ; \ do-nothing word
-\end{verbatim}
+\end{lstlisting}
 
 Now, the usage would be (SIZE is included merely as a reminder of what 5 means — it has no function other than to make the definition look like an English phrase)
 
-\begin{verbatim}
+\begin{lstlisting}
 SIZE 5 SPACE-SHIP KLINGON <cr> ok
 7135 KLINGON <cr> ok
-\end{verbatim}
+\end{lstlisting}
 
 Of course, SPACE-SHIP is a poorly constructed defining word because it does not do what it is intended to do. Its child-word KLINGON simply draws itself at (x, y).
 
 What we really want is for KLINGON to undraw itself from its old location, compute its new position according to a set of rules, and then redraw itself at its new position This sequence of operations would require a definition more like
 
-\begin{verbatim}
+\begin{lstlisting}
 :OLD.POS@ (adr--adr n x y) DUP @ OVER
   2+ D@ :
 : SPACE-SHIP CREATE , 4 ALLOT DOES>
    OLD.POS@ UNBOX NEW.POSI
    OLD.POS@ BOX DROP ;
-\end{verbatim}
+\end{lstlisting}
 
 where the needed specialized operation UNBOX would be defined previously along with BOX.
 
@@ -480,28 +484,28 @@ For example, traffic police reporting accidents in the United States or the Unit
 We simply keep) all internal lengths in millimeters, say, and con-
 vert as follow\footnote{This example is based on 16-bit integer arithmetic. The word */ means "multiply the third number on the stack by NOS, keeping 32 bits of precision, and divide by TOS". That is, the stack comment for */is(a b c --a*b/c).}:
 
-\begin{verbatim}
+\begin{lstlisting}
 : INCHES  254 10 */ ;
 : FEET  [ 254 12 * ] LITERAL 10 */ ;
 : YARDS [ 254 36 * ] LITERAL 10 */ ;
 : CENTIMETERS 10 * ;
 : METERS 1000 * ;
-\end{verbatim}
+\end{lstlisting}
 
 The usage would be
-\begin{verbatim}
+\begin{lstlisting}
 10 FEET . <cr> 3048 ok
-\end{verbatim}
+\end{lstlisting}
 
 These are more definitions than necessary, of course, and the technique generates unnecessary code. A more compact approach uses a \textit{defining word}, UNITS:
 
-\begin{verbatim}
+\begin{lstlisting}
 : D, SWAP , , ; \ I double—length # in next ceIIs
 : UNITS CREATE D, DOES> D@ */ ;
-\end{verbatim}
+\end{lstlisting}
 
 Then we could make the table
-\begin{verbatim}
+\begin{lstlisting}
 254 10        UNITS INCHES
 254 12 * 10   UNITS FEET
 254 36 * 10   UNITS YARDS
@@ -512,26 +516,26 @@ Then we could make the table
 \ 3  METERS . <cr> 3000 ok
 \ ......
 \ \textit{etc}.
-\end{verbatim}
+\end{lstlisting}
 
 This is an improvement, but FORTH lets us do even better: here is a simple extension that allows conversion back to the input units, for use in output:
 
-\begin{verbatim}
-VARIABLE <AS>               \ new variable
-0 <AS> !                    \ initialize to "F"
-: AS -1 <AS> ! ;            \ set <AS> = "T"
-:UNITS CREATE D, DOES>
-  D@                        \ get 2 #s
-  <AS> @                    \ get current val.
-      IF SWAP THEN          \ flip if "true"
-  */  0 <AS> ! ;            \ convert. reset <AS>
+\begin{lstlisting}
+VARIABLE <AS>                \ new variable
+0 <AS> !                     \ initialize to "F"
+: AS -1 <AS> ! ;             \ set <AS> = "T"
+: UNITS CREATE D, DOES>
+   D@                        \ get 2 #s
+   <AS> @                    \ get current val.
+      IF SWAP THEN           \ flip if "true"
+  */  0 <AS> ! ;             \ convert. reset <AS>
 
-BEHEAD' < AS >       \ make it local for security\footnote{Headerless words are described in "R, p. 3251f. The word BEHEAD' is HS/FORTH’s method for making a normal word into a headerless one. See Ch. 5§1§§3 for further details.}
+BEHEAD' < AS >       \ make it local for security(*@\footnote{Headerless words are described in "R, p. 3251f. The word BEHEAD' is HS/FORTH’s method for making a normal word into a headerless one. See Ch. 5§1§§3 for further details.} @*)
 \ unit definitions remain the same
 \ Usage:
 \ 10 FEET       . <cr> 3048 ok
 \ 3048 AS FEET  . <cr> 10 ok
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Advanced methods of controlllng the compiler}
 FORTH includes a technique for switching from compile mode to interpret mode while compiling or interpreting. This is done using the words ] and [ . (Contrary to intuition, ] turns the
@@ -541,22 +545,22 @@ One use of ] and [ is to create an "action table" that allows us to choose which
 
 For example, suppose we have a series of push-buttons numbered 1-6, and a word WHAT to read them.
 
-That is, WHAT waits for input from a keypad; when button \# 3 is pushed, \textit{e.g.}, WHAT leaves 3 on the stack.
+That is, WHAT waits for input from a keypad; when button \#3 is pushed, \textit{e.g.}, WHAT leaves 3 on the stack.
 
-We would like to use the word BUTTON in the following way:
+We would like to use the word \lstinline$BUTTON$ in the following way:
 
-\begin{verbatim}
+\begin{lstlisting}
 WHAT BUTTON
-\end{verbatim}
+\end{lstlisting}
 
 BUTTON can be defined to choose its action from a table of
 actions called BUTTONS . We define the words as follows:
 
-\begin{verbatim}
+\begin{lstlisting}
 CREATE BUTTONS ] RING-BELL OPEN-DOOR
   ENTER LAUGH CRY SELF-DESTRUCT [
 : BUTTON 1- 2* BUTTONS + @ EXECUTE ;
-\end{verbatim}
+\end{lstlisting}
 
 If, as before, I push \#3, then the action ENTER will be executed. Presumably button \#7 is a good one to avoid\footnote{The safety of an execution table can be increased by making the first (that is, the zero’th) action WARNING, and making the first step of BUTTON a word CHECK-DATA that maps any number not in the range 1-6 into 0. Then a wrong button number causes a WARNING to be issued and the system resets.}.
 
@@ -564,7 +568,7 @@ How does this work?
 \begin{itemize}
     \item CREATE BUTTONS makes a dictionary entry BUTTONS.
     \item ] turns on the compiler: the previously-defined word-names RING-BELL, \textit{etc}. are looked up in the dictionary and compiled into the table (as though we had begun with :), rather than being executed.
-    \item  returns to interactive mode (as if it were ;), so that the next colon definition (BUTTON) can be processed.
+    \item \rbrack returns to interactive mode (as if it were ;), so that the next colon definition (BUTTON) can be processed.
     \item The table BUTTONS now contains the code-field addresses (CFA’s) of the desired actions of BUTTON.
     \item BUTTON first uses 1- to subtract 1 from the button number left on the stack by WHAT (so we can use 0—based numbering into the table — if the first button were \# 0, this would be unneeded).
     \item 2* then multiplies by 2 to get the offset (from the beginning of BUTTONS) of the CFA representing the desired action.
@@ -606,13 +610,13 @@ them, and places the string in a buffer beginning at an address
 returned by PAD".
 
 The word 3. ("string-emit") could then be defined as
-\begin{verbatim}
+\begin{lstlisting}
 : $. COUNT TYPE ; (adr - -)
 and would be used with 3" like this:
 
 $' The quick brown fox" < cr> ok
 S. The quick brown fox ok
-\end{verbatim}
+\end{lstlisting}
 
 Since this book in not an attempt to paraphrase fiR it is strongly
 recommended that the details of using the system words to devise
@@ -638,7 +642,7 @@ to handle strings about 3—5 kbytes long.
 §10 FORTH programming style
 A FORTH program typically looks like this
 
-\begin{verbatim}
+\begin{lstlisting}
 \ Example of FORTH program
 :WORD1 .. . ;
 
@@ -648,7 +652,7 @@ A FORTH program typically looks like this
 : LAST-WORD wonon ...WORD3
 wonoz wonm ;
 LAST-WORD <cr> \ run program
-\end{verbatim}
+\end{lstlisting}
 
 Note: The word \ means "disregard the rest of this line". It is a
 convenient method for commenting code.
