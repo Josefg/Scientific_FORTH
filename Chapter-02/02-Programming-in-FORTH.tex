@@ -1,10 +1,10 @@
 ﻿\chapter{Programming in FORTH}
 
-This chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
+\TallC{T}{his} chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
 
 Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \footnote{L. Brodie, \textit{Starting FORTH}, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as \textbf{SF}.} and \textit{Thinking FORTH} \footnote{L. Brodie, \textit{Thinking FORTH} (Prentice-Hall, NJ 1984), referred to hereafter as \textbf{TF}.} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \footnote{M. Kelly and N. Spies, FORTH: a Tea and Reference (Prentice-Hall, NJ , 1986), referred to hereafter as \textbf{FTR}.} by M.Kelly and N.Spies. I strongly recommend reading \textbf{FTR} or \textbf{SF} (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
 
-The (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
+\TallC{T}{he} (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
 
 FIG publishes a journal \textit{Forth Dimensions} whose object is the exchange of programming ideas and clever tricks.
 
@@ -16,7 +16,7 @@ finally, an attempt to codify and standardize FORTH is underway, so by the time 
 
 \section{The structure of FORTH}
 
-The "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces. ASCII "at, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
+\TallC{T}{he} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces. ASCII "at, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
 
 Input? Yes
 No Interpret
@@ -28,11 +28,11 @@ number? Yes NUMBER
 ERROR
 fig. 2-1 Overview of FORTH outer interpreter
 
-In general, because FORTH is interpretive as well as compiled, the best way to study something new is in front of a computer running FORTH. Therefore we explain with illustrations, expecting the reader to try them out. \\
+In general, because FORTH is interpretive as well as compiled, the best way to study something new is in front of a computer running FORTH. Therefore we explain with illustrations, expecting the reader to try them out.
 
-In what follows, anything the user types in will be set in \lstinline$Helvetica$, such as \lstinline$DECIMAL$ below. \\
+In what follows, anything the user types in will be set in \lstinline$Helvetica$, such as \regc{DECIMAL} below.
 
-Machine responses appear in ordinary type. \\ 
+Machine responses appear in ordinary type.
 
 We now give a trivial illustration:
 
@@ -42,95 +42,112 @@ DECIMAL <cr> ok
 
 \underline{\textbf{Notes}}:
 \begin{itemize}
-  \item \lstinline$<cr>$ means "the user pushes the ENTER or <= button".
-  \item ok is what FORTH says in response to an input line, if nothing has gone wrong.
-  \item DECIMAL is an instruction to use base 10 arithmetic. FORTH will use any base on tell it, within reason, but usually only DECIMAL and HEX (hexadecimal) are predefined.
+  \item \bc{<cr>} means "the user pushes the ENTER or $\Leftarrow$ button".
+  \item \bc{ok} is what FORTH says in response to an input line, if nothing has gone wrong.
+  \item \regc{DECIMAL} is an instruction to use base 10 arithmetic. FORTH will use any base on tell it, within reason, but usually only \regc{DECIMAL} and \regc{HEX} (hexadecimal) are predefined.
 \end{itemize}
 
-When the outer interpreter (see fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \textbf{\lstinline$NUMBER$}. \\
+When the outer interpreter (see fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \bc{NUMBER}.
 
-It places the number in a special memory location called "the top of the stack" (TOS)  \footnote{We will explain about the stack in §2.3.}
+It places the number in a special memory location called "the top of the stack" (TOS)\footnote{We will explain about the stack in §2.3.}
 \begin{lstlisting}
 2 17 +. <cr> 19 ok
 \end{lstlisting}
 
 \underline{\textbf{Notes}}:
 \begin{itemize}
-  \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. " \lstinline$+$ " is a word and so is " \lstinline$.$ " so they are \textbf{\lstinline$EXECUTE$}d.
+  \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. "\bc{+}" is a word and so is "\bc{.}" so they are \bc{EXECUTE}d.
   \item \lstinline$+$ adds 2 to 17 and leaves 19 on the stack.
   \item The word . (called "emit") removes 19 from the stack and displays it on the screen.
 \end{itemize}
 
 We might also have said \footnote{since FORTH uses words, when we enter an input line we say the corresponding phrase.}
 
-HEX 0A 14 * . <cr> C8 ok
+\begin{lstlisting}
+HEX 0A 14 * . <cr> CR ok
+\end{lstlisting}
 
-(Do you understand this? Hint: \textbf{HEX} stands for "switch to hexadecimal arithmetic")
+(Do you understand this? Hint: \bc{HEX} stands for "switch to hexadecimal arithmetic")
 
 If the incoming text can neither be located in the dictionary nor interpreted as a number, FORTH issues an error message.
 
 
 \section{Extending the dictionary}
 
-The compiler is one of FORTl-I’s most endearing features. It is elegant, simple, and mostly written in FORTH. Although the technical details of the FORTH compiler are generally more interesting to systems developers than to scientists, its components can often be used to solve programming problems. When this is the case, we necessarily discuss details of the compiler. In this section we discuss how the compiler extends the dictionary. In §2§§8 below we examine the parts of the compiler in greater detail.
+\TallC{T}{he} compiler is one of FORTl-I’s most endearing features. It is elegant, simple, and mostly written in FORTH. Although the technical details of the FORTH compiler are generally more interesting to systems developers than to scientists, its components can often be used to solve programming problems. When this is the case, we necessarily discuss details of the compiler. In this section we discuss how the compiler extends the dictionary. In §2§§8 below we examine the parts of the compiler in greater detail.
 
 FORTH has special words that allow the creation of new dictionary entries, i.e., new words. The most important are " : " ("start a new definition") and " ; " ("end the new definition").
 
 Consider the phrase
 
+\begin{lstlisting}
 : NEW-WORD WORD1 17 WORDZ . . . WORDn ; ok
+\end{lstlisting}
 
-The initial " : " is \textit{EXECUTE}d because it is already in the dictionary. Upon execution, " : " does the following:
+The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. Upon execution, "\bc{:}" does the following:
 
 \begin{itemize}
-    \item Creates a new dictionary entry, \textbf{NEW-WORD}, and switches from interpret- to compile mode.
-    \item In compile mode, the interpreter looks up words and — rather than executin them — installs ointers to their code. If the text is a number ( 7 above), FOR builds the literal number into
-the dictionary space allotted for \textbf{NEW-WORD}.
-    \item The action of \textbf{NEW-WORD} will be to \textbf{EXECUTE} sequentially the previously-defined words \textbf{WORD1}, \textbf{WORD2}, ...\textbf{WORDn}, placing any built-in numbers on the stack as they occur.
-    \item The FORTH co aililerpo \textbf{EXECUTE}s the last word " ; " of the definition, by installing code (to return control to the next outer level of the interpreter \footnote{This level could be either the outer interpreter or a word that invokes \textbf{ NEW-WORD}.}) then switching back from compile to interpret mode. Most other languages treat tokens like " ; " as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
+    \item Creates a new dictionary entry, \bc{NEW-WORD}, and switches from \textbf{interpret}- to \textbf{compile} mode.
+    \item In compile mode, the interpreter looks up words and — rather than executin them — installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
+    \item The action of \bc{NEW-WORD} will be to \bc{EXECUTE} sequentially the previously-defined words \bc{WORD1}, \bc{WORD2}, ...\bc{WORDn}, placing any built-in numbers on the stack as they occur.
+    \item The FORTH compiler \bc{EXECUTE}s the last word " ; " of the definition, by installing code (to return control to the next outer level of the interpreter\footnote{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}) then switching back from compile to interpret mode. Most other languages treat tokens like "\regc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
 
 In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.
 
 The above definition of \textbf{NEW-WORD} is extremely structured compared with FORTRAN or BASIC. Its definition is just a series of subroutine calls.
 
-We now illustrate how to define and use a new word using the previously defined words " : "and " ; ". Enter the phrase (this new word *+ expects 3 numbers, a, b, and c on the stack)
+\TallC{W}{e} now illustrate how to define and use a new word using the previously defined words "\bc{:}"and "\bc{;}". Enter the phrase (this new word \bc{*+} expects 3 numbers, a, b, and c on the stack)
 
-: *+ 	* + ; ok
+\begin{lstlisting}
+: *+   * + ; ok
+\end{lstlisting}
 
 \underline{Notes:}
 \begin{itemize}
-	\item * multiplies b with c, leaving b*c.
-	\item + then adds b*c to a, leaving a + b*c behind.
+    \item \bc{*} multiplies b with c, leaving b*c.
+    \item \bc{+} then adds b*c to a, leaving a + b*c behind.
 \end{itemize}
 
 Now we actually try out a + :
-DECIMAL 5 6 7 *+ . 47 ok
 
-\underline{Notes:}
+\begin{lstlisting}
+DECIMAL 5 6 7 *+ . 47 ok
+\end{lstlisting}
+
+\underline{\textbf{Notes:}}
 \begin{itemize}
-	\item The period . is not a typo, it EMlTs the result.
-	\item FORTH’s response to a b c *+ . is a + b*c ok.
+    \item The period \bc{.} is not a typo, it EMlTs the result.
+    \item FORTH’s response to \bc{a b c *+ .} is a + b*c ok.
 \end{itemize}
 
-What if we were to enter *+ with nothing on the stack? Let's try it and see ( .S is a word that displays the stack without changing its contents):
+What if we were to enter *+ with nothing on the stack? Let's try it and see (\bc{.S} is a word that displays the stack without changing its contents):
 
+\begin{lstlisting}
 .S empty stack ok
 
 *+ empty stack ok
+\end{lstlisting}
 
-\underline{Exercise:}
+\dotrule{1\textwidth}
+
+\underline{\textbf{Exercise:}}
+
 Suppose you entered the input line
 
+\begin{lstlisting}
 HEX 5 6 7 *+ . <cr> xxx ok
+\end{lstlisting}
 
-What would you expect the response xxx to be?
+What would you expect the response \textbf{xxx} to be?
 
-\textit{Answer: 2F}
+\textit{Answer:} \bc{2F}
+
+\dotrule{1\textwidth}
 
 \section{Stacks and reverse Polish notation (RPN)}
 
-We now discuss the stack and the "reverse Polish" or "postfix" arithmetic based on it. (Anyone who has used one of the Hewlett-Packard calculators should already be familiar with the basic concepts.)
+\TallC{W}{e} now discuss the stack and the "reverse Polish" or "postfix" arithmetic based on it. (Anyone who has used one of the Hewlett-Packard calculators should already be familiar with the basic concepts.)
 
 A Polish mathematician (J .Lukasewcleia) showed that numerical calculations require an irreducible minimum of elementary operations (f\textit{etc}hing and storing numbers as well as addition, subtraction, multiplication and division). The minimum is obtained when the calculation is organized by "stack" arithmetic.
 
@@ -138,11 +155,15 @@ Thus virtually all central processors (CPU’s) intended for arithmetic operatio
 
 But what is a stack? As the name implies, a stack is the machine analog of a pile of cards with numbers written on them. Numbers are always added to, and removed from, the top of the pile. (That is, a stack resembles a job where layoffs follow seniority: last in, first out.) Thus, the FORTH input line
 
+\begin{lstlisting}
 DECIMAL 2 5 73 -16 ok
+\end{lstlisting}
 
 followed by the line
 
+\begin{lstlisting}
 + - * . yyy ok
+\end{lstlisting}
 
 leaves the stack in the successive states shown in Table 2-1 below 
 
@@ -154,25 +175,25 @@ Cell\# 	Initial 	Ops-> 	+ 	-	*	.
 
  Table 2-1 \textit{Picture of the stack during operations}
 
-We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables,  \textit{\textit{etc}}.  — so TOS ("top of stac ") is given relative \#0, NOS ("next on stack") \#1, \textit{\textit{etc}}.
+We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables, \textit{etc}.— so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \textit{\textit{etc}}.
 
-The operation ``.'' ("emit") displays -104 to the screen, leaving the stack empty. That is, yyy above is -104.
+The operation "\bc{.}" ("emit") displays -104 to the screen, leaving the stack empty. That is, \bc{yyy} above is \bc{-104}.
 
 \section{Manipulating the parameter stack}
 
-FORTH system incorporate (at least) two stacks: the parameter stack which we now discuss, and the return stack which we defer to 2.3.2.
+\TallC{F}{ORTH} system incorporate (at least) two stacks: the \textbf{parameter} stack which we now discuss, and the \textbf{return stack} which we defer to 2.3.2.
 
 In order to use a stack-based system, we must be able to put numbers on the stack, remove them, and rearrange their order. FORTH includes standard words for this purpose.
 
 Putting numbers on the stack is easy: one simply types the number (or it appears in the definition of a FORTH word).
 
-To remove a number we have the word DROP that drops the number from TOS and moves up all the other numbers.
+To remove a number we have the word \bc{DROP} that drops the number from TOS and moves up all the other numbers.
 
 Tb exchange the top 2 numbers we have .
 
-DUP duplicates the TOS into NOS, pushing down all the other numbers.
+\bc{DUP} duplicates the TOS into NOS, pushing down all the other numbers.
 
-ROT rotates the top 3 numbers.
+\bc{ROT} rotates the top 3 numbers.
 
 Cell \# 	initial 	Ops->	DROP 	SWAP	ROT		DUP
 0		-16		Result	73		73		5		16
@@ -185,7 +206,7 @@ Table 2-2 Stack manipulation operators
 
 These actions are shown on page 19 above in Thble 2—2 (we show what each word does to the initial stack).
 
-In addition the words OVER, UNDER, PICK and ROLL act as shown in Table 2-3 below (note PICK and ROLL must be
+In addition the words \bc{OVER}, \bc{UNDER}, \bc{PICK} and \bc{ROLL} act as shown in Table 2-3 below (note \bc{PICK} and \bc{ROLL} must be preceded by an integer that says where on the stack an element gets  \bc{PICK}ed or \bc{ROLL}ed).
 
 Cell \# 	initial		Ops->	OVER	UNDER	4 PICK	4 ROLL
 0 		-16		 Result 	73 		-16		2
@@ -196,60 +217,64 @@ Cell \# 	initial		Ops->	OVER	UNDER	4 PICK	4 ROLL
 
 Table 2-3 More stack manipulation operators
 
-preceded by an integer that says where on the stack an element gets  \textbf{PlCK}ed or  \textbf{ROLL}ed).
+Clearly, \bc{1 PICK} is the same as \bc{DUP}, \bc{2 PICK} is a synonym for \bc{OVER}, \bc{2 ROLL} means \bc{SWAP}, and \bc{3 ROLL} means \bc{ROT}.
 
-Clearly, 1 PICK is the same as DUP, 2 PICK is a synonym for OVER, 2 ROLL means SWAP, and 3 ROLL means ROT.
-
-As Brodie has noted (TF), it is rarely advisable to have aword use a stack so deep that PICK or ROLL is needed. It is generally better to keep word definitions short, using only a small number of arguments on the stack and consuming them to the extent possible. On the other hand, \textbf{ROT} and its opposite, \textbf{-ROT}\footnote{defined as : -ROT ROT ROT ;}, are often useful.
+As Brodie has noted (\textbf{TF}), it is rarely advisable to have aword use a stack so deep that \bc{PICK} or \bc{ROLL} is needed. It is generally better to keep word definitions short, using only a small number of arguments on the stack and consuming them to the extent possible. On the other hand, \bc{ROT} and its opposite, \bc{-ROT}\footnote{defined as \bc{: -ROT ROT ROT ;}}, are often useful.
 
 \subsection{The return stack and Its uses}
 
-We have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism ——during actual execution- is the return stack (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the next address, it is actually called the return address for historical reasons.
+We have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism ——during actual execution- is the \textbf{return stack} (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the \textbf{next} address, it is actually called the \textbf{return} address for historical reasons.
 
-In addition to serving as a reservoir of return addresses (since words can be nested, the return addresses need a stack to be put on) the rstack is where the limits of a DO LOOP construct are placed\footnote{We discuss looping in 2.7 below.}
+In addition to serving as a reservoir of return addresses (since words can be nested, the return addresses need a stack to be put on) the rstack is where the limits of a \bc{DO ... LOOP} construct are placed\footnote{We discuss looping in 2.7 below.}
 
-The user can also store/retrieve to/from the rstack This is an example of using a component for a purpose other than the one it was designed for. Such use is not encouraged by every FORTH text, needless to say, since it introduces the spice of danger. To store to the rstack we say > R, and to retrieve we say R > . DUP > R is a speedup of the phrase DUP > R . The words D>R DR> , for maving double-length integers, also exist on many systems. The word R@ copies the top of the rstack to the TOS.
+The user can also store/retrieve to/from the rstack This is an example of using a component for a purpose other than the one it was designed for. Such use is not encouraged by every FORTH text, needless to say, since it introduces the spice of danger. To store to the rstack we say \bc{>R}, and to retrieve we say \bc{R>}. \bc{DUP>R} is a speedup of the phrase \bc{DUP >R}. The words \bc{D>R DR>} , for maving double-length integers, also exist on many systems. The word \bc{R@} copies the top of the rstack to the TOS.
 
-The danger is this: anything put on the rstack during a word’s execution must be removed before the word terminates. If the > R and the R > do not balance, then a wrong next address will be jumped to and EXECUTEd. Since this could be the address of data, and since it is being interpreted as machine instructions, the results will be always unpredictable, but seldom amusing.
+\leftbar[1\linewidth]
+\textbf{The danger is this:} anything put on the rstack during a word’s execution must be removed before the word terminates. If the \bc{>R} and the \bc{R>} do not balance, then a \textbf{wrong next address} will be jumped to and \bc{EXECUTE}d. Since this could be the address of data, and since it is being interpreted as machine instructions, the results will be \textbf{always unpredictable}, but seldom amusing.
+\endleftbar
 
 Why would we want to use the rstack for storage when we have a perfectly good parameter stack to play with? Sometimes it becomes simply impossible to read code that performs complex gymnastics on the parameter stack, even though FORTH permits such gymnastics.
 
-Consider a problem — say, drawing a line on a bit- mapped graphics output device from (x,y) to (x’,y’)— that requires 4 arguments. We have to turn on the appropriate pixels in the memory area representing the display, in the ranges from the origin to the end coordinates of the line. Suppose we want to work with x and y first, but they are 3rd and 4th on the stack. So we have to ROLL or PICK to get them to TOS where they can be worked with conveniently. We probably need them again, so we use
+Consider a problem — say, drawing a line on a bit- mapped graphics output device from (x,y) to (x',y')— that requires 4 arguments. We have to turn on the appropriate pixels in the memory area representing the display, in the ranges from the origin to the end coordinates of the line. Suppose we want to work with x and y first, but they are 3rd and 4th on the stack. So we have to \bc{ROLL} or \bc{PICK} to get them to TOS where they can be worked with conveniently. We probably need them again, so we use
 
+\begin{lstlisting}
 4PICK 4PICK ( -- x y x' y' x y)
+\end{lstlisting}
 
-Now 6 arguments are on the stack! See what I mean? A better way stores temporarily the arguments x’ and y', leaving only 2 on the stack. If we need to duplicate them, we can do it with an already existing word, DDUP.
+Now 6 arguments are on the stack! See what I mean? A better way stores temporarily the arguments x’ and y', leaving only 2 on the stack. If we need to duplicate them, we can do it with an already existing word, \bc{DDUP}.
 
-Complex stack manipulations can be avoided by defining VARIABLEs —named locations— to store numbers. Since FORTH, variables are typically global — any word can access them — their use can lead to unfortunate and unexpected interactions among parts of a large program. Variables should be used sparingly.
+Complex stack manipulations can be avoided by defining \bc{VARIABLE}s —named locations— to store numbers. Since FORTH, variables are typically \textit{global} —any word can access them — their use can lead to unfortunate and unexpected interactions among parts of a large program. Variables should be used sparingly.
 
 While FORTH permits us to make variables local to the sub- if routines that use themlo, for many purposes the rstack can advantageously replace local variables:
 
 \begin{itemize}
-	\item The rstack already exists, so it need not be defined anew.
-	\item When the numbers placed on it are removed, the rstack shrinks, thereby reclaiming some memory.
+    \item The rstack already exists, so it need not be defined anew.
+    \item When the numbers placed on it are removed, the rstack shrinks, thereby reclaiming some memory.
 \end{itemize}
 
 Suppose, in the previous example, we had put x’ and y’ on the rstack via the phrase
 
->R >R DDUP.
+\begin{lstlisting}
+>R >R DDUP .
+\end{lstlisting}
 
 Then we could duplicate and access x and y with no trouble.
 
-10. See FTR, p. 3253 for a description of beheading - a process to make variables local to a small \ set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2§8§§3-2, 3§5§§2, 5§1§§2 and 11§2 offer examples. It
+10. See FTR, p. 3253 for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2§8§§3-2, 3§5§§2, 5§1§§2 and 11§2 offer examples.
 
-\underline{\textbf{A note of caution}}: since the rstack is a critical component of the execution mechanism, we mess with it at our peril. If we want to use it, we must clean up when we are done, so it is in the same state as when we found it. A word that places a number on the rstack must get it off again — using R> or RDROP — before exiting that word". Similarly, since no LOOP uses the rstack also, for each >R in such a loop (after DO) there must be a corresponding R > or RDROP (before LOOP is reached). Otherwise the results will be unpredictable and probably will crash the system.
+\leftbar[1\linewidth]
+\underline{\textbf{A note of caution}}: since the rstack is a critical component of the execution mechanism, we mess with it at our peril. If we want to use it, we must clean up when we are done, so it is in the same state as when we found it. A word that places a number on the rstack must get it off again — using \bc{R>} or \bc{RDROP} — before exiting that word\footnote{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \textbf{TF}.}. Similarly, since no LOOP uses the rstack also, for each >R in such a loop (after DO) there must be a corresponding R > or RDROP (before LOOP is reached). Otherwise the results will be unpredictable and probably will crash the system.
+\endleftbar
 
-\section{F\textit{etc}hing and storing}
+\section{Fetching and storing}
 
-Ordinary (16-bit) numbers are f\textit{etc}hed from memory to the stack by " @ " ("f\textit{etc}h"), and stored by " I " ("store"). The word @ expects an address on the stack and replaces that address by its contents using, \textit{e.g.}, the phrase X @ . The word " I" expects a number (NOS) and an address (T OS) to store it in, and places the number in the memory location referred to by the address, consuming both arguments in the process, as in the phrase 32 X !
+\TallC{O}{rdinary} (16-bit) numbers are f\textit{etc}hed from memory to the stack by "\bc{@}" ("fetch"), and stored by "\bc{!}" ("store"). The word @ expects an address on the stack and replaces that address by its contents using, \textit{e.g.}, the phrase \bc{X @}. The word "\regc{!}" expects a number (NOS) and an address (T OS) to store it in, and places the number in the memory location referred to by the address, consuming both arguments in the process, as in the phrase \bc{32 X !}
 
-Double length (32-bit) numbers can similarly be f\textit{etc}hed and stored, by D@ and DI . (FORTH systems designed for the newer 32-bit machines sometimes use a 32-bit-wide stack and may not distinguish between single- and double-length integers.)
+Double length (32-bit) numbers can similarly be f\textit{etc}hed and stored, by \bc{D@} and \bc{DI} . (FORTH systems designed for the newer 32-bit machines sometimes use a 32-bit-wide stack and may not distinguish between single- and double-length integers.)
 
-Positive numbers smaller than 255 can be placed in single bytes of memory using C@ and CI . This is convenient for operations with strings of ASCII text, for example screen, file and keyboard I/O.
+Positive numbers smaller than 255 can be placed in single bytes of memory using \bc{C@} and \bc{C!}. This is convenient for operations with strings of ASCII text, for example screen, file and keyboard I/O.
 
-In Chapters 3, 4, S and 7 we shall extend the lexicon of @ and ! words to include floating point and complex numbers.
-
-11. \textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See TF.
+In Chapters 3, 4, S and 7 we shall extend the lexicon of \regc{@} and \regc{!} words to include floating point and complex numbers.
 
 \section{Arlthmetlc operations}
 

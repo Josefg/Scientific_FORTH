@@ -1,10 +1,17 @@
 \documentclass{book}
 
-% Julian called out Helvetica font for code
-\usepackage{helvet}
+% Code formatting
+\usepackage{helvet}     % Julian called out Helvetica font for code
+\usepackage{pxfonts}    % Bold inline code
 \usepackage{listings}
     \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
             basicstyle=\ttfamily }
+\newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
+\newcommand{\regc}[1]{\lstinline{#1}}
+% For code in paragraphs use \lstinline$word$
+% For bolded code in paragraphs use \bc{word}
+% For code not in paragraphs use \begin{listing} code here \end{listing}
+
 % Extend the footnote line across the page
 \makeatletter
 \renewcommand\footnoterule{%
@@ -14,6 +21,35 @@
 \makeatother
 
 \let\cleardoublepage\clearpage
+
+% Place a blank line with every space between paragraphs
+\usepackage{parskip}
+
+% Have a paragraph's first letter span 2 lines
+\usepackage{lettrine}
+    \newcommand{\TallC}[2]{\lettrine[lines=2]{\textbf{#1}}{#2}}
+% \TallC{T}{he} to create a large T
+
+% Dotted lines across the page
+\newcommand{\dotrule}[1]{%
+   \parbox[t]{#1}{\dotfill}}
+% \dotrule{1\textwidth} will make it across the page
+
+% Side bar at some points in the text
+\usepackage{framed}
+\renewenvironment{leftbar}[1][\hsize]
+{%
+    \def\FrameCommand
+    {%
+        {\vrule width 2pt}%
+        \hspace{0pt}%must no space.
+        % \fboxsep=\FrameSep\colorbox{yellow}%
+    }%
+    \MakeFramed{\hsize#1\advance\hsize-\width\FrameRestore}%
+}
+{\endMakeFramed}
+% Use \leftbar[1\linewidth] at the beginning
+% Ues \endleftbar at the end
 
 \begin{document}
 \include{Chapter-01/01-Toward-Scientific-FORTH}
