@@ -16,17 +16,48 @@ finally, an attempt to codify and standardize FORTH is underway, so by the time 
 
 \section{The structure of FORTH}
 
-\TallC{T}{he} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces. ASCII "at, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
+\TallC{T}{he} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces, ASCII 20hex, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
 
-Input? Yes
-No Interpret
-ok
-
-Interpret
-word? Yes EXECUTE
-number? Yes NUMBER
-ERROR
-fig. 2-1 Overview of FORTH outer interpreter
+\begin{figure}[ht]
+    \framebox[\textwidth]{
+        \begin{tikzpicture}[node distance=2cm]
+            %Create nodes for left loop
+            \node (input_1)     [wordinr1] {Input?}    ;
+            \node (interpret_1) [wordinr1, right of = input_1, xshift=0.5cm, yshift=-0.75cm] {Interpret};
+            \node (ok)          [wordinr1, below of = input_1, xshift=1.0cm, yshift=0.5cm] {ok};
+            \coordinate[below of=input_1, yshift=0.5cm] (cont_1);
+            \coordinate[left  of=cont_1,  xshift=0.5cm] (cont_2);
+            \coordinate[above of=cont_2, yshift=0.5cm] (cont_3);
+            \coordinate[above of=input_1, yshift=-1.0cm] (cont_4);
+            \coordinate[below of=input_1, xshift=2.5cm, yshift=0.5cm] (cont_5);
+            %Connect left loop
+            \draw [arrow] (input_1.south) -- node[xshift=0.40cm] {No} (cont_1.north);
+            \draw [arrow] (ok.west)       -- (cont_1.east);
+            \draw [arrow] (cont_1.west)   -- (cont_2.east);
+            \draw [arrow] (cont_2.north)  -- (cont_3.south);
+            \draw [arrow] (cont_3.east)   -- (cont_4.west);
+            \draw [arrow] (cont_4.south)  -- (input_1.north);
+            %Connect right loop
+            \draw [arrow] (input_1.east)  -| node[yshift=0.30cm, xshift=-0.80cm] {Yes} (interpret_1.north) ;
+            \draw [arrow] (interpret_1.south) -- (cont_5.north);
+            \draw [arrow] (cont_5.west) -- (ok.east) ;
+            
+            \node (interpret_2) [wordinr2, yshift=0.75cm, xshift=5.0cm]           {Interpret} ;
+            \node (word)        [wordinr2, yshift=1.0cm,  below of = interpret_2] {word?}     ;
+            \node (number_1)    [wordinr2, yshift=1.0cm,  below of = word, ]      {number?}   ;
+            \node (error)       [wordinr2, yshift=1.0cm,  below of = number_1]    {ERROR}     ;
+            \node (execute)     [wordinr2, xshift=1.0cm,  right of = word]        {EXECUTE}   ;
+            \node (number_2)    [wordinr2, xshift=1.0cm,  right of = number_1]    {NUMBER}    ;
+            \draw [arrow] (interpret_2) -- (word);
+            \draw [arrow] (word)        -- (number_1);
+            \draw [arrow] (number_1)    -- (error);
+            \draw [arrow] (word)        -- node[yshift=0.30cm] {Yes} (execute);
+            \draw [arrow] (number_1)    -- node[yshift=0.30cm] {Yes} (number_2);
+        \end{tikzpicture}
+    }
+  \caption{\textit{Overview of FORTH outer interpreter}}
+  \label{fig:Outer_interpreter}
+\end{figure}
 
 In general, because FORTH is interpretive as well as compiled, the best way to study something new is in front of a computer running FORTH. Therefore we explain with illustrations, expecting the reader to try them out.
 
@@ -58,13 +89,13 @@ It places the number in a special memory location called "the top of the stack" 
 \begin{itemize}
   \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. "\bc{+}" is a word and so is "\bc{.}" so they are \bc{EXECUTE}d.
   \item \lstinline$+$ adds 2 to 17 and leaves 19 on the stack.
-  \item The word . (called "emit") removes 19 from the stack and displays it on the screen.
+  \item The word \bc{.} (called "emit") removes 19 from the stack and displays it on the screen.
 \end{itemize}
 
 We might also have said \footnote{since FORTH uses words, when we enter an input line we say the corresponding phrase.}
 
 \begin{lstlisting}
-HEX 0A 14 * . <cr> CR ok
+HEX 0A 14 * . <cr> C8 ok
 \end{lstlisting}
 
 (Do you understand this? Hint: \bc{HEX} stands for "switch to hexadecimal arithmetic")
@@ -76,7 +107,7 @@ If the incoming text can neither be located in the dictionary nor interpreted as
 
 \TallC{T}{he} compiler is one of FORTl-I’s most endearing features. It is elegant, simple, and mostly written in FORTH. Although the technical details of the FORTH compiler are generally more interesting to systems developers than to scientists, its components can often be used to solve programming problems. When this is the case, we necessarily discuss details of the compiler. In this section we discuss how the compiler extends the dictionary. In §2§§8 below we examine the parts of the compiler in greater detail.
 
-FORTH has special words that allow the creation of new dictionary entries, i.e., new words. The most important are " : " ("start a new definition") and " ; " ("end the new definition").
+FORTH has special words that allow the creation of new dictionary entries, \textit{i.e.}, new words. The most important are "\bc{:}" ("start a new definition") and "\bc{;}" ("end the new definition").
 
 Consider the phrase
 
@@ -90,14 +121,14 @@ The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. U
     \item Creates a new dictionary entry, \bc{NEW-WORD}, and switches from \textbf{interpret}- to \textbf{compile} mode.
     \item In compile mode, the interpreter looks up words and — rather than executin them — installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
     \item The action of \bc{NEW-WORD} will be to \bc{EXECUTE} sequentially the previously-defined words \bc{WORD1}, \bc{WORD2}, ...\bc{WORDn}, placing any built-in numbers on the stack as they occur.
-    \item The FORTH compiler \bc{EXECUTE}s the last word " ; " of the definition, by installing code (to return control to the next outer level of the interpreter\footnote{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}) then switching back from compile to interpret mode. Most other languages treat tokens like "\regc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
+    \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\footnote{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
 
 In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.
 
 The above definition of \textbf{NEW-WORD} is extremely structured compared with FORTRAN or BASIC. Its definition is just a series of subroutine calls.
 
-\TallC{W}{e} now illustrate how to define and use a new word using the previously defined words "\bc{:}"and "\bc{;}". Enter the phrase (this new word \bc{*+} expects 3 numbers, a, b, and c on the stack)
+\TallC{W}{e} now illustrate how to define and use a new word using the previously defined words "\bc{:}"and "\bc{;}". Enter the phrase (this new word \bc{*+} expects 3 numbers, \textit{a}, \textit{b}, and \textit{c} on the stack)
 
 \begin{lstlisting}
 : *+   * + ; ok
@@ -109,7 +140,7 @@ The above definition of \textbf{NEW-WORD} is extremely structured compared with 
     \item \bc{+} then adds b*c to a, leaving a + b*c behind.
 \end{itemize}
 
-Now we actually try out a + :
+Now we actually try out \bc{*+} :
 
 \begin{lstlisting}
 DECIMAL 5 6 7 *+ . 47 ok
@@ -118,7 +149,7 @@ DECIMAL 5 6 7 *+ . 47 ok
 \underline{\textbf{Notes:}}
 \begin{itemize}
     \item The period \bc{.} is not a typo, it EMlTs the result.
-    \item FORTH’s response to \bc{a b c *+ .} is a + b*c ok.
+    \item FORTH's response to \bc{a b c *+ .} is \bc{a + b*c ok}.
 \end{itemize}
 
 What if we were to enter *+ with nothing on the stack? Let's try it and see (\bc{.S} is a word that displays the stack without changing its contents):
@@ -149,11 +180,11 @@ What would you expect the response \textbf{xxx} to be?
 
 \TallC{W}{e} now discuss the stack and the "reverse Polish" or "postfix" arithmetic based on it. (Anyone who has used one of the Hewlett-Packard calculators should already be familiar with the basic concepts.)
 
-A Polish mathematician (J .Lukasewcleia) showed that numerical calculations require an irreducible minimum of elementary operations (f\textit{etc}hing and storing numbers as well as addition, subtraction, multiplication and division). The minimum is obtained when the calculation is organized by "stack" arithmetic.
+A Polish mathematician (J .Lukasewcleia) showed that numerical calculations require an irreducible minimum of elementary operations (fetching and storing numbers as well as addition, subtraction, multiplication and division). The minimum is obtained when the calculation is organized by "stack" arithmetic.
 
-Thus virtually all central processors (CPU’s) intended for arithmetic operations are designed around stacks. FORTH makes efficient use of CPU's by reflecting this underlying stack architecture in its syntax, rather than translating algebraic-looking program statements ("infix" notation) into RPN-based machine operations as FORTRAN, BASIC, C and Pascal do.
+Thus virtually all central processors (CPU's) intended for arithmetic operations are designed around stacks. FORTH makes efficient use of CPU's by reflecting this underlying stack architecture in its syntax, rather than translating algebraic-looking program statements ("infix" notation) into RPN-based machine operations as FORTRAN, BASIC, C and Pascal do.
 
-But what is a stack? As the name implies, a stack is the machine analog of a pile of cards with numbers written on them. Numbers are always added to, and removed from, the top of the pile. (That is, a stack resembles a job where layoffs follow seniority: last in, first out.) Thus, the FORTH input line
+But what \textit{is} a stack? As the name implies, a stack is the machine analog of a pile of cards with numbers written on them. Numbers are always added to, and removed from, the top of the pile. (That is, a stack resembles a job where layoffs follow seniority: last in, first out.) Thus, the FORTH input line
 
 \begin{lstlisting}
 DECIMAL 2 5 73 -16 ok
@@ -165,15 +196,22 @@ followed by the line
 + - * . yyy ok
 \end{lstlisting}
 
-leaves the stack in the successive states shown in Table 2-1 below 
+leaves the stack in the successive states shown in Table 2-1 below
 
-Cell\# 	Initial 	Ops-> 	+ 	-	*	.
-0 		-16 		Result 	57 	-52	104	...
-1 		73 		-> 		5 	2	...	...
-2 		5 		2		...	...
-3 		2		...		...
+\begin{center}
+    \begin{tabular}{|c c c c c c c|}
+        \hline
+   Cell\# & Initial    & Ops$\rightarrow$ & +       & -          & *       & . \\ [0.5ex] 
+        \hline
+        0 & \lgray -16 & Result        & \Aggray 57 & \dgray -52 & \gray 104 & ... \\ 
+        1 & \lgray 73  & $\rightarrow$ & \Aggray 5  & \dgray 2   & ...       & ... \\
+        2 & \lgray 5   &               & \Aggray 2  & ...        & ...       & ... \\
+        3 & \lgray 2   &               & ...        & ...        & ...       & ... \\
+        \hline
+    \end{tabular}
+\end{center}
 
- Table 2-1 \textit{Picture of the stack during operations}
+Table 2-1 \textit{Picture of the stack during operations}
 
 We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables, \textit{etc}.— so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \textit{\textit{etc}}.
 
@@ -195,27 +233,41 @@ Tb exchange the top 2 numbers we have .
 
 \bc{ROT} rotates the top 3 numbers.
 
-Cell \# 	initial 	Ops->	DROP 	SWAP	ROT		DUP
-0		-16		Result	73		73		5		16
-1		73		->		5		-16		-16
-2		5				2		5		73
-3		2				...		2		2
-4		...				...		...		...
+\begin{center}
+    \begin{tabular}{|c c c c c c c|}
+        \hline
+   Cell\# & Initial    & Ops$\rightarrow$ & DROP   & SWAP        & ROT       & DUP\\ [0.5ex] 
+        \hline
+        0 & \lgray -16 & Result        & \Aggray 73 & \dgray 73  & \gray 5   & \digray -16 \\ 
+        1 & \lgray 73  & $\rightarrow$ & \Aggray 5  & \dgray -16 & \gray -16 & \digray -16 \\
+        2 & \lgray 5   &               & \Aggray 2  & \dgray 5   & \gray 73  & \digray 73  \\
+        3 & \lgray 2   &               & ...        & \dgray 2   & \gray 2   & \digray 5   \\
+        4 & \lgray ... &               & ...        & ...        & ...       & \digray 2   \\
+        \hline
+    \end{tabular}
+\end{center}
 
-Table 2-2 Stack manipulation operators
+Table 2-2 \textit{Stack manipulation operators}
 
 These actions are shown on page 19 above in Thble 2—2 (we show what each word does to the initial stack).
 
 In addition the words \bc{OVER}, \bc{UNDER}, \bc{PICK} and \bc{ROLL} act as shown in Table 2-3 below (note \bc{PICK} and \bc{ROLL} must be preceded by an integer that says where on the stack an element gets  \bc{PICK}ed or \bc{ROLL}ed).
 
-Cell \# 	initial		Ops->	OVER	UNDER	4 PICK	4 ROLL
-0 		-16		 Result 	73 		-16		2
-1 		73 		-> 		-16		73		-16
-2 		5 				73 		-16		73
-3 		2				5 		5		5
-4 		...				2		2		2		...
+\begin{center}
+    \begin{tabular}{|c c c c c c c|}
+        \hline
+   Cell\# & Initial    & Ops$\rightarrow$ & OVER   & UNDER        & 4 PICK  & 4 ROLL \\ [0.5ex] 
+        \hline
+        0 & \lgray -16 & Result        & \Aggray 73  & \dgray -16 & \gray 2   & \digray 2   \\ 
+        1 & \lgray 73  & $\rightarrow$ & \Aggray -16 & \dgray 73  & \gray -16 & \digray -16 \\
+        2 & \lgray 5   &               & \Aggray 73  & \dgray -16 & \gray 73  & \digray 73  \\
+        3 & \lgray 2   &               & \Aggray 5   & \dgray 5   & \gray 5   & \digray 5   \\
+        4 & \lgray ... &               & \Aggray 2   & \dgray 2   & \gray 2   & ...         \\
+        \hline
+    \end{tabular}
+\end{center}
 
-Table 2-3 More stack manipulation operators
+Table 2-3 \textit{More stack manipulation operators}
 
 Clearly, \bc{1 PICK} is the same as \bc{DUP}, \bc{2 PICK} is a synonym for \bc{OVER}, \bc{2 ROLL} means \bc{SWAP}, and \bc{3 ROLL} means \bc{ROT}.
 
@@ -245,7 +297,7 @@ Now 6 arguments are on the stack! See what I mean? A better way stores temporari
 
 Complex stack manipulations can be avoided by defining \bc{VARIABLE}s —named locations— to store numbers. Since FORTH, variables are typically \textit{global} —any word can access them — their use can lead to unfortunate and unexpected interactions among parts of a large program. Variables should be used sparingly.
 
-While FORTH permits us to make variables local to the sub- if routines that use themlo, for many purposes the rstack can advantageously replace local variables:
+While FORTH permits us to make variables local to the sub- if routines that use them\footnote{See \textbf{FTR}, p. 3253 for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2§8§§3-2, 3§5§§2, 5§1§§2 and 11§2 offer examples.}, for many purposes the rstack can advantageously replace local variables:
 
 \begin{itemize}
     \item The rstack already exists, so it need not be defined anew.
@@ -259,8 +311,6 @@ Suppose, in the previous example, we had put x’ and y’ on the rstack via the
 \end{lstlisting}
 
 Then we could duplicate and access x and y with no trouble.
-
-10. See FTR, p. 3253 for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2§8§§3-2, 3§5§§2, 5§1§§2 and 11§2 offer examples.
 
 \leftbar[1\linewidth]
 \underline{\textbf{A note of caution}}: since the rstack is a critical component of the execution mechanism, we mess with it at our peril. If we want to use it, we must clean up when we are done, so it is in the same state as when we found it. A word that places a number on the rstack must get it off again — using \bc{R>} or \bc{RDROP} — before exiting that word\footnote{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \textbf{TF}.}. Similarly, since no LOOP uses the rstack also, for each >R in such a loop (after DO) there must be a corresponding R > or RDROP (before LOOP is reached). Otherwise the results will be unpredictable and probably will crash the system.
@@ -348,7 +398,7 @@ The word \textbf{/LOOP} 1s a variant of \textbf{+LOOP} for working with unsigned
 
 \section{The pearl of FORTH}
 
-An unusual construct, \textbf{CREATE. .DOES>}, has been called ‘the pearl of FORTH" \footnote{Michael Ham, "Structured Programming", Dr. Dobb’slmmal adel‘m Tools, October, 1986.} This is more than poetic license.
+An unusual construct, \textbf{CREATE...DOES\textgreater}, has been called ‘the pearl of FORTH" \footnote{Michael Ham, "Structured Programming", Dr. Dobb’slmmal adel‘m Tools, October, 1986.} This is more than poetic license.
 
 \textbf{CREATE} is a component of the compiler that makes a new dictionary entry with a given name (the next name in the input stream) and has no other function.
 
@@ -408,7 +458,7 @@ The inner workings of VARIABLE are these:
 \begin{itemize}
     \item CREATE makes a dictionary entry with the next name in the input stream — in this case, X.
     \item Then the number 2 is placed on the stack, and the word ALLOT increments the pointer that represents the current location in the dictionary by 2 bytes.
-    \item This leaves a 2- e vacancy to store the value of the variable (that is, the next ictionary header begins 2 bytes above the end of the one just defined).
+    \item This leaves a 2-byte vacancy to store the value of the variable (that is, the next ictionary header begins 2 bytes above the end of the one just defined).
 \end{itemize}
 
 When the outer interpreter loop encounters a new VARIABLE's name in the input stream, that name’s address is placed on the stack. But this is also the location where the 2 bytes of storage begins. Hence when we type in X, the TOS will contain the storage address named X.
