@@ -1,114 +1,40 @@
-The 80x87 Family
+\chapter{The 80x87 Family}
+\startcontents[chapters]
+\printcontents[chapters]{}{1}{}
 
-Comm
+\TallC{W}{hen} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and HT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
 
-51 Internal 80x87 stack manipulation 67
+We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\footnote{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling VAX minicomputers.}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\footnote{J. Palmer and S. Morse, \textit{The 8087 Primer} (John Wiley & Sons, NY (1984), hereafter referred to as \textbf{8087P}).} The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
 
-551 The FORTH assembler 67
+Instructions for the 80x87 are always appended to a code called “escape” (ESC, D8h) that alerts the coprocessor and diverts control to it. The MS-DOS assembler MASM and debugger DEBUG will automatically assemble this code with 80x87 instructions, so the user does not need to worry about including ESC except to be aware that it is happening. (Of course, a FORTH system that lacks 80x87 assembler extensions will need to include ESC explicitly to generate 80x87 codes.)
 
-§§2 Using MS-DOS DEBUG 68
-52 Memory usage (storage and retrieval) 70
-53 Arithmetic words 72
-54 Special constants 73
-§5 Test words 74
-56 Mathematical functions 76
-§7 Extending the intrinsic 80x87 stack 80
-58 Clone wars 84
+We shall see in Ch. 4 §1.1 how to use the FORTH assembler, and in Ch. 4 §1.2 how to use DEBUG\footnote{A treasure included with MS-DOS}, to extend a FORTH system for 80x87 operations if they are not already included as a floating point lexicon.
 
-When we speak of the 80x87 mathematical co-processor family,
+The 80x87 machine code instruction set includes instructions for moving numbers to the registers from memory and vice-versa, as well as from one 80x87 register to another. The internal moves are of course much faster than those to or from external memory.
 
-we include the original Intel chips, the Cyrix D387 and HT
-C287 and C387 chips, and the AMD 80287 and 80387 clones, as
-well as the on-chip ﬂoating point unit found on the Intel 80486
-chips.
+Advanced programming methods — such a recursive algorithms — require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\footnote{see \textbf{8087P}, p. 93ff.} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 §7.
 
-We now describe some features of the 80x87 ﬂoating point co«
-processors (FPUs) that affect scientiﬁc programming on IBM-PC
-compatible machinesl. The 8087 chip complements the Intel
-8088/8086 CPU family, the 80287 works with the 30286 series,
-the 80387 with the 80386, and the 80486 includes an on-chip FPU.
-The 8087 chip is connected pin-for-pin to the 8088/8086. (ﬁle
-details are given in The 8037mm” 2.) The interface and instruc-
+\section{Internal 80x87 and manipulation}
 
- 
+The 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\footnote{see \textbf{8087P, p. 87ff.}.
 
-l. Althoudiweconﬁneounelves tothe $1187 chip. theMotorola 68881/2 coprocessorscan be
-prpymmed inthenmegenenlmannertoachieveﬂoatingpointcapabﬂitiesﬁvaﬂingVAx'
+We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are FDUP FSWAP FDROP FROT FOVER .
 
-mmwonputen.
+How are we to define them in terms of machine code primitives?
 
-2. J. Palmer and S. Morse, The 8087M!” (John Wiley & Sons. NY (1984), hereafter referred to
-
-an MP).
-
-Glamor 4 - The ma? Famly Scientiﬁc FORTH
-
-tion set automatically take care of bus arbitration (that is, which
-chip has access to the memory) and interrupts, in order to be sure
-that the CPU and 80x87 do not perform conﬂicting operations.
-
-Instructions for the 80x87 are always appended to a code called
-“escape” (ESC, D8h) that alerts the coprocessor and diverts
-control to it. The MS-DOS assembler MASM and debugger
-DEBUG will automatically assemble this code with 80x87 in-
-structions, so the user does not need to worry about including
-ESC except to be aware that it is happening. (Of course, aFORI'I-I
-system that lacks 80x87 assembler extensions will need to include
-ESC explicitly to generate 80x87 codes.)
-
-We shall see in Ch. 4 §1.1 how to use the FOKI'H assembler, and
-in Ch. 4 §1.2 how to use DEBUGs, to extend a FORTH system
-for 80x87 operations if they are not already included as a ﬂoating
-point lexicon.
-
-The 80x87 machine code instruction set includes instructions for
-moving numbers to the registers from memory and vice-versa, as
-well as from one 80x87 register to another. The internal moves
-are of course much faster than those to or from external memory.
-
-Advanced programming methods —such a recursive algo-
-rithms — require an fstack of unlimited depth. The designers of
-the 8087 anticipated the need for fstack extension and included
-instructions for this purpose. Unfortunately, the instructions were
-not well thought out4 so a moderately complex software fstack
-extension manager is needed to augment them. We design such a
-manager in Ch. 4 §7.
-
- 
-
-A treasure included with MS-DOS
-
-see 8087?, p. 93ft.
-
-Mc-mnmrm 67
-
-81 Internal m7 and: manlpulatlon
-
-The 80x87 is organized around a stack of 8 80-bit registers ( the
-87stack). The 8-deep stack can be subdivided into smaller
-
-stacks for special pu g‘poses, but this 1s only useful when coding 1n
-assembler for speed
-
-We begin with words for performing 80x87 stack manipulation
-analogous to those deﬁned for parameter stack. These are FDUP
-FSWAP FDROP FROT FOVER .
-
-How are we to deﬁne them in terms of machine code primitives?
-
-“1 me FORTH «enabler
+\subsection{The FORTH assembler}
 
 very FORTH worthy of the name includes an assembler,
 
-usually set up as an alternate vocabulary6 called ASSEMBLEH.
-The assembler allows direct deﬁnition of a new word in terms of
+usually set up as an alternate vocabulary\footnote{Vocabularies are a method for subdividing the dictionary.} called ASSEMBLEH.
+The assembler allows direct definition of a new word in terms of
 machine codes, which are referred to using standard mnemonics. A
-typical FORTH assembly language deﬁnition (we now specialize to
-HS/FORTH) for @ would have the form7
+typical FORTH assembly language definition (we now specialize to
+HS/FORTH) for @ would have the form\footnote{BX is a CPU register, and \[BX\] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
 
 CODE @ BX [BX] MOV. END-CODE
 
-ACODE deﬁnitionis a machine-coded subroutine somewhere
+ACODE definitionis a machine-coded subroutine somewhere
 in memory. To use it, the compiler has to know where it is and
 insert appropriate unconditional JUMP (JMP) and RETURN
 (REI‘) instructions in the machine code representation of the
@@ -116,23 +42,20 @@ calling program.
 
 Here is what happened in the CODE version of @ above:
 
-0 The deﬁning word CODE set up a dictionary entry with the
+0 The defining word CODE set up a dictionary entry with the
 name @, with an appropriate pointer and JUMP instructions
-to make the newly deﬁned word run the code sequence com-
-prising the deﬁnition.
+to make the newly defined word run the code sequence com-
+prising the definition.
 
  
 
-5. see me, p. m.
 
-6. Vocabularies are a method for subdividing the dictionary.
 
-7. BXisaCPUreg'ster,and[BX]means“thememorylocationwhoseaddressisinBX".
-PIS/FORTH uses a naming convention in which assembler mnemonics end with a period, e.g.
-HOV. .Also, PIS/FORTH makes the TOS the BX register. to reduce the number of pushes and
-pops needed to execute simple words.
 
-Chapter 4 — The N? Famly Scientiﬁc FORTH
+
+
+
+Chapter 4 — The N? Famly Scientific FORTH
 
 e The word END-CODE cleans up the loose ends by adding
 the obligatory RET instruction sequence and turning off the
@@ -141,7 +64,7 @@ compiler. (That is, END-CODE installs “NEXT".)
 0 END-CODE is thus the analog of ; as CODE is of 3 .
 
 Consider now the word FROT whose Intel assembly language
-deﬁnition would be
+definition would be
 
 FROT: ; entry point
 
@@ -152,7 +75,7 @@ FWAIT ; hold 8086 operations
 FXCH ST(2) ; swap TOS and ST(2)
 RET ; return
 
-In PIS/FORTH assembler, the deﬁnition becomes 1 .
+In PIS/FORTH assembler, the definition becomes 1 .
 CODE FROT FWAIT. 1 FXCH. FWAIT. 2 FXCH. E
 END-CODE 1
 
@@ -181,7 +104,7 @@ The design of the 80286, 80386 and 80486 eliminates this problem. consequently W
 required when assembling 80287/80387/80487 machine code. See, ¢.g., John H. Crawford and
 Patrick P. Gelsinger, Programming the 80386 (Sybex. San Francisco, 1987). HS/FORTH allows
 the user to choose which class of machine to assemble for, when loading the 80:87 assembler c!-
-lension. The 80287 + option simply deﬁnes FWAIT. as a null word. '
+lension. The 80287 + option simply defines FWAIT. as a null word. '
 
 l1
 
@@ -190,11 +113,11 @@ l1
 mam Mo-msomF-uy 69
 
 system, in addition to an assembler, provide a way to insert
-machine codes —hex numbers - directly into the code ﬁeld of a
+machine codes —hex numbers - directly into the code field of a
 word. HS/FORTH, e.g., uses the words < 96 and 96 > to enclose
 the hex codes being inserted.
 
-The problem is, how do we ﬁnd out what these hex codes are?
+The problem is, how do we find out what these hex codes are?
 The simplest way is to use DEBUG9 to generate (HEX) code
 
 sequences. Rather than try to explain, we shall illustrate by re-
@@ -224,8 +147,8 @@ C > DEBUG starts DEBUG
 3801:0100 98 09 09 98 09 CA
 -0 Quit session
 
-From the Dump (or Unsassembly) we ﬁnd code bytes 93 D9 F7
-D9 C9 F6 D9 C9 which can be inserted directly into the deﬁni-
+From the Dump (or Unsassembly) we find code bytes 93 D9 F7
+D9 C9 F6 D9 C9 which can be inserted directly into the defini-
 tion of FROT:
 
  
@@ -239,7 +162,7 @@ emvuounese-Almm.
 
 70
 
-Chapter 4 — The ma? anly Scientiﬁc FORTH
+Chapter 4 — The ma? anly Scientific FORTH
 
 CODE FROT <96 9809 F709 CSFB 0909 96>
 END-CODE (::abc--bca)
@@ -248,10 +171,10 @@ The rest of the 80x87 stack words, l
 
 FDUP FSWAP FDROP FOVER F-ROT ‘
 
-whose assembler deﬁnitions are:
+whose assembler definitions are:
 
 l
-CODE FDUP FWAIT. 0 FLD. END-CODE l
+CODE FDUP FWAIT. 0 flD. END-CODE l
 CODE FSWAP FWAIT. 1 FXCH. END-CODE
 CODE FDROP FWAIT. o FSTP. END-CODE L
 CODE F—ROT FWAIT. 2 FXCH. .
@@ -260,7 +183,7 @@ l
 
  
 
-can be deﬁned similarly in 8086/8087 machine code using the
+can be defined similarly in 8086/8087 machine code using the
 DEBUG program or a reference manual for the chip (cg. 8087?) 1
 to determine the hex codes.
 
@@ -274,19 +197,19 @@ the 87stack.
 
 For the moment we need words to retrieve and store 16-bit
 integers, short reals (32 bit) and temporary reals (80 bit).
-These have mnemonics FILD (“load integer to ST (0)”), FISTP
-(“store integer and pop ST(1) into ST(O)”); FLD, FSTP respec-
-tively. Typical (HS/)FORTH assembler deﬁnitions are
+These have mnemonics fiLD (“load integer to ST (0)”), fiSTP
+(“store integer and pop ST(1) into ST(O)”); flD, FSTP respec-
+tively. Typical (HS/)FORTH assembler definitions are
 
 CODE I16@
-FWAIT. [BX] WORD-PTR FILD.
+FWAIT. [BX] WORD-PTR fiLD.
 [3x1 POP.
 FWAIT.
 
 END-CODE
 
 CODE l16|
-FWAIT. [BX] WORD-PTR FISTP.
+FWAIT. [BX] WORD-PTR fiSTP.
 [13x1 POP.
 FWAIT.
 
@@ -294,27 +217,27 @@ END-CODE
 
 ma—mmrm 71
 
-Similarly, m and I32! can be deﬁned by replacing WORD-
-PTR with DWORD-PTR. 11) deﬁne M and l6“ -assuming
+Similarly, m and I32! can be defined by replacing WORD-
+PTR with DWORD-PTR. 11) define M and l6“ -assuming
 these are needed— replace DWORD-PTR with OWOBD-PTR.
-The 32-, 64- and 80-bit ﬂoating point analogues 332@, R32!,
-Rm, RMI, ROO@ and ROOI are deﬁnedbyreplacing FILD
-by FLD and FISTP by FSTP, and using DWOﬂD-PTR,
+The 32-, 64- and 80-bit floating point analogues 332@, R32!,
+Rm, RMI, ROO@ and ROOI are definedbyreplacing fiLD
+by flD and fiSTP by FSTP, and using DWOflD-PTR,
 OWORD-PTR or Terra-Pram as appropriate.
 
 We also need words to load the 87stack from the stack and vice
 versa. In HS/FORTH, the top of the parameter stack is
 actually the BX register on the CPU. There is no machine instruc-
 tion for loading the 87stack directly from a CPU register. Thus,
-we must ﬁrst transfer the contents of BX to memory and thence
+we must first transfer the contents of BX to memory and thence
 to the 87stack. The inverse operation also must proceed through
 a memory location. The data-transfer words are named in an
-obvious way 5- > F and F- > S. HS/FORTH deﬁnes them directly
+obvious way 5- > F and F- > S. HS/FORTH defines them directly
 in machine code, manipulating the CPU register BP that points
 to the top of the CPU stack. That is, HS/FORTH uses two bytes
 immediately below NOS as the intermediate memory cell.
 
-Here we deﬁne S— > F and F— > S directly in high-level FORTH
+Here we define S— > F and F— > S directly in high-level FORTH
 by wasting a little memory for a (hidden) temporary variable:
 
 VARIABLE TEMP
@@ -330,9 +253,9 @@ BEHEAD' TEMP \ hide address or TEMP
 Faster machine code versions of S—> F and F— > S are11
 
 CODE S—>F TEMP +[] BX MOV. BX POP.
-FWAIT. TEMP +[] I16 FILD. END-CODE
+FWAIT. TEMP +[] I16 fiLD. END-CODE
 
-CODE F—>S 8X PUSH. TEMP +[] FISTP.
+CODE F—>S 8X PUSH. TEMP +[] fiSTP.
 ex TEMP +[] MOV. END-CODE
 
  
@@ -344,41 +267,41 @@ DJunnvuounm—umm.
 
 72
 
-Chapter 4 — The m7 Famly Sclentlﬂc FORTH
+Chapter 4 — The m7 Famly Sclentlflc FORTH
 
-These deﬁnitions will satisfy our present needs for storing and
+These definitions will satisfy our present needs for storing and
 retrieving from the 87stack.
 
 Note: a substantial gain in speed can be achieved with the
 80386/80387 and 80486 families, by using instructions that effect
 32-bit wide transfers 2.
 
-§3 Arithmetic words
+\section{Arithmetic words}
 
-PU (80x87) arithmetic is generally performed with the
+\TallC{F}{PU} (80x87) arithmetic is generally performed with the
 maximum precision allowed by the (80-bit) size of the
 registers .
 
-As noted in §4.2, the 80x87 allows 3 ﬂoating point representations
+As noted in §4.2, the 80x87 allows 3 floating point representations
 for storage and retrieval in external memory: 32 hit (single precision),
 64 bit (double precision) and 80 bit (“temporary real”).
 
-To conserve memory we generally use 32 bit ﬂoating point num-
+To conserve memory we generally use 32 bit floating point num-
 bers (REAL'4 in the old FORTRAN parlance)unless the nature
-of the calculation demands retention of more signiﬁcant ﬁgures
+of the calculation demands retention of more significant figures
 to prevent roundoff errors.
 
 The FORTH arithmetic words we shall need are
 
 F+ F— FR— F* F/ FR/ FNEGATE FABS FSGN
-whose deﬁnitions are (CODE and END-CODE are assumed)
+whose definitions are (CODE and END-CODE are assumed)
 
 F+ FWAIT. FADDP. (a7: a b -- a+b)
 F- FWAIT. FSUBP. (87: a b -- a—b)
-FFI— FWAIT. FSUBRP. (87: a b -- b—a)
+Ffi— FWAIT. FSUBRP. (87: a b -- b—a)
 F* FWAIT. FMULP. (a7: a b -- a'b)
 F/ FWAIT. FDIVP. (87: a b -- a/b)
-FFl/ FWAIT. FDIVRF’. (a7: a b -- b/a)
+Ffl/ FWAIT. FDIVRF’. (a7: a b -- b/a)
 
  
 
@@ -387,8 +310,8 @@ FFl/ FWAIT. FDIVRF’. (a7: a b -- b/a)
 
 See, cg, John H. Crawford and Patrick P. Gelsinger,Progumming the 80386 (Sybex, San Fran-
 cisco, 1987).
-MthmrghhhptnsialewfmaudﬁdaﬂprredstﬁmnﬁsubismﬂmmaEarhhmedc
-performedtmothermachinesohatis.toeompareresultswhiledebuﬁng),lseenow'rtueinamode
+MthmrghhhptnsialewfmaudfidaflprredstfimnfisubismflmmaEarhhmedc
+performedtmothermachinesohatis.toeompareresultswhiledebufing),lseenow'rtueinamode
 thatdmnupcaktdmkmswhikdbrdnhldngpredsionandrefuthereadermnfs2a8
 
 sammam own-name“ 73
@@ -414,13 +337,13 @@ Table 4-1 Speclal Constants
 
 word oonst. mnemonic codes
 
-F =0 0 FLDZ 98 09 E5
-F=1 1 FLD1 93 De E8
-FwPl pi=3.14... FLDPI 98 09 E5
-F=L2(10) Iog210 FLDL2T 98 D9 E9
-F =L2(E) logze FLDL2E 98 09 EA
-F =L10(2) logioZ FLDLG2 98 09 EC
-F=LN(2) loge2 FLDLN2 98 09 ED
+F =0 0 flDZ 98 09 E5
+F=1 1 flD1 93 De E8
+FwPl pi=3.14... flDPI 98 09 E5
+F=L2(10) Iog210 flDL2T 98 D9 E9
+F =L2(E) logze flDL2E 98 09 EA
+F =L10(2) logioZ flDLG2 98 09 EC
+F=LN(2) loge2 flDLN2 98 09 ED
 
  
 
@@ -432,14 +355,14 @@ F=LN(2) loge2 FLDLN2 98 09 ED
 
 §5 Test words
 
-We need to be able to determine the algebraic sign of a ﬂoating
+We need to be able to determine the algebraic sign of a floating
 
 point number, as well as whether one is larger than another.
 The 80x87 chip has 4 instructions for this purpose, whose
 mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are
 shown below in Table 4-2.
 
-Table 4-2 Machine language ﬂoating point tests
+Table 4-2 Machine language floating point tests
 
  
 
@@ -497,7 +420,7 @@ mm<x o 1
 
  
 
-Now we are in a position to deﬁne the test words F0>, F0=,
+Now we are in a position to define the test words F0>, F0=,
 F0<,aswellasF>,F=,F<.Wehave16
 
 CODE FTST FWAIT. FTST. 0 FSTP END-CODE
@@ -521,21 +444,16 @@ DECIMAL
 
 15. aee,e.g., Table 4.1
 
-16. ﬂuthetestwordsF< andF>aredeﬁnedothetoFo> andFo<.Thisreversalofdirec-
-tionsisnaratypographicalerrorﬂtisdemanded bytheoperationofFCONPP -seell7|‘.
+16. fluthetestwordsF< andF>aredefinedothetoFo> andFo<.Thisreversalofdirec-
+tionsisnaratypographicalerrorfltisdemanded bytheoperationofFCONPP -seell7|‘.
 
 thlthNoblHQZvAlrlgtlsrsaaNed.
 
-76 Ctmpter4-Tham7Famly SclendﬂcFORTH
+76 Ctmpter4-Tham7Famly SclendflcFORTH
 
-56 Mathematical functions
+\section{Mathematical functions}
 
-We now proceed to develop a suite of special functions for the
-
-801187 FPU. These will include the usual trigonometric func-
-tions, logarithms, and exponentials. We retain initial Fs' 1n the
-names to remind us the FPUis being used. The functions are given
-in Table 4-4 below:
+\TallC{W}{e} now proceed to develop a suite of special functions for the 801187 FPU. These will include the usual trigonometric functions, logarithms, and exponentials. We retain initial Fs' 1n the names to remind us the FPUis being used. The functions are given in Table 4-4 below:
 
 Table 4-4 Mathematical function prlmltlvas
 
@@ -555,7 +473,7 @@ F2XM1 (87:x-- 2"—1) 9809F0 FWAITFZXM1
 
  
 
-These primitive functions allow us to deﬁne the logarithms and
+These primitive functions allow us to define the logarithms and
 exponentials. To get log2(x), for example, we need to decide
 whetherx lies between 0 and 2: this can best be accomplished with
 the sequence (we assume x is already on the 87stack)
@@ -565,7 +483,7 @@ the sequence (we assume x is already on the 87stack)
 :LOG.TST FDUP FO> NOT
 ABORT‘ Can't take Iog(—|x|) 11' ;
 
-: FLG (87: y x - - y*|g[x])
+: flG (87: y x - - y*|g[x])
 LOG. TST FDUP F- — 2
 IF F= 1 F— FY'LGZXP1
 
@@ -577,34 +495,30 @@ ELSE FY'LGZX THEN ;
 
 ma-mwmrm 77
 
-: FLN F-LN(2 FSWAP FLG ;
-:FLOG F-L10() FSWAP FLG;
+: flN F-LN(2 FSWAP flG ;
+:flOG F-L10() FSWAP flG;
 
-Now we can use the fundamental deﬁnition of exponentiation to
-deﬁne both the operation of raising an arbitrary positive number
-to a real power, as well as the standard mathematical function e’:
+Now we can use the fundamental definition of exponentiation to define both the operation of raising an arbitrary positive number to a real power, as well as the standard mathematical function e’:
 
 F2“ (87: x-- 2"x) F2XM1 F=1 F+ ;
-F“ (87: xy-- y“x) FLG F2“ ;
+F“ (87: xy-- y“x) flG F2“ ;
 FEXP (87: x-- exp[x]) F=L2(E) F' F2“ ;
 
-e now have only to implement the trigonometric and inverse-
-trigonometric functions. We need (TREAL) IO-byte con-
-stants:
+\TallC{W}{e} now have only to implement the trigonometric and inverse-
+trigonometric functions. We need (TREAL) IO-byte constants:
 
 : F, HERE 10 ALLOT R80| ;
 : FCONSTANT CREATE F, DOES> REO@ ;
 
-Also, for simplicity, we deﬁne FORTH functions for degree/rad-
-ian conversions and conversely:
+Also, for simplicity, we define FORTH functions for degree/radian conversions and conversely:
 
-FINIT F=Pl 130 s->r= Fl (87:-- p/180)
+fiNIT F=Pl 130 s->r= fl (87:-- p/180)
 FCONSTANT Pl/180 \ make constant
 :DEG->RAD Pl/180 F* ;
 :RAD->DEG PI/180 F/ ;
 
 The 80x87 chip has a fast way to multiply or divide by powers of
-2, called FSCALE. The CODE deﬁnition is
+2, called FSCALE. The CODE definition is
 
 CODE FSCALE <96 98 D9 FC 96 > END-CODE
 
@@ -624,10 +538,10 @@ OWVMOHHOZ-Almm.
 
 78
 
-Chapter 4 - The m7 Fame Scientiﬁc FORTH
+Chapter 4 - The m7 Fame Scientific FORTH
 
 The 8087 and 80287 implement an unnormalized tangent func-
-tion, whose effect is ( 87: z - - y x), with tan(z) =y/x. Let us deﬁne
+tion, whose effect is ( 87: z - - y x), with tan(z) =y/x. Let us define
 
 f= tan(z /2) (1)
 
@@ -653,7 +567,7 @@ CODE FPREM FWAIT. <96 DQ F8 96> END-CODE
 : XDUP FOVER FOVER ;
 : ENUF? FSTSW 1024 AND 0= ; \bit C2 =0?
 : FNORM (87: x k - -x mod k) FSWAP
-BEGIN FPFlEM ENUF? UNTIL FPLUCK ;
+BEGIN FPflEM ENUF? UNTIL FPLUCK ;
 \ extract multiples of R
 
 Here is how we code the tangent in high-level FORTH:
@@ -661,7 +575,7 @@ Here is how we code the tangent in high-level FORTH:
 WWI
 
 x=0 is an exception - set tan =0 and exit.
-x < 0 ? Save sign as a ﬂag on stack.
+x < 0 ? Save sign as a flag on stack.
 reduce by multiples of n .
 
 \ cont'd
@@ -672,8 +586,8 @@ reduce by multiples of n .
 
 awn-moment» 79
 
-x h1stquedrant(:r/2< x< n)? FIeg,reduceby:r/2
-x Intatoctantoru< x< 3/2)? Flagroduoobynm
+x h1stquedrant(:r/2< x< n)? fieg,reduceby:r/2
+x Intatoctantoru< x< 3/2)? flagroduoobynm
 
 \ HIGH LEVEL FORTH VERSION
 :REDUCE (:87:xk--xmodk --f)
@@ -685,7 +599,7 @@ FDUP FO< FABS (--Isgn 87:-- |x|)
 F=PI FNORM \0< x< n
 F=Pl F2/ REDUCE (--isgnf1q)
 F=Pl F2] F2] REDUCE (--isgnf1q f1o)
-FPTAN Fl (87: |x|— -tan[x])
+FPTAN fl (87: |x|— -tan[x])
 IF F=1 XDUP F+ F-ROT F- F/ THEN
 
 \ adjust for octant
@@ -694,7 +608,7 @@ IF 1/F FNEGATE THEN \adjustfor quadrant
 IF FNEGATE THEN ; \adjust sign
 
 The remaining trigonometric functions (sine, cosine, scant, co-
-secant) can easily be deﬁned in terms of tan(z /2) . For example,
+secant) can easily be defined in terms of tan(z /2) . For example,
 here are FSIN and FCOS:
 
 :FSIN F2] FTAN FDUP FDUP F“ F=1 F+
@@ -703,17 +617,17 @@ FR/ F2* ;
 : FCOS F21 FTAN FDUP F* F=1 FOVER F-
 FSWAP F=1 F+ F/ -
 
-m: The 80387 improves on the 8087/80287 by eliminating the
+\textbf{Note:} The 80387 improves on the 8087/80287 by eliminating the
 need to adjust the argument in software. Further, the tangent
 produced by the 80387 is normalized (that is, x = 1.0 in Eq. 4.1
-above). Finally, the 80387 has instructions FSIN, FCOS and
+above). finally, the 80387 has instructions FSIN, FCOS and
 FSINCOS built in, so all the software emulation is unnecessary.
 
-We deﬁne inverse-trigonometric functions using FPATAN
+\TallC{W}{e} define inverse-trigonometric functions using FPATAN
 
-deﬁned previously, whose action is ( 87: y x - - arctan[y/x]).
+defined previously, whose action is ( 87: y x - - arctan[y/x]).
 The 80387 has no additional instructions for inverse trig func-
-tions, relative to the 8087/80287, so the same code ﬁts all.
+tions, relative to the 8087/80287, so the same code fits all.
 
 To calculate the inverse functions, we make use of standard
 identities (the forms chosen minimize roundoff error). Thus,
@@ -735,7 +649,7 @@ F/ FPATAN ;
 
 :FACOS FDUP FABS F-t F>
 ABORT'uwmentotarccos>1'
-FDUP F-1 FR- FSWAP F-1 F+ Fl
+FDUP F-1 FR- FSWAP F-1 F+ fl
 FSORT FPATAN ;
 
 m: the argument of arcsincr) or arccosbr) must be smaller than
@@ -744,29 +658,29 @@ taking the square root of a negative number.
 
  
 
-i7 Extending 1h. W 80187 stack
-As promised' in the beginning of the chapter, we now desip
-afstackmanagerin softwarethatallowsmorethanScells. First -‘
+\section{Extending the intrinsic 80x87 stack}
+\TallC{A}{s} promised' in the beginning of the chapter, we now desip
+afstackmanagerin softwarethatallowsmorethanScells. first -‘
 we examine the structure of the 80:87 stack (87M).
 
 From m we see that the 8 registers in the 87stack are:
 organized as a circular stack. A 3-bit pointer, 51; records which:
 physimlregisteris aemallyTOSJheinstruc-tionsetallowsSth
-be incremented (FINCSTP) or decremented (FDBCSTI’)?
-modu108.1he87stackisshownbelowinFig.4-lonpage81.
+be incremented (fiNCSTP) or decremented (FDBCSTI’)?
+modu108.1he87stackisshownbelowinfig.4-lonpage81.
 
-A FID instruction decrements ST (mod 8) before storing ,
+A fiD instruction decrements ST (mod 8) before storing ,
 whereasaFSTPimtruetionincrementsS’I'l‘obuildoursoftwart;
 
 fstackweneedtodothefolknvingthinp:
 
-e WhentheﬂstackgetshrleutSlKDonthememymmioe,
+e WhentheflstackgetshrleutSlKDonthememymmioe,
 andvr'a-vasa.
 
-eKeeptraekolhowmanymmbersareontheﬂstxk. f
+eKeeptraekolhowmanymmbersareontheflstxk. f
 
 o Keepuackofwherewehsvestoredthelastmmberremei
-fromtheﬂstack.
+fromtheflstack.
 
 -m-—A_.-U
 
@@ -822,24 +736,24 @@ l6 2’ND FROM TOP
 
  
 
-Fig. 4.1 The 00:87 snack. from seen:
+fig. 4.1 The 00:87 snack. from seen:
 
 The algorithm has the following expression in pseudo-FORTH
 
-Redeﬁne operations that put #5 on 87stack:
+Redefine operations that put #5 on 87stack:
 increment stack _pointer
 it 87steck full put st(7) on fstack
 push onto st(O)
 
-Redeﬁne operations that take #5 off 87stack:
+Redefine operations that take #5 off 87stack:
 popst(0) _
 decrement stack _pornter
 iffstack notempty. puttofs onto st(7)
 
-We begin by deﬁning the data structure (the fstack proper) where
+We begin by defining the data structure (the fstack proper) where
 we will stash and retrieve the numbers coming OR the 875tack.
 
-Chapter 4 - The wits? Famly Scientiﬁc FORTH '
+Chapter 4 - The wits? Famly Scientific FORTH '
 
 e We need to decide how deep the fstack will be, in 80-bit
 (TREAL) wide cells, and then ALLOT 10' that number of
@@ -853,13 +767,13 @@ I
 
 e We need to test whether the 87stack is full (or empty). i
 
-0 Finally, what do we do if the memory we set aside gets full? !
+0 finally, what do we do if the memory we set aside gets full? !
 The solution chosen below makes the extension circular using I
 modulo arithmetic to compute the addresses within it.
 
 I
 i
-We now exhibit the fstack manager program in Fig. 4-2 on page 83
+We now exhibit the fstack manager program in fig. 4-2 on page 83
 below. By now the reader should be familiar enough with FORTH .~
 style to understand the program logic with only moderate com-
 
@@ -867,7 +781,7 @@ menting and explanation. Remember— the program reads from
 the bottom up!
 
 The key words are FPUSH and FPOP — they do the work. Every
-word that changes the 87stack has to be redeﬁned to include
+word that changes the 87stack has to be redefined to include
 either FPUSH or FPOP as appropriate.
 
 As the test results in Table 4-5 below make clear, the high-level
@@ -916,7 +830,7 @@ VARIABLE Fs-eiza (shedinckhM‘s)
 
 40 Fselzzi (newsman)
 
-VARIABLE FLGTH (la-minimum)
+VARIABLE flGTH (la-minimum)
 
 VARIABLEFSP (wmmm
 
@@ -926,17 +840,17 @@ VAniAet£ FDEPTH (annals-duet)
 CREATE F3TAG< FS-SIZE @10‘ ALLOT OKLW
 
 :FSINIT FSP OI -8 FDEPTH I FS-SIZE @10'
-FLGTHI FINIT ; (IrIUIzeWardstadrs)
+flGTHI fiNIT ; (IrIUIzeWardstadrs)
 
-000E10+ <96 ﬂCSOAI» swoon:
+000E10+ <96 flCSOAI» swoon:
 
 030E10- <%83EBOA%> END-WE
 (Mmtoaddorsumdw)
 
 FSINIT
 
-:WRAPUspntapmodﬂgri) \rmkeiatnckdrcuar
-[FLGTH@] UTERAL UNDER + SWAPMOD:
+:WRAPUspntapmodflgri) \rmkeiatnckdrcuar
+[flGTH@] UTERAL UNDER + SWAPMOD:
 
 :AWAYI DUP nor l;(adrn-—n) \ueeiuieetoredwoie
 :INC-FSP (--iap') FSPDUP@ 10+ WRAP AWAY! ;
@@ -948,10 +862,10 @@ AWAY! ;
 
 :DEC-FDEPTH (--idenh')
 FDEPTH DUP@ 1- DUP e <
-ABORT" FSTAOK UNDERFLOW' AWAY!
+ABORT" FSTAOK UNDERflOW' AWAY!
 
 :FPUSH INC-FDETH O< NOT
-IFINC-FSP FSTACK +
+IfiNC-FSP FSTACK +
 
 FDECSTP RN! (atlTl--isp)
 
@@ -959,7 +873,7 @@ THEN :
 
 :FPOP DEC-FDEP'IH -1 < NOT
 IF FSP@FSTAO( +
-Rm FINCSTP (fep--st[7])
+Rm fiNCSTP (fep--st[7])
 DEC-FSP THEN:
 
  
@@ -968,9 +882,9 @@ DEC-FSP THEN:
 
  
 
-Flo.¢.2 HI-Ievellstackmanagerform7
+flo.¢.2 HI-Ievellstackmanagerform7
 
-oJﬂthNaﬂatm-Alrtgnsnasrved.
+oJflthNaflatm-Alrtgnsnasrved.
 
 84 Chopra“ —nie com Famly SclentmcFORTH
 
@@ -994,31 +908,31 @@ storage from, or retrieval to the 87stack' rs demanded— annot
 possibly be less than 170 clock cycles. 1 fetch and 1 store1 .egl'h
 main place to save some time would be m moves to or om
 memory; the depth of the fstack and the pointer must be kept l
-as variables, but FS-SIZE and FLGTH do not change and could "
+as variables, but FS-SIZE and flGTH do not change and could "
 be compiled as literals, thereby saving 30 cycles ln FPUSH and '
 10 in FPOP. )
 
 e Substantially greater efficiency (at best another 1. 5x improve-
 ment over the code version discussed above) would require a
-different algorithm— —based, perhaps, on the 87stack overﬂow
-or underﬂow interrupt. But because other error conditions can
+different algorithm— —based, perhaps, on the 87stack overflow
+or underflow interrupt. But because other error conditions can
 initiate this interrupt, the testing and decision-making needed
 to use this method seemed to me likely to produce equivalent
 overhead to the method employed here.
 
  
 
-§B Clone wars
+\section{Clone wars}
 
-Several companies have produced non-infringing clones of the
+\TallC{S}{everal} companies have produced non-infringing clones of the
 
 Intel 80x87 family of chips. American Micro Devices is a second
 source for 80287 and 80387 chips. Cyrix Corporation has
-produced 80287 and 80387 equivalents with signiﬁcantly faster
+produced 80287 and 80387 equivalents with significantly faster
 transcendental functions and moderately faster arithmetic than ,
 the Intel originals.
 
-And ﬁnally, Integrated Information Technology, Inc. (founded by
+And finally, Integrated Information Technology, Inc. (founded by
 the designers of the Weitek chips) has produced the most inter- 1
 
  
@@ -1036,7 +950,7 @@ additional 80-bit on-chip registers. Unfortunately these cannot
 be combined directly with the eight original registers to make a
 32-deep stack, since this would have required increasing the
 80x87 stack-pointer (see 57 above) from 3 bits to 5. Since there
-was no place to ﬁnd the 2 extra bits. one cannot really fault IIT's
+was no place to find the 2 extra bits. one cannot really fault IIT's
 designers.
 
 But if they cannot be used to extend the 87stack, what are the 24
@@ -1048,7 +962,7 @@ Moreover, IIT has provided an on-chip linear transformation: a
 original vector is overwritten, but the matrix is unchanged.) It worls
 like this :
 
-First we deﬁne the instructions
+first we define the instructions
 
 CODE FSBPO <96 DB E8 96> END-CODE
 CODE FSBP1 <96 DB EB 96> END-CODE
@@ -1062,13 +976,13 @@ o VAR a{{ o VAR v{
 
 : VEC- > 087 ( adr ~ - ) \ load vector into 80c387
 IS V{ \ I vector address to V{
-FINIT FSBPO \ reset ST. select bank 0
+fiNIT FSBPO \ reset ST. select bank 0
 
 30 DOV{I} G@ LOOP ;
 : MAT->087 (adr--) \Ioad matrix into 80c387
 
 IS a{{ \ ! matrix address to a{{
-FINIT FSBP2 \ reset ST, select bank 2
+fiNIT FSBP2 \ reset ST, select bank 2
 1 0 DO
 
 30 DO a{{IJ}} G@ LOOP
@@ -1076,15 +990,15 @@ P \cont'd
 
  
 
-20. Note: FINIT operates diﬁerently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s
+20. Note: fiNIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s
 in all 8 87stack cells.
 
 30 DO v{l} GI LOOP;
 \example: ANS = A*V
 A{{ MAT->87 V{ VEC->87 F4x4 ANs{ce7->VEC
 
-Chapter 4 — rite eoxa-r FamIIy Scientiﬁc FORTH 5‘
-FINIT FSBP1 \ reset ST, select bank 1
+Chapter 4 — rite eoxa-r FamIIy Scientific FORTH 5‘
+fiNIT FSBP1 \ reset ST, select bank 1
 3 2 DO
 SODOa{{IJ}}G@ LOOP
 LOOP ; I
@@ -1095,11 +1009,11 @@ FSBPO \ select bank 0 %
 
  
 
-The on-chip 4x4 matrix multiply was intended to accelerate
+\TallC{T}{he} on-chip 4x4 matrix multiply was intended to accelerate
 
 3-dimensional graphics (rotation and translation can be ex-
 pressed as a single 4-dimensional transformation). However, most
-scientiﬁc programmers spend little time on 3-D graphics. The matrix
+scientific programmers spend little time on 3-D graphics. The matrix
 instructions are more interesting for their potential to accelerate
 general matrix operations21. For example, suppose we need to -_
 transform a vector by multiplying with an arbitrary matrix. Normally i
@@ -1139,7 +1053,7 @@ awa-mmrrm O7
 
 needed to load and store a 4-dimensional vector, we therefore
 estimate the vector operation F4“ takes only about 50 clocks,
-ale. about I ﬂoating point multiplication time. We can now es-
+ale. about I floating point multiplication time. We can now es-
 timate the time to multiply two 4 x 4 matrices as about 1200 cloclu
 vs. about 7000 for the scalar process, Le. the same speedup factor
 
@@ -1186,7 +1100,7 @@ azlbll+azzb21 azlblz+azzbzz
 
 cJtsanVNouetaaz-Aiingmm.
 
-Chaptar4-Thewxa7Famly Scleno‘ﬂcFORTH
+Chaptar4-Thewxa7Famly Scleno‘flcFORTH
 
 requires 8 matrix multiplications and 4 matrix additions to
 evaluate. Strassen has shown that in fact the evaluation can be
@@ -1215,9 +1129,9 @@ Cu =P1‘P5 +176 +P7
 
 ‘ V‘s-‘-
 
-‘l Firm V' was...“
+‘l firm V' was...“
 
-Equations 10 and 11 look at first blush half as efﬁcient as 8 .
+Equations 10 and 11 look at first blush half as efficient as 8 .
 
 multiplications and 4 additions. But let us examine the time to
 multiply two partitioned matrices, first by the straightforward
@@ -1227,14 +1141,14 @@ where Mn is the multiplication time andAn the addition time, for
 square matrices of order n.
 
 Setting n = 2" that (note A,l a! 0(n2) ) we see the recursion,
-Eq. 12, is satisﬁed by an expression of form
+Eq. 12, is satisfied by an expression of form
 
 tun-ml.“ +ca 4“ (13)
 
 M4-Tham7Fan-ily I.
 
 where m and I are the elementary multiplication and addition
-times. Substituting 13in 12 we ﬁnd A =- 8 and c - — 1, i.e.,
+times. Substituting 13in 12 we find A =- 8 and c - — 1, i.e.,
 
 Mn - mn’ — an2 (14)
 Applying the same idea to Strassen’s method we obtain
@@ -1249,7 +1163,7 @@ lg? E I092? = 2.807...
 
 That is, partitioning allows a potentially large reduction in the
 time to multiply dense matrices.
-By writing a partitioned matrix in the form
+\TallC{B}{y} writing a partitioned matrix in the form
 an at: | 0 all 812 ..
 = = 1
 [A] [82‘ 82;] [52131—11 ' i 0 z i ( I)
@@ -1278,12 +1192,12 @@ whose solution is
 
 OWVNouatm-Aldd'itsraaarvad.
 
-Chapter 4 - The 80x87 Family Scientiﬁc FORTH
+Chapter 4 - The 80x87 Family Scientific FORTH
 
 ie., the time needed to invert is comparable with that needed to i
 multiply.
 
-Suppose we merely wish to solve a linear system without invert-
+\TallC{S}{uppose} we merely wish to solve a linear system without invert-
 1ng the matrix. can we gain some speed that way? From 17 we
 see that the problem
 
@@ -1311,13 +1225,4 @@ Sn=m(j4-n’g7
 
 + 2n 2) + O(n ’93) (24)
 
-Linear equation solution via recursion thus has the same asymp-1
-totic running time as matrix multiplication, except that 4 x fewer,
-operations are required than for inversion. That is, it should bci
-about 5 x faster to solve a dense system of 1000 linear equationsl
-by recursive partitioning than by ordinary Gaussian elimination‘
-even on a scalar processor. The vector instruction on the III“
-80c387 chip, together with Strassen’ s algorithm, offers the posA
-sibility of solving very large systems in practical times, on desktori
-computers. ,‘
-
+Linear equation solution via recursion thus has the same asymptotic running time as matrix multiplication, except that 4 x fewer operations are required than for inversion. That is, it should be about 5 x faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the IT 80c387 chip, together with Strassen’ s algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.
