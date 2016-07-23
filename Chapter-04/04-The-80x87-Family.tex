@@ -18,269 +18,163 @@ Advanced programming methods — such a recursive algorithms — require an fsta
 
 The 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\footnote{see \textbf{8087P, p. 87ff.}.
 
-We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are FDUP FSWAP FDROP FROT FOVER .
+We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER} .
 
 How are we to define them in terms of machine code primitives?
 
 \subsection{The FORTH assembler}
 
-very FORTH worthy of the name includes an assembler,
+\TallC{E}{very} FORTH worthy of the name includes an assembler, usually set up as an alternate vocabulary\footnote{Vocabularies are a method for subdividing the dictionary.} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\footnote{BX is a CPU register, and \[BX\] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
 
-usually set up as an alternate vocabulary\footnote{Vocabularies are a method for subdividing the dictionary.} called ASSEMBLEH.
-The assembler allows direct definition of a new word in terms of
-machine codes, which are referred to using standard mnemonics. A
-typical FORTH assembly language definition (we now specialize to
-HS/FORTH) for @ would have the form\footnote{BX is a CPU register, and \[BX\] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
+\begin{listing}
+    CODE @ BX [BX] MOV. END-CODE
+\end{listing}
 
-CODE @ BX [BX] MOV. END-CODE
+A \bc{CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (REI‘) instructions in the machine code representation of the calling program.
 
-ACODE definitionis a machine-coded subroutine somewhere
-in memory. To use it, the compiler has to know where it is and
-insert appropriate unconditional JUMP (JMP) and RETURN
-(REI‘) instructions in the machine code representation of the
-calling program.
+Here is what happened in the \bc{CODE} version of \regc{@} above:
 
-Here is what happened in the CODE version of @ above:
+\begin{list}
+    \item The defining word \bc{CODE} set up a dictionary entry with the name \bc{@}, with an appropriate pointer and JUMP instructions to make the newly defined word run the code sequence comprising the definition.
+    \item The word \bc{END-CODE} cleans up the loose ends by adding the obligatory RET instruction sequence and turning off the compiler. (That is, \bc{END-CODE} installs “\bc{NEXT}".)
+    \item \bc{END-CODE} is thus the analog of \bc{;} as \bc{CODE} is of \bc{:}.
+\end{list}
 
-0 The defining word CODE set up a dictionary entry with the
-name @, with an appropriate pointer and JUMP instructions
-to make the newly defined word run the code sequence com-
-prising the definition.
+Consider now the word \bc{FROT} whose Intel assembly language definition would be
 
- 
+\begin{listing}
+    FROT:       ; entry point
+    FWAIT       ; hold 8086 operations
+    FXCH ST(1)  ; swap TOS and NOS
+    FWAIT       ; hold 8086 operations
+    FXCH ST(2)  ; swap TOS and ST(2)
+    RET         ; return
+\end{listing}
 
+In HS/FORTH assembler, the definition becomes
 
+\begin{listing}
+    CODE FROT FWAIT. 1 FXCH. FWAIT. 2 FXCH.
+        END-CODE
+\end{listing}
 
+\leftbar[1\linewidth]
+\textbf{\textunderline{Note}: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete resultss.
+\endleftbar \footnote{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}
 
+subsection{Using MS-DOS DEBUG}
 
-
-
-Chapter 4 — The N? Famly Scientific FORTH
-
-e The word END-CODE cleans up the loose ends by adding
-the obligatory RET instruction sequence and turning off the
-compiler. (That is, END-CODE installs “NEXT".)
-
-0 END-CODE is thus the analog of ; as CODE is of 3 .
-
-Consider now the word FROT whose Intel assembly language
-definition would be
-
-FROT: ; entry point
-
-FWAIT ; hold 8086 operations
-FXCH ST(1) ; swap TOS and NOS
-
-FWAIT ; hold 8086 operations
-FXCH ST(2) ; swap TOS and ST(2)
-RET ; return
-
-In PIS/FORTH assembler, the definition becomes 1 .
-CODE FROT FWAIT. 1 FXCH. FWAIT. 2 FXCH. E
-END-CODE 1
-
-Note: the definition includes FWAIT (the same as WAlT), an 1‘
-instruction that makes the 8086 CPU wait for the FPU to com- i
-plete its work before attempting to access the memory. If WAlT ,
-were omitted and the CPU accessed the memory, it could store ‘.
-
-incomplete resultss. i
-
- 
-
-§§2 Using MS-DOS DEBUG ‘
-The FORTH assembler, with its 80x87 extension, lets us
-develop machine-coded words while retaining Intel mnemon»
-ics for documentation, at the price of loading and compiling the:
-entire ASSEMBLER lexicon. But if we know the actual machine .
-code bytes we can bypass the assembler by entering the (hexae "
-decimal) codes directly into a CODE definition. Most FORTH’
-
- 
-
-1a
-
-The design of the 80286, 80386 and 80486 eliminates this problem. consequently WAIT is not
-required when assembling 80287/80387/80487 machine code. See, ¢.g., John H. Crawford and
-Patrick P. Gelsinger, Programming the 80386 (Sybex. San Francisco, 1987). HS/FORTH allows
-the user to choose which class of machine to assemble for, when loading the 80:87 assembler c!-
-lension. The 80287 + option simply defines FWAIT. as a null word. '
-
-l1
-
- 
-
-mam Mo-msomF-uy 69
-
-system, in addition to an assembler, provide a way to insert
-machine codes —hex numbers - directly into the code field of a
-word. HS/FORTH, e.g., uses the words < 96 and 96 > to enclose
-the hex codes being inserted.
+\TallC{T}{he} FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes - hex numbers - directly into the code field of a word. HS/FORTH, \texit{e.g.}, uses the words <% and %> to enclose the hex codes being inserted.
 
 The problem is, how do we find out what these hex codes are?
-The simplest way is to use DEBUG9 to generate (HEX) code
 
-sequences. Rather than try to explain, we shall illustrate by re-
-cording and annotating the DEBUG session for the word FROT:
+The simplest way is to use DEBUG\footnote{see, \eg, R. Lafitte, \textit{Assembly Language: Primer for the IBM PC & XT} (Plume/Waite-New American Library, New York, 1984). Complete operating systems often include a code debugger that permits assembly; disassembly; modifying the contents of selected memory locations; setting breakpoints; and running proyams under debuger control.} to generate (HEX) code sequences. Rather than try to explain, we shall illustrate by recording and annotating the DEBUG session for the word \bc{FROT}:
 
-C > DEBUG starts DEBUG
--A100 Assemble from man
-3801:0100 FWAIT enter asembler
-3801:0101 FXCH ST(1) mnemonlcs
+\begin{listing}
+    C > DEBUG               starts DEBUG
+    -A100                   Assemble from 100h
+    3B01:0100 FWAIT         enter asembler
+    3B01:0101 FXCH ST(1)    mnemonlcs
+    3B01:0103 FWAIT
+    3B01:0104 FEXCH ST(2)
+             ^ Error        DEBUG notes a typo
+    3B01:0104 FXCH ST(2)
+    3B01:0106       no more, <cr>stops assembly
+    
+    -U 100 105              Unassemble to check
+    3B01:0100 9B    WAIT    Hold CPU
+    3B01:0101 D9C9  FXCH    ST(1)
+                            (87: a b c -- a c b )
+    3B01:0103 9B    WAIT    Hold up CPU
+    3B01:0104 D9CA  FXCH    ST(2)
+                            (87: a c b -- b c a)
 
-3301:0103 FWAIT
-3301:0104 FEXCH ST(2)
+    -D 100 105              Dump to get hex codes
+    3B01:0100 9B D9 C9 9B D9 CA
+    -Q                      Quit session
+\end{listing}
 
-" Error DEBUG notes a typo
-3801:0104 FXCH ST(2)
-3801:0106 no more, < cr>stops assembly
--U 100 105 Unassemble to check
-3801:0100 98 WAIT Hold CPU
+From the \underline{D}ump (or \underline{U}nsassembly) we find code bytes 9B D9 F7 D9 C9 F6 D9 C9 which can be inserted directly into the definition of \bc{FROT}:
 
-3801:0101 0909 FXCH ST(1)
-(87:abc -- acb)
-3801:0103 98 WAIT Hold up CPU
-3801:0104 DQCA FXCH ST(2)
-(87:acb--bca)
-
--D 100 105 Qump to get hex codes
-3801:0100 98 09 09 98 09 CA
--0 Quit session
-
-From the Dump (or Unsassembly) we find code bytes 93 D9 F7
-D9 C9 F6 D9 C9 which can be inserted directly into the defini-
-tion of FROT:
-
- 
-
-9. see, eg, R. Lafitte, Assembly urging: Primer for the IBM PC & XT (Plume/Waite -New
-American Library, New York, 1%). Complete operating systems often include a code debug-
-get that permits My; disassembly; modifying the contents of selected memory locations; set-
-ting breakpoints; and running proyams under debuger control.
-
-emvuounese-Almm.
-
-70
-
-Chapter 4 — The ma? anly Scientific FORTH
-
-CODE FROT <96 9809 F709 CSFB 0909 96>
-END-CODE (::abc--bca)
-
-The rest of the 80x87 stack words, l
-
-FDUP FSWAP FDROP FOVER F-ROT ‘
+\begin{listing}
+    CODE FROT <% 9B D9 F7 D9 C9 F6 D9 C9 %>
+        END-CODE (:: a b c -- b c a )
+\end{listing}
+The rest of the 80x87 stack words,
+\begin{listing}
+    FDUP FSWAP FDROP FOVER F-ROT
+\end{listing}
 
 whose assembler definitions are:
-
-l
-CODE FDUP FWAIT. 0 flD. END-CODE l
-CODE FSWAP FWAIT. 1 FXCH. END-CODE
-CODE FDROP FWAIT. o FSTP. END-CODE L
-CODE F—ROT FWAIT. 2 FXCH. .
-FWAIT. 1 FXCH. END-CODE i
-l
-
- 
+\begin{listing}
+    CODE    FDUP      FWAIT. 0  FLD.  END-CODE
+    CODE    FSWAP     FWAIT. 1 FXCH.  END-CODE
+    CODE    FDROP     FWAIT. 0 FSTP.  END-CODE
+    CODE    F—ROT   FWAIT. 2 FXCH.
+            FWAIT.  1 FXCH.           END-CODE
+\end{listing}
 
 can be defined similarly in 8086/8087 machine code using the
-DEBUG program or a reference manual for the chip (cg. 8087?) 1
-to determine the hex codes.
+DEBUG program or a reference manual for the chip (\eg \textbf{8087P})to determine the hex codes.
 
-§2 Memory usage (storage and retrieval)
+\section{Memory usage (storage and retrieval)}
 
-he 80x87 instruction set includes codes for loading ST (0)
-
-from memory and storing ST(O) to memory. The former invole
-ves a “push” and the latter may or may not involve a “pop", from
+\TallC{T}{he} 80x87 instruction set includes codes for loading \regc{ST (0)} from memory and storing \regc{ST(0)} to memory. The former involeves a "push" and the latter may or may not involve a "pop", from
 the 87stack.
 
-For the moment we need words to retrieve and store 16-bit
-integers, short reals (32 bit) and temporary reals (80 bit).
-These have mnemonics fiLD (“load integer to ST (0)”), fiSTP
-(“store integer and pop ST(1) into ST(O)”); flD, FSTP respec-
-tively. Typical (HS/)FORTH assembler definitions are
+For the moment we need words to retrieve and store 16-bit integers, short reals (32 bit) and temporary reals (80 bit). These have mnemonics \regc{FILD} ("load integer to \regc{ST (0)}"), \regc{FISTP}("store integer and pop \regc{ST(1)} into \regc{ST(0)"); \regc{FLD}, \regc{FSTP} respectively. Typical (HS/)FORTH assembler definitions are
 
-CODE I16@
-FWAIT. [BX] WORD-PTR fiLD.
-[3x1 POP.
-FWAIT.
+\begin{listing}
+    CODE I16@
+        FWAIT. [BX] WORD-PTR FILD.
+        [BX] POP.
+        FWAIT.
+    END-CODE
+    CODE |16|
+        FWAIT. [BX] WORD-PTR FISTP.
+        [BX] POP.
+        FWAIT.
+    END-CODE
+\end{listing}
 
-END-CODE
+Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} -assuming these are needed— replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64-, and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64@}, \bc{R80@}, and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\footnote{"Ten-byte pointer". Note HS/FORTH appends a period "." to most Intel mnemonics.} as appropriate.
 
-CODE l16|
-FWAIT. [BX] WORD-PTR fiSTP.
-[13x1 POP.
-FWAIT.
+\TallC{W}{e} also need words to load the 87stack from the stack and textit{vice versa}. In HS/FORTH, the top of the parameter stack is actually the BX register on the CPU. There is no machine instruction for loading the 87stack directly from a CPU register. Thus, we must first transfer the contents of BX to memory and thence to the 87stack. The inverse operation also must proceed through a memory location. The data-transfer words are named in an obvious way \bc{S->F} and \bc{F->S}. HS/FORTH defines them directly in machine code, manipulating the CPU register BP that points to the top of the CPU stack. That is, HS/FORTH uses two bytes immediately below NOS as the intermediate memory cell.
 
-END-CODE
+Here we define \bc{S->F} and \bc{F->S} directly in high-level FORTH by wasting a little memory for a (hidden) temporary variable:
 
-ma—mmrm 71
+\begin{listing}
+    VARIABLE TEMP
+    : S—>F (n-- ::--float[n])
+        TEMP !          \TOS —> TEMP
+        TEMP I16@ ;     \TEMP-> ST(O)
+    : F—>S (::x — --int[x])
+        TEMP I16!       \ST(O) -> TEMP
+        TEMP @ ;        \TEMP—> TOS
+    BEHEAD' TEMP        \ hide address of TEMP
+\end{listing}
 
-Similarly, m and I32! can be defined by replacing WORD-
-PTR with DWORD-PTR. 11) define M and l6“ -assuming
-these are needed— replace DWORD-PTR with OWOBD-PTR.
-The 32-, 64- and 80-bit floating point analogues 332@, R32!,
-Rm, RMI, ROO@ and ROOI are definedbyreplacing fiLD
-by flD and fiSTP by FSTP, and using DWOflD-PTR,
-OWORD-PTR or Terra-Pram as appropriate.
+Faster machine code versions of \bc{S->F} and \bc{F->S} are\footnote{\bc{TEMP + []} is HS/FORTH's phrase to assemble a named memory address.}
 
-We also need words to load the 87stack from the stack and vice
-versa. In HS/FORTH, the top of the parameter stack is
-actually the BX register on the CPU. There is no machine instruc-
-tion for loading the 87stack directly from a CPU register. Thus,
-we must first transfer the contents of BX to memory and thence
-to the 87stack. The inverse operation also must proceed through
-a memory location. The data-transfer words are named in an
-obvious way 5- > F and F- > S. HS/FORTH defines them directly
-in machine code, manipulating the CPU register BP that points
-to the top of the CPU stack. That is, HS/FORTH uses two bytes
-immediately below NOS as the intermediate memory cell.
+\begin{listing}
+    CODE S—>F TEMP +[] BX MOV. BX POP.
+        FWAIT. TEMP +[] I16 fiLD. END-CODE
 
-Here we define S— > F and F— > S directly in high-level FORTH
-by wasting a little memory for a (hidden) temporary variable:
+    CODE F—>S BX PUSH. TEMP +[] FISTP.
+        BX TEMP +[] MOV. END-CODE
+\end{listing}
 
-VARIABLE TEMP
-:S—>F (n-- ::--float[n])
-TEMP I \TOS —> TEMP
-TEMP l16@ : \TEMP-> ST(O)
-: F—>S (::x — --int[x])
-TEMP I16! \ST(O) -> TEMP
-TEMP @ ; \TEMP—> TOS
+These definitions will satisfy our present needs for storing and retrieving from the 87stack.
 
-BEHEAD' TEMP \ hide address or TEMP
-
-Faster machine code versions of S—> F and F— > S are11
-
-CODE S—>F TEMP +[] BX MOV. BX POP.
-FWAIT. TEMP +[] I16 fiLD. END-CODE
-
-CODE F—>S 8X PUSH. TEMP +[] fiSTP.
-ex TEMP +[] MOV. END-CODE
-
- 
-
-10. “Ten-byte pointer". Note PIS/FORTH appends a period “." to most Intel mnemonics.
-ll. TEMP +[] isHS/FORTH’sphrase to assemble anamedmemoryaddress.
-
-DJunnvuounm—umm.
-
-72
-
-Chapter 4 — The m7 Famly Sclentlflc FORTH
-
-These definitions will satisfy our present needs for storing and
-retrieving from the 87stack.
-
-Note: a substantial gain in speed can be achieved with the
+\leftbar[1\linewidth]
+\Note: a substantial gain in speed can be achieved with the
 80386/80387 and 80486 families, by using instructions that effect
-32-bit wide transfers 2.
+32-bit wide transfers.
+\endleftbar \footnote{See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Progumming the 80386} (Sybex, San Francisco, 1987).}
 
 \section{Arithmetic words}
 
-\TallC{F}{PU} (80x87) arithmetic is generally performed with the
-maximum precision allowed by the (80-bit) size of the
-registers .
+\TallC{F}{PU} (80x87) arithmetic is generally performed with the maximum precision allowed by the (80-bit) size of the registers\footnote{Although it \textit{is} possible to force artificially 80x87 precision to 24 mantissa bits to simulate arithmetic performed on other machines (that is, to compare results while debugging), I see no virture in a mode that shows up calculations while \textit{diminishing} precision and refer the reader to refs. 2 or 8.}.
 
 As noted in §4.2, the 80x87 allows 3 floating point representations
 for storage and retrieval in external memory: 32 hit (single precision),
@@ -296,129 +190,78 @@ The FORTH arithmetic words we shall need are
 F+ F— FR— F* F/ FR/ FNEGATE FABS FSGN
 whose definitions are (CODE and END-CODE are assumed)
 
-F+ FWAIT. FADDP. (a7: a b -- a+b)
-F- FWAIT. FSUBP. (87: a b -- a—b)
-Ffi— FWAIT. FSUBRP. (87: a b -- b—a)
-F* FWAIT. FMULP. (a7: a b -- a'b)
-F/ FWAIT. FDIVP. (87: a b -- a/b)
-Ffl/ FWAIT. FDIVRF’. (a7: a b -- b/a)
+\begin{listing}
+    F+      FWAIT.    FADDP.    (87: a b -- a+b)
+    F-      FWAIT.    FSUBP.    (87: a b -- a—b)
+    FR-     FWAIT.    FSUBRP.   (87: a b -- b—a)
+    F*      FWAIT.    FMULP.    (87: a b -- a'b)
+    F/      FWAIT.    FDIVP.    (87: a b -- a/b)
+    FR/     FWAIT.    FDIVRP.   (87: a b -- b/a)
+\end{listing}
 
- 
+\begin{listing}
+    FNEGATE FWAIT.  FCHS.   (87: a -- -a)
+    FABS   FWAIT.   FABS.   (87: a -- |a|)
 
-12.
-13.
+    : FSGN      (n-- 87:x -- |x|*sgn[n])
+        FABS 0< IF FNEGATE THEN ;
+\end{listing}
 
-See, cg, John H. Crawford and Patrick P. Gelsinger,Progumming the 80386 (Sybex, San Fran-
-cisco, 1987).
-MthmrghhhptnsialewfmaudfidaflprredstfimnfisubismflmmaEarhhmedc
-performedtmothermachinesohatis.toeompareresultswhiledebufing),lseenow'rtueinamode
-thatdmnupcaktdmkmswhikdbrdnhldngpredsionandrefuthereadermnfs2a8
+\section{Special constants}
 
-sammam own-name“ 73
-
-FNEGATE FWAIT. FCHS. 87: e - - -e)
-FABS FWAIT. FABS. 87: a -- lal)
-:FSGN (n--87:x--|x 'sgn[n])
-
-FABS 0< IF FNEGATE EN ;
-
-54 Special constants
-
-For convenience the designers of the 8087 chip have arranged
-
-fast loading of certain constants into ST(O) of the fstack (1' OS).
-The words that place these constants on the fstack, and the
-corresponding assembler mnemonics and (hex) codes are shown
-in Table 4-1 below.
-
- 
+\TallC{F}{or} convenience the designers of the 8087 chip have arranged fast loading of certain constants into \bc{ST(0)} of the fstack (TOS). The words that place these constants on the fstack, and the corresponding assembler mnemonics and (hex) codes are shown in Table 4-1 below.
 
 Table 4-1 Speclal Constants
+\begin{center}
+    \begin{tabular}{|c c c c|}
+        word      & const.      & mnemonic  & codes     \\
+        F=0       & 0           & FLDZ      & 9B D9 E5  \\
+        F=1       & 1           & FLD1      & 9B D9 E8  \\
+        F=PI      & pi=3.14...  & FLDPI     & 9B 09 E5  \\
+        F=L2(10)  & log_{2}10   & FLDL2T    & 9B D9 E9  \\ 
+        F=L2(E)   & log_{2}e    & FLDL2E    & 9B 09 EA  \\
+        F=L10(2)  & log_{10}2   & FLDLG2    & 9B 09 EC  \\
+        F=LN(2)   & log_{e}     & FLDLN2    & 9B 09 ED  \\
+    \end{tabular}
+\end{center}
 
-word oonst. mnemonic codes
+\section{Test words}
 
-F =0 0 flDZ 98 09 E5
-F=1 1 flD1 93 De E8
-FwPl pi=3.14... flDPI 98 09 E5
-F=L2(10) Iog210 flDL2T 98 D9 E9
-F =L2(E) logze flDL2E 98 09 EA
-F =L10(2) logioZ flDLG2 98 09 EC
-F=LN(2) loge2 flDLN2 98 09 ED
+\TallC{W}{e} need to be able to determine the algebraic sign of a floating point number, as well as whether one is larger than another.
+The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are shown below in Table 4-2.
 
- 
+Table 4-2 \textit{Machine language floating point tests}
+\begin{center}
+    \begin{tabular}{|c c c c|}
+        mnemonic    &   comparison      &   pop?        \\
+        FTST        &   ST(O) to 0      &   no          \\
+        FCOM        &   ST(1) to ST(O)  &   no          \\
+        FCOMP       &   ST(1) to ST(O)  &   pop once    \\
+        FCOMPP      &   ST(1) to ST(O)  &   pop twice   \\
+    \end{tabular}
+\end{center}
 
- 
+The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques the STATUS register must be moved to the parameter stack\footnote{\Note: the 80387 includes a new instruction whereby the status control word can be moved \textit{directly} into the AX register of the 80386 CPU. The hex codes for FSTSW AX are DF E0.}. This is done with the the 80x87 instruction \regc{FSTSW} \textit{via} the assembler sequence
 
- 
+\begin{listing}
+    VARIABLE F.STATUS
+    CODE FSTSW BX PUSH.
+        F.STATUS +[] FSTSW.
+        BX F.STATUS +[] MOV.
+    END-CODE
+    BEHEAD' F.STATUS
+\end{listing}
 
-74 Chapter 4 — The com Femly Scientific FORTH
+Now we have to consider how to bit-mask the status integer left on the stack by FSTSW. We use the logical AND with 400011 og 0100h (\textunderline{Exercise}: Why?) to pick out C3 and C0. Now from \textbf{8087P}\footnote{see, \eg, Table 4.1} we have the truth table 4-3 below:
 
-§5 Test words
-
-We need to be able to determine the algebraic sign of a floating
-
-point number, as well as whether one is larger than another.
-The 80x87 chip has 4 instructions for this purpose, whose
-mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are
-shown below in Table 4-2.
-
-Table 4-2 Machine language floating point tests
-
- 
-
-mnemonic comparison pop?
-
-Fr ST ST(O) to 0 no
-FCOM ST(1) to ST(O) no
-FCOMP ST(1) to ST(O) pop once
-FCOMPP ST(1) to ST(O) pop twice
-
- 
-
- 
-
- 
-
-The results of these comparisons are encoded as bits (3 (14) and
-C0 (8) of the 16-bit 80x87 STATUS register. In order to get these
-bits by bit- masking techniques‘ the STATUS register must be
-moved to the parameter stack1 .This 15 done with the the 80x87
-instruction FSTSW via the assembler sequence
-
-VARIABLE ESTATUS
-
-CODE FSTSW 8X PUSH.
-ESTATUS +[] FSTSW.
-ex ESTATUS +[] MOV.
-
-END-CODE
-
-BEHEAD' ESTATUS
-
- 
-
-l4. mthe80387includesanewinstructionwherebythestatuseontrolmrdcanbemoveddirsct-
-brintothcAXrey'sleroflhcmCPU. ThehucodesforFSTSWAXare DFED.
-
-Now we have to consider how to bit-mask the status integer left
-on the stack by FSTSW. We use the logical AND with 400011 og
-010011 (Exam Why?) to pick out C3 and co. Now from usrr‘
-we have the truth table 4-3 below:
-
-M043 rmnmumrmmumxlsmopaw — Oor$T(l))
-
- 
-
-Conamon C3 co
-srm)>x o 0
-mm=x 1 o
-mm<x o 1
-
- 
-
- 
-
- 
+\begin{center}
+    \begin{tabular}{|c c c c|}
+        \textbf{Conamon}    &   \textbf{C3} & \textbf{C0}   \\
+        ST(0) > x           &   0           & 0             \\
+        ST(0) = x           &   1           & 0             \\
+        ST(0) < x           &   0           & 1             \\
+    \end{tabular}
+\end{center}
 
 Now we are in a position to define the test words F0>, F0=,
 F0<,aswellasF>,F=,F<.Wehave16
@@ -442,7 +285,7 @@ DECIMAL
 
  
 
-15. aee,e.g., Table 4.1
+
 
 16. fluthetestwordsF< andF>aredefinedothetoFo> andFo<.Thisreversalofdirec-
 tionsisnaratypographicalerrorfltisdemanded bytheoperationofFCONPP -seell7|‘.
@@ -460,12 +303,12 @@ Table 4-4 Mathematical function prlmltlvas
  
 
 name action code(3) mnemonic
-FSQRT (87: x - - t/i ) 98 09 FA FWAIT FSQRT
-FY'LG2X (87: y x - - y*Iogz[x] ) 98 09 F1 FWAIT FYL2X
+FSQRT (87: x - - t/i ) 9B 09 FA FWAIT FSQRT
+FY'LG2X (87: y x - - y*Iogz[x] ) 9B 09 F1 FWAIT FYL2X
 
 FY*LGZXP1 (37: y x - - y'logz[x+1] ) 93 09 F9 FWAIT FYL2XP1
 
-F2XM1 (87:x-- 2"—1) 9809F0 FWAITFZXM1
+F2XM1 (87:x-- 2"—1) 9B09F0 FWAITFZXM1
 
  
 
@@ -520,7 +363,7 @@ FCONSTANT Pl/180 \ make constant
 The 80x87 chip has a fast way to multiply or divide by powers of
 2, called FSCALE. The CODE definition is
 
-CODE FSCALE <96 98 D9 FC 96 > END-CODE
+CODE FSCALE <96 9B D9 FC 96 > END-CODE
 
 FSCALE adds ST(1) to the (powers-of-Z) exponent of ST(O).
 Thus, cg. , we can write fast divide- and multiply-by-Z instructions:
