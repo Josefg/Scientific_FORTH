@@ -471,6 +471,7 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
     \item Keep track of where we have stored the last number removed from the 87stack.
 \end{itemize}
 
+\begin{listing}
 0 4'TH FROM TOP
 1 5'TH FROM TOP
 2 6'TH FROM TOP
@@ -480,6 +481,7 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
 6 2’ND FROM TOP
 7 3'RD FROM TOP
 fig. 4.1 The 00:87 snack. from seen:
+\end{listing}
 
 The algorithm has the following expression in pseudo-FORTH
 
@@ -495,208 +497,93 @@ The algorithm has the following expression in pseudo-FORTH
     iffstack notempty. puttofs onto st(7)
 \end{listing}
 
-We begin by defining the data structure (the fstack proper) where
-we will stash and retrieve the numbers coming OR the 875tack.
+We begin by defining the data structure (the fstack proper) where we will stash and retrieve the numbers coming off the 87stack.
 
-Chapter 4 - The wits? Famly Scientific FORTH '
+\begin{itemize}
+    \item We need to decide how deep the fstack will be, in 80-bit (\regc{TREAL}) wide cells, and then \bc{ALLOT} 10* that number of bytes of storage.
+    \item We need a word that will initialize the 80x87 and fstack.
+    \item We need a fast way to increment (or decrement) the address of the next availabe space in the fstack by 10.
+    \item We need to test whether the 87stack is full (or empty).
+    \item Finally, what do we do if the memory we set aside gets full? The solution chosen below makes the extension circular using modulo arithmetic to compute the addresses within it.
+\end{itemize}
 
-e We need to decide how deep the fstack will be, in 80-bit
-(TREAL) wide cells, and then ALLOT 10' that number of
-bytes of storage.
+We now exhibit the fstack manager program in fig. 4-2 on page 83 below. By now the reader should be familiar enough with FORTH style to understand the program logic with only moderate commenting and explanation. Remember- the program reads from the bottom up!
 
-0 We need a word that will initialize the 80x87 and fstack.
+The key words are \bc{FPUSH} and \bc{FPOP}- they do the work. Every word that changes the 87stack has to be redefined to include either \bc{FPUSH} or \bc{FPOP} as appropriate.
 
-e We need a fast wa to increment (or decrement) the address I
-of the next availab e space in the fstack by 10. :
-I
+As the test results in Table 4-5 below make clear, the high-level stack extension is too slow. Some optimization is necessary.
 
-e We need to test whether the 87stack is full (or empty). i
+Table 4-5 fstack manager timings
+8086 machine @ 4.77 MHz
+40,000 \regc{FPUSH}'s and \regc{FPOP}'s
+\begin{center}
+    \begin{tabular}{|c c c|}
+        \textbf{High-level} & \textbf{Optimized} & \textbf{Hand-coded} \\
+        29 sec              & 6 sec              & 4 sec \\
+    \end{tabular}
+\end{center}
 
-0 finally, what do we do if the memory we set aside gets full? !
-The solution chosen below makes the extension circular using I
-modulo arithmetic to compute the addresses within it.
+HS/FORTH comes with a very helpful utility: a recursive-descent optimizer. The optimizer replaces the subroutine calls of ordinary high-level threaded FORTH code by in-line machine code.
 
-I
-i
-We now exhibit the fstack manager program in fig. 4-2 on page 83
-below. By now the reader should be familiar enough with FORTH .~
-style to understand the program logic with only moderate com-
-
-menting and explanation. Remember— the program reads from
-the bottom up!
-
-The key words are FPUSH and FPOP — they do the work. Every
-word that changes the 87stack has to be redefined to include
-either FPUSH or FPOP as appropriate.
-
-As the test results in Table 4-5 below make clear, the high-level
-stack extension is too slow. Some optimization is necessary.
-
-Table 4-5 fstack manager timings”
-T8086 machine @ 4.77 MHz
-
-*4o,ooo FPUSH's and FPOP's
-
- 
-
-High-level Optlmlzed Hand-coded
-
-29 sec 6 sec 4 sec
-
- 
-
- 
-
- 
-
-HS/FORI‘H comes with a very helpful utility: a recursive-descent!
-
-optimizer. The optimizer replaces the subroutine calls of ordi-- ‘
-
-nary high-level threaded FORTH code by in-line machine code I
-
-cJuianVNoueiaaa-Alingntsmmed. ,
-
- 
-
--»
-
- 
-
-WFORTH MQ-TMWFM
-
- 
-
-\noAnmmsermman
-
-beam.
-
-VARIABLE Fs-eiza (shedinckhM‘s)
-
-40 Fselzzi (newsman)
-
-VARIABLE flGTH (la-minimum)
-
-VARIABLEFSP (wmmm
-
-VAniAet£ FDEPTH (annals-duet)
-(QWWI
-
-CREATE F3TAG< FS-SIZE @10‘ ALLOT OKLW
-
-:FSINIT FSP OI -8 FDEPTH I FS-SIZE @10'
-flGTHI fiNIT ; (IrIUIzeWardstadrs)
-
-000E10+ <96 flCSOAI» swoon:
-
-030E10- <%83EBOA%> END-WE
-(Mmtoaddorsumdw)
-
+\begin{listing}
+\ FLOATING POINT STACK MANAGER
+DECIMAL
+VARIABLE FS-SIZE                ( size of fstack in TREAL's  ) 
+40 FS-SIZE !                    ( the fstack is 40 deep      )
+VARIABLE FLGTH                  ( length of fstack in bytes  )
+VARIABLE FSP                    ( current offset into fstack )
+VARIABLE FDEPTH                 ( current size of stack      )
+                                ( -8 fdepth fs-length        )
+CREATE FSTACK FS-SIZE @ 10 * ALLOT OKLW
+: FSINIT FSP O! -8 FDEPTH ! FS-SIZE @ 10 *
+      FLGTH ! FINIT ;           ( initialize 8087 and stacks )
+CODE 10+      <% 83 C3 0A %>    END-CODE
+CODE 10-      <% 83 eb 0A %>    END-CODE
+       ( fast way to add or subtract 10 )
 FSINIT
 
-:WRAPUspntapmodflgri) \rmkeiatnckdrcuar
-[flGTH@] UTERAL UNDER + SWAPMOD:
+: WRAP ( fsp -- fsp mod flgth ) 
+       [FLGTH @ ] LITERAL UNDER + SWAP MOD ;
 
-:AWAYI DUP nor l;(adrn-—n) \ueeiuieetoredwoie
-:INC-FSP (--iap') FSPDUP@ 10+ WRAP AWAY! ;
-:DEC-FSP (--fap') FSP DUP@ 10— WRAP SWAP I;
+: AWAY! DUP ROT ! ; ( adr n -— n ) \ useful factored word
+: INC-FSP ( -- fsp') FSP DUP@ 10+ WRAP AWAY!  ;
+: DEC-FSP ( -- fsp') FSP DUP@ 10— WRAP SWAP ! ;
 
-:INC—FDE’I'H (--Idenh')
-FDEPTI-l DUP@ 1+ FS-LENG‘IH @ MIN
-AWAY! ;
+: INC—FDEPTH                    ( -- fdepth' )
+      FDEPTH DUP@ 1+ FS-LEGTH @ MIN
+      AWAY! ;
 
-:DEC-FDEPTH (--idenh')
-FDEPTH DUP@ 1- DUP e <
-ABORT" FSTAOK UNDERflOW' AWAY!
+: DEC-FDEPTH                    ( -- fdepth' )
+      FDEPTH DUP@ 1- DUP -8 <
+      ABORT" FSTACK UNDERFlOW" AWAY! ;
 
-:FPUSH INC-FDETH O< NOT
-IfiNC-FSP FSTACK +
+: FPUSH INC-FDETH O< NOT
+      IF INC-FSP FSTACK +
+          FDECSTP R80!          ( st[7] -- fsp )
+      THEN ;
 
-FDECSTP RN! (atlTl--isp)
+: FPOP DEC-FDEPTH -1 < NOT
+       IF FSP @ FSTACK +
+       R80@ FINCSTP             ( fsp -- st[7] )
+       DEC-FSP THEN ;
+\end{listing}
+Fig. 4-2 Hi-level manager for 80x87
 
-THEN :
-
-:FPOP DEC-FDEP'IH -1 < NOT
-IF FSP@FSTAO( +
-Rm fiNCSTP (fep--st[7])
-DEC-FSP THEN:
-
- 
-
- 
-
- 
-
-flo.¢.2 HI-Ievellstackmanagerform7
-
-oJflthNaflatm-Alrtgnsnasrved.
-
-84 Chopra“ —nie com Famly SclentmcFORTH
-
-stripping out redundant pushes and pops of the parameter stack.
-It is fairly straightforward to construct a similar optimizer for any ‘
-FORTH dialect. Alternatively, one can machine code the time-
-critical words.
-
-w“
+stripping out redundant pushes and pops of the parameter stack. It is fairly straightforward to construct a similar optimizer for any FORTH dialect. Alternatively, one can machine code the time-critical words.
 
 The results of the tests, presented in Table 4-5 on page 82 above,
 are interesting:
-
-0 the optimizer does nearly as well as hand-tuned machine code. I
-
-0 An FPUSH or an FPOP takes about 50 ysec on the average,
-when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
-
-0 The irreducible minimum on an 8086/80286 —since TREAL
-storage from, or retrieval to the 87stack' rs demanded— annot
-possibly be less than 170 clock cycles. 1 fetch and 1 store1 .egl'h
-main place to save some time would be m moves to or om
-memory; the depth of the fstack and the pointer must be kept l
-as variables, but FS-SIZE and flGTH do not change and could "
-be compiled as literals, thereby saving 30 cycles ln FPUSH and '
-10 in FPOP. )
-
-e Substantially greater efficiency (at best another 1. 5x improve-
-ment over the code version discussed above) would require a
-different algorithm— —based, perhaps, on the 87stack overflow
-or underflow interrupt. But because other error conditions can
-initiate this interrupt, the testing and decision-making needed
-to use this method seemed to me likely to produce equivalent
-overhead to the method employed here.
-
- 
+\begin{itemize}
+    \item the optimizer does nearly as well as hand-tuned machine code.
+    \item An \regc{FPUSH} or an \regc{FPOP} takes about 50 ysec on the average, when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
+    \item The irreducible minimum on an 8086/80286 -since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded— cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\footnote{Somewhat less, \approx 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
+    \item Substantially greater efficiency (at best another 1.5x improvement over the code version discussed above) would require a different algorithm -based, perhaps, on the 87stack overflow or underflow interrupt. But because other error conditions can initiate this interrupt, the testing and decision-making needed to use this method seemed to me likely to produce equivalent overhead to the method employed here.
 
 \section{Clone wars}
 
-\TallC{S}{everal} companies have produced non-infringing clones of the
+\TallC{S}{everal} companies have produced non-infringing clones of the Intel 80x87 family of chips. American Micro Devices is a second source for 80287 and 80387 chips. Cyrix Corporation has produced 80287 and 80387 equivalents with significantly faster transcendental functions and moderately faster arithmetic than , the Intel originals.
 
-Intel 80x87 family of chips. American Micro Devices is a second
-source for 80287 and 80387 chips. Cyrix Corporation has
-produced 80287 and 80387 equivalents with significantly faster
-transcendental functions and moderately faster arithmetic than ,
-the Intel originals.
-
-And finally, Integrated Information Technology, Inc. (founded by
-the designers of the Weitek chips) has produced the most inter- 1
-
- 
-
-19. Somewhat less, arill?!) clocks, if a 32-bit bus is utilized with the 386/387 pair. See, ¢.g., John H. 1
-Crawford and Patrick F. Gelsinger, Programingthe 80386 (Sybex, San Francisco, 1987). L1
-
-COMFORT“
-
-M4-Them7hmly as
-
-eating of the clones: the 80c287/80c387 not only perform arith-
-metic significantly faster than the Intel originals, they possess 24
-additional 80-bit on-chip registers. Unfortunately these cannot
-be combined directly with the eight original registers to make a
-32-deep stack, since this would have required increasing the
-80x87 stack-pointer (see 57 above) from 3 bits to 5. Since there
-was no place to find the 2 extra bits. one cannot really fault IIT's
-designers.
+And finally, Integrated Information Technology, Inc. (founded by the designers of the Weitek chips) has produced the most interesting of the clones: the 80c287/80c387 not only perform arithmetic significantly faster than the Intel originals, they possess 24 additional 80-bit on-chip registers. Unfortunately these cannot be combined directly with the eight original registers to make a 32-deep stack, since this would have required increasing the 80x87 stack-pointer (see 7 above) from 3 bits to 5. Since there was no place to find the 2 extra bits, one cannot really fault IIT's designers.
 
 But if they cannot be used to extend the 87stack, what are the 24
 extra registers good for? Eight (bank 3) are not even accessible,
@@ -804,18 +691,10 @@ vs. about 7000 for the scalar process, Le. the same speedup factor
 
 Table 46 Timings for 4x4 matrix - vector
 
- 
-
 Operation: x + @ I
 mx mm: 16-52 12'28 20-20 4'44
 
 W: 832 336 400 176
-
- 
-
- 
-
- 
 
 as for matrix 'vector. If one must load the 4x4 matrix each time,
 the speedup factor is less: about 35-fold because of the 16 addi-
@@ -908,7 +787,9 @@ lg? E I092? = 2.807...
 
 That is, partitioning allows a potentially large reduction in the
 time to multiply dense matrices.
+
 \TallC{B}{y} writing a partitioned matrix in the form
+
 an at: | 0 all 812 ..
 = = 1
 [A] [82‘ 82;] [52131—11 ' i 0 z i ( I)
@@ -922,52 +803,45 @@ z = 322 — anal—9a.. (18)
 I 0
 [—azrar-t1 '] (19)
 
-which leads to the recursion for In , the time to invert an nxn
-matrix:
-
 we may express the inverse of A as
 
-[Al-ail?"
-
- 
+which leads to the recursion for In , the time to invert an nxn
+matrix:
+\begin{align}
+l_{2n} \cong 2l_{n} + 5M_{n}
+\end{align} 
 
 whose solution is
+\begin{align}
+l_{n} = mn^{lg 7} + O(n)
+\end{align}
 
-1,,=mn’97+0(n) (21)
+\textit{i.e.}, the time needed to invert is comparable with that needed to multiply.
 
-OWVNouatm-Aldd'itsraaarvad.
-
-Chapter 4 - The 80x87 Family Scientific FORTH
-
-ie., the time needed to invert is comparable with that needed to i
-multiply.
-
-\TallC{S}{uppose} we merely wish to solve a linear system without invert-
-1ng the matrix. can we gain some speed that way? From 17 we
+\TallC{S}{uppose} we merely wish to solve a linear system without inverting the matrix: can we gain some speed that way? From 17 we
 see that the problem
 
- 
-
+\begin{align*}
 Ax=y
+\end{align*}
 
-reduces to three sub-problems: i
+reduces to three sub-problems:
 
-aiiui = Vt (223)
-
-l
-3‘2 = Y2 - aztut (22b) ;
-a1‘l-x1 =.V1 — ataxz i (22C) i
+\begin{align}
+    a_{11}u_{1} = y_{1}                 \\
+    zx_{2} = y_{2} - a_{21}{u}_1        \\
+    a_{11}x_{1} = y_{1} - a_{12}x_{2}
+\end{align}
 
 that is, we have the recursion
 
- 
+\begin{align}
+S_{2n} = 3S_{n} + mn^{lg 7} + 2mn^{2}
+\end{align}
 
-32,: as, +mn’97+2mn2 (B)
 whose solution is dominated by
+\begin{align}
+S_{n} = m\left(\frac{1}{4}n^{lg 7} + 2n^{2}\right) + O(n^{lg 3})
+\end{align}
 
-1
-Sn=m(j4-n’g7
-
-+ 2n 2) + O(n ’93) (24)
-
-Linear equation solution via recursion thus has the same asymptotic running time as matrix multiplication, except that 4 x fewer operations are required than for inversion. That is, it should be about 5 x faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the IT 80c387 chip, together with Strassen’ s algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.
+Linear equation solution via recursion thus has the same asymptotic running time as matrix multiplication, except that 4 x fewer operations are required than for inversion. That is, it should be about 5 x faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the ITT 80c387 chip, together with Strassen's algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.
