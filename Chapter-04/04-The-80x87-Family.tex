@@ -4,7 +4,7 @@
 
 \TallC{W}{hen} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and HT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
 
-We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\footnote{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling VAX minicomputers.}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\footnote{J. Palmer and S. Morse, \textit{The 8087 Primer} (John Wiley & Sons, NY (1984), hereafter referred to as \textbf{8087P}).} The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
+We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\footnote{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling VAX minicomputers.}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\footnote{J. Palmer and S. Morse, \textit{The 8087 Primer} (John Wiley \& Sons, NY (1984), hereafter referred to as \textbf{8087P}).}} The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
 
 Instructions for the 80x87 are always appended to a code called “escape” (ESC, D8h) that alerts the coprocessor and diverts control to it. The MS-DOS assembler MASM and debugger DEBUG will automatically assemble this code with 80x87 instructions, so the user does not need to worry about including ESC except to be aware that it is happening. (Of course, a FORTH system that lacks 80x87 assembler extensions will need to include ESC explicitly to generate 80x87 codes.)
 
@@ -16,7 +16,7 @@ Advanced programming methods — such a recursive algorithms — require an fsta
 
 \section{Internal 80x87 and manipulation}
 
-The 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\footnote{see \textbf{8087P, p. 87ff.}.
+The 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\footnote{see \textbf{8087P, p. 87ff.}}.
 
 We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER} .
 
@@ -24,53 +24,53 @@ How are we to define them in terms of machine code primitives?
 
 \subsection{The FORTH assembler}
 
-\TallC{E}{very} FORTH worthy of the name includes an assembler, usually set up as an alternate vocabulary\footnote{Vocabularies are a method for subdividing the dictionary.} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\footnote{BX is a CPU register, and \[BX\] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
+\TallC{E}{very} FORTH worthy of the name includes an assembler, usually set up as an alternate vocabulary\footnote{Vocabularies are a method for subdividing the dictionary.} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\footnote{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
 
-\begin{listing}
+\begin{lstlisting}
     CODE @ BX [BX] MOV. END-CODE
-\end{listing}
+\end{lstlisting}
 
 A \bc{CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (REI‘) instructions in the machine code representation of the calling program.
 
 Here is what happened in the \bc{CODE} version of \regc{@} above:
 
-\begin{list}
+\begin{itemize}
     \item The defining word \bc{CODE} set up a dictionary entry with the name \bc{@}, with an appropriate pointer and JUMP instructions to make the newly defined word run the code sequence comprising the definition.
     \item The word \bc{END-CODE} cleans up the loose ends by adding the obligatory RET instruction sequence and turning off the compiler. (That is, \bc{END-CODE} installs “\bc{NEXT}".)
     \item \bc{END-CODE} is thus the analog of \bc{;} as \bc{CODE} is of \bc{:}.
-\end{list}
+\end{itemize}
 
 Consider now the word \bc{FROT} whose Intel assembly language definition would be
 
-\begin{listing}
+\begin{lstlisting}
     FROT:       ; entry point
     FWAIT       ; hold 8086 operations
     FXCH ST(1)  ; swap TOS and NOS
     FWAIT       ; hold 8086 operations
     FXCH ST(2)  ; swap TOS and ST(2)
     RET         ; return
-\end{listing}
+\end{lstlisting}
 
 In HS/FORTH assembler, the definition becomes
 
-\begin{listing}
+\begin{lstlisting}
     CODE FROT FWAIT. 1 FXCH. FWAIT. 2 FXCH.
         END-CODE
-\end{listing}
+\end{lstlisting}
 
 \leftbar[1\linewidth]
-\textbf{\textunderline{Note}: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete resultss.
+\Note: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete resultss.
 \endleftbar \footnote{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}
 
-subsection{Using MS-DOS DEBUG}
+\subsection{Using MS-DOS DEBUG}
 
-\TallC{T}{he} FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes - hex numbers - directly into the code field of a word. HS/FORTH, \texit{e.g.}, uses the words <% and %> to enclose the hex codes being inserted.
+\TallC{T}{he} FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes - hex numbers - directly into the code field of a word. HS/FORTH, \eg, uses the words \regc{<\%} and \regc{\%>} to enclose the hex codes being inserted.
 
 The problem is, how do we find out what these hex codes are?
 
-The simplest way is to use DEBUG\footnote{see, \eg, R. Lafitte, \textit{Assembly Language: Primer for the IBM PC & XT} (Plume/Waite-New American Library, New York, 1984). Complete operating systems often include a code debugger that permits assembly; disassembly; modifying the contents of selected memory locations; setting breakpoints; and running proyams under debuger control.} to generate (HEX) code sequences. Rather than try to explain, we shall illustrate by recording and annotating the DEBUG session for the word \bc{FROT}:
+The simplest way is to use DEBUG\footnote{see, \eg, R. Lafitte, \textit{Assembly Language: Primer for the IBM PC \& XT} (Plume/Waite-New American Library, New York, 1984). Complete operating systems often include a code debugger that permits assembly; disassembly; modifying the contents of selected memory locations; setting breakpoints; and running proyams under debuger control.} to generate (HEX) code sequences. Rather than try to explain, we shall illustrate by recording and annotating the DEBUG session for the word \bc{FROT}:
 
-\begin{listing}
+\begin{lstlisting}
     C > DEBUG               starts DEBUG
     -A100                   Assemble from 100h
     3B01:0100 FWAIT         enter asembler
@@ -92,27 +92,27 @@ The simplest way is to use DEBUG\footnote{see, \eg, R. Lafitte, \textit{Assembly
     -D 100 105              Dump to get hex codes
     3B01:0100 9B D9 C9 9B D9 CA
     -Q                      Quit session
-\end{listing}
+\end{lstlisting}
 
 From the \underline{D}ump (or \underline{U}nsassembly) we find code bytes 9B D9 F7 D9 C9 F6 D9 C9 which can be inserted directly into the definition of \bc{FROT}:
 
-\begin{listing}
+\begin{lstlisting}
     CODE FROT <% 9B D9 F7 D9 C9 F6 D9 C9 %>
         END-CODE (:: a b c -- b c a )
-\end{listing}
+\end{lstlisting}
 The rest of the 80x87 stack words,
-\begin{listing}
+\begin{lstlisting}
     FDUP FSWAP FDROP FOVER F-ROT
-\end{listing}
+\end{lstlisting}
 
 whose assembler definitions are:
-\begin{listing}
+\begin{lstlisting}
     CODE    FDUP      FWAIT. 0  FLD.  END-CODE
     CODE    FSWAP     FWAIT. 1 FXCH.  END-CODE
     CODE    FDROP     FWAIT. 0 FSTP.  END-CODE
     CODE    F—ROT   FWAIT. 2 FXCH.
             FWAIT.  1 FXCH.           END-CODE
-\end{listing}
+\end{lstlisting}
 
 can be defined similarly in 8086/8087 machine code using the
 DEBUG program or a reference manual for the chip (\eg \textbf{8087P})to determine the hex codes.
@@ -122,9 +122,9 @@ DEBUG program or a reference manual for the chip (\eg \textbf{8087P})to determin
 \TallC{T}{he} 80x87 instruction set includes codes for loading \regc{ST (0)} from memory and storing \regc{ST(0)} to memory. The former involeves a "push" and the latter may or may not involve a "pop", from
 the 87stack.
 
-For the moment we need words to retrieve and store 16-bit integers, short reals (32 bit) and temporary reals (80 bit). These have mnemonics \regc{FILD} ("load integer to \regc{ST (0)}"), \regc{FISTP}("store integer and pop \regc{ST(1)} into \regc{ST(0)"); \regc{FLD}, \regc{FSTP} respectively. Typical (HS/)FORTH assembler definitions are
+For the moment we need words to retrieve and store 16-bit integers, short reals (32 bit) and temporary reals (80 bit). These have mnemonics \regc{FILD} ("load integer to \regc{ST (0)}"), \regc{FISTP}("store integer and pop \regc{ST(1)} into \regc{ST(0)")}; \regc{FLD}, \regc{FSTP} respectively. Typical (HS/)FORTH assembler definitions are
 
-\begin{listing}
+\begin{lstlisting}
     CODE I16@
         FWAIT. [BX] WORD-PTR FILD.
         [BX] POP.
@@ -135,7 +135,7 @@ For the moment we need words to retrieve and store 16-bit integers, short reals 
         [BX] POP.
         FWAIT.
     END-CODE
-\end{listing}
+\end{lstlisting}
 
 Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} -assuming these are needed— replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64-, and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64@}, \bc{R80@}, and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\footnote{"Ten-byte pointer". Note HS/FORTH appends a period "." to most Intel mnemonics.} as appropriate.
 
@@ -143,7 +143,7 @@ Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} wit
 
 Here we define \bc{S->F} and \bc{F->S} directly in high-level FORTH by wasting a little memory for a (hidden) temporary variable:
 
-\begin{listing}
+\begin{lstlisting}
     VARIABLE TEMP
     : S—>F (n-- ::--float[n])
         TEMP !          \TOS —> TEMP
@@ -152,17 +152,17 @@ Here we define \bc{S->F} and \bc{F->S} directly in high-level FORTH by wasting a
         TEMP I16!       \ST(O) -> TEMP
         TEMP @ ;        \TEMP—> TOS
     BEHEAD' TEMP        \ hide address of TEMP
-\end{listing}
+\end{lstlisting}
 
 Faster machine code versions of \bc{S->F} and \bc{F->S} are\footnote{\bc{TEMP + []} is HS/FORTH's phrase to assemble a named memory address.}
 
-\begin{listing}
+\begin{lstlisting}
     CODE S—>F TEMP +[] BX MOV. BX POP.
         FWAIT. TEMP +[] I16 fiLD. END-CODE
 
     CODE F—>S BX PUSH. TEMP +[] FISTP.
         BX TEMP +[] MOV. END-CODE
-\end{listing}
+\end{lstlisting}
 
 These definitions will satisfy our present needs for storing and retrieving from the 87stack.
 
@@ -186,26 +186,27 @@ of the calculation demands retention of more significant figures
 to prevent roundoff errors.
 
 The FORTH arithmetic words we shall need are
-
-F+ F— FR— F* F/ FR/ FNEGATE FABS FSGN
+\begin{lstlisting}
+    F+ F- FR— F* F/ FR/ FNEGATE FABS FSGN
+\end{lstlisting}
 whose definitions are (CODE and END-CODE are assumed)
 
-\begin{listing}
+\begin{lstlisting}
     F+      FWAIT.    FADDP.    (87: a b -- a+b)
-    F-      FWAIT.    FSUBP.    (87: a b -- a—b)
-    FR-     FWAIT.    FSUBRP.   (87: a b -- b—a)
-    F*      FWAIT.    FMULP.    (87: a b -- a'b)
+    F-      FWAIT.    FSUBP.    (87: a b -- a-b)
+    FR-     FWAIT.    FSUBRP.   (87: a b -- b-a)
+    F*      FWAIT.    FMULP.    (87: a b -- a*b)
     F/      FWAIT.    FDIVP.    (87: a b -- a/b)
     FR/     FWAIT.    FDIVRP.   (87: a b -- b/a)
-\end{listing}
+\end{lstlisting}
 
-\begin{listing}
-    FNEGATE FWAIT.  FCHS.   (87: a -- -a)
+\begin{lstlisting}
+    FNEGATE FWAIT.  FCHS.   (87: a -- -a )
     FABS   FWAIT.   FABS.   (87: a -- |a|)
 
     : FSGN      (n-- 87:x -- |x|*sgn[n])
-        FABS 0< IF FNEGATE THEN ;
-\end{listing}
+       FABS 0< IF FNEGATE THEN ;
+\end{lstlisting}
 
 \section{Special constants}
 
@@ -214,14 +215,14 @@ whose definitions are (CODE and END-CODE are assumed)
 Table 4-1 Speclal Constants
 \begin{center}
     \begin{tabular}{|c c c c|}
-        word      & const.      & mnemonic  & codes     \\
-        F=0       & 0           & FLDZ      & 9B D9 E5  \\
-        F=1       & 1           & FLD1      & 9B D9 E8  \\
-        F=PI      & pi=3.14...  & FLDPI     & 9B 09 E5  \\
-        F=L2(10)  & log_{2}10   & FLDL2T    & 9B D9 E9  \\ 
-        F=L2(E)   & log_{2}e    & FLDL2E    & 9B 09 EA  \\
-        F=L10(2)  & log_{10}2   & FLDLG2    & 9B 09 EC  \\
-        F=LN(2)   & log_{e}     & FLDLN2    & 9B 09 ED  \\
+        word      & const.      & mnemonic & codes     \\
+        F=0       & 0           & FLDZ     & 9B D9 E5  \\
+        F=1       & 1           & FLD1     & 9B D9 E8  \\
+        F=PI      & pi=3.14...  & FLDPI    & 9B 09 E5  \\
+        F=L2(10)  & $log_{2}10$ & FLDL2T   & 9B D9 E9  \\ 
+        F=L2(E)   & $log_{2}e$  & FLDL2E   & 9B 09 EA  \\
+        F=L10(2)  & $log_{10}2$ & FLDLG2   & 9B 09 EC  \\
+        F=LN(2)   & $log_{e}$   & FLDLN2   & 9B 09 ED  \\
     \end{tabular}
 \end{center}
 
@@ -234,52 +235,52 @@ Table 4-2 \textit{Machine language floating point tests}
 \begin{center}
     \begin{tabular}{|c c c|}
         mnemonic    &   comparison      &   pop?        \\
-        FTST        &   ST(O) to 0      &   no          \\
-        FCOM        &   ST(1) to ST(O)  &   no          \\
-        FCOMP       &   ST(1) to ST(O)  &   pop once    \\
-        FCOMPP      &   ST(1) to ST(O)  &   pop twice   \\
+        FTST        &   ST(0) to 0      &   no          \\
+        FCOM        &   ST(1) to ST(0)  &   no          \\
+        FCOMP       &   ST(1) to ST(0)  &   pop once    \\
+        FCOMPP      &   ST(1) to ST(0)  &   pop twice   \\
     \end{tabular}
 \end{center}
 
 The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques the STATUS register must be moved to the parameter stack\footnote{\Note: the 80387 includes a new instruction whereby the status control word can be moved \textit{directly} into the AX register of the 80386 CPU. The hex codes for FSTSW AX are DF E0.}. This is done with the the 80x87 instruction \regc{FSTSW} \textit{via} the assembler sequence
 
-\begin{listing}
+\begin{lstlisting}
     VARIABLE F.STATUS
     CODE FSTSW BX PUSH.
         F.STATUS +[] FSTSW.
         BX F.STATUS +[] MOV.
     END-CODE
     BEHEAD' F.STATUS
-\end{listing}
+\end{lstlisting}
 
-Now we have to consider how to bit-mask the status integer left on the stack by FSTSW. We use the logical AND with 400011 og 0100h (\textunderline{Exercise}: Why?) to pick out C3 and C0. Now from \textbf{8087P}\footnote{see, \eg, Table 4.1} we have the truth table 4-3 below:
+Now we have to consider how to bit-mask the status integer left on the stack by FSTSW. We use the logical AND with 400011 og 0100h (\underline{Exercise}: Why?) to pick out C3 and C0. Now from \textbf{8087P}\footnote{see, \eg, Table 4.1} we have the truth table 4-3 below:
 
 \begin{center}
     \begin{tabular}{|c c c|}
-        \textbf{Conamon}    &   \textbf{C3} & \textbf{C0}   \\
-        ST(0) > x           &   0           & 0             \\
-        ST(0) = x           &   1           & 0             \\
-        ST(0) < x           &   0           & 1             \\
+        \textbf{Conamon}    &   \textbf{C3} & \textbf{C0} \\
+        ST(0) $>$ x           &   0           & 0         \\
+        ST(0) $=$ x           &   1           & 0         \\
+        ST(0) $<$ x           &   0           & 1         \\
     \end{tabular}
 \end{center}
 
 Now we are in a position to define the test words \bc{F0>}, \bc{F0=},
 \bc{F0<}, as well as \bc{F>}, \bc{F=}, \bc{F<} .We have\footnote{\Note the test worrds \bc{F<} and \bc{F>} are defined opposite to \bc{F0>} and \bc{F0<}. This reversal of directions is \textit{not} a typographical error: it is \textit{demanded} by the operation of \bc{FCONPP} -see \textbf{8087P}.}
 
-\begin{listing}
+\begin{lstlisting}
     CODE FTST FWAIT. FTST. 0 FSTP END-CODE
     CODE FCOMPP FWAIT. FCOMPP. END-CODE
 
     HEX
     : FTSTP FTST FSTSW ;
-    : F0> FTSTP 4100 AND NOT 0) ;
-    : F0= FTSTP 4000 AND 0> ;
-    : F0< FTSTP 0100 AND 0> ;
+    : F0> FTSTP 4100 AND NOT 0> ;
+    : F0= FTSTP 4000 AND     0> ;
+    : F0< FTSTP 0100 AND     0> ;
     : F< FCOMPP FSTSW 4100 AND NOT 0> ;
-    : F= FCOMPP FSTSW 4000 AND 0> ;
-    : F> FCOMPP FSTSW 0100 AND 0> ;
+    : F= FCOMPP FSTSW 4000 AND     0> ;
+    : F> FCOMPP FSTSW 0100 AND     0> ;
     DECIMAL
-\end{listing}
+\end{lstlisting}
 
 \section{Mathematical functions}
 
@@ -289,19 +290,19 @@ Table 4-4 Mathematical function primitives
 
 \begin{center}
     \begin{tabular}{|c c c c|}
-        \textbf{name}   &   \textbf{action}             & \textbf{code(s)}  & \textbf{mnemonic} \\
-        FSQRT           &   (87: x -- \sqrt{x})         & 9B D9 FA          & FWAIT FSQRT       \\
-        FY*LG2X         &   (87: y x -- y*log_{2}[x])   & 9B D9 F1          & FWAIT FYL2X       \\
-        FY*LG2XP1       &   (87: y x -- y*log_{2}[x+1]) & 9B D9 F0          & FWAIT FYL2XP1     \\
-        F2XM1           &   (87:x-- 2^{x}-1)            & 9B D9 F0          & FWAIT F2XM1       \\
+        \textbf{name}   &   \textbf{action}               & \textbf{code(s)}  & \textbf{mnemonic} \\
+        FSQRT           &   (87:   x -- $\sqrt{x}$)       & 9B D9 FA          & FWAIT FSQRT       \\
+        FY*LG2X         &   (87: y x -- $y*log_{2}$[x])   & 9B D9 F1          & FWAIT FYL2X       \\
+        FY*LG2XP1       &   (87: y x -- $y*log_{2}$[x+1]) & 9B D9 F0          & FWAIT FYL2XP1     \\
+        F2XM1           &   (87:   x -- $2^{x}$-1)        & 9B D9 F0          & FWAIT F2XM1       \\
     \end{tabular}
 \end{center}
 
 These primitive functions allow us to define the logarithms and exponentials. To get $log_{2}(x)$, for example, we need to decide whether $x$ lies between 0 and 2: this can best be accomplished with
 the sequence (we assume $x$ is already on the 87stack)
 
-\begin{listing}
-    : F=2 F=1 FDUP FSCALE FPLUCK ; (e7:--2)(*@\footnote{See below for a discussion of \bc{FSCALE}.}@*)
+\begin{lstlisting}
+    : F=2 F=1 FDUP FSCALE FPLUCK ; (87:--2)
 
     : LOG.TST FDUP F0> NOT
        ABORT" Can't take log(—|x|) 11" ;
@@ -313,91 +314,89 @@ the sequence (we assume $x$ is already on the 87stack)
 
     : FLN   F=LN(2)     FSWAP FLG ;
     : FLOG  F=L10(2)    FSWAP FLG ;
-\end{listing}
+\end{lstlisting} \footnote{See below for a discussion of \bc{FSCALE}.}
 
 Now we can use the fundamental definition of exponentiation to define both the operation of raising an arbitrary positive number to a real power, as well as the standard mathematical function $e^x$:
 
-\begin{listing}
+\begin{lstlisting}
     : F2**  (87: x   -- 2**x)   F2XM1 F=1 F+ ;
     : F*    (87: x y -- y**x)   FLG F2** ;
     : FEXP  (87: x   -- exp[x]) F=L2(E) F* F2** ;
-\end{listing}
+\end{lstlisting}
 
-\TallC{W}{e} now have only to implement the trigonometric and inverse-trigonometric functions. We need (TREAL) IO-byte constants:
+\TallC{W}{e} now have only to implement the trigonometric and inverse-trigonometric functions. We need (\regc{TREAL}) IO-byte constants:
 
-\begin{listing}
+\begin{lstlisting}
     : F,        HERE    10 ALLOT R80! ;
     : FCONSTANT CREATE  F, DOES> R80@ ;
-\end{listing}
+\end{lstlisting}
 
 Also, for simplicity, we define FORTH functions for degree/radian conversions and conversely:
 
-\begin{listing}
+\begin{lstlisting}
     : FINIT     F=PI    180 S->F F/    (87:-- p/180)
     : FCONSTANT PI/180                \ make constant
     : DEG->RAD  PI/180 F* ;
     : RAD->DEG  PI/180 F/ ;
-\end{listing}
+\end{lstlisting}
 
 
 The 80x87 chip has a fast way to multiply or divide by powers of 2, called \bc{FSCALE}. The \bc{CODE} definition is
 
-\begin{listing}
+\begin{lstlisting}
     CODE FSCALE <% 9B D9 FC %> END-CODE
-\end{listing}
+\end{lstlisting}
 
 \bc{FSCALE} adds \regc{ST(1)} to the (powers-of-2) exponent of \regc{ST(0)}. Thus, \eg, we can write fast divide-and multiply-by-2 instructions:
 
-\begin{listing}
+\begin{lstlisting}
     : F2* F=1 FSWAP         FSCALE  FPLUCK ;
     : F2/ F=1 FNEGATE FSWAP FSCALE  FPLUCK ;
-\end{listing}
+\end{lstlisting}
 
 Now, according to \textbf{8087P}, we may evaluate trigonometric and inverse-trigonometric functions using the instructions
 
-\begin{listing}
+\begin{lstlisting}
     CODE FPTAN  FWAIT. <% D9 F2 %> END-CODE
     CODE FPATAN FWAIT. <% D9 F3 %> END-CODE
-\end{listing}
+\end{lstlisting}
 
 The 8087 and 80287 implement an \textit{unnormalized} tangent function, whose effect is \regc{(87: z -- y x)}, with $tan(z)=y/x$. Let us define
 
 \begin{align} 
-    \frac{y}{x} = tan(\frac{z}{2})
+    \frac{y}{x} =& tan(\frac{z}{2})
 \end{align}
 
 That is, we obtain the tangent of half the angle. The other trigonometric functions can be computed in software using the identities
 
 \begin{align}
-    sin(z) = \frac{2(\frac{y}{x})}{1 + (\frac{y/x})^{2}
-    cos(z) = \frac{1 - (\frac{y}{x})^2}{1 + (\frac{y}{x})^2}
-    tan(z) = \frac{sin(z)/cos(z)}
+    sin(z) =& \frac{2(y/x)}{1 + (y/x)^{2}}       \\
+    cos(z) =& \frac{1 - (y/x)^2}{1 + (y/x)^2}   \\
+    tan(z) =& \frac{sin(z)}{cos(z)}
 \end{align}
 
 A further problem created by the 8087/80287 instruction set is that the argument $z$ must lie in the range $0 < z < \pi/4$. Thus we must shift the argument to this range, using a special instruction \bc{FPREM} ("exact" partial remainder\footnote{see \textbf{8087P}, p. 100ff}) that can be used to extract multiples of $\pi$:
 
-\begin{listing}
+\begin{lstlisting}
     CODE FPREM FWAIT. <% D9 F8 %> END-CODE
     : XDUP FOVER FOVER ;
     : ENUF? FSTSW 1024 AND 0= ;     \ bit C2 =0?
     : FNORM (87: x k -- x mod k ) FSWAP
         BEGIN FPREM ENUF? UNTIL FPLUCK ;
         \ extract multiples of k
-\end{listing}
+\end{lstlisting}
 
 Here is how we code the tangent in high-level FORTH:
 
-\begin{listing}
+\begin{lstlisting}
     (*@
-    \textbf\textunderline{Pseudocode version}:
+    \textbf\underline{Pseudocode version}:
     x=0 is an exception - set tan =0 and exit.
     x < 0 ? Save sign as a flag on stack.
     reduce by multiples of $\pi$
-    x in 1st quadrant $\(\pi/2 < x < \pi )$ ? Flag, reduce by $\pi/2$
-    x in 1st octant   $\(\pi/2 < x < \pi )$ ? Flag, reduce by $\pi/4$
+    x in 1st quadrant ( $\pi/2 < x < \pi$ ) ? Flag, reduce by $\pi/2$
+    x in 1st octant   ( $\pi/2 < x < \pi$ ) ? Flag, reduce by $\pi/4$
     @*)
-    
-    
 
 \ HIGH LEVEL FORTH VERSION
     : REDUCE ( :87: x k -- x mod k -- f)
@@ -413,22 +412,22 @@ Here is how we code the tangent in high-level FORTH:
                         \ adjust for octant
         IF 1/F FNEGATE THEN     \ adjust for quadrant
         IF FNEGATE THEN ;       \ adjust sign
-\end{listing}
+\end{lstlisting}
 
 The remaining trigonometric functions (sine, cosine, scant, co-secant) can easily be defined in terms of $tan(z /2)$. For example, here are \bc{FSIN} and \bc{FCOS}:
 
-\begin{listing}
+\begin{lstlisting}
     : FSIN F2/ FTAN FDUP FDUP F* F=1 F+
        FR/ F2* ;
     : FCOS F2/ FTAN FDUP F* F=1 FOVER F-
        FSWAP F=1 F+ F/ ;
-\end{listing}
+\end{lstlisting}
 
 \leftbar[1\linewidth]
 \Note: The 80387 improves on the 8087/80287 by eliminating the
 need to adjust the argument in software. Further, the tangent
 produced by the 80387 is normalized (that is, $x = 1.0$ in Eq. 4.1
-above). finally, the 80387 has instructions \regc{FSIN}, \regc{FCOS and \regc{FSINCOS} built in, so all the software emulation is unnecessary.
+above). finally, the 80387 has instructions \regc{FSIN}, \regc{FCOS}, and \regc{FSINCOS} built in, so all the software emulation is unnecessary.
 \endleftbar
 
 \TallC{W}{e} define inverse-trigonometric functions using \bc{FPATAN} defined previously, whose action is \regc{( 87: y x -- arctan[y/x] )}. The 80387 has no additional instructions for inverse trig functions, relative to the 8087/80287, so the same code fits all.
@@ -436,11 +435,11 @@ above). finally, the 80387 has instructions \regc{FSIN}, \regc{FCOS and \regc{FS
 To calculate the inverse functions, we make use of standard identities (the forms chosen minimize roundoff error). Thus,
 
 \begin{align}
-    Arcsin(z) = Arctan\left(\frac{z}{\sqrt{(1-z)(1+z)}}\right)
-    Arccos(z) = 2 Arctan\Big\{\left(\frac{1-z}{1+z}\right)^{\frac{1}{2}\Big\}
+    Arcsin(z) =& Arctan\left(\frac{z}{\sqrt{(1-z)(1+z)}}\right) \\
+    Arccos(z) =& 2 Arctan\Big(\{\left(\frac{1-z}{1+z}\right)^{\frac{1}{2}\Big)}
 \end{align}
 
-\begin{listing}
+\begin{lstlisting}
     : FATAN F-1 FPATAN ;
     : FASIN FDUP FABS F=1 F>
         ABORT' argu'nentotarcsh > 1'
@@ -451,7 +450,7 @@ To calculate the inverse functions, we make use of standard identities (the form
         ABORT" argument of arcsin > 1"
         FDUP F=1 FR- FSWAP F=1 F+ F/
         FSORT FPATAN ;
-\end{listing}
+\end{lstlisting}
 
 \leftbar[1\linewidth]
 \Note: the argument of arcsin($x$) or arccos($x$) must be smaller than
@@ -471,7 +470,7 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
     \item Keep track of where we have stored the last number removed from the 87stack.
 \end{itemize}
 
-\begin{listing}
+\begin{lstlisting}
 0 4'TH FROM TOP
 1 5'TH FROM TOP
 2 6'TH FROM TOP
@@ -481,21 +480,21 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
 6 2’ND FROM TOP
 7 3'RD FROM TOP
 fig. 4.1 The 00:87 snack. from seen:
-\end{listing}
+\end{lstlisting}
 
 The algorithm has the following expression in pseudo-FORTH
 
-\begin{listing}
-    Redefine operations that put #5 on 87stack:
+\begin{lstlisting}
+    Redefine operations that put \#5 on 87stack:
     increment stack _pointer
     it 87steck full put st(7) on fstack
     push onto st(O)
 
-    Redefine operations that take #5 off 87stack:
+    Redefine operations that take \#5 off 87stack:
     popst(0) _
     decrement stack _pornter
     iffstack notempty. puttofs onto st(7)
-\end{listing}
+\end{lstlisting}
 
 We begin by defining the data structure (the fstack proper) where we will stash and retrieve the numbers coming off the 87stack.
 
@@ -525,7 +524,7 @@ Table 4-5 fstack manager timings
 
 HS/FORTH comes with a very helpful utility: a recursive-descent optimizer. The optimizer replaces the subroutine calls of ordinary high-level threaded FORTH code by in-line machine code.
 
-\begin{listing}
+\begin{lstlisting}
 \ FLOATING POINT STACK MANAGER
 DECIMAL
 VARIABLE FS-SIZE                ( size of fstack in TREAL's  ) 
@@ -566,7 +565,7 @@ FSINIT
        IF FSP @ FSTACK +
        R80@ FINCSTP             ( fsp -- st[7] )
        DEC-FSP THEN ;
-\end{listing}
+\end{lstlisting}
 Fig. 4-2 Hi-level manager for 80x87
 
 stripping out redundant pushes and pops of the parameter stack. It is fairly straightforward to construct a similar optimizer for any FORTH dialect. Alternatively, one can machine code the time-critical words.
@@ -576,237 +575,220 @@ are interesting:
 \begin{itemize}
     \item the optimizer does nearly as well as hand-tuned machine code.
     \item An \regc{FPUSH} or an \regc{FPOP} takes about 50 ysec on the average, when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
-    \item The irreducible minimum on an 8086/80286 -since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded— cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\footnote{Somewhat less, \approx 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
+    \item The irreducible minimum on an 8086/80286 -since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded— cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\footnote{Somewhat less, $\approx$ 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
     \item Substantially greater efficiency (at best another 1.5x improvement over the code version discussed above) would require a different algorithm -based, perhaps, on the 87stack overflow or underflow interrupt. But because other error conditions can initiate this interrupt, the testing and decision-making needed to use this method seemed to me likely to produce equivalent overhead to the method employed here.
-
+\end{itemize}
 \section{Clone wars}
 
 \TallC{S}{everal} companies have produced non-infringing clones of the Intel 80x87 family of chips. American Micro Devices is a second source for 80287 and 80387 chips. Cyrix Corporation has produced 80287 and 80387 equivalents with significantly faster transcendental functions and moderately faster arithmetic than , the Intel originals.
 
 And finally, Integrated Information Technology, Inc. (founded by the designers of the Weitek chips) has produced the most interesting of the clones: the 80c287/80c387 not only perform arithmetic significantly faster than the Intel originals, they possess 24 additional 80-bit on-chip registers. Unfortunately these cannot be combined directly with the eight original registers to make a 32-deep stack, since this would have required increasing the 80x87 stack-pointer (see 7 above) from 3 bits to 5. Since there was no place to find the 2 extra bits, one cannot really fault IIT's designers.
 
-But if they cannot be used to extend the 87stack, what are the 24
-extra registers good for? Eight (bank 3) are not even accessible,
-being used to speed up on-chip arithmetic. However, banlm 0-2
-— 24 registers — can be accessed (cg. for on-chip cache memory).
-Moreover, IIT has provided an on-chip linear transformation: a
-4x4 matrix multiplies a 4-dimensional column vector in place. (The
-original vector is overwritten, but the matrix is unchanged.) It worls
-like this :
+But if they cannot be used to extend the 87stack, what are the 24 extra registers good for? Eight (bank 3) are not even accessible, being used to speed up on-chip arithmetic. However, banks 0-2 -24 registers- \textit{can} be accessed (\eg for on-chip cache memory). Moreover, IIT has provided an on-chip linear transformation: a 4x4 matrix multiplies a 4-dimensional column vector in place. (The original vector is overwritten, but the matrix is unchanged.) It works like this\footnote{Note: FINIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s in all 8 87stack cells.}:
 
-first we define the instructions
+First we define the instructions
 
-CODE FSBPO <96 DB E8 96> END-CODE
-CODE FSBP1 <96 DB EB 96> END-CODE
-CODE FSBP2 <96 DB EA 96> END-CODE
-CODE F4x4 <96 DB F1 96 > END-CODE
+\begin{lstlisting}
+    CODE FSBP0 <% DB E8 %> END-CODE
+    CODE FSBP1 <% DB EB %> END-CODE
+    CODE FSBP2 <% DB EA %> END-CODE
+    CODE F4x4  <% DB F1 %> END-CODE
+\end{lstlisting}
 
-Then we load the 4x4 matrix into banks 1 and 2, the vector into
-bank 0, and multiply:
+Then we load the 4x4 matrix into banks 1 and 2, the vector into bank 0, and multiply:
 
-o VAR a{{ o VAR v{
-
-: VEC- > 087 ( adr ~ - ) \ load vector into 80c387
-IS V{ \ I vector address to V{
-fiNIT FSBPO \ reset ST. select bank 0
-
-30 DOV{I} G@ LOOP ;
-: MAT->087 (adr--) \Ioad matrix into 80c387
-
-IS a{{ \ ! matrix address to a{{
-fiNIT FSBP2 \ reset ST, select bank 2
-1 0 DO
-
-30 DO a{{IJ}} G@ LOOP
-P \cont'd
-
+\begin{lstlisting}
+    0 VAR a{{ 0 VAR v{
+    : VEC->c87 ( adr -- )  \ load vector into 80c387
+       IS v{               \ ! vector address to V{
+       FINIT FSBP0         \ reset ST, select bank 0
+       3 0 DO v{ I } G@ LOOP ;
+    : MAT->c87 ( adr -- )  \ load matrix into 80c387
+       IS a{{              \ ! matrix address to a{{
+       FINIT FSBP2         \ reset ST, select bank 2
+       1 0 DO
+          3 0 DO a{{ I J }} G@ LOOP
+       LOOP
+       FINIT FSBP1         \ reset ST, select bank 1
+       3 2 DO
+         3 0 DO a{{ I J }} G@ LOOP
+       LOOP ;
+       
+    : 087- >VEC (adr - - ) \ I from 800387 to vector
+       IS v{               \ ! vector address to v{
+       FSBP0               \ select bank 0 %
+       3 0 DO v{ I } G! LOOP ;
+    \ example: ANS = A*V
+    A{{ MAT-87 V{ VEC->87 F4x4 ANS{ c87->VEC
+\end{lstlisting}
  
 
-20. Note: fiNIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s
-in all 8 87stack cells.
+\TallC{T}{he} on-chip 4x4 matrix multiply was intended to accelerate 3-dimensional graphics (rotation and translation can be expressed as a single 4-dimensional transformation). However, most scientific programmers spend little time on 3-D graphics. The matrix instructions are more interesting for their potential to accelerate general matrix operations\footnote{See Ch. 9 of this book for a fuller discussion of standard matrix algorithms.}. For example, suppose we need to transform a vector by multiplying with an arbitrary matrix. Normally we would write
 
-30 DO v{l} GI LOOP;
-\example: ANS = A*V
-A{{ MAT->87 V{ VEC->87 F4x4 ANs{ce7->VEC
+\begin{align}
+    y_{i} = \sum_{j=1}^{n} A_{ij}x_{j}
+\end{align}
 
-Chapter 4 — rite eoxa-r FamIIy Scientific FORTH 5‘
-fiNIT FSBP1 \ reset ST, select bank 1
-3 2 DO
-SODOa{{IJ}}G@ LOOP
-LOOP ; I
-I
-087- >VEC (adr - - ) \ I from 800387 to vector 1
-IS V{ \ I vector address to v{ ‘
-FSBPO \ select bank 0 %
+But consider, \eg, an 8x8 matrix operating on an 8-dimensional column vector: we \textbf{partition} the matrix and vector into 4-dimensional sub-matrices $a_{11}$ , \textit{etc}. and sub-vectors $x_{1}$ , \textit{etc}.:
 
- 
+\begin{lstlisting}
+\begin{align}
+    [A] [x] \equiv 
+    \[ \begin{matrix}
+      a_{11} & a_{12} \\
+      a_{21} & a_{22}
+    \end{matrix} \]
+    \[ \begin{matrix} x_{1} \\ x_{2} \end{matrix} \]
+    =
+    \[ \begin{matrix}
+      a_{11}x_{1} & a_{12}x_{2} \\
+      a_{21}x_{1} & a_{22}x_{2}
+    \end{matrix} \]
+\end{align}
+\end{lstlisting}
 
-\TallC{T}{he} on-chip 4x4 matrix multiply was intended to accelerate
+From timings on assembly-coded demonstration programs that multiply vectors by constant 4x4 matrices, we estimate an overall speedup of 6-7 -fold on an 80c387 system. The timings for this process are as shown in Table 4-6 below (assume 32-bit \regc{REAL*4} matrices). The execution time for a 4-dimensional linear transformation using conventional operations is approximately 1744 clock cycles. The time using the vector operation is some 250-300 clocks, based on measured performance. Since 256 clocks are needed to load and store a 4-dimensional vector, we therefore estimate the vector operation \bc{F4x4} takes only about 50 clocks, \textit{i.e.} about 1 floating point multiplication time. We can now estimate the time to multiply two 4x4 matrices as about 1200 clocks \textit{vs.} about 7000 for the scalar process, \textit{i.e.} the same speedup factor
 
-3-dimensional graphics (rotation and translation can be ex-
-pressed as a single 4-dimensional transformation). However, most
-scientific programmers spend little time on 3-D graphics. The matrix
-instructions are more interesting for their potential to accelerate
-general matrix operations21. For example, suppose we need to -_
-transform a vector by multiplying with an arbitrary matrix. Normally i
-we would write ‘
+Table 4-6 \textit{Timings for 4x4 matrix - vector}
+\begin{center}
+    \begin{tabular}{|c c c c c|}
+        \textbf{\underline{Operation}} & x & + & @ & ! \\
+        \textbf{\underline{No}}. x \textbf{\underline{Clocks}}: & 16*52 & 12*28 & 20*20 & 4*44 \\
+        \textbf{\underline{Total clocks}}: & 832 & 336 & 400 & 176 \\
+    \end{tabular}
+\end{center}
 
-   
+as for \textit{matrix vector}. If one must load the 4x4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
 
-II
-Yi = 21 Aijxj (7) i
-J:
+The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\footnote{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time—consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
 
-But consider, e.g., an 8 x 8 matrix operating on an 8-dimensional i
-column vector: we partition the matrix and vector into 4-dimen- g
-sional sub-matrices an , etc. and sub-vectors x1 , etc.: '
+\begin{lstlisting}
+\begin{align}
+    [A] [B] = 
+    \[ \begin{matrix}
+      a_{11} & a_{12} \\
+      a_{21} & a_{22}
+    \end{matrix} \]
+    \[ \begin{matrix}
+      b_{11} & b_{12} \\
+      b_{21} & b_{22}
+    \end{matrix} \]
+    \equiv
+    [C] \\
+    [C] =
+    \[ \begin{matrix}
+      a_{11}b_{11}+a_{12}b_{21} & a_{11}b_{12}+a_{12}b_{22} \\
+      a_{21}b_{11}+a_{22}b_{21} & a_{21}b_{12}+a_{22}b_{22}
+    \end{matrix} \]
+    \[ \begin{matrix} x_{1} \\ x_{2} \end{matrix} \]
+    =
+    \[ \begin{matrix}
+      a_{11}x_{1} & a_{12}x_{2} \\
+      a_{21}x_{1} & a_{22}x_{2}
+    \end{matrix} \]
+\end{align}
+\end{lstlisting}
 
-_ an 012 X1 _ 01131 + 611212
-[A] [x] _ [021 022] [‘2] [anti + 022352] (8)
-From timings on assembly-coded demonstration programs that
-multiply vectors by constant 4 x 4 matrices, we estimate an overall
-speedup of 6—7 -fold on an 80c387 system. The timings for this
-process are as shown in Table 4-6 below (assume 32-bit REAL'4
-matrices). The execution time for a 4-dimensional linear trans-
-formation using conventional operations is approximately 1744
+requires 8 matrix multiplications and 4 matrix additions to evaluate. Strassen has shown that in fact the evaluation can be performed with 7 matrix multiplications:
 
-clock cycles. The time using the vector operation is some 30-300
-clocks, based on measured performance. Since 256 clocks are
-
- 
-
-21.
-
-See Ch. 9 of this book for a fuller discussion of standard matrix algorithms.
-
-MPORTH
-
-awa-mmrrm O7
-
-needed to load and store a 4-dimensional vector, we therefore
-estimate the vector operation F4“ takes only about 50 clocks,
-ale. about I floating point multiplication time. We can now es-
-timate the time to multiply two 4 x 4 matrices as about 1200 cloclu
-vs. about 7000 for the scalar process, Le. the same speedup factor
-
-Table 46 Timings for 4x4 matrix - vector
-
-Operation: x + @ I
-mx mm: 16-52 12'28 20-20 4'44
-
-W: 832 336 400 176
-
-as for matrix 'vector. If one must load the 4x4 matrix each time,
-the speedup factor is less: about 35-fold because of the 16 addi-
-tional fetches.
-
-The conventionally programmed 8x8 matrix-vector multiply
-should also be some 3-5 times faster than the scalar operations,
-Le. there is no obvious speed gain — except being able to employ
-the built-in vector instruction F4x4 — from partitioning the 8x 8
-system into 4X4 sub-units. However, Strassen22 has pointed out
-that if one can evaluate matrix products recursively, partitioning
-can substantially speed the most time—consuming matrix opera-
-tions, multiplication and inversion. For example, it appears as
-though the product of two partitioned matrices,
-
-[A] [B] = [::::;:][::::Z::] [c]
-
-[C] = [allbll+alzb21 allblz+alzb22]
-
-azlbll+azzb21 azlblz+azzbzz
-
-(9)
-
- 
-
-22. v. Strassen, Numer. Math. 13 (1969) 134. See also v. Put, SIAMReview 26 (1984) 393.
-
-cJtsanVNouetaaz-Aiingmm.
-
-Chaptar4-Thewxa7Famly Scleno‘flcFORTH
-
-requires 8 matrix multiplications and 4 matrix additions to
-evaluate. Strassen has shown that in fact the evaluation can be
-performed with 7 matrix multiplications:
-
-p1 = (all + an) (b11 + bu)
-
-p2 = (an + an) bn
-
-p3 = all (b12 — b2)
-
-p, = (—a,, + an) (b,1 + bu) (10)
-p5 = (all + an) b22
-
-p5 = an (-bll + bu)
-
-P 7 = (012 ‘ (122) (1721 + bzz)
+\begin{align}
+    p_{1} =& (a_{ll} + a_{22}) (b_{11} + b_{22})  \\
+    p_{2} =& (a_{21} + a_{22}) b_{11}             \\
+    p_{3} =& a_{ll} (b_{12} - b_{22})             \\
+    p_{4} =& (-a_{ll} + a_{21}) (b_{11} + b_{12}) \\
+    p_{5} =& (a_{ll} + a_{l2}) b_{22}             \\
+    p_{6} =& a_{22} (-b_{11} + b_{21})            \\
+    p_{7} =& (a_{12} - a_{22}) (b_{21} + b_{22})
+\end{align}
 
 and 18 matrix additions:
 
-Cu =P1‘P5 +176 +P7
-€12=P3+Ps
-(11)
-€21 =P2 +P6
-€22 =P1—P2 +P3 +P4
+\begin{align}
+    c_{11} =& p_{1} - p_{5} + p_{6} + p_{7} \\
+    c_{12} =& p_{3} + p_{5}                 \\
+    c_{21} =& p_{2} + p_{6}                 \\
+    c_{22} =& p_{1} - p_{2} + p_{3} + p_{4}
+\end{align}
 
-‘ V‘s-‘-
+Equations 10 and 11 look at first blush half as efficient as 8 multiplications and 4 additions. But let us examine the time to multiply two partitioned matrices, first by the straightforward method and then by Strassen's: clearly,
 
-‘l firm V' was...“
+\begin{align}
+    M_{2n} = 8M_{n} + 4A_{n}
+\end{align}
 
-Equations 10 and 11 look at first blush half as efficient as 8 .
+where $M_{a}$ is the multiplication time and $A_{n}$ the addition time, for square matrices of order n.
 
-multiplications and 4 additions. But let us examine the time to
-multiply two partitioned matrices, first by the straightforward
-method and then by Strassen's: clearly,
+Setting $n = 2^{k}$ that (note $A_{n} \cong O(n^{2})$) we see the recursion, Eq. 12, is satisfied by an expression of form
 
-where Mn is the multiplication time andAn the addition time, for
-square matrices of order n.
+\begin{align}
+    M_{n} \approx m\lambda^{k} + ca 4^{k}
+\end{align}
 
-Setting n = 2" that (note A,l a! 0(n2) ) we see the recursion,
-Eq. 12, is satisfied by an expression of form
+where $m$ and $a$ are the elementary multiplication and addition times. Substituting 13 in 12 we find $\lambda = 8$ and $c = -1$, \textit{i.e.},
 
-tun-ml.“ +ca 4“ (13)
+\begin{align}
+    M_{n} \approx mn^{3} + an^{2}
+\end{align}
 
-M4-Tham7Fan-ily I.
-
-where m and I are the elementary multiplication and addition
-times. Substituting 13in 12 we find A =- 8 and c - — 1, i.e.,
-
-Mn - mn’ — an2 (14)
 Applying the same idea to Strassen’s method we obtain
 
-10,, = 710,, + um2 (15)
+\begin{align}
+    \hat{M}_{2n} = 7\hat{M}_{n} + 18an^{2}
+\end{align}
+
 or
 
-Ian-mn’w—San’, (16)
+\begin{align}
+    \hat{M}_{n} \approx mn^{lg 7} - 6an^{2}
+\end{align}
+
 where
 
-lg? E I092? = 2.807...
+\begin{align}
+    lg 7 \equiv log_{2} 7 = 2.807...
+\end{align}
 
-That is, partitioning allows a potentially large reduction in the
-time to multiply dense matrices.
+That is, partitioning allows a potentially large reduction in the time to multiply dense matrices.
 
 \TallC{B}{y} writing a partitioned matrix in the form
-
-an at: | 0 all 812 ..
-= = 1
-[A] [82‘ 82;] [52131—11 ' i 0 z i ( I)
-
+\begin{lstlisting}
+\begin{align}
+    [A]                     = 
+    \[ \begin{matrix}
+      a_{11} & a_{12} \\
+      a_{21} & a_{22}
+    \end{matrix} \]         =
+    \[ \begin{matrix}
+      I      & 0      \\
+      a_{21}a_{11}^{-1} & I
+    \end{matrix} \]
+    \[ \begin{matrix}
+      a_{11} & a_{12} \\
+      0      & z
+    \end{matrix} \]
+\end{align}
+\end{lstlisting}
 where
 
- 
+\begin{align}
+    z = a_{22} - a_{21}a_{11}^{-1}a_{12}
+\end{align}
 
-z = 322 — anal—9a.. (18)
+we may express the inverse of $A$ as
 
-I 0
-[—azrar-t1 '] (19)
+\begin{align}
+    [A]^{-1}                \equiv
+    \begin{matrix}
+      a_{11}^{-1} & a_{11}^{-1}a_{12}z^{-1} \\
+      0           & z^{-1}
+    \end{matrix}        
+    \begin{matrix}
+      I                  & 0      \\
+      -a_{21}a_{11}^{-1} & I
+    \end{matrix}
+\end{align}
 
-we may express the inverse of A as
-
-which leads to the recursion for In , the time to invert an nxn
-matrix:
+which leads to the recursion for $I_{a}$, the time to invert an nxn matrix:
 \begin{align}
 l_{2n} \cong 2l_{n} + 5M_{n}
 \end{align} 
