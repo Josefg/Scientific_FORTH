@@ -215,6 +215,7 @@ whose definitions are (CODE and END-CODE are assumed)
 Table 4-1 Speclal Constants
 \begin{center}
     \begin{tabular}{|c c c c|}
+        \hline
         word      & const.      & mnemonic & codes     \\
         F=0       & 0           & FLDZ     & 9B D9 E5  \\
         F=1       & 1           & FLD1     & 9B D9 E8  \\
@@ -223,6 +224,7 @@ Table 4-1 Speclal Constants
         F=L2(E)   & $log_{2}e$  & FLDL2E   & 9B 09 EA  \\
         F=L10(2)  & $log_{10}2$ & FLDLG2   & 9B 09 EC  \\
         F=LN(2)   & $log_{e}$   & FLDLN2   & 9B 09 ED  \\
+        \hline
     \end{tabular}
 \end{center}
 
@@ -234,11 +236,13 @@ The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FC
 Table 4-2 \textit{Machine language floating point tests}
 \begin{center}
     \begin{tabular}{|c c c|}
+        \hline
         mnemonic    &   comparison      &   pop?        \\
         FTST        &   ST(0) to 0      &   no          \\
         FCOM        &   ST(1) to ST(0)  &   no          \\
         FCOMP       &   ST(1) to ST(0)  &   pop once    \\
         FCOMPP      &   ST(1) to ST(0)  &   pop twice   \\
+        \hline
     \end{tabular}
 \end{center}
 
@@ -257,10 +261,12 @@ Now we have to consider how to bit-mask the status integer left on the stack by 
 
 \begin{center}
     \begin{tabular}{|c c c|}
+        \hline
         \textbf{Conamon}    &   \textbf{C3} & \textbf{C0} \\
         ST(0) $>$ x           &   0           & 0         \\
         ST(0) $=$ x           &   1           & 0         \\
         ST(0) $<$ x           &   0           & 1         \\
+        \hline
     \end{tabular}
 \end{center}
 
@@ -290,11 +296,13 @@ Table 4-4 Mathematical function primitives
 
 \begin{center}
     \begin{tabular}{|c c c c|}
+        \hline
         \textbf{name}   &   \textbf{action}               & \textbf{code(s)}  & \textbf{mnemonic} \\
         FSQRT           &   (87:   x -- $\sqrt{x}$)       & 9B D9 FA          & FWAIT FSQRT       \\
         FY*LG2X         &   (87: y x -- $y*log_{2}$[x])   & 9B D9 F1          & FWAIT FYL2X       \\
         FY*LG2XP1       &   (87: y x -- $y*log_{2}$[x+1]) & 9B D9 F0          & FWAIT FYL2XP1     \\
         F2XM1           &   (87:   x -- $2^{x}$-1)        & 9B D9 F0          & FWAIT F2XM1       \\
+        \hline
     \end{tabular}
 \end{center}
 
@@ -517,54 +525,57 @@ Table 4-5 fstack manager timings
 40,000 \regc{FPUSH}'s and \regc{FPOP}'s
 \begin{center}
     \begin{tabular}{|c c c|}
+    \hline
         \textbf{High-level} & \textbf{Optimized} & \textbf{Hand-coded} \\
+        \\
         29 sec              & 6 sec              & 4 sec \\
+    \hline
     \end{tabular}
 \end{center}
 
 HS/FORTH comes with a very helpful utility: a recursive-descent optimizer. The optimizer replaces the subroutine calls of ordinary high-level threaded FORTH code by in-line machine code.
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=single, float]
 \ FLOATING POINT STACK MANAGER
 DECIMAL
-VARIABLE FS-SIZE                ( size of fstack in TREAL's  ) 
-40 FS-SIZE !                    ( the fstack is 40 deep      )
-VARIABLE FLGTH                  ( length of fstack in bytes  )
-VARIABLE FSP                    ( current offset into fstack )
-VARIABLE FDEPTH                 ( current size of stack      )
-                                ( -8 fdepth fs-length        )
+VARIABLE FS-SIZE        ( size of fstack in TREAL's  ) 
+40 FS-SIZE !            ( the fstack is 40 deep      )
+VARIABLE FLGTH          ( length of fstack in bytes  )
+VARIABLE FSP            ( current offset into fstack )
+VARIABLE FDEPTH         ( current size of stack      )
+                        ( -8 fdepth fs-length        )
 CREATE FSTACK FS-SIZE @ 10 * ALLOT OKLW
 : FSINIT FSP O! -8 FDEPTH ! FS-SIZE @ 10 *
-      FLGTH ! FINIT ;           ( initialize 8087 and stacks )
+      FLGTH ! FINIT ;   ( initialize 8087 and stacks )
 CODE 10+      <% 83 C3 0A %>    END-CODE
 CODE 10-      <% 83 eb 0A %>    END-CODE
        ( fast way to add or subtract 10 )
 FSINIT
 
-: WRAP ( fsp -- fsp mod flgth ) 
+: WRAP ( fsp -- fsp mod flgth )    \ make fstack circular
        [FLGTH @ ] LITERAL UNDER + SWAP MOD ;
 
-: AWAY! DUP ROT ! ; ( adr n -— n ) \ useful factored word
+: AWAY! DUP ROT ! ; ( adr n -— n )\ useful factored word
 : INC-FSP ( -- fsp') FSP DUP@ 10+ WRAP AWAY!  ;
-: DEC-FSP ( -- fsp') FSP DUP@ 10— WRAP SWAP ! ;
+: DEC-FSP ( -- fsp') FSP DUP@ 10- WRAP SWAP ! ;
 
-: INC—FDEPTH                    ( -- fdepth' )
+: INC-FDEPTH                    ( -- fdepth'   )
       FDEPTH DUP@ 1+ FS-LEGTH @ MIN
       AWAY! ;
 
-: DEC-FDEPTH                    ( -- fdepth' )
+: DEC-FDEPTH                    ( -- fdepth'   )
       FDEPTH DUP@ 1- DUP -8 <
       ABORT" FSTACK UNDERFlOW" AWAY! ;
 
 : FPUSH INC-FDETH O< NOT
       IF INC-FSP FSTACK +
-          FDECSTP R80!          ( st[7] -- fsp )
+         FDECSTP R80!          ( st[7] -- fsp )
       THEN ;
 
-: FPOP DEC-FDEPTH -1 < NOT
-       IF FSP @ FSTACK +
-       R80@ FINCSTP             ( fsp -- st[7] )
-       DEC-FSP THEN ;
+: FPOP  DEC-FDEPTH -1 < NOT
+      IF FSP @ FSTACK +
+         R80@ FINCSTP          ( fsp -- st[7] )
+         DEC-FSP THEN ;
 \end{lstlisting}
 Fig. 4-2 Hi-level manager for 80x87
 
@@ -598,25 +609,26 @@ First we define the instructions
 Then we load the 4x4 matrix into banks 1 and 2, the vector into bank 0, and multiply:
 
 \begin{lstlisting}
-    0 VAR a{{ 0 VAR v{
-    : VEC->c87 ( adr -- )  \ load vector into 80c387
-       IS v{               \ ! vector address to V{
-       FINIT FSBP0         \ reset ST, select bank 0
+    0 VAR a{{
+    0 VAR v{
+    : VEC->c87 ( adr -- )    \ load vector into 80c387
+       IS v{                 \ ! vector address to V{
+       FINIT FSBP0           \ reset ST, select bank 0
        3 0 DO v{ I } G@ LOOP ;
-    : MAT->c87 ( adr -- )  \ load matrix into 80c387
-       IS a{{              \ ! matrix address to a{{
-       FINIT FSBP2         \ reset ST, select bank 2
+    : MAT->c87 ( adr -- )    \ load matrix into 80c387
+       IS a{{                \ ! matrix address to a{{
+       FINIT FSBP2           \ reset ST, select bank 2
        1 0 DO
-          3 0 DO a{{ I J }} G@ LOOP
+         3 0 DO a{{ I J }} G@ LOOP
        LOOP
-       FINIT FSBP1         \ reset ST, select bank 1
+       FINIT FSBP1           \ reset ST, select bank 1
        3 2 DO
          3 0 DO a{{ I J }} G@ LOOP
        LOOP ;
        
-    : 087- >VEC (adr - - ) \ I from 800387 to vector
-       IS v{               \ ! vector address to v{
-       FSBP0               \ select bank 0 %
+    : 087- >VEC (adr - - )   \ I from 800387 to vector
+       IS v{                 \ ! vector address to v{
+       FSBP0                 \ select bank 0 %
        3 0 DO v{ I } G! LOOP ;
     \ example: ANS = A*V
     A{{ MAT-87 V{ VEC->87 F4x4 ANS{ c87->VEC
@@ -631,83 +643,76 @@ Then we load the 4x4 matrix into banks 1 and 2, the vector into bank 0, and mult
 
 But consider, \eg, an 8x8 matrix operating on an 8-dimensional column vector: we \textbf{partition} the matrix and vector into 4-dimensional sub-matrices $a_{11}$ , \textit{etc}. and sub-vectors $x_{1}$ , \textit{etc}.:
 
-\begin{lstlisting}
 \begin{align}
-    [A] [x] \equiv 
-    \[ \begin{matrix}
+    \begin{bmatrix}A\end{bmatrix} [x] \equiv 
+    \begin{bmatrix}
       a_{11} & a_{12} \\
       a_{21} & a_{22}
-    \end{matrix} \]
-    \[ \begin{matrix} x_{1} \\ x_{2} \end{matrix} \]
+    \end{bmatrix}
+    \begin{bmatrix} x_{1} \\ x_{2} \end{bmatrix}
     =
-    \[ \begin{matrix}
+    \begin{bmatrix}
       a_{11}x_{1} & a_{12}x_{2} \\
       a_{21}x_{1} & a_{22}x_{2}
-    \end{matrix} \]
+    \end{bmatrix}
 \end{align}
-\end{lstlisting}
 
 From timings on assembly-coded demonstration programs that multiply vectors by constant 4x4 matrices, we estimate an overall speedup of 6-7 -fold on an 80c387 system. The timings for this process are as shown in Table 4-6 below (assume 32-bit \regc{REAL*4} matrices). The execution time for a 4-dimensional linear transformation using conventional operations is approximately 1744 clock cycles. The time using the vector operation is some 250-300 clocks, based on measured performance. Since 256 clocks are needed to load and store a 4-dimensional vector, we therefore estimate the vector operation \bc{F4x4} takes only about 50 clocks, \textit{i.e.} about 1 floating point multiplication time. We can now estimate the time to multiply two 4x4 matrices as about 1200 clocks \textit{vs.} about 7000 for the scalar process, \textit{i.e.} the same speedup factor
 
 Table 4-6 \textit{Timings for 4x4 matrix - vector}
 \begin{center}
     \begin{tabular}{|c c c c c|}
+        \hline
         \textbf{\underline{Operation}} & x & + & @ & ! \\
         \textbf{\underline{No}}. x \textbf{\underline{Clocks}}: & 16*52 & 12*28 & 20*20 & 4*44 \\
         \textbf{\underline{Total clocks}}: & 832 & 336 & 400 & 176 \\
+        \hline
     \end{tabular}
 \end{center}
 
-as for \textit{matrix vector}. If one must load the 4x4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
+as for \textit{bmatrix vector}. If one must load the 4x4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
 
 The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\footnote{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time—consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
 
-\begin{lstlisting}
 \begin{align}
-    [A] [B] = 
-    \[ \begin{matrix}
+    \begin{bmatrix}A\end{bmatrix}
+    \begin{bmatrix}B\end{bmatrix} =& 
+    \begin{bmatrix}
       a_{11} & a_{12} \\
       a_{21} & a_{22}
-    \end{matrix} \]
-    \[ \begin{matrix}
+    \end{bmatrix}
+    \begin{bmatrix}
       b_{11} & b_{12} \\
       b_{21} & b_{22}
-    \end{matrix} \]
+    \end{bmatrix}
     \equiv
-    [C] \\
-    [C] =
-    \[ \begin{matrix}
+    \begin{bmatrix}C\end{bmatrix} \\
+    \begin{bmatrix}C\end{bmatrix} =&
+    \begin{bmatrix}
       a_{11}b_{11}+a_{12}b_{21} & a_{11}b_{12}+a_{12}b_{22} \\
       a_{21}b_{11}+a_{22}b_{21} & a_{21}b_{12}+a_{22}b_{22}
-    \end{matrix} \]
-    \[ \begin{matrix} x_{1} \\ x_{2} \end{matrix} \]
-    =
-    \[ \begin{matrix}
-      a_{11}x_{1} & a_{12}x_{2} \\
-      a_{21}x_{1} & a_{22}x_{2}
-    \end{matrix} \]
+    \end{bmatrix}
 \end{align}
-\end{lstlisting}
 
 requires 8 matrix multiplications and 4 matrix additions to evaluate. Strassen has shown that in fact the evaluation can be performed with 7 matrix multiplications:
 
 \begin{align}
-    p_{1} =& (a_{ll} + a_{22}) (b_{11} + b_{22})  \\
-    p_{2} =& (a_{21} + a_{22}) b_{11}             \\
-    p_{3} =& a_{ll} (b_{12} - b_{22})             \\
-    p_{4} =& (-a_{ll} + a_{21}) (b_{11} + b_{12}) \\
-    p_{5} =& (a_{ll} + a_{l2}) b_{22}             \\
-    p_{6} =& a_{22} (-b_{11} + b_{21})            \\
-    p_{7} =& (a_{12} - a_{22}) (b_{21} + b_{22})
+    p_{1} =&\ (a_{ll} + a_{22}) (b_{11} + b_{22})  \\
+    p_{2} =&\ (a_{21} + a_{22}) b_{11}             \\
+    p_{3} =&\ a_{ll} (b_{12} - b_{22})             \\
+    p_{4} =&\ (-a_{ll} + a_{21}) (b_{11} + b_{12}) \\
+    p_{5} =&\ (a_{ll} + a_{l2}) b_{22}             \\
+    p_{6} =&\ a_{22} (-b_{11} + b_{21})            \\
+    p_{7} =&\ (a_{12} - a_{22}) (b_{21} + b_{22})
 \end{align}
 
 and 18 matrix additions:
 
 \begin{align}
-    c_{11} =& p_{1} - p_{5} + p_{6} + p_{7} \\
-    c_{12} =& p_{3} + p_{5}                 \\
-    c_{21} =& p_{2} + p_{6}                 \\
-    c_{22} =& p_{1} - p_{2} + p_{3} + p_{4}
+    c_{11} =&\ p_{1} - p_{5} + p_{6} + p_{7} \\
+    c_{12} =&\ p_{3} + p_{5}                 \\
+    c_{21} =&\ p_{2} + p_{6}                 \\
+    c_{22} =&\ p_{1} - p_{2} + p_{3} + p_{4}
 \end{align}
 
 Equations 10 and 11 look at first blush half as efficient as 8 multiplications and 4 additions. But let us examine the time to multiply two partitioned matrices, first by the straightforward method and then by Strassen's: clearly,
@@ -721,7 +726,7 @@ where $M_{a}$ is the multiplication time and $A_{n}$ the addition time, for squa
 Setting $n = 2^{k}$ that (note $A_{n} \cong O(n^{2})$) we see the recursion, Eq. 12, is satisfied by an expression of form
 
 \begin{align}
-    M_{n} \approx m\lambda^{k} + ca 4^{k}
+    M_{n} \approx m\lambda^{k} + ca\ 4^{k}
 \end{align}
 
 where $m$ and $a$ are the elementary multiplication and addition times. Substituting 13 in 12 we find $\lambda = 8$ and $c = -1$, \textit{i.e.},
@@ -739,63 +744,66 @@ Applying the same idea to Strassen’s method we obtain
 or
 
 \begin{align}
-    \hat{M}_{n} \approx mn^{lg 7} - 6an^{2}
+    \hat{M}_{n} \approx mn^{lg\ 7} - 6an^{2}
 \end{align}
 
 where
 
 \begin{align}
-    lg 7 \equiv log_{2} 7 = 2.807...
+    lg\ 7 \equiv log_{2}\ 7 = 2.807...
 \end{align}
 
 That is, partitioning allows a potentially large reduction in the time to multiply dense matrices.
 
 \TallC{B}{y} writing a partitioned matrix in the form
-\begin{lstlisting}
+
 \begin{align}
-    [A]                     = 
-    \[ \begin{matrix}
+    [A]                     =& 
+    \begin{bmatrix}
       a_{11} & a_{12} \\
       a_{21} & a_{22}
-    \end{matrix} \]         =
-    \[ \begin{matrix}
-      I      & 0      \\
-      a_{21}a_{11}^{-1} & I
-    \end{matrix} \]
-    \[ \begin{matrix}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+      I                 & 0 \\
+      a_{21}^{}a_{11}^{-1} & I
+    \end{bmatrix}
+    \begin{bmatrix}
       a_{11} & a_{12} \\
       0      & z
-    \end{matrix} \]
+    \end{bmatrix}
 \end{align}
-\end{lstlisting}
+
 where
 
 \begin{align}
-    z = a_{22} - a_{21}a_{11}^{-1}a_{12}
+    z =& a_{22} - a_{21}a_{11}^{-1}a_{12}
 \end{align}
 
 we may express the inverse of $A$ as
 
 \begin{align}
-    [A]^{-1}                \equiv
-    \begin{matrix}
-      a_{11}^{-1} & a_{11}^{-1}a_{12}z^{-1} \\
+    \begin{bmatrix}
+      A
+    \end{bmatrix}^{-1} \equiv&
+    \begin{bmatrix}
+      a_{11}^{-1} & a_{11}^{-1}a_{12}^{}z^{-1} \\
       0           & z^{-1}
-    \end{matrix}        
-    \begin{matrix}
-      I                  & 0      \\
-      -a_{21}a_{11}^{-1} & I
-    \end{matrix}
+    \end{bmatrix}
+    \begin{bmatrix}
+      I                     & 0 \\
+      -a_{21}^{}a_{11}^{-1} & I
+    \end{bmatrix}
 \end{align}
 
 which leads to the recursion for $I_{a}$, the time to invert an nxn matrix:
 \begin{align}
-l_{2n} \cong 2l_{n} + 5M_{n}
+l_{2n} \cong&\ 2l_{n} + 5M_{n}
 \end{align} 
 
 whose solution is
 \begin{align}
-l_{n} = mn^{lg 7} + O(n)
+l_{n} =&\ mn^{lg\ 7} + O(n)
 \end{align}
 
 \textit{i.e.}, the time needed to invert is comparable with that needed to multiply.
@@ -804,26 +812,26 @@ l_{n} = mn^{lg 7} + O(n)
 see that the problem
 
 \begin{align*}
-Ax=y
+Ax\ =&\ y
 \end{align*}
 
 reduces to three sub-problems:
 
 \begin{align}
-    a_{11}u_{1} = y_{1}                 \\
-    zx_{2} = y_{2} - a_{21}{u}_1        \\
-    a_{11}x_{1} = y_{1} - a_{12}x_{2}
+    a_{11}u_{1} =& y_{1}                 \\
+         zx_{2} =& y_{2} - a_{21}{u}_1   \\
+    a_{11}x_{1} =& y_{1} - a_{12}x_{2}
 \end{align}
 
 that is, we have the recursion
 
 \begin{align}
-S_{2n} = 3S_{n} + mn^{lg 7} + 2mn^{2}
+S_{2n} =& 3S_{n} + mn^{lg\ 7} + 2mn^{2}
 \end{align}
 
 whose solution is dominated by
 \begin{align}
-S_{n} = m\left(\frac{1}{4}n^{lg 7} + 2n^{2}\right) + O(n^{lg 3})
+S_{n} =& m\bigg(\frac{1}{4}n^{lg\ 7} + 2n^{2}\bigg) + O(n^{lg\ 3})
 \end{align}
 
 Linear equation solution via recursion thus has the same asymptotic running time as matrix multiplication, except that 4 x fewer operations are required than for inversion. That is, it should be about 5 x faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the ITT 80c387 chip, together with Strassen's algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.

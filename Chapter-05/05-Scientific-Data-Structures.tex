@@ -1,427 +1,183 @@
-SMFORTH M6~mmm
+\chapter{Scientific Data Structures}
+\startcontents[chapters]
+\printcontents[chapters]{}{1}{}
 
-Scientiﬁc Data Structures
+\TallC{D}{ata} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
 
-Contents
+\begin{itemize}
+    \item The re-defined structures are what most users need to solve stan ard problems, so meet 80-90\% of the cases in practice. That 15, they are not terribly restrictive.
+    \item Because the most-needed structures are predefined and have a standard format, they do not have to be invented each time a prggram is written. Standardization facilitates the exchange an portability of programs.
+    \item Standardized data structures aid program development in discrete modules, permitting sections written by different persons or teams to interface properly with minimal tuning.
+\end{itemize}
 
-51 Typed data structures 92
-551 Type descriptors 94
-S52 Typed scalars 94
-$53 Deﬁning several scalars at once 95
-554 Generic access 97
-§§5 The intelligent ﬂoating point stack (ifstack) 99
-§§6 Unary and binary generic operators 100
+FORTH pre—defines a minimal set of data structures but allows unlimited definition of new structures. How is this different from Pascal, Ada, or even C? FORTH not only permits extension of the set of data structures, it permits definition of new operators on them. Thus, \eg, FORTH permits simple implementation of complex arithmetic whereas the aforementioned do not.
 
-52 Arrays of typed data 104
-§§1 Improved (FORTRAN-like) array notation 105
-§§2 Large matrices 106
-553 Using high memory 108
-§§4 A general typed-array deﬁnition 110
-§§5 ZARRAY and }} 113
+This chapter\footnote{Much of the material in this chapter has appeared previously in J.V.Noble, \textit{J.FORTH Ap. and Res.} 6 (1990) 47.} suggests protocols for arrays and typed data\footnote{Most languages classify data by type: in FORTRAN, \eg, we have INTEGER, INTEGER*4, REAL, REAL*8, COMPLEX, and COMPLEX*16, requiring 2, 4, 4, 8, 8, and 16 bytes of memory, respectively.} that will increase the portability of code and encourage the exchange of scientific programs. The keys to this are generic operations that recognize the data type of a scalar or array variable at run—time and act appropriately.
 
-§3 Tuning for speed 114
+\section{Typed data structures}
 
-91
+One of the virtues of FORTRAN or BASlC is that the programmer does not have to keep track of what type of data he is fetching and storing from memory. In fact the user does not even program such operations explicitly - the compiler takes care of everything induding the bookkeeping. Mixed-arithmetic expressions like
 
-Data structures are the soul of any computer program in any
+\begin{lstlisting}
+Z = -37.2E-17*CEXP(CMPLX((R**2,W)/32)/DSIN(W)
+\end{lstlisting}
 
-language. Some languages, most notably FORTRAN and
-BASIC, predeﬁne some data structures but require extensive
-contortions to define others. This straitjacket approach has vir-
-tues as well as defects:
+place great demands on a compiler. The compiler first tabulates the types of the variables and literals in the expression, and then decide which run-time routines to insert. With two types of integers and four types of floating-point numbers (REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16) a typical binary operator such as exponentiation (** offers 36 possibilities. No wonder FORTRAN compilers are slow. 
 
-0 The re-deﬁned structures are what most users need to solve
-stan ard problems, so meet 80-99% of the cases in practice.
-That 15, they are not terribly restrictive.
+\TallC{F}{ORTH} sacrifices automation opting for a small, fast, flexible compiler. The traditional FORTH style gives each type of data its own operators. However, if a program demands all the standard REAL*4, REAL*S, COMPLEX*8 and COMPLEX*16 data types (not to mention INTEGER*2 and *4), having to remember them all and use them appropriately is a chore. This problem has
 
-0 Because the most-needed structures are predeﬁned and have
-a standard format, they do not have to be invented each time a
-prggram is written. Standardization facilitates the exchange
-an portability of programs.
+led me to experiment with generic access operators, \bc{G@} and \bc{G!}. These let FORTH keep track of which words to use in fetching and storing the "scientific" data types to the fstack (which may partly reside on a co-processor like the 80x87 or MC68881 chips). Corresponding generic unary and binary floating point operators \bc{GDUP}, \bc{G*}, \textit{etc}. allow programs themselves to be generic.
 
-0 Standardized data structures aid program development in dis-
-crete modules, permitting sections written 2i" different persons
-or teams to interface properly with minim tuning.
+\TallC{I}{} have lately further modified the scheme to permit more complete automation. The kernel of the method is an "intelligent" fstack, or ifstack, that recordns the type of each number on it. The generic arithmetic operators and library functions decide from the information on the ifstack how to treac their operands.
 
-FORTH pre—deﬁnes a minimal set of data structures but allows
-unlimited deﬁnition of new structures. How is this different from
+An ifstack-base protocol for floating point and complex arithmetic has drawbacks and advantages. A major drawback is the run-time overhead in maintaining the ifstack and in choosing the appropriate operator for a given situation. In other words we trade convenience for a non-negligible execution speed penalty. To some extent this can be mitigated by \textit{computing} decisions and by vectoring rather than branching (\textit{i.e.} no Eaker \bc{CASE} statements or \bc{IF ... ELSE ... THEN}s). Moreover, although the definitions are coded in high-level FORTH for portability, the key words should be hand-assembled for the target machine. Finally, my high-level ifstack manager has plenty of error checking that could be dispensed ith when speed is an issue.
 
-OJUlan.Noﬂoiﬂ2—Almfemod.
+The chief advantages of the ifstack are:
+\begin{itemize}
+    \item Unlike FORTRAN, this scheme permits generic routines that will accept several types of input. Hence, \eg, a matrix inversion routine will happily invert REAL*4, REAL*8, COMPLEX, and DCOMPLEX matrices.
+    \item A FORTRAN \rightarrow FORTH translator\footnote{See J.V. Noble, \textit{J. FORTH Ap. and Res.} 6 (1990) 131. See also Chapter 11, where we describe a FORmula TRANslator} becomes simple with generic operators.
+    \item The ifstack permits recursive programming \textit{a la} LISP.
+\end{itemize}
 
-Ours-mum mm
-
-Pmcal, Ada or even C? FORTH not only permits extension ofthe '
-set of data structures, it permits deﬁnition of new operators on
-them. Thus. e.g., FORTH permits simple implementation of com‘
-plex arithmetic whereas the aforementioned do not.
-
-This chapter1 suggests protocols for arrays and typed rlata2 that
-will increase the portability of code and encourage the exchange
-of scientiﬁc programs. The keys to this are generic operations that
-recognize the data type of a scalar or array variable at run—time
-and act appropriately.
-
-§1 Typed data structures
-
-OneofthevinuesofFORTRANorBASlCisthattheprogrammer
-doesnothavetokeeptraekofwhattypeofdataheisfetdiing
-andstoringfrom memory. lnfactﬂtetiserdoesmtevenprogram
-such operatiom explicitly — the compiler takes care ofeverything
-indudingthebookkeeping Mixed-arithmetic expressiomlike
-
-z = —37.2E—17‘CEXP(CMPU((R"2.W)/32)IDSIN(W)
-
- 
-
-place great demands on a compiler. Die compiler ﬁrst tabulates A
-the types of the variables and literals in the expression, and then ' l
-decide which run- ~time routines to insert. With two types of l
-integers and four types of ﬂoating- point numbers (REAL‘ 44:
-REAL'S, COMPLEX' 8 and COMPLEX'16) a typical binary;
-operator such as exponentiation (") offers 36 possibilities. No .
-wonder FORIRAN compilers are slow.
-
- 
-
-FORTH sacriﬁces automation opting for a small, fast, ﬂexible
-compiler. The traditional FORTH style gives each type of data
-its own operators. However, if a program demands all the stand-
-ard REAL‘4, REAL'S, COMPLEX‘8 and COMPI£X‘ 16 data 1
-types (not to mention INTEGER'Z and '4), having to remember
-them all and use them appropriately is a chore. This problem has ,.
-
-l
-!
-
- 
-
-_, l.,._ _
-
-Mruiolthenaterialinthischapterhuappearedpevioulyia l.V.Noble. LFORmApar-d
-Ra.c(r990)47. ;
-
-MouhaguagesdauilyduabytypethORTRAN,u,wehvelNrEGER,mGER'4, 5‘
-i
-
-'—
-
-REALRFAL‘&CDMH£XM(X)MPLEX'16,mquil‘ZﬂﬂBJMdeytesd
-memory, respectively.
-
-aunt-mum n
-
-Iedmetoelperimemwithgenericmoperatmoamdm.
-TheseletFORmheeptrackofwhichwordstomeinfetdring
-Indeter'ingthe'sdentiﬁc'datatypestotliefstack(wlridimay
-pu'tlyreddeonaco-proceumliketheWOrMCﬁssldnps).
-Owreqnadingpenericunaryandbimryﬂoatingpoimoperam
-”,0',dc.allowprogranuthemselvestobegeneﬁc.
-
-havelatelyhtrthermodiﬁedthesdiemetopermitmorecom-
-Ipletemtornatim'l'hekernelofthemethodisan“intelligem'
-(stackerihuthhunecorrBthetypeofeachnumberonitThe
-genericarithmeticoperatorsandh‘bnryfunctionsdecidefrom
-theinformationontheifstackhowtotreattheiroperands.
-
-Anifstack-basedprotocolforﬂoatingpointandcomplexarith-
-metichadrawhacksandadnntagaAmajordrawbackisthe
-run-ﬁnneverheadinmainniningtheifstaiandinchoosingthe
-appropriateopemorforagivensimationlnotherwordswe
-trade convenience for a non-negligible exemu'on speed penalty.
-Tosomeeatentthiscanbemitigatedbycompmbrgdecisiomand
-byvectoring rather than branching (Le. no Baker CASE state-
-mentsorlF ELSE ...THENs).Moreover,althoughthedefini-
-tiomarecodedinhigh-levelFORIHforportability,thekey
-wordssbrmldbe hand-memblcd forthetarget machine. Finally,
-myhigh—levelifstackmanagerhasplemyoferrorcheckingthat
-mldbedispensedwithwhenspeedisan‘mue.
-
-Thedriefadvantagesoftheifstackare:
-
-e UnlikeFORTRAN,thissdreme rmrngenericroutinesthat
-
-willacceptseveral of' t. .,amatrixinversion
-routine will invert '4, ‘8, COMPUEX
-andDm matrices
-
-eAFQRTRAN-OFORmtnmlatoerecom simple with
-genencoperators
-
-o‘IheifstackpermitsreairsivepmgrammingalaUSP.
-
- 
-
-3. SeeJ.V.Nd*,J.PORmAp.-IM.6(19M)BLSeeﬁoanerlL'herewedcaaisea
-iguana-kw.
-
-emvmrm-umw
-
-Chapters—Sclentll'chetaStmcturea SclentlﬂcFORTH
-
-§§1 Type descriptors
-To decide at run-time which @ or I to use for a particular datum,
-FORTH needs to know what type of datum it is. The scheme
-described here wastes a little memory by attaching to each vari-
-able a label that tells G@ and GI how to get hold of it.
+\subsection{Type descriptors}
+\TallC{T}{o} decide at run-time which \regc{@} or \regc{!} to use for a particular datum, FORTH needs to know what type of datum it is. The scheme described here wastes a little memory by attaching to each variable a label that tells \bc{G@} and \bc{G!} how to get hold of it.
 
 Here is how we label types:
-\ Data type identiﬁers
-0 CONSTANT REALM \ 4 bytes long
-1 CONSTANT REAL‘8 \ 8 bytes long
-2 CONSTANT COMPLEX \ 8 bytes long
-3 CONSTANT DCOMPLEX \ 16 bytes long
+\begin{lstlisting}
+    \ Data type identifiers
+    0 CONSTANT REALM \ 4 bytes long
+    1 CONSTANT REAL‘8 \ 8 bytes long
+    2 CONSTANT COMPLEX \ 8 bytes long
+    3 CONSTANT DCOMPLEX \ 16 bytes long
 
-\ a simple version of #BYTES
-CREATE #bytes 4 C, 8 C, 8 C, 16 C,
-: #BYTES (type — #bytes) #bytes + C@ ;
+    \ a simple version of #BYTES
+    CREATE #bytes 4 C, 8 C, 8 C, 16 C,
+    : #BYTES (type — #bytes) #bytes + C@ ;
+\end{lstlisting}
 
-§§2 Typed scalars
-We want the machine to remember for us the data-speciﬁc
-fetches and stores to the co-processor. To accomplish this,
-the typed variable has to place its address and type on the stack.
-Thus we need a data structure that we might visualize diagramati-
-cally in Fig. 5-1 below (a cell | El represents 2 bytes):
+\subsection{Typed scalars}
 
--. a};
-
-    
-
-start of data
-
-_ - tohlghermemory
-
- 
+\TallC{W}{e} want the machine to remember for us the data-specific fetches and stores to the co-processor. To accomplish this, the typed variable has to place its address and type on the stack. Thus we need a data structure that we might visualize diagramatically in Fig. 5-1 below (a cell  represents 2 bytes):
 
 Fig. 5-1 Memory structure a! a typed scalar
 
 We implement a scalar through the defining word
 
-OWE-WWW 95
+\begin{lstlisting}
+    : SCALAR ( type--)
+       CREATE DUP , #BYTES ALLOT
+       DOES> DUP@ SWAP 2+ SWAP ; ( -- adr t )
+\end{lstlisting}
 
-some ( pe--)
-CREATE P , #BYTES ALLOT
-DOES> DUP@ SWAP 2+ SWAP ;(--adrt)
+The word \bc{SCALAR} is used as
+\begin{lstlisting}
+REAL*4   SCALAR X
+REAL*8   SCALAR XX
+COMPLEX  SCALAR Z
+DCOMPLEX SCALAR ZZ
+  etc.
+\end{lstlisting}
 
-The word SCALAR is used as
+\subsection{Defining several scalars at once}
+\TallC{O}{ne} aspect of the FORTH method of handling variables, that seems strange to programmers familiar with Pascal, BASIC, or FORTRAN, is that \bc{VARIABLE}, \bc{CONSTANT} or a new defining word like \bc{SCALAR} need to be repeated for each one defined, as above. That is, such defining words generally do not accept name-lists.
 
-REALM SCALAR X
+This idiosyncracy can be traced to FORTH’s abhorrence of variables:
+\begin{itemize}
+    \item Easily read (and maintained) FORTH code consists of short definitions with few (generally $\leq$ 4) numbers on the stack. Such programs have small use for variables, especially since the top of the return stack can serve as a local variable.
+    \item In FORTH as in BASIC, variables tend to be global and hence corruptible. The variables in a large program can have unmnemonic names or names that do not express their meaning simply because we run out of names.
+    \item Experienced FORTH programmers tend to reserve named variables for such special purposes as vectoring execution.
+    \item The standard FORTH kernel therefore discourages named variables by making them as tedious as possible.
+\end{itemize}
 
-REAL‘B SCALAR XX
+Most objections to variables can be resolved by making them local. Local variables are relatively easy to define in FORTH: a straightforward but cumbersome method for making "headerless" words is given in Kelly’s and Spies’s book\footnote{M.G. Kelly and N. Spies, \textit{Forth, a Text and Reference} (Prentice-Hall, New Jersey, 1986), p. 324 ff.}.
 
-COMPLEX SCALAR Z
+HS/FORTH\footnote{Harvard Softworkts, PO. Box 69, Springboro, Ohio 45066 Tel: (513) 748-0390.} provides beheading in a particularly simple form: \bc{BEHEAD' NAME}, or \bc{BEHEAD" NAME1 NAME2}.
 
-DCOMPLEX SCALAR 22
-as. etc ae-
+Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}’s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
 
-Del'lnlng several scalars at once
-One aspect of the FORTH method of handling variables, that
-seems strange to programmers familiar with Pascal, BASIC
-or FORTRAN, is that VARIABLE, CONSTANT or a new deﬁn-
-ing word like SCALAR need to be repeated for each one deﬁned.
-as above. That is, such defining words generally do not accept
-name-lists.
+Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed -or corrupted- by later definitions. (Pountain\footnote{Dick Fountain, "Object-oriented FORTH", Byte Magazine, 8/86; \textit{Object—oriented FORTH} (Academic Press, Inc., Orlando, 1987).} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
 
-This idiosyncracy can be traced to FORTH’s abhorrence of vari-
-ables:
+Variables are essential for scientific programming. Since we must often have more than two variables, it is silly to repeat \bc{SCALAR}. A simple way to allow SCALAR to use a list is
 
-e Easily read (and maintained) FORTH code consists of lert
-deﬁnitions with few (generally 5 4) numbers on the stack. Such
-programs have small use for variables, especially since the top
+\begin{lstlisting}
+    :SCALARS ( n -- )
+      SWAP 0 DO DUP SCALAR LOOP DROP ;
+    \ Examples:
+    \ 2 REAL*4  SCALARS  A  B
+    \ 5 COMPLEX SCALARS XA XB XC XD XE
+\end{lstlisting}
 
-of t e return stack can serve as a local variable.
+I find the use of \bc{SCALARS} with modifiers and lists more convenient and readable than many repetitions of \bc{SCALAR}. Its resemblance to FORTRAN (thereby helping me live with my FORTRAN-inspired habits) is pure coincidence. Although possible to use a terminator (",\eg) rather than a count (to define the variable list) I feel it is desirable for the programmer to know how many variable names he has supplied, hence the counted version.
 
-0 In FORTH as in BASIC, variables tend to be global and hence
-corruptible. The variables in a large program can have un-
-mnemonic names or names that do not express their meaning
-simply because we run out of names.
+\subsection{Generic access}
+\TallC{A}{} major theme of FORTH is to replace decisions by calculation henever possible\footnote{Leo Brodie, \textit{Thinkning FORTH} (Prentice-Hall, Inc., Englewood Cliff, NJ, 1984), p. 118ff. See also J.V. Noble, "Avoid Decisions", \textit{Computers in Physics} 5,4 (1991) 386.}. This philosophy usually pays dividends in execution speed and brevity of code.
 
-0 Experienced FORTH programmers tend to reserve named
-variables for such special purposes as vectoring execution.
+But there is an even more important reason to avoid \bc{IF ... THEN} decisions, especially when working with modern microprocessors. CPUs like 80x86 and MC680x0 achieve their speed in part by pre-fetching instructions and storing them in a queue in high speed on-chip cache memory. A conditional-branch machine instruction (the crux of \bc{IF ... THEN}) empties the queue whenever the branch is taken. Branches should be avoided because they slow execution far more than one might expect based on their clock-counts alone.
 
-e The standard FORTH kernel therefore discourages named
-variables by making them as tedious as possible.
+To replace decisions, we use the standard FORTH technique of the execution array (analogous to the familiar assembly language jump table). This lets us compute from the type descriptor which fetch or store to use.
 
-Most objections to variables can be resolved by making them
-local. Local variables are relatively easy to deﬁne in FORTH: a
+\TallC{W}{e} now define \bc{G@} and \bc{G!} as execution arrays using\footnote{HS/PORTH uses a word pair \bc{CASE: ... ;CASE} that performs the same task as \bc{G: .. ;} below. \bc{G:} was inspired by Michael Ham (\textit{Dr. Dobb's Journal}, October 1986).} anexecution-array-defining word \bc{G:}
 
-Chapter 5 — Sclentltlc Data Structures Scientiﬁc FORTH
+\begin{lstlisting}
+    : G: CREATE ]
+       DOES> OVER + + @ EXECUTE ; ( t -- )
+    G: G@ R32@ R64@ X@ DX@ ;
+    G: G! R32! R64! X! DX! ;
+\end{lstlisting}
 
-straightforward but cumbersome method for making “header-
-less" words is given in Kelly’s and Spies’s book .
+assembled from components of the FORTH compiler. That is, the ordinary colon \bc{:} might have the high-level definition (shorn of error detection)
 
-HS/FORTH5 provides beheading in a particularly simple form:
-BEHEAD' NAME, or BEHEAD" NAME1 NAME2.
+\begin{lstlisting}
+    : : CREATE ] DOES> @ EXECUTE ;
+\end{lstlisting}
 
-Used after NAME has been invoked in the words that need to
-reference it, BEHEAD' removes NAME’s dictionary entry leaving
-pointers and code ﬁelds intact and recovering the unused diction-
-ary space. The more powerful word BEHEAD" does the same for
-the range of dictionary entries NAME1 NAME2, inclusive.
+\bc{CREATE} makes the new dictionary entry, and \bc{]} switches to
+compile mode. \bc{DOES>} specifies the run-time action (recall any word created by \bc{CREATE} leaves its parameter field address
+\textbf{-pfa-} on the stack at run-time, \textit{prior} to the actions following \bc{DOES>}). In the case of \bc{:} the run-time action is to fetch the pfa of the new word and execute it. At run-time, words defined using \bc{G:} add twice the type descriptor to the pfa (to get the offset into the array) then fetch the desired address and \bc{EXECUTE} it.
 
-Beheading variable or constant names makes them local to the
-deﬁnitions that use them; they cannot be further accessed —or
-corrupted — by later deﬁnitions. (Pountain6 has given yet another
-method for making variables local, using a syntax derived from
-“object-oriented” languages such as SMALLTALK.)
+Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the “far” forms of addressing words\footnote{Consult, \eg, LJ. Scanlon, \textit{op. cit.}; or R. Lafore, \textit{op. cit.} HS/FORTH defines "far" access operators, \bc{@L} and \bc{IL} of all types, that expect a "long" address on the stack. For example, \bc{CODE R32®L DS POP. FWAIT. DS:[BX] DWORD-PTR. FLD. END-CODE}}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH’s name for the portion of the dictionary containing the word headers)
 
-Variables are essential for scientiﬁc programming. Since we must
-often have more than two variables, it is silly to repeat SCALAR.
-A simple way to allow SCALAR to use a list is
+\begin{lstlisting}
+    : SCALAR (type - -)
+    CREATE DUP , \make header ,type
+    #BYTES ALLOT \reserve space
+    DOES > > R
+    [ LISTS @] LITERAL (- - sag)
+    R@ 2 + (- - seg off)
+    R> @ - (--segofltype)
+    \ Ex: BEAU-4' SCALAR x
+\end{lstlisting}
 
-:SCALARS (n--)
-SWAP 0 DO DUP SCALAR LOOP DROP ;
-\ Examples:
-\2 REAL*4 SCALARS A B
-\5 COMPLEX SCALARS XA X8 X0 X0 XE
-
-I ﬁnd the use of SCALARS with modiﬁers and lists more con~
-venient and readable than many repetitions of SCALAR. Its
-resemblance to FORTRAN (thereby helping me live with my
-FORTRAN-inspired habits) is pure coincidence. Although pos-
-sible to use a terminator ( ” , e.g.) rather than a count (to deﬁne
-the variable list) I feel it is desirable for the programmer to know
-
- 
-
-95"!“
-
-M.G. Kelly and N. Spies, Forth, a Ten and Reference (Prentice-Hal New Jersey, 1986), p. 324 ﬁ.
-OHarvard Softworlts, PO. Box 69, Springboro, Ohio 45066 Tel: (513) 748-0390.
-
-Dick Fountain, “Object-oriented FORTH”, Byte Magazine, 8/86; Object—oriented F 0R1?!
-(Academic Press, Inc., Orlando, 1987).
-
-macaw ma-mmanmm 91
-
-how many variable names he has supplied, hence the counted
-version.
-
-5’4 Generic access
-major theme of FORTH is to replace decisions by calculation
-henever possible . This philosophy usually pays dividends in
-execution speed and brevity of code.
-
-But there is an even more important reason to avoid IF . .. THEN
-decisions, especially when working with modern microproces-
-sors. CPUs like 80x86 and MC680x0 achieve their speed in part
-by pre-fetching instructions and storing them in a queue in high
-speed on-chip cache memory. A conditional-branch machine
-instruction (the crux of IF . . . THEN) empties the queue whenever
-the branch is taken. Branches should be avoided because they
-slow execution far more than one might expect based on their
-clock-counts alone.
-
-To replace decisions, we use the standard FORTH technique of
-the execution array (analogous to the familiar assembly language
-jump table). This lets us compute from the type descriptor which
-fetch or store to use.
-
-e now deﬁne G@ and G! as execution arrays using8 an
-execution-array- deﬁning word G:
-
-:G: CREATE
-
-DOES> oven + + @ EXECUTE ; (t--)
-G: G@ R32@ R64@ X@ DX@ ;
-G: Gl n32: R64l xr cxr ;
-
-assembled from components of the FORTH compiler. That is,
-the ordinary colon: might have the high-level deﬁnition (shorn
-of error detection)
-
- 
-
-7. Leo Brodie, WFORW (Prentice-Hall, Inc., Englewood Cliﬁ's, NJ, 1984), p. 1135. See
-abo J.V. Noble, “Avoid Decisions", Compruers in Physics 5,4 (191) 386.
-
-8. HS/PORTHmesawordpairCASE: :CASE thatpertonnsthesametaskssG: ...: below.
-a: was inspiredbyMidrael Ham (Dr. mum, October 1986).
-
-QJtlthNohletm—Alngﬂsmserved.
-
-Chapter 5 - Sclentltlc Data Structures Sclean FORTH
-
-CREATE] DOES> @ EXECUTE ;
-
-CREATE makes the new dictionary entry, and ] switches to
-compile mode. DOES > speciﬁes the run-time action (recall any
-word created by CREATE leaves its parameter ﬁeld address
-—pfa- on the stack at run-time, prior to the actions following
-DOES > ). In the case of : the run-time action is to fetch the pfa
-of the new word and execute it. At run-time, words deﬁned using
-G: add twice the type descriptor to the pfa (to get the offset into
-the array) then fetch the desired address and EXECUTE it.
-
-Microprocessors like the MC680x0 and 80386 that can address
-large, level memories require no further elaboration for G@ and
-6!. However, if large arrays are to be addressed within the
-segmented memory addressing protocol of the 8086/80286 chips,
-we would have to deﬁne G@ and G! to use the “far” forms of
-addressing wordsg. For example, in HS/FORI'H such words as
-R32@L expect a segment paragraph number and offset (32 bits
-total) as the complete address of the variable being fetched to the
-87stack. In that case we modify the deﬁnition of SCALAR to
-include the segment paragraph number (seg) in the deﬁnition
-(LISTS is nonstande — it is HS/FORTI-I’s name for the portion
-of the dictionary containing the word headers)
-
-: SCALAR (type - -)
-
-CREATE DUP , \make header ,type
-#BYTES ALLOT \reserve space
-DOES > > R
-
-[ LISTS @] LITERAL (- - sag)
-
-R@ 2 + (- - seg off)
-
-R> @ - (--segofltype)
-
-\Ex: BEAU-4' SCALAR x
-
- 
-
-Consult, ¢.g., LJ. Scanlon, op. cit.; or R. Lafore, op. cit. HS/FORTH deﬁnes “far” access
-operators, @L and IL of all types, that expect a “long" address on the stack. For example,
-CODE R32®L 08 POP. FWAIT. OS: [BX] DWORD-PTR. FLD. END-CODE
-
-SWFORTH
-
-OWE—WWW 99
-
-"5 WWWWMW)
-
-he Ifstach is a more complex data structure than either a
-simple fstack or the parameter/retum stacks. When a typed
-datum is placed on the ifstack its type must be placed there also.
+\subsection{The intelligent floating point stack (ifstack)}
+\TallC{T}{he} \textbf{ifstach} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
 
 But the typed data have varying lengths, from 4 to 16 bytes. We
 can deal with this two different ways: either ALLOT enough
 memory to hold a stack of the longest type, making each position
 on the ifstack 18 bytes wide (to hold datum plus type); or manage
-the ifstack as a modiﬁed heap, with the address of a given datum
+the ifstack as a modified heap, with the address of a given datum
 being computable from the ifstack-pointer and the data type.
 
 The 18-byte wide ifstack wastes memory, but is easy to program.
 (In retrospect, this is exactly the method I used to program
 adaptive numerical quadrature10 .) After several false attempts I
-settled on the ﬁxed-width ifstack. High level FORTH code for
+settled on the fixed-width ifstack. High level FORTH code for
 this variant is given below.
 
 \TYPEDDATASTACKMANAGER (-—segoll‘type)
 
 TASKFS’TACKS \aay. REALM SCALAR X
 
-FIND CP@ 0= :SCALARS (ntype--)
+fiND CP@ 0= :SCALARS (ntype--)
 
-?(FI.OAD(X)MPLEX.FIH) SWAP 0 DO DUP SCALAR LOOP
+?(fi.OAD(X)MPLEX.fiH) SWAP 0 DO DUP SCALAR LOOP
 DROP ;
 
 \ddinedata—typetokens \say4DOOMPLEXSCALARSXAXBXCXD
 
 0 CONSTANT REALM
 
-ICONSI’ANT REAL'B \deﬁnsionstortheparalelstackottypesanddm
+ICONSI’ANT REAL'B \definsionstortheparalelstackottypesanddm
 
 2 CONSTANT COMPLEX \Brodle.TF(Brady,NY.1984) p. 207.
 
@@ -433,7 +189,7 @@ CREATEitbyteu 0.80.86. 16 C. \2tos-pouer2018-bytecels
 
 :#BYTES #bytes + C@ ; :FSJNIT FSTACK 0!:
 
-(M38"thlﬂesl =>EMPTY ("8°90“)
+(M38"thlflesl =>EMPTY ("8°90“)
 
 [USTS@]UTERAL
 
@@ -447,7 +203,7 @@ DOES> DUP@ SWAP 2+ SWAP ; R@ OVER l \storetypeonlstack
 
  
 
-10. LV. Noble, “Scientiﬁc Computation in FORTH”. Computers in Physics 3 (1989) 31; and
+10. LV. Noble, “Scientific Computation in FORTH”. Computers in Physics 3 (1989) 31; and
 GI- mus of this book.
 
 OWVMIM—Mmm.
@@ -462,7 +218,7 @@ FS> (segciltype--)\aay:X FS> @EXECUTE : (t--)
 FSTACK 1-l \decllstackptr
 >R >EMPTY(-- segoiiseg'oit') G: G@ R32@L R64@L X@L DX@L ;
 DUP@ R@ = \srce.type=dea.type? G: Gl R321L R641L XlL DXlL ;
-IF 2+ DSWAP (-- seg'oif'segoil) \movedatatromliatacktoﬂromFPU
+IF 2+ DSWAP (-- seg'oif'segoil) \movedatatromliatacktoflromFPU
 R> #BYTES (--seg'oi'l"segoiln) :FS>F (--t 87:--x)
 CMOVEL \movedatairomltstack FSTACK 1—l \declatackptr
 ELSE RDROP CR >EMPTY (--eegoi‘l)
@@ -470,7 +226,7 @@ ATTEMPT TO STORETO DUP@ >R 2+
 WRONG DATATYPE" ABORT R@ (-- segoiftype)
 THEN G@ R>:
 \movedatal'romltstacktosntackJeavetype
-\ execution-anay deﬁning word
+\ execution-anay defining word
 \HS/FORTHhasthefaster :F>Fs (t-- 87:x--)
 \CASE:...;CASEpairtorthesarne]ob >R >EMPTY (-- segoil)
 R@ OVER!
@@ -488,7 +244,7 @@ We want to define generic unary and binary operators whose
 run-time action selects the desired operation using informa-
 tion contained in the ifstack. A unary operator such as FNEGATE
 or FEXP expects one argument and leaves one result. With a
-ﬂoating-point coprocessor (FPU) the only distinction is between
+floating-point coprocessor (FPU) the only distinction is between
 real or complex. This distinction is contained in the second bit of
 the type descriptor, which we exhibit in Table 5-1 on page 101,
 in binary notation.
@@ -518,7 +274,7 @@ DCOMPLEX 00000000 00000011
  
 
 Since most unary operators produce results of the same type as
-their argument, we write a deﬁning word for generic unary oper-
+their argument, we write a defining word for generic unary oper-
 ators:
 
 : GU: CREATE ] DOES> (--pfa)
@@ -533,9 +289,9 @@ When we use GU: in the form
 GU: GNEGATE FNEGATE XNEGATE ;
 
 CREATE produces a dictionary entry for GNEGATE; ] turns on
-the compiler so the previously deﬁned words FNEGATE and
+the compiler so the previously defined words FNEGATE and
 XNEGATE have their addresses compiled into GNEGATE’s
-parameter ﬁeld; and DOES > attaches the run-time code. The
+parameter field; and DOES > attaches the run-time code. The
 run-time code converts the real/complex bit into an offset, 0 or 2
 which is added to the address of the daughter word to get the
 address where the pointer to the actual code is stored. This
@@ -560,7 +316,7 @@ arguments and their types on the ifstack. There is no distinction
 between single- and double-precision arithmetic on most
 numeric coprocessors. However, the result must leave the proper
 type-label on the stack. Here is what we want to happen, illus-
-trated in Fig. 5-2 as a matrix TYPE(arga, argb)
+trated in fig. 5-2 as a matrix TYPE(arga, argb)
 
  
 
@@ -578,22 +334,22 @@ Dx__x ox x ox
 
  
 
-Flg. 5-2 Types resulting from 2—argument operators
+flg. 5-2 Types resulting from 2—argument operators
 
 Note: this protocol avoids misleading precision for the results
-of computations. It seems more scientiﬁc than FORTRAN’s
+of computations. It seems more scientific than FORTRAN’s
 “convert intermediate results to the precision of the highest-
 precision operand” protocol.
 
  
 
-If we think of the indices and entries in Fig. 5-2 as numbers 0, 1,
+If we think of the indices and entries in fig. 5-2 as numbers 0, 1,
 2, 3 (so we can use them as indices into a table) rather than as let-
-ters, a simple algorithm emerges: the ﬁrst bit of the result is the
-logical-AND of the ﬁrst bits of the two operands, and the second
+ters, a simple algorithm emerges: the first bit of the result is the
+logical-AND of the first bits of the two operands, and the second
 bit of the result is the logical-OR of their second bits. Although
 we would program this in assembler for speed, the high-level
-deﬁnition is
+definition is
 
 MLMMW 103
 
@@ -614,9 +370,9 @@ simple!" by choosing a data structure (the numeric type tokens
 We will also need a way to select the appropriate operator from
 a jump table of addresses. Given that the precision (internal) is
 irrelevant, again all that matters is whether the number is real or
-complex, Le. the second bits of the numbers. The ﬁrst operation
+complex, Le. the second bits of the numbers. The first operation
 must then be to divide by 2 (right-shift by one bit). We then have
-the matrix of Fig. 5-3 below
+the matrix of fig. 5-3 below
 
  
 
@@ -632,7 +388,7 @@ XR XX 1
 
  
 
-Flg. 54! Operatoraelectlon matrix
+flg. 54! Operatoraelectlon matrix
 
 where R stands for real-real, etc. The numerical elements are
 generated as 2'] +1. This leads to the word
@@ -642,9 +398,9 @@ generated as 2'] +1. This leads to the word
 
 104
 
-Chapter 5 - Scientiﬁc Data Structures Scientiﬁc FORTH
+Chapter 5 - Scientific Data Structures Scientific FORTH
 
-Thus we come to the binary generic-operator deﬁning word
+Thus we come to the binary generic-operator defining word
 
 :68: CREATE ] DOES> ( -ap1‘ )
 FS>F FS>F (- -pfa t0 t1)
@@ -656,8 +412,8 @@ F > FS ; \ save result
 
 The generic multiply G', e.g., picks out, at run-time, which of
 four routines to use. By using only logical or shift operations we
-have made even the high-level deﬁnitions fairly quick in com-
-parison with the times of ﬂoating point operations.
+have made even the high-level definitions fairly quick in com-
+parison with the times of floating point operations.
 
 The only instance where one might forego the overhead penalty
 paid for the convenience of generic coding would be in nested
@@ -676,10 +432,10 @@ G. GLOOP RLOOP DRLOOP XLOOP DXLOOP;
 
 Numerical arrays represent a frequently encountered charac-
 
-teristic feature of scientiﬁc programming. Arrays per se are
+teristic feature of scientific programming. Arrays per se are
 hardly foreign to FORTH. Arrays of typed data are novel, how-
 ever, and therefore worth elaborating. Following Brodie’s ad-
-vice(TF, p. 48ft") we ﬁrst specify the “user interface” (matrix
+vice(TF, p. 48ft") we first specify the “user interface” (matrix
 notation) and then proceed to implementation.
 
 mmm ms-mmm 105
@@ -688,7 +444,7 @@ mmm ms-mmm 105
 Something like V(15) —the 15'th element of V— is the com-
 monest notation for array elements in high-level languages
 because lineprinters and terminals do not easily recognize sub-
-scripts. In FORTH, the most natural notation would be postﬁx
+scripts. In FORTH, the most natural notation would be postfix
 (RPN), 15 v —but this is both hard to read and unintuitive“.
 That is, 15 V does not say, immediately and unambiguously,
 “I am the 15th element of the array V l"
@@ -698,16 +454,16 @@ recognizes V(15) as a single word . Since we want the 15 to be
 parsed, we would have to modify the FORTRAN-ish notation to
 V0 (0 15) or V(. 15 -), where °stands for a blank space (ASCII 32).
 Unfortunately, “(” is a reserved word. While we might place the
-matrix deﬁnitions in a separate vocabulary —which would let us
-redeﬁne anything we want— “(" is too useful as a comment
+matrix definitions in a separate vocabulary —which would let us
+redefine anything we want— “(" is too useful as a comment
 delineator to dispense with.
 
 This leaves the second possibility, where “(” becomes part of
 the array name, V(. To make V(- 15 -) work,“ ) ” must become
-an operator —unless we want to leave postﬁx notation entirely,
+an operator —unless we want to leave postfix notation entirely,
 with all the complication that would entail”. Since “ ) " is not a
-reserved word, nothing in principle prevents deﬁning it as an
-operator. However, such usage would conﬂict with comments.
+reserved word, nothing in principle prevents defining it as an
+operator. However, such usage would conflict with comments.
 
 The square braces, [ ], are commonly used in matrix notation;
 however both are reserved FORTH words, Le. forbidden. This
@@ -725,7 +481,7 @@ Bentham, “FORTH and the Fast Fourier Transform" Dr. Dobb‘r Journal, Septembe
 34. Also Did: Pountains's book Object-oriented FORTH (op cit.) uses an array naming conven-
 tion with brackets.
 
-RecaﬂthatthestandardFORTHdelimiteristheASCllblank(20h - 32d).
+RecaflthatthestandardFORTHdelimiteristheASCllblank(20h - 32d).
 
 See. e.g., L Brodie, WFORW (op. cit.) p. 1135.
 
@@ -733,9 +489,9 @@ Pt“
 
 eJuanvuouoim—Mmm.
 
-106 Chapter 5 - Sclentlﬂc Data Structures Sclentlﬂc FORTH
+106 Chapter 5 - Sclentlflc Data Structures Sclentlflc FORTH
 
-mnemonic reﬁnement, namely to place {{ and }} at the ends of
+mnemonic refinement, namely to place {{ and }} at the ends of
 2-dimensional arrays, as in M{{' 3 ° 5 ° }}.
 
 How will this notation operate? Clearly, to place the (general.
@@ -752,8 +508,8 @@ should analogously place the address of the m,n’th element of a
 2- dimensional array on the stack. 1
 
 §§2 Large matrices
-The deﬁning word SCALAR given in §2 above allots space 111
-the dictionary —for most FORTHs, code + data must ﬁt
+The defining word SCALAR given in §2 above allots space 111
+the dictionary —for most FORTHs, code + data must fit
 here— or in the LISTS segment of HS/FORTH (part of the
 dictionary). This is OK for variables, but not for arrays, since even
 a modest matrix would exhaust the ( $64 Kbyte) LISTS segmem.
@@ -819,12 +575,12 @@ of two numbers: a segment descrlptor and an offset which
 must be present in appropriate registers. The segment descriptor
 is the absolute address of a l6—byte paragra h, divided by 16.
 The offset is any (unsigned) integer from 0 to 2 6— 1 = 65,535 that
-can ﬁt in a 16-bit register.
+can fit in a 16-bit register.
 
 The chips contain 4 segment registers: SS (stack segment), CS
-(code segment), DS (data segment) and ES (extra segment). Five
+(code segment), DS (data segment) and ES (extra segment). five
 registers, BP, SP, SI, DI and BX, can be used for offsets, although
-they are not entirely interchangeable (some have speciﬁc func-
+they are not entirely interchangeable (some have specific func-
 tions in some of the more complex machine instructions, such a
 string operations). Manifestly, since the 8086 can address
 
@@ -836,7 +592,7 @@ as
 
 emvmtm-umm.
 
-108 Chapter 5 - Scientific Data Structures Sclem'ﬂc FORTH
+108 Chapter 5 - Scientific Data Structures Sclem'flc FORTH
 
 cs: [BX+S|+0008]
 
@@ -849,14 +605,14 @@ in CS, multiply by 16 and add to produce the absolute address.
 HS/FORTH permits accessing all the memory in a PC/AT (up
 to 1 megabyte) in the following manner:
 
-0 Deﬁne a named segment of length 1 byte: this marks the be-
+0 Define a named segment of length 1 byte: this marks the be-
 ginning of available memory.
 
 0 Then tell both FORTH and DOS how much memory you want.
 
  
 
-As might be expected, HS/FORT'H deﬁnes non-standard worth r
+As might be expected, HS/FORT'H defines non-standard worth r
 (coded as DOS function calls) to use the various DOS service
 routines that allocate memory, etc.
 
@@ -867,7 +623,7 @@ DCONSTANT MEM.START \beg. of free memory
 :TOTAL.PARS MAX.PARS MEM.START D- ;
 \ # pars of memory available 3:
 1 SEGMENT SUPERSEG }
-\ deﬁne named segment 1 byte long ="
+\ define named segment 1 byte long ="
 TOTALPARS DROP FREE-SIZE
 \ tell DOS and HS/FORTH about it
 
@@ -897,7 +653,7 @@ unique. This naturally poses a problem when the processor tries
 to prevent segments from overlapping (protected mode). In such
 cases, the only answer is a memory management scheme that
 computes segments and offsets (by brute force) in a nonooverlap-
-ping fashion. For example, we might deﬁne large arrays such that
+ping fashion. For example, we might define large arrays such that
 each row has its own segment paragraph.
 
 The 80386 CPU has a third mode that permits direct 32-bit
@@ -915,7 +671,7 @@ addressing segmented memory.
 The 8086 permits 32— bit addressing as long as we translate 32-bit
 addresses to the segment + offset notation expected by the 80:86
 processors in real mode. A word that performs this conversion is
-SEG.OFF, deﬁned as
+SEG.OFF, defined as
 
 : >SEG.OFF (d - - seg off)
 OVER 15 AND (- - d off)
@@ -939,44 +695,44 @@ XT (Plume/Waite, New York, 1984).
 
 emvmrm—me.
 
-110 Chapters—SciemlfchataStmctwu SclenﬁﬂcFOR
+110 Chapters—SciemlfchataStmctwu SclenfiflcFOR
 
 address); 410T 0/16 DROP then shifts the (32-bit) addres
-right 4 bits and drops the least-signiﬁcant part, to produce
+right 4 bits and drops the least-significant part, to produce
 offset. This conversion method produces offsets in the ran
 00-0F (hex), that clearly have nothing to do with the original offs:
 (that led to the 32-bit absolute address via 16‘seg + off ).
 
-§§4 A general typed-array deﬂnltion .
+§§4 A general typed-array deflnltion .
 or the new syntax to work the word } must compute the address:
 of the n’th element of V{ from the information on the staclg,
 
 and }} must do the same for M{ {. In order to encompass:
 matrices of typed data we specify that the results of the phrases}
 V{ n } and M{{ m n }} be to leave the generalized address our
-the parameter stack, 1'. e. to leave the stack picture ( - - seg off typeﬁ,
+the parameter stack, 1'. e. to leave the stack picture ( - - seg off typefi,
 exactly as with SCALARS.
 
-Before we can deﬁne }, however, we must specify the data:
+Before we can define }, however, we must specify the data:
 structure it operates on, i.e. the array header.
 
 Once again we begin with the user interface. We can opt fol.
-maximum generality or maximum simplicity. My ﬁrst attempt fel.‘
+maximum generality or maximum simplicity. My first attempt fel.‘
 into the first category, permitting the user to define a named
-segment of given length and to deﬁne an array in that segment
+segment of given length and to define an array in that segment
 Lately I realized this generality accomplishes little, so have abut?
-doned it. All arrays will be deﬁned in the heap, named SUPER;-
-SEG as above. To deﬁne a length- 50 1ARRAY of 4-byte numbea
+doned it. All arrays will be defined in the heap, named SUPER;-
+SEG as above. To define a length- 50 1ARRAY of 4-byte numbea
 we will say
 
 50LONG REALM 1ARRAY V{
 
 Now, before we work out the mechanics of 1ARRAY, we imagim
-that an array will be stored as in Fig. 5-4 below:
+that an array will be stored as in fig. 5-4 below:
 
 The proposed data structure consists of an 8-byte header (the
-array descriptor) in the dictionary (LISTS in PIS/FORTH), wiﬁ
-the body of the array stored elsewhere. The array descriptﬁ;
+array descriptor) in the dictionary (LISTS in PIS/FORTH), wifi
+the body of the array stored elsewhere. The array descriptfi;
 
 it
 
@@ -995,16 +751,16 @@ M” ”‘9‘" (324a address)
 
 1 l
 
-lﬁ%l WWI ”8% l%%l —~ ”WWhUW-‘r
+lfi%l WWI ”8% l%%l —~ ”WWhUW-‘r
 
 .
 
 . SUPERSEG portion to Wuunemory h SUPERSEG
-lﬁﬁllﬁSt llﬁllﬁ ﬁll%%ll%%ll%5’l —-
+lfifillfiSt llfillfi fill%%ll%%ll%5’l —-
 
 L—d start at data - vases (from beg. or SUPERSEGU
 
-Fig. 54 Structure of a 1-dimenslonal array In SUPERSEG
+fig. 54 Structure of a 1-dimenslonal array In SUPERSEG
 
  
 
@@ -1032,10 +788,10 @@ Fig. 54 Structure of a 1-dimenslonal array In SUPERSEG
 
  
 
-The array-deﬁning word 1ARRAY must perform the following
+The array-defining word 1ARRAY must perform the following
 tasks:
 
-a lace the length and type of the data in the ﬁrst two cells
+a lace the length and type of the data in the first two cells
 4 bytes) of the array descriptor.
 
 a lace the 32-bit address (start of data) in the next two cells
@@ -1050,11 +806,11 @@ The start of data is handled by VHERE, a word that puts the next
 
 vacant (32-bit) address in SUPERSEG on TOS.
 
-We deﬁne VALLOT to keep track of the storage used by arrays.
+We define VALLOT to keep track of the storage used by arrays.
 VALLOT increments the pointer in VHERE (and aborts with a
 : warning if the segment length is exceeded).
 
-We ﬁrst deﬁne some auxiliary words:
+We first define some auxiliary words:
 MEMORY 4 + @
 S- > D DCONSTANT MEMSTART
 \ bag. of free memory
@@ -1063,7 +819,7 @@ emvmrm-Mmm.
 
 112
 
-Chapter 5 — Sclentllc Data Structures Scientiﬁc FORTH
+Chapter 5 — Sclentllc Data Structures Scientific FORTH
 
 40.960 DCONSTANT MAXPARS \4oeeo= 655360/10
 
@@ -1087,7 +843,7 @@ lNlIVHERE >
 
 : TOO-BIG? VHERE >SEG.OFF
 0 AND TOTALPARS D >
-ABORT“ INSUFFICIENT ROOM IN SUPERSEG' ;
+ABORT“ INSUFfiCIENT ROOM IN SUPERSEG' ;
 \ check whether new value of VHERE > passes end
 \ of SUPERSEG
 
@@ -1095,13 +851,13 @@ ABORT“ INSUFFICIENT ROOM IN SUPERSEG' ;
 VHERE D + DDUP TOO.BIG?
 VHERE > D! ;
 
-Array-deﬁning words
+Array-defining words
 Ex: 50LONG REAL*4 1ARRAY V{
 
 17} >FS (::--V[17])
 
 : LONG DUP ;
-FINDD, 0= ?( :D, SWAP, , ;)
+fiNDD, 0= ?( :D, SWAP, , ;)
 \ conditionally compile D,
 :1ARRAY (IIt--)
 CREATE UNDER D, \t,l into 1st4bytes(--|t)
@@ -1123,89 +879,52 @@ SWAP DUP@ R > \fypo .. rstack
 ROT R@ #BYTES M'
 D+ >SEG.OFF R > ; (- - seg.cfl[n] t)
 
-Finally, here is a useful diagnostic word
+finally, here is a useful diagnostic word
 
-:7TYPE (t--) \it'sokforthistobeslowl
+\begin{lstlisting}
+    :7TYPE (t--) \it's ok for this to be slow!
+        DUP 0 = IF DROP ." REAL*4"   EXIT THEN
+        DUP 1 = IF DROP ." REAL*8"   EXIT THEN
+        DUP 2 = IF DROP ." COMPLEX"  EXIT THEN
+        DUP 3 = IF DROP ." DCOMPLEX" EXIT THEN
+        ." NOT A DEfiNED DATA TYPE" ABORT ;
+\end{lstlisting}
 
-DUP 0 = IF DROP .' REAL‘4' EXITTHEN
-DUP 1 = IF DROP .' REAL‘B' EXIT THEN
-DUP 2 = IF DROP ." COMPLEX' EXIT THEN
-DUP 3 = IF DROP .' DCOMPLEX' EXIT THEN
-.' NOT A DEFINED DATA TYPE" ABORT
+\subsection{2ARRAY and \}\} }
+\TallC{W}{e} now want to define arrays of higher dimensionality. For example, to define a 2-dimensional array we might say
 
-§§5 2ARRAY and }}
-We now want to deﬁne arrays of higher dimensionality. For
-example, to deﬁne a 2-dimensional array we might say
+\begin{lstlisting}
+    90 LONG BY 90 WIDE COMPLEX 2ARRAY XA{{
+\end{lstlisting}
 
-90 LONG BY 90 WIDE COMPLEX 2ARRAY XA{{
+This leads to the definitions
+\begine{lstlisting}
+    : BY ; \a do-nothing word for style
+    : WIDE * ; (I w -- I*w)
+    : 2ARRAY   (I*w t —- ) 1ARRAY ;
+\end{lstlisting}
 
-This leads to the deﬁnitions
-: BY ; \a do-nothing word for style
-:WIDE * ; (I w--|*w)
+Now let us define \}\} to fetch the double-indexed address:
 
-: 2ARRAY (|*Wt—-) 1ARRAY ;
-Now let us deﬁne }} to fetch the double-indexed address:
+\begin{lstlisting}
+    : }} ( adr m n -- a[m*I+n] t)
+        >R OVER 2+ @ ( -- adr m I*w)
+        * R> + } ;
+\end{lstlisting}
 
-, 2}} (adrmn--am"l+n]t)
->R OVER 2+ (--adrml'w)
-* * R> + } ;
+By correct factoring (putting some of the work into \bc{WIDE}) we achieved an easy definition of \bc{2ARRAY}. Careful factoring also let
+us define \}\} in terms of \}.
 
-By correct factoring (putting some of the work into WIDE) we
-achieved an easy deﬁnition of ZAR RAY. Careful factoring also let
-us deﬁne }} in terms of }.
+\section{Tuning for speed}
 
-114
+Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH’s\footnote{J.S. Callahan, \textit{Proc. 1988 Rochester FORTH Conference} (Inst. for Applied FORTH Research, Inc., 1988), p. 39.}.
 
-Chapter 5 - Sclentlic Data Structures Scientiﬁc FORTH
+Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
-§3 Tuning for speed
+\TallC{S}{ignificant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \texit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile—time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \texit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
 
-Some of the words in our typed-data/matrix lexicons should be
-optimized or redeﬁned in machine code. Accessing matrix
-elements imposes a non-trivial overhead on matrix operations.
-We can reduce the execution time with inline code, either in the
-traditional FORTH manner via selected assembler deﬁnitions,
-or with a recursive-descent optimizer such as HS/FORTH’sls.
+\leftbar[1\linewidth]
+FORTH data structures, especially as defined in this Chapter, do little- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.
 
-Experience teaches that optimization is most fruitful (most bang
-for the buck) applied to entire inner loops and other selected
-areas of code, rather than to access words per se. By hand-coding
-the innermost loop in matrix inversion and FI-T routines, one
-achieves programs that run in (asymptotically) minimum time on
-the 8086/8087 chip set.
-
-Signiﬁcant speed increases in data access could perhaps be
-obtained with multiple code ﬁeld (MCF) words, as described
-by Shaw”, and as implemented by HS/FORTH in the words
-VAR, AT, IS, and variants thereof. The disadvantage of MCF style
-is that compile-time binding, while faster in execution, loses the
-ﬂexibility of run-time binding. That is, data types would — as with
-FORTRAN — be speciﬁed at compile—time, and lexicons would
-be recompiled to run with speciﬁc types. Run-time binding 3
-described in this Chapter produces generic words that can handle al
-four standard scientiﬁc data types, a major advantage over MCF.
-
-FORTH data structures, especially as deﬁned in this Chapter,
-do little— or no bounds checking, hence do not prevent ao-
-cidentally overwriting key parts of the operating system.
-
-The new fetch and store words were defined in high-level
-FORTH for safety. Adding bounds-checking to arrays, at
-
-least during the debug cycle, is strongly recommendg
-to avoid crashing, or even damaging, the system.
-
- 
-
-18.
-19.
-
-.I .S. Callahan, Proc. 1988 Rochester FORTH Conference (Inst. for Applied FORTH Research,
-
-Inc., 1988), p. 39.
-
-G. Shaw, “Forth Shifts Gears, 1", Computer Langmge (May 1988) p. 67; “Forth Shifts Gears, 11'.
-Computer Language (June 1988) p. 61; Proc. MAsilomar FORML Conference (JFAR 5 (1988)
-
-347.)
-
+The new fetch and store words were defined in high-level FORTH for safety. Adding bounds-checking to arrays, at least during the debug cycle, is \underline{strongly recommended} to avoid crashing, or even damaging, the system.
+\endleftbar
