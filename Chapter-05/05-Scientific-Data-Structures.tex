@@ -199,10 +199,6 @@ CREATEitbyteu 0.80.86. 16 C. \2tos-pouer2018-bytecels
 CREATE DUP, #BYTESALLDT >R >EMPTY (uwgdfseg'oif)
 DOES> DUP@ SWAP 2+ SWAP ; R@ OVER l \storetypeonlstack
 
- 
-
- 
-
 10. LV. Noble, “Scientific Computation in FORTH”. Computers in Physics 3 (1989) 31; and
 GI- mus of this book.
 
@@ -267,12 +263,6 @@ COMPLEX 00000000 00000010
 
 DCOMPLEX 00000000 00000011
 
- 
-
- 
-
- 
-
 Since most unary operators produce results of the same type as
 their argument, we write a defining word for generic unary oper-
 ators:
@@ -318,21 +308,9 @@ numeric coprocessors. However, the result must leave the proper
 type-label on the stack. Here is what we want to happen, illus-
 trated in fig. 5-2 as a matrix TYPE(arga, argb)
 
- 
-
- 
-
 TYPE“,
 
- 
-
 Dx__x ox x ox
-
- 
-
- 
-
- 
 
 flg. 5-2 Types resulting from 2—argument operators
 
@@ -374,27 +352,18 @@ complex, Le. the second bits of the numbers. The first operation
 must then be to divide by 2 (right-shift by one bit). We then have
 the matrix of fig. 5-3 below
 
- 
-
- 
 
 0 1 0 1
 RR RX 0
 XR XX 1
-
- 
-
- 
-
- 
 
 flg. 54! Operatoraelectlon matrix
 
 where R stands for real-real, etc. The numerical elements are
 generated as 2'] +1. This leads to the word
 
-:WHICH.0P (ab--c)
-2/ SWAP 2 AND + ;
+    :WHICH.0P ( a b -- c )
+    2/ SWAP 2 AND + ;
 
 104
 
@@ -402,13 +371,13 @@ Chapter 5 - Scientific Data Structures Scientific FORTH
 
 Thus we come to the binary generic-operator defining word
 
-:68: CREATE ] DOES> ( -ap1‘ )
-FS>F FS>F (- -pfa t0 t1)
-NEW.TYPE UNDER (--t’p1at')
-WHICH.OP 2* + \ make result-type
-@ EXECUTE \ select binop
-F > FS ; \ save result
-\say: GB: 6* F* F‘X X‘F X‘ ;
+    :68: CREATE ] DOES> ( -ap1‘ )
+    FS>F FS>F (- -pfa t0 t1)
+    NEW.TYPE UNDER (--t’p1at')
+    WHICH.OP 2* + \ make result-type
+    @ EXECUTE \ select binop
+    F > FS ; \ save result
+    \say: GB: 6* F* F‘X X‘F X‘ ;
 
 The generic multiply G', e.g., picks out, at run-time, which of
 four routines to use. By using only logical or shift operations we
@@ -421,12 +390,12 @@ inner loops, such as occur in matrix operations. Here it might pay
 to code four inner loops, one for each type, and then access them
 generically, e.g.
 
-:RLOOP real words ;
-: DRLOOP dreal words ,
-:XLOOP complex words ,
-:DXLOOP dcomplex words ;
+    : RLOOP real words ;
+    : DRLOOP dreal words ;
+    : XLOOP complex words ;
+    : DXLOOP dcomplex words ;
 
-G. GLOOP RLOOP DRLOOP XLOOP DXLOOP;
+    G. GLOOP RLOOP DRLOOP XLOOP DXLOOP;
 
 §2 Arrays of typed data
 
@@ -761,32 +730,6 @@ lfifillfiSt llfillfi fill%%ll%%ll%5’l —-
 L—d start at data - vases (from beg. or SUPERSEGU
 
 fig. 54 Structure of a 1-dimenslonal array In SUPERSEG
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
 
 The array-defining word 1ARRAY must perform the following
 tasks:
