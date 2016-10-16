@@ -81,7 +81,7 @@ DCOMPLEX SCALAR ZZ
 \subsection{Defining several scalars at once}
 \TallC{O}{ne} aspect of the FORTH method of handling variables, that seems strange to programmers familiar with Pascal, BASIC, or FORTRAN, is that \bc{VARIABLE}, \bc{CONSTANT} or a new defining word like \bc{SCALAR} need to be repeated for each one defined, as above. That is, such defining words generally do not accept name-lists.
 
-This idiosyncracy can be traced to FORTH’s abhorrence of variables:
+This idiosyncracy can be traced to FORTH's abhorrence of variables:
 \begin{itemize}
     \item Easily read (and maintained) FORTH code consists of short definitions with few (generally $\leq$ 4) numbers on the stack. Such programs have small use for variables, especially since the top of the return stack can serve as a local variable.
     \item In FORTH as in BASIC, variables tend to be global and hence corruptible. The variables in a large program can have unmnemonic names or names that do not express their meaning simply because we run out of names.
@@ -89,11 +89,11 @@ This idiosyncracy can be traced to FORTH’s abhorrence of variables:
     \item The standard FORTH kernel therefore discourages named variables by making them as tedious as possible.
 \end{itemize}
 
-Most objections to variables can be resolved by making them local. Local variables are relatively easy to define in FORTH: a straightforward but cumbersome method for making "headerless" words is given in Kelly’s and Spies’s book\footnote{M.G. Kelly and N. Spies, \textit{Forth, a Text and Reference} (Prentice-Hall, New Jersey, 1986), p. 324 ff.}.
+Most objections to variables can be resolved by making them local. Local variables are relatively easy to define in FORTH: a straightforward but cumbersome method for making "headerless" words is given in Kelly's and Spies's book\footnote{M.G. Kelly and N. Spies, \textit{Forth, a Text and Reference} (Prentice-Hall, New Jersey, 1986), p. 324 ff.}.
 
 HS/FORTH\footnote{Harvard Softworkts, PO. Box 69, Springboro, Ohio 45066 Tel: (513) 748-0390.} provides beheading in a particularly simple form: \bc{BEHEAD' NAME}, or \bc{BEHEAD" NAME1 NAME2}.
 
-Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}’s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
+Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}'s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
 
 Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed -or corrupted- by later definitions. (Pountain\footnote{Dick Fountain, "Object-oriented FORTH", Byte Magazine, 8/86; \textit{Object—oriented FORTH} (Academic Press, Inc., Orlando, 1987).} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
 
@@ -135,7 +135,7 @@ assembled from components of the FORTH compiler. That is, the ordinary colon \bc
 compile mode. \bc{DOES>} specifies the run-time action (recall any word created by \bc{CREATE} leaves its parameter field address
 \textbf{-pfa-} on the stack at run-time, \textit{prior} to the actions following \bc{DOES>}). In the case of \bc{:} the run-time action is to fetch the pfa of the new word and execute it. At run-time, words defined using \bc{G:} add twice the type descriptor to the pfa (to get the offset into the array) then fetch the desired address and \bc{EXECUTE} it.
 
-Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the “far” forms of addressing words\footnote{Consult, \eg, LJ. Scanlon, \textit{op. cit.}; or R. Lafore, \textit{op. cit.} HS/FORTH defines "far" access operators, \bc{@L} and \bc{IL} of all types, that expect a "long" address on the stack. For example, \bc{CODE R32®L DS POP. FWAIT. DS:[BX] DWORD-PTR. FLD. END-CODE}}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH’s name for the portion of the dictionary containing the word headers)
+Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the "far" forms of addressing words\footnote{Consult, \eg, LJ. Scanlon, \textit{op. cit.}; or R. Lafore, \textit{op. cit.} HS/FORTH defines "far" access operators, \bc{@L} and \bc{IL} of all types, that expect a "long" address on the stack. For example, \bc{CODE R32®L DS POP. FWAIT. DS:[BX] DWORD-PTR. FLD. END-CODE}}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH's name for the portion of the dictionary containing the word headers)
 
 \begin{lstlisting}
     : SCALAR (type - -)
@@ -151,681 +151,406 @@ Microprocessors like the MC680x0 and 80386 that can address large, level memorie
 \subsection{The intelligent floating point stack (ifstack)}
 \TallC{T}{he} \textbf{ifstach} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
 
-But the typed data have varying lengths, from 4 to 16 bytes. We
-can deal with this two different ways: either ALLOT enough
-memory to hold a stack of the longest type, making each position
-on the ifstack 18 bytes wide (to hold datum plus type); or manage
-the ifstack as a modified heap, with the address of a given datum
-being computable from the ifstack-pointer and the data type.
+But the typed data have varying lengths, from 4 to 16 bytes. We can deal with this two different ways: either \bc{ALLOT} enough memory to hold a stack of the longest type, making each position on the ifstack 18 bytes wide (to hold datum plus type); or manage the ifstack as a modified heap, with the address of a given datum being computable from the ifstack-pointer and the data type.
 
-The 18-byte wide ifstack wastes memory, but is easy to program.
-(In retrospect, this is exactly the method I used to program
-adaptive numerical quadrature10 .) After several false attempts I
-settled on the fixed-width ifstack. High level FORTH code for
-this variant is given below.
+The 18-byte wide ifstack wastes memory, but is easy to program. (In retrospect, this is exactly the method I used to program adaptive numerical quadrature\footnote{J.V. Noble, "Scientific Computation in FORTH". \textit{Computers in Physics} 3 (1989) 31; and Ch 8.1.5 of this book.}.) After several false attempts I settled on the fixed-width ifstack. High level FORTH code for this variant is given below.
 
-\TYPEDDATASTACKMANAGER (-—segoll‘type)
+\begine{lstlisting}
+    \ TYPED DATA STACK MANAGER
+    TASK FSTACKS
+    FIND CP@ 0=
+    ?( FLOAD COMPLEX.FTH )
 
-TASKFS’TACKS \aay. REALM SCALAR X
+    \ define data—type tokens
+    0 CONSTANT REAL*4
+    1 CONSTANT REAL*8
+    2 CONSTANT COMPLEX
+    3 CONSTANT DCOMPLEX
 
-fiND CP@ 0= :SCALARS (ntype--)
+    CREATE #bytes 4 C, 8 C, 16 C,
+    : #BYTES #bytes + C@ ; 
+    ( type -- length in bytes )
 
-?(fi.OAD(X)MPLEX.fiH) SWAP 0 DO DUP SCALAR LOOP
-DROP ;
+    \define scalar and scalars
+    : SCALAR        ( type -- ) 
+        CREATE DUP , #BYTES ALLOT 
+        DOES> DUP@ SWAP 2+ SWAP ;
 
-\ddinedata—typetokens \say4DOOMPLEXSCALARSXAXBXCXD
+    ( -- seg off type )
+    \ say: REAL*4 SCALAR X
+    : SCALARS ( n type -- )
+        SWAP 0 DO DUP SCALAR LOOP
+        DROP ;
+    \ say: 4 DCOMPLEX SCALARS XA XB XC XD
 
-0 CONSTANT REALM
+    \ definitions for the parallel stack of types and data 
+    \ Brodle, TF (Brady, NY, 1984) p. 207.
 
-ICONSI’ANT REAL'B \definsionstortheparalelstackottypesanddm
+    CREATE FSTACK 2018' 2+ ALLOT
+    \ 2 tos-pointer, 20 18-byte cells
+    : FS.INT FSTACK 0! ;
+    : EMPTY         ( -- seg off )
+        [ LISTS @ ] LITERAL
+        FSTACK DUP@ 18 * 2+ + ;
+    : >FS ( seg off type -- ) \ say: X >FS
+        >R >EMPTY ( -- seg off seg' off )
+        R@ OVER ! \ store type on ifstack
 
-2 CONSTANT COMPLEX \Brodle.TF(Brady,NY.1984) p. 207.
+FS> ( seg off type -- ) \ say: X FS>
+FSTACK 1-I              \ dec ifstack ptr
+>R >EMPTY               ( -- seg off seg' off' )
+DUP@ R@ =               \ srce.type = dest.type ? 
+IF 2+ DSWAP             ( -- seg' off' sef off )
+R> #BYTES               ( -- seg' off' sef off n )
+CMOVEL                  \ move data from ifstack
+ELSE RDROP CR 
+    ." ATTEMPT TO STORE TO
+    WRONG DATA TYPE" ABORT
+THEN ;
 
-3 (DNSTANT DCOMPLEX
+\ execution-array defining word
+\ HS/FORTH has the faster
+\ CASE:...;CASE pair for the same job
 
-CREATE FSTACK 2018' 2+ ALLOT
+: G: CREATE ] DOES> OVER + +
+    @EXECUTE ; ( t -- )
 
-CREATEitbyteu 0.80.86. 16 C. \2tos-pouer2018-bytecels
+G: G@ R32@L R64@L X@L DX@L ;
+G: G! R32!L R64!L X!L DX!L ;
+\ move data from ifstack to/from FPU
+: FS>F ( -- t 87: -- x )
+    FSTACK 1—!  \ dec ifstack ptr
+    >EMPTY      ( -- seg off )
+    DUP@ >R 2+
+    R@ ( sef off' type )
+    G@ R> ;
+\ move data from ifstack to 87stack, leave type
 
-:#BYTES #bytes + C@ ; :FSJNIT FSTACK 0!:
-
-(M38"thlflesl =>EMPTY ("8°90“)
-
-[USTS@]UTERAL
-
-\ddlnesodarandscalars FSTACK DUP@ 18' 2+ +;
-
-:SCALAR (type--) :>FS (segotltype--) \myzx >FS
-CREATE DUP, #BYTESALLDT >R >EMPTY (uwgdfseg'oif)
-DOES> DUP@ SWAP 2+ SWAP ; R@ OVER l \storetypeonlstack
-
-10. LV. Noble, “Scientific Computation in FORTH”. Computers in Physics 3 (1989) 31; and
-GI- mus of this book.
-
-OWVMIM—Mmm.
-
-100
-
-Chaplets - Sclentltlc Data Stntcturea
-
-Scientific FORTH
-
-FS> (segciltype--)\aay:X FS> @EXECUTE : (t--)
-FSTACK 1-l \decllstackptr
->R >EMPTY(-- segoiiseg'oit') G: G@ R32@L R64@L X@L DX@L ;
-DUP@ R@ = \srce.type=dea.type? G: Gl R321L R641L XlL DXlL ;
-IF 2+ DSWAP (-- seg'oif'segoil) \movedatatromliatacktoflromFPU
-R> #BYTES (--seg'oi'l"segoiln) :FS>F (--t 87:--x)
-CMOVEL \movedatairomltstack FSTACK 1—l \declatackptr
-ELSE RDROP CR >EMPTY (--eegoi‘l)
-ATTEMPT TO STORETO DUP@ >R 2+
-WRONG DATATYPE" ABORT R@ (-- segoiftype)
-THEN G@ R>:
-\movedatal'romltstacktosntackJeavetype
-\ execution-anay defining word
-\HS/FORTHhasthefaster :F>Fs (t-- 87:x--)
-\CASE:...;CASEpairtorthesarne]ob >R >EMPTY (-- segoil)
-R@ OVER!
-:6: CREATE ] DOES> OVER+ + 2+ R> (--segcirtype)
-
+:F>FS (t-- 87:x--)
+    >R >EMPTY   ( -- sef off )
+    R@ OVER!
+    2+ R> ;     ( -- sef off' type)
+\end{lstlisting}
  
 
-The stack comments and comments should make the preceding
-code self-explanatory.
+The stack comments and comments should make the preceding code self-explanatory.
 
-§§6 Unary and binary generic operators
+\subsection{Unary and binary generic operators}
 
-We want to define generic unary and binary operators whose
-
-run-time action selects the desired operation using informa-
-tion contained in the ifstack. A unary operator such as FNEGATE
-or FEXP expects one argument and leaves one result. With a
-floating-point coprocessor (FPU) the only distinction is between
-real or complex. This distinction is contained in the second bit of
-the type descriptor, which we exhibit in Table 5-1 on page 101,
-in binary notation.
+\TallC{W}{e} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table 5-1 on page 101, in binary notation.
 
 Real and complex can then be distinguished via the code fragment
 
-2 AND (type - - O = wall 2 = complex)
+2 AND ( type -- 0 = real| 2 = complex )
 
-ms-MMW 101
-
-Thu. 5-1 Bit-patterns of data type descriptors
-
- 
-
+Table 5-1 \textit{Bit-patterns of data type descriptors}
 Type BINARY representation
-REAL-4 00000000 00000000
-REAL'B 00000000 00000001
+REAL*4      00000000 00000000
 
-COMPLEX 00000000 00000010
+REAL*8      00000000 00000001
 
-DCOMPLEX 00000000 00000011
+COMPLEX     00000000 00000010
 
-Since most unary operators produce results of the same type as
-their argument, we write a defining word for generic unary oper-
-ators:
+DCOMPLEX    00000000 00000011
 
-: GU: CREATE ] DOES> (--pfa)
+Since most unary operators produce results of the same type as their argument, we write a defining word for generic unary operators:
 
-FS> F (- - pfa t) \ get data
-UNDER 2 AND + (- - t adr)
-@ EXECUTE \ do it
+\begin{lstlisting}
+: GU: CREATE ] DOES>    ( -- pfa )
+    FS>F ( -- pfa t )   \ get data
+    UNDER 2 AND +       ( -- t adr )
+    @ EXECUTE           \ do it
+    F>FS ;              \ return ans.
+\end{lstlisting}
 
-F > FS ; \ return ans.
-
-When we use GU: in the form
+When we use \bc{GU:} in the form
+\begin{lstlisting}
 GU: GNEGATE FNEGATE XNEGATE ;
+\end{lstlisting}
 
-CREATE produces a dictionary entry for GNEGATE; ] turns on
-the compiler so the previously defined words FNEGATE and
-XNEGATE have their addresses compiled into GNEGATE’s
-parameter field; and DOES > attaches the run-time code. The
-run-time code converts the real/complex bit into an offset, 0 or 2
-which is added to the address of the daughter word to get the
-address where the pointer to the actual code is stored. This
-pointer is fetched and EXECUTEd.
+\bc{CREATE} produces a dictionary entry for \bc{GNEGATE; ]} turns on the compiler so the previously defined words \bc{FNEGATE} and \bc{XNEGATE} have their addresses compiled into \bc{GNEGATE}'s parameter field; and \bc{DOES>} attaches the run-time code. The run-time code converts the real/complex bit into an offset, 0 or 2 which is added to the address of the daughter word to get the address where the pointer to the actual code is stored. This pointer is fetched and \bc{EXECUTE}d.
 
-A few unary operators like XABS (complex absolute value)
-return real values from complex arguments. If we want to use
-GU: to define, say, GABS, we must remember to redefine
-XABS so it zeros the second bit of the type descriptor left on
+A few unary operators like \bc{XABS} (complex absolute value) return real values from complex arguments. If we want to use \bc{GU:} to define, say, \bc{GABS}, we must remember to redefine \bc{XABS} so it zeros the second bit of the type descriptor left on the stack, before returning its result to the ifstack. This is just a \bc{1 AND} so is fast.
 
-OJulanVNobleteez—Alrlghtsraserved.
+A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))
 
-102
-
-Chapter 5 — Sciemlllc Data Stnrctures Scientific FORTH
-
-the stack, before returning its result to the ifstack. This is just a ‘I
-AND so is fast.
-
-A binary operator (one that takes two arguments) expects its
-arguments and their types on the ifstack. There is no distinction
-between single- and double-precision arithmetic on most
-numeric coprocessors. However, the result must leave the proper
-type-label on the stack. Here is what we want to happen, illus-
-trated in fig. 5-2 as a matrix TYPE(arga, argb)
-
-TYPE“,
+TYPE\_{ab}
 
 Dx__x ox x ox
 
-flg. 5-2 Types resulting from 2—argument operators
+flg. 5-2 \textit{Types resulting from 2—argument operators}
 
-Note: this protocol avoids misleading precision for the results
-of computations. It seems more scientific than FORTRAN’s
-“convert intermediate results to the precision of the highest-
-precision operand” protocol.
+   R D  X DX
+R  R R  X X
+D  R D  X DX
+X  X X  X X
+DX X DX X DX 
 
- 
+\leftbar[1\linewidth]
+Note: this protocol avoids misleading precision for the results of computations. It seems more scientific than FORTRAN's "convert intermediate results to the precision of the highest-precision operand" protocol.
+\endleftbar
 
-If we think of the indices and entries in fig. 5-2 as numbers 0, 1,
-2, 3 (so we can use them as indices into a table) rather than as let-
-ters, a simple algorithm emerges: the first bit of the result is the
-logical-AND of the first bits of the two operands, and the second
-bit of the result is the logical-OR of their second bits. Although
-we would program this in assembler for speed, the high-level
-definition is
+If we think of the indices and entries in Fig. 5-2 as numbers 0, 1, 2, 3 (so we can use them as indices into a table) rather than as letters, a simple algorithm emerges: the first bit of the result is the logical-AND of the first bits of the two operands, and the second bit of the result is the logical-OR of their second bits. Although we would program this in assembler for speed, the high-level definition is
 
-MLMMW 103
+\begin{lstlisting}
+: NEW.TYPE  ( a b -- a2 + b2 + a1b1 )
+    DDUP        ( -- a b a b        )
+    AND         ( -- a b ab         )
+    1 AND       ( -- a b [ab]1      )
+    —ROT OR     ( -- [ab]1 a+b      )
+    2AND        ( -- [ab]1 [a+b]2   )
+    + ;         ( -- a2 + b2 + a1b1 )
+\end{lstlisting}
 
-:NEW.TYPE ab--a2+b2+a1b1)
---abab)
---abab)
-1AND --ab [ab])1
-—ROT OR in [ab1a+b)
-2AND (--[ab1a+b]2)
-+ ; (--a2+b +a1b1)
+Since only logical operations are used. \bc{NEW.TYPE} is faster than table lookup or branching. Note that in programming this key word we have obeyed the central FORTH precept: "Keep it simple!" by choosing a data structure (the numeric type tokens 0-3) that is easily manipulated.
 
-Since only logical operations are used. NEWJYPE is faster than
-table lookup or branching. Note that in programming this key
-word we have obeyed the central FORTH precept: “Keep it
-simple!" by choosing a data structure (the numeric type tokens
-0-3) that is easily manipulated.
+We will also need a way to select the appropriate operator from a jump table of addresses. Given that the precision (internal) is irrelevant, again all that matters is whether the number is real or complex, \ie the second bits of the numbers. The first operation must then be to divide by 2 (right-shift by one bit). We then have the matrix of FYig. 5-3 below
 
-We will also need a way to select the appropriate operator from
-a jump table of addresses. Given that the precision (internal) is
-irrelevant, again all that matters is whether the number is real or
-complex, Le. the second bits of the numbers. The first operation
-must then be to divide by 2 (right-shift by one bit). We then have
-the matrix of fig. 5-3 below
+  0  1        0 1
+0 RR RX     0 0 1
+1 XR XX     1 2 3
 
+Fig. 5-3 \textit{Operator selection matrix}
 
-0 1 0 1
-RR RX 0
-XR XX 1
+where RR stands for real-real, \textit{etc.} The numerical elements are generated as \regc{2*J+I}. This leads to the word
 
-flg. 54! Operatoraelectlon matrix
-
-where R stands for real-real, etc. The numerical elements are
-generated as 2'] +1. This leads to the word
-
-    :WHICH.0P ( a b -- c )
-    2/ SWAP 2 AND + ;
-
-104
-
-Chapter 5 - Scientific Data Structures Scientific FORTH
+\begin{lstlisting}
+    : WHICH.0P ( a b -- c )
+        2/ SWAP 2 AND + ;
+\end{lstlisting}
 
 Thus we come to the binary generic-operator defining word
+\begin{lstlisting}
+    : GB: CREATE ] DOES>        ( -- pfa )
+        FS>F FS>F               ( -- pdf t0 t1 )
+        NEW.TYPE UNDER          ( -- t' pfa t' )
+        WHICH.OP 2* +           \ make result-type
+            @ EXECUTE           \ select binop
+        F>FS ;                  \ save result
+    \say: GB: G*   F*  F*X  X*F  X* ;
 
-    :68: CREATE ] DOES> ( -ap1‘ )
-    FS>F FS>F (- -pfa t0 t1)
-    NEW.TYPE UNDER (--t’p1at')
-    WHICH.OP 2* + \ make result-type
-    @ EXECUTE \ select binop
-    F > FS ; \ save result
-    \say: GB: 6* F* F‘X X‘F X‘ ;
+The generic multiply \bc{G*}, \eg, picks out, at run-time, which of four routines to use. By using only logical or shift operations we have made even the high-level definitions fairly quick in comparison with the times of floating point operations.
 
-The generic multiply G', e.g., picks out, at run-time, which of
-four routines to use. By using only logical or shift operations we
-have made even the high-level definitions fairly quick in com-
-parison with the times of floating point operations.
+The only instance where one might forego the overhead penalty paid for the convenience of generic coding would be in nested inner loops, such as occur in matrix operations. Here it might pay to code four inner loops, one for each type, and then access them generically, \eg
 
-The only instance where one might forego the overhead penalty
-paid for the convenience of generic coding would be in nested
-inner loops, such as occur in matrix operations. Here it might pay
-to code four inner loops, one for each type, and then access them
-generically, e.g.
+\begin{lstlisting}
+    : RLOOP      ... real     words ... ;
+    : DRLOOP     ... dreal    words ... ;
+    : XLOOP      ... complex  words ... ;
+    : DXLOOP     ... dcomplex words ... ;
+    G: GLOOP  RLOOP DRLOOP XLOOP DXLOOP ;
+\end{lstlisting}
 
-    : RLOOP real words ;
-    : DRLOOP dreal words ;
-    : XLOOP complex words ;
-    : DXLOOP dcomplex words ;
+\section{Arrays of typed data}
 
-    G. GLOOP RLOOP DRLOOP XLOOP DXLOOP;
+\TallC{N}{umerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
 
-§2 Arrays of typed data
+\section{Improved (FORTRAN-like) array notation}
+\TallC{S}{omething} like V(15) —the 15'th element of V- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} —but this is both hard to read and unintuitive\footnote{Other authors have noted this and proposed more readable matrix notations. See, \eg, Joe Bentham, "FORTH and the Fast Fourier Transform" \textit{Dr. Dobb‘s Journal}, September, 1984, p. 34. Also Dick Pountains's book \textit{Object-oriented FORTH (op cit.)} uses an array naming convention with brackets.}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
-Numerical arrays represent a frequently encountered charac-
+FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\footnote{Recall that the standard FORTH delimiter is the ASCII blank (20h = 32d).}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary —which would let us redefine anything we want- "(" is too useful as a comment delineator to dispense with.
 
-teristic feature of scientific programming. Arrays per se are
-hardly foreign to FORTH. Arrays of typed data are novel, how-
-ever, and therefore worth elaborating. Following Brodie’s ad-
-vice(TF, p. 48ft") we first specify the “user interface” (matrix
-notation) and then proceed to implementation.
+This leaves the second possibility, where "(" becomes part of the array name, \regc{V(}. To make \regc{V(dot15dot)} work,")" must become an operator —unless we want to leave postfix notation entirely, with all the complication that would entail\footnote{See, \eg,L. Brodie, \textit{Thinking FORTH (op. cit.)} p. 113ff.}. Since ")" is not a reserved word, nothing in principle prevents defining it as an operator. However, such usage would conflict with comments.
 
-mmm ms-mmm 105
+The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie forbidden. This leaves the curly braces { }, which are unused by FORTH.
 
-“I W (FORTRAN-lite) array not-Ion
-Something like V(15) —the 15'th element of V— is the com-
-monest notation for array elements in high-level languages
-because lineprinters and terminals do not easily recognize sub-
-scripts. In FORTH, the most natural notation would be postfix
-(RPN), 15 v —but this is both hard to read and unintuitive“.
-That is, 15 V does not say, immediately and unambiguously,
-“I am the 15th element of the array V l"
+Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the advantage that the opening brace, \regc{{}, is only part of the name, but reminds us that the name \regc{V{} is an array, exactly as names ending with \bc{$} are strings, \textit{etc}. The notation suggests a further mnemonic refinement, namely to place \bc{{{} and \bc{}}} at the ends of 2-dimensional arrays, as in \bc{M{{dot3dot5dot}}}.
 
-FORI'H's idiosyncrasies forbid saying V(15) because the parser
-recognizes V(15) as a single word . Since we want the 15 to be
-parsed, we would have to modify the FORTRAN-ish notation to
-V0 (0 15) or V(. 15 -), where °stands for a blank space (ASCII 32).
-Unfortunately, “(” is a reserved word. While we might place the
-matrix definitions in a separate vocabulary —which would let us
-redefine anything we want— “(" is too useful as a comment
-delineator to dispense with.
+How will this notation operate? Clearly, to place the (generalized) address of the n'th element (of a 1-dimensional array) on the stack we would say
 
-This leaves the second possibility, where “(” becomes part of
-the array name, V(. To make V(- 15 -) work,“ ) ” must become
-an operator —unless we want to leave postfix notation entirely,
-with all the complication that would entail”. Since “ ) " is not a
-reserved word, nothing in principle prevents defining it as an
-operator. However, such usage would conflict with comments.
-
-The square braces, [ ], are commonly used in matrix notation;
-however both are reserved FORTH words, Le. forbidden. This
-leaves the curly braces { }, which are unused by FORTH.
-
-Ofthe two possible forms, V- {0 15 } or V{° 15° }, the latter has
-the advantage that the opening brace, {, is only part of the name,
-but reminds us that the name V{ is an array, exactly as names
-ending with 3 are strings, etc. The notation suggests a further
-
- 
-
-1. Other authors have noted this and proposed more readable matrix notations. See, e.g., Joe
-Bentham, “FORTH and the Fast Fourier Transform" Dr. Dobb‘r Journal, September, 1984, p.
-34. Also Did: Pountains's book Object-oriented FORTH (op cit.) uses an array naming conven-
-tion with brackets.
-
-RecaflthatthestandardFORTHdelimiteristheASCllblank(20h - 32d).
-
-See. e.g., L Brodie, WFORW (op. cit.) p. 1135.
-
-Pt“
-
-eJuanvuouoim—Mmm.
-
-106 Chapter 5 - Sclentlflc Data Structures Sclentlflc FORTH
-
-mnemonic refinement, namely to place {{ and }} at the ends of
-2-dimensional arrays, as in M{{' 3 ° 5 ° }}.
-
-How will this notation operate? Clearly, to place the (general.
-ized) address of the n’th element (of a l-dimensional array) 01
-the stack we would say
-
-W“ n '}.
+\begin{align*)
+    V{dot n dot}
+\end{align*}
 
 whereas
 
-M{{~ m- n -}} i
+\begin{align*)
+    M{{ dot m dot n dot}}
+\end{align*}
 
-should analogously place the address of the m,n’th element of a
-2- dimensional array on the stack. 1
+should analogously place the address of the m,n'th element of a 2-dimensional array on the stack.
 
-§§2 Large matrices
-The defining word SCALAR given in §2 above allots space 111
-the dictionary —for most FORTHs, code + data must fit
-here— or in the LISTS segment of HS/FORTH (part of the
-dictionary). This is OK for variables, but not for arrays, since even
-a modest matrix would exhaust the ( $64 Kbyte) LISTS segmem.
+\subsection{Large matrices}
+The defining word \bc{SCALAR} given in ch2 above allots space in the dictionary -for most FORTHs, code + data must fit here- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\gte$64 Kbyte) LISTS segment.
 
-A REAL“ matrix uses 4 bytes per ellement. The largest such arrq
-that can be stored in a 65, 536 (i. e., 21) -byte segment is 128x 1233
-This" Is the largest array that can be addressed with unsigned 16- '
-numbers. On the other hand, a filled IBM PC/XT clone has 64
-Kbytes of memory under MS—DOS. Even a generous F0
-kernel (plus DOS) takes up less than 150 K; hence 450 K '
-available to hold large arrays. Up to 8 Mbytes can be added
-EMS storage, assuming a suitable memory managem
-scheme 14. That is, in principle one could tackle matrix proble
-of order 350X350. What about speed? The dominant term '
-solving linear equations by —say- Gaussian elimination '
-partial pivoting is
+A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, 2^16) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS—DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\footnote{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by -say- Gaussian elimination with partial pivoting is
 
- 
-   
- 
- 
-  
-   
- 
-  
- 
- 
-  
+T = 1/3 mn^{3}
 
- 
+where m is the time for 1 multiply and 1 add, and n is the order of the matrix. We should also include the fetch + store time, since the bus bandwidth is as much a limiting factor as the FPU arithmetic speed. For the 8086/8087 the time $m$ is of order 400 clock cycles. Thus the asymptotic execution time on a 10 MHz machine should be of order 10 minutes for n = 350.
 
-14. See, e.g., Ray Duncan, “FORTH support for Intel/Lotus expanded memory”, Dr. Dobb's I
-August 1986; also, John A. Lefor and Karen Lund, “Reaching into expanded memorf', PC 1'
-Journal, May 1987.
+On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the [ITT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4.8), to tackle 10^{3} x 10^{3} dense matrix problems.
 
-awe-WWW 107
+The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines - 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6—byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
 
-13
-T§mn
+The chips contain 4 segment registers: SS (stack segment), CS (code segment), DS (data segment) and ES (extra segment). Five registers, BP, SP, SI, DI, and BX, can be used for offsets, although they are not entirely interchangeable (some have specific functions in some of the more complex machine instructions, such as string operations). Manifestly, since the 8086 can address
 
-where m is the time for 1 multiply and 1 add, and n is the order
-of the matrix. We should also include the fetch + store time, since
-the bus bandwidth is as much a limiting factor as the FPU arith-
-metic speed. For the 8086/8087 the time m is of order 400 clock
-cycles. Thus the asymptotic execution time on a 10 MHz machine
-should be of order 10 minutes for n = 350.
+$2^{20} = 1,048,576 bytes ("1 megabyte")$,
 
-On the 80386/80387 combination running at 25 MHz, the execu-
-tion time for the same problem should be only 2.3 minutes or so.
-Thus it would be practical (Le, execution time I! 1 hour) on such
-machines, even without special equipment such as the [IT 80c387,
-or an array co-processor, or a faster proced re such as Strassen’s
-algorithm (see Ch. 4 §8), to tackle 103 x 103 dense matrix
-problems.
-
-The crucial question therefore, is memory. The Intel machines
-were designed around a segmented memory architecture. That is,
-to avoid having to use (expensive) 32-bit address registers, the
-8086/80286 chips were designed to use 16-bit registers. However,
-these chips have more than 16 external address lines — 20 for the
-8086, 2A for the 80286. Thus the absolute address is compounded
-of two numbers: a segment descrlptor and an offset which
-must be present in appropriate registers. The segment descriptor
-is the absolute address of a l6—byte paragra h, divided by 16.
-The offset is any (unsigned) integer from 0 to 2 6— 1 = 65,535 that
-can fit in a 16-bit register.
-
-The chips contain 4 segment registers: SS (stack segment), CS
-(code segment), DS (data segment) and ES (extra segment). five
-registers, BP, SP, SI, DI and BX, can be used for offsets, although
-they are not entirely interchangeable (some have specific func-
-tions in some of the more complex machine instructions, such a
-string operations). Manifestly, since the 8086 can address
-
-22° =1,048,576 bytes ('1 megabyte”),
-the largest segment number is 214_1 = 16,383.
+the largest segment number is $2^{14}-1 = 16,383$.
 
 A typical (segmented) address is expressed in Intel assembly code
 as
 
-emvmtm-umm.
+\begin{lstlisting}
+    CS: [BX + SI + 0008]
+\end{lstlisting}
 
-108 Chapter 5 - Scientific Data Structures Sclem'flc FORTH
+which translates in words to "add the offset in BX to that in SI and then add 8 to get the total offset; take the segment descriptor in CS, multiply by 16 and add to produce the absolute address.
 
-cs: [BX+S|+0008]
-
-which translates in words to “add the offset in BX to that in SI
-and then add 8 to get the total offset; take the segment descriptor
-in CS, multiply by 16 and add to produce the absolute address.
-
-§§3 Using high memory
-
-HS/FORTH permits accessing all the memory in a PC/AT (up
+\subsection{Using high memory}
+\TallC{H}{S}/FORTH permits accessing all the memory in a PC/AT (up
 to 1 megabyte) in the following manner:
+\begin{itemize}
+    \item Define a named segment of length 1 byte: this marks the beginning of available memory.
+    \item Then tell both FORTH and DOS how much memory you want.
+\end{itemize} 
 
-0 Define a named segment of length 1 byte: this marks the be-
-ginning of available memory.
+As might be expected, HS/FORTH defines non-standard words (coded as DOS function calls) to use the various DOS service routines that allocate memory, \textit{etc}.\footnote{See, \eg, D.N. Jump, \textit{Programmer's guide to MS-DOS}, rev. ed. (Brady Books, New York, 1987).
 
-0 Then tell both FORTH and DOS how much memory you want.
+\begin{lstlisting}
+    MEMORY 4+ @ S->D
+    DCONSTANT MEM.START \ beg. of free memory
+    40.960 DCONSTANT MAX.PARS
+        \ 40960 = 655360 /16
+    : TOTAL.PARS MAX.PARS MEM.START D- ;
+        \ # pars of memory available
+    1 SEGMENT SUPERSEG
+        \ define named segment 1 byte long
+    TOTAL.PARS DROP FREE-SIZE
+        \ tell DOS and HS/FORTH about it
+\end{lstlisting}
 
- 
+Having allocated the memory, how can we address it efficiently? We would like the simplicity of double-length integer arithmetic for computing an (absolute) array address, as in
 
-As might be expected, HS/FORT'H defines non-standard worth r
-(coded as DOS function calls) to use the various DOS service
-routines that allocate memory, etc.
+\begin{lstlisting}
+    abs.adr(Aij) = abs.adr(Ainf) + (row.length*I+J) *#BYTES
+\end{lstlisting}
 
-MEMORY 4+ @ S->D
-DCONSTANT MEM.START \beg. of free memory
-40.960 DCONSTANT MAX.PARS
-\40960 = 655360 /16
-:TOTAL.PARS MAX.PARS MEM.START D- ;
-\ # pars of memory available 3:
-1 SEGMENT SUPERSEG }
-\ define named segment 1 byte long ="
-TOTALPARS DROP FREE-SIZE
-\ tell DOS and HS/FORTH about it
+However, although the absolute address referenced by a segment and offset is unique, \ie the absolute address in bytes is
 
-   
- 
-    
-  
+\begin{lstlisting}
+    abaadr -18'segment + offset,
+\end{lstlisting}
 
-Having allocated the memory, how can we address it efficien .
-We would like the simplicity of double-length integer arithme
-for computing an (absolute) array address, as in
+the reverse translation, of an absolute address (in bytes) to the segment + offset notation expected by 80x86 processors is \textit{not} unique. This naturally poses a problem when the processor tries to prevent segments from overlapping (protected mode). In such cases, the only answer is a memory management scheme that computes segments and offsets (by brute force) in a non-overlapping fashion. For example, we might define large arrays such that each row has its own segment paragraph.
 
-abs.adr(A,-,) = abs.adr(AOO) +(row.length"l+J) *#B
+The 80386 CPU has a third mode that permits direct 32-bit addressing of 4 gigabytes (albeit few computer users have quite this much fast memory available). A scheme for addressing large amounts of RAM in 80386 machines (without leaving MS-DOS) has been discussed in \textit{Dr Dobb's Journal}\footnote{See, \eg, Al Williams, "DOS + 386 = 4 Gigabytes", Dr. Dobb's Journal, July 1990, p. 62.}.
 
-However, although the absolute address referenced by a segm
-and offset is unique, i.e. the absolute address in bytes is
+For 8086 PC's and/or real-mode programming on 80286 + machines, we can merely ignore whether segments overlap. Oddly, standard assembly programming books\footnote{C. Morph and M. Waite, \textit{8086/8088 16-bit microprocessor primer} (Byte/McGraw—Hill, Peterborough, 1982); L. Scanlon, \textit{IBM PC & XT assembly language: a guide for programmers} (Brady/Prentice-Hall, Bowie, Md., 1983); R. Lafore, \textit{Assembly language primer for the IBM PC & XT} (Plume/Waite, New York, 1984).} omit this way of addressing segmented memory.
 
- 
+The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to the segment + offset notation expected by the 80x86 processors in real mode. A word that performs this conversion is \bc{SEG.OFF}, defined as
 
-15. Sec, e.g., D.N. Jump, Programmer’s guide to Ills-DOS, rev. ed. (Brady Books, New York, 1987).
+\begin{lstlisting}
+    : >SEG.OFF          ( d -- seg off )
+        OVER 15 AND     (   --   d off )
+        -ROT D16/ DROP  (   -- off seg )
+        SWAP ;
+\end{lstlisting}
 
-abaadr -18'segment + offset,
+The 32-bit address is placed on the stack as a double-length integer, with the low-order (\ie offset part) above the segment part. The phrase \bc{OVER 15 AND} saves bits 0-3 (of the 32-bit address); \bc{-ROT D/16 DROP} then shifts the (32-bit) address right 4 bits and drops the least-significant part, to produce the offset. This conversion method produces offsets in the range 00-0F (hex), that clearly have nothing to do with the original offsets (that led to the 32-bit absolute address \textit{via} 16*seg + off ).
 
-the reverse translation, of an absolute address (in bytes) to the
-segment + offset notation expected by 801186 processors is not
-unique. This naturally poses a problem when the processor tries
-to prevent segments from overlapping (protected mode). In such
-cases, the only answer is a memory management scheme that
-computes segments and offsets (by brute force) in a nonooverlap-
-ping fashion. For example, we might define large arrays such that
-each row has its own segment paragraph.
+\subsection{A general typed-array definition}
+\TallC{F}{or} the new syntax to work the word \bc{}} must compute the addresses of the n'th element of \bc{V{} from the information on the stack, and \bc{}}} must do the same for \bc{M{{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V{ n }}and \bc{M{{ m n }}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
 
-The 80386 CPU has a third mode that permits direct 32-bit
-addressing of 4 gigabytes (albeit few computer users have quite
-this much fast memory available). A scheme for addressing large
-amounts of RAM in 80386 machines (without leaving MS-DOS)
-has been discussed in Dr Dobb’s Journal“.
+Before we can define \bc{}}, however, we must specify the data: structure it operates on, \ie the array header.
 
-' For 8086 PC's and/or real-mode programming on 80286+
+Once again we begin with the user interface. We can opt for maximum generality or maximum simplicity. My first attempt fell into the first category, permitting the user to define a named segment of given length and to define an array in that segment. Lately I realized this generality accomplishes little, so have abandoned it. All arrays will be defined in the heap, named SUPERSEG as above. To define a length-50 \bc{1ARRAY} of 4-byte number we will say
 
-machines, we can merely ignore whether segments overlap.
-Oddly, standard assembly programming booksl omit this way of
-addressing segmented memory.
+\begin{lstlisting}
+    50 LONG REAL*4 1ARRAY V{
+\end{lstlisting}
 
-The 8086 permits 32— bit addressing as long as we translate 32-bit
-addresses to the segment + offset notation expected by the 80:86
-processors in real mode. A word that performs this conversion is
-SEG.OFF, defined as
+Now, before we work out the mechanics of \bc{1ARRAY}, we imagine that an array will be stored as in Fig. 5-4 below:
 
-: >SEG.OFF (d - - seg off)
-OVER 15 AND (- - d off)
--ROT D16] DROP (- - off seg)
-SWAP ;
+The proposed data structure consists of an 8-byte header (the array descriptor) in the dictionary (\regc{LISTS} in HS/FORTH), with the body of the array stored elsewhere. The array descriptor points to the absolute address of the array data (body).
 
-The 32-bit address is placed on the stack as a double-length
-integer, with the low-order (tie. offset part) above the segment
-part. The phrase OVER 15 AND saves bits 0-3 (of the 32-bit
+\begin{lstlisting}
+LISTS portion: (V{ puts adr on
+type length         VHERE + SUPERSEG*16
+                    (32-bit address)
+--> to higher memory in LISTS 
+adr
+SUPERSEG portion      to higher memory in SUPERSEG
 
- 
+start at data = VHERE (from beg. or SUPERSEG)
+\end{lstlisting}
 
-5. See,e.g.,AlWil|ia1ns, “DOS + 386 = 4Gigabytes", Dr. Dobb'slournal, July 19%, p. 62.
-
-7.
-
-C. Morph and M. Waite, was/m l6-bil War primer (Byte/McGraw—Hill, Peter-
-borough, 1982); L SmhmlBMPCéXTassanblymmgudeforW
-(Bfldy/Preadce-Hall. Bowie, Md, 1983); a. [afanssembly m primer form lBMPCd
-XT (Plume/Waite, New York, 1984).
-
-emvmrm—me.
-
-110 Chapters—SciemlfchataStmctwu SclenfiflcFOR
-
-address); 410T 0/16 DROP then shifts the (32-bit) addres
-right 4 bits and drops the least-significant part, to produce
-offset. This conversion method produces offsets in the ran
-00-0F (hex), that clearly have nothing to do with the original offs:
-(that led to the 32-bit absolute address via 16‘seg + off ).
-
-§§4 A general typed-array deflnltion .
-or the new syntax to work the word } must compute the address:
-of the n’th element of V{ from the information on the staclg,
-
-and }} must do the same for M{ {. In order to encompass:
-matrices of typed data we specify that the results of the phrases}
-V{ n } and M{{ m n }} be to leave the generalized address our
-the parameter stack, 1'. e. to leave the stack picture ( - - seg off typefi,
-exactly as with SCALARS.
-
-Before we can define }, however, we must specify the data:
-structure it operates on, i.e. the array header.
-
-Once again we begin with the user interface. We can opt fol.
-maximum generality or maximum simplicity. My first attempt fel.‘
-into the first category, permitting the user to define a named
-segment of given length and to define an array in that segment
-Lately I realized this generality accomplishes little, so have abut?
-doned it. All arrays will be defined in the heap, named SUPER;-
-SEG as above. To define a length- 50 1ARRAY of 4-byte numbea
-we will say
-
-50LONG REALM 1ARRAY V{
-
-Now, before we work out the mechanics of 1ARRAY, we imagim
-that an array will be stored as in fig. 5-4 below:
-
-The proposed data structure consists of an 8-byte header (the
-array descriptor) in the dictionary (LISTS in PIS/FORTH), wifi
-the body of the array stored elsewhere. The array descriptfi;
-
-it
-
-points to the absolute address of the array data (body). 1,
-
-rmmm Mabmmm 111
-
- 
-
-" LISTSponion:(V{putsadron
-
- 
-
-, wens + mascara
-M” ”‘9‘" (324a address)
-
-1 l
-
-lfi%l WWI ”8% l%%l —~ ”WWhUW-‘r
-
-.
-
-. SUPERSEG portion to Wuunemory h SUPERSEG
-lfifillfiSt llfillfi fill%%ll%%ll%5’l —-
-
-L—d start at data - vases (from beg. or SUPERSEGU
-
-fig. 54 Structure of a 1-dimenslonal array In SUPERSEG
+Fig. 5-4 \textit{Structure of a 1-dimenslonal array in \regc{SUPERSEG}}
 
 The array-defining word 1ARRAY must perform the following
 tasks:
 
-a lace the length and type of the data in the first two cells
-4 bytes) of the array descriptor.
+\begin{itemize}
+    \item place the length and type of the data in the first two cells 4 bytes) of the array descriptor.
+    \item place the 32-bit address (start of data) in the next two cells 4 bytes) of the array descriptor.
+    \item allot the necessary storage in \bc{SUPERSEG}.
+    \item at run-time, place the generalized address, length and type on the parameter stack.
+\end{itemize}
 
-a lace the 32-bit address (start of data) in the next two cells
-4 bytes) of the array descriptor.
+The start of data is handled by \bc{VHERE}, a word that puts the next vacant (32-bit) address in \bc{SUPERSEG} on TOS.
 
-a allot the necessary storage in SUPERSEG.
-
-e at run-time, place the generalized address, length and type on
-the parameter stack.
-
-The start of data is handled by VHERE, a word that puts the next
-
-vacant (32-bit) address in SUPERSEG on TOS.
-
-We define VALLOT to keep track of the storage used by arrays.
-VALLOT increments the pointer in VHERE (and aborts with a
-: warning if the segment length is exceeded).
+We define \bc{VALLOT} to keep track of the storage used by arrays. \bc{VALLOT} increments the pointer in \bc{VHERE} (and aborts with a warning if the segment length is exceeded).
 
 We first define some auxiliary words:
-MEMORY 4 + @
-S- > D DCONSTANT MEMSTART
-\ bag. of free memory
+\begin{lstlisting}
+    MEMORY 4 + @
+    S-> D DCONSTANT MEM.START
+        \ beg. of free memory
+    40.960 DCONSTANT MAX.PARS \ 40960 = 655360/16
+    : TOTAL.PARS MAX.PARS   MEM.START D- ;
+        \ # pars avail. mem.
+    1 SEGMENT SUPERSEG        \ named seg. 1 byte long
+    TOTAL.PARS DROP
+        FREE-SIZE             \ tell DOS and HS/FORTH
 
-emvmrm-Mmm.
+    DVARIABLE VHERE>
+    : INIT.VHERE> 0.0 VHERE> D! ;
+    INIT.VHERE>
+    : VHERE ( -- d.offset ) VHERE> D@ ;
+    : D4/   D2/ D2/ ;
+    : D16/  D4/ D4/ ;
 
-112
+    : TOO-BIG? VHERE >SEG.OFF
+        0 AND TOTAL.PARS D>
+        ABORT" INSUFFICIENT ROOM IN SUPERSEG" ;
+        \ check whether new value of VHERE> passes end
+        \ of SUPERSEG
 
-Chapter 5 — Sclentllc Data Structures Scientific FORTH
+    : VALLOT ( d.#bytes -- )
+        VHERE  D+ DDUP TOO.BIG?
+        VHERE> D! ;
 
-40.960 DCONSTANT MAXPARS \4oeeo= 655360/10
+    \ Array-defining words
+    \ Ex: 50 LONG REAL*4 1ARRAY V{
+    \ V{            (   -- adr )
+    \ V{ 17 } >FS   (:: -- V[17])
 
-:TOTAL.PARS MAX.PARS MEM.START D-
-\ # pars avail. mom.
+    : LONG DUP ;
+    FIND D, 0= ?( :D, SWAP , , ; )
+        \ conditionally compile D,
+    :1ARRAY ( || t -- )
+        CREATE UNDER D,  \ t,| into 1st 4 bytes { -- |t )
+        SUPERSEG @ 16 M* \ start of SUPERSEG
+        VHERE D+ D,      \ abs. address —> next 4 bytes
+        #BYTES M*        ( | t -- #bytes to allot)
+        VALLOT ;         \ allot space in the segment
+    \ run-time action: ( -- adr )
+\end{lstlisting}
 
-1 SEGMENT SUPERSEG \ named seg. 1 byte long
-TOTALPARS DROP
+We also need some words to go with \bc{1ARRAY}:
+\begin{lstlisting}
+    :}  (adr n -- seg.off[n] t )
+        SWAP DUP@ R > \ type -> rstack
+        4+  D@
+        ROT R@ #BYTES M*
+        D+ >SEG.OFF R > ; ( -- seg.off[n] t )
+\end{lstlisting}
 
-FREE-SIZE \tell DOS and HS/FORTH
-
-DVARIABLE VHERE>
-:lNlIVHERE> 0.0 VHERE> Dl
-
-a
-l
-
-lNlIVHERE >
-: VHERE ( - - d.offset) VHERE) D@ ;
-: D4/ 02/ 02/ ; : 016/ D4/ 04/ i
-
-: TOO-BIG? VHERE >SEG.OFF
-0 AND TOTALPARS D >
-ABORT“ INSUFfiCIENT ROOM IN SUPERSEG' ;
-\ check whether new value of VHERE > passes end
-\ of SUPERSEG
-
-: VALLOT (d.#bytes - -)
-VHERE D + DDUP TOO.BIG?
-VHERE > D! ;
-
-Array-defining words
-Ex: 50LONG REAL*4 1ARRAY V{
-
-17} >FS (::--V[17])
-
-: LONG DUP ;
-fiNDD, 0= ?( :D, SWAP, , ;)
-\ conditionally compile D,
-:1ARRAY (IIt--)
-CREATE UNDER D, \t,l into 1st4bytes(--|t)
-SUPERSEG @ 16 M* \ start of SUPERSEG
-
-VHERE D + D, \ abs. address —~next 4 byt
-#BYTES M“ ( I t - - #bytes to allot)
-VALLOT ; \ allot space in the segmen
-
-\ run-time action: (- - adr)
-
-comment Ml-MMW 113
-
-We also need some words to go with 1ARRAY:
-
-(adr n - - seg. oti[n] t)
-SWAP DUP@ R > \fypo .. rstack
-4 + D@
-ROT R@ #BYTES M'
-D+ >SEG.OFF R > ; (- - seg.cfl[n] t)
-
-finally, here is a useful diagnostic word
+Finally, here is a useful diagnostic word
 
 \begin{lstlisting}
-    :7TYPE (t--) \it's ok for this to be slow!
+    :7TYPE ( t-- ) \ it's ok for this to be slow!
         DUP 0 = IF DROP ." REAL*4"   EXIT THEN
         DUP 1 = IF DROP ." REAL*8"   EXIT THEN
         DUP 2 = IF DROP ." COMPLEX"  EXIT THEN
@@ -860,7 +585,7 @@ us define \}\} in terms of \}.
 
 \section{Tuning for speed}
 
-Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH’s\footnote{J.S. Callahan, \textit{Proc. 1988 Rochester FORTH Conference} (Inst. for Applied FORTH Research, Inc., 1988), p. 39.}.
+Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH's\footnote{J.S. Callahan, \textit{Proc. 1988 Rochester FORTH Conference} (Inst. for Applied FORTH Research, Inc., 1988), p. 39.}.
 
 Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
