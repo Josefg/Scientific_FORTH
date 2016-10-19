@@ -129,56 +129,33 @@ The partial sums converge rapidly to 2 (which, as we saw in §1.1.2 above, is th
 
 For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $tan^{-1}(x)$(that is, $arctan(x)$ ) has the infinite series representation\footnote{HMF, Ch. 4 4.42}
 
-tan‘l(x)=x—%+x?5-x7... (7)
-Since a 45° right triangle has equal height and base, 5the tangent
+\begin{align}
+    tan^{-1}(x) = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} + \frac{x^{7}}{7} ...
+\end{align}
+Since a 45^\circ right triangle has equal height and base, the tangent of 45^\circ is 1 (side opposite over side adjacent). That is\footnote{Since $\pi/4$ radians is 45^{\circ}.},
 
-of 45° is 1 (side opposite over side adjacent). That is ,
-
+\begin{align}
 a = -i _ _ l 1 _ 1 l
 4_tan (1)—1 3+5 7+9... (8)
+\end{align}
 
-Actually the series Eq. 8 is slowly converging and therefore a poor
-way to compute 7r . But anyway, let us proceed. The flow diagram
+Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\footnote{A better method would be to evaluate the series for $x = 1/\sqrt{3}$ which is the tangent of $\pi/6$, or $x = \sqrt{Z-1}, the tangent of $\pi/8$}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
 
-is now that of fig. 6-2 below.
-
- 
-
+\begin{lstlisting}
 SETUP: flag=1 n=1 sum=0 (--1n::--O)
 
 BEGIN
 EXHIBIT \ display n, sum
 ?CONTINUE WHILE
-
 DUP S->F 1/F (--fn::--sum1/n)
 SWAP FDUP FSIGN \transfer sign
-
- 
-
- 
-
 F+ \sum = sum +
-
 term
-
 NEGATE \ flip sign of f
 REPEAT
+\end{lstlisting}
+Fig. 6-2 \textit{ Computing $\pi/4$ by the infinite series for $tan^{-1}(1)}
 
- 
-
- 
-
- 
-
-fig. e2 Computing 3/4 by the infinite series for tan" (1)
-
- 
-
-5. Since iii/4 radians is 45°.
-6. Ahettermethodwouldbetoevaluatetheseriesforx-l/flwhichisthetangentofu/Gmr
-x-t/Z—l, the tangent ofn/S.)
-
-Ware—Wm 121
 The corresponding program is
 15 #PIACES I \eetEtoiSdigits
 :NEX'tTERM 12n+1--i'2n+3::sum--eum')
@@ -479,9 +456,6 @@ GDROP GDROP F>FS :
 ELSE c G@ S->F
 F‘ FDUP c G! 1/F
 
- 
-
- 
 
 THEN REAL’B F>FS;
 
@@ -547,16 +521,9 @@ achieve a given accuraqr is predictable, and it is guaranteed to
 find a captured root. Creating a FORTH program from the
 pseudocode skeleton of fig. 6-3 is left as an exercise.
 
- 
 
 10. Wespedafiumuamcendentdequfionsheauseomrou-findingmethodswiflwkakofa
 pdynomhlgwherusthemethodsdevelopedfmpdynomhkfiflnmwakhthemegeurfl
-
-GJUIanVNohieiflz-Almreeuved.
-
-Were-PWW SclmtlflcFORTH
-
- 
 
 INITIALIZE
 ft = f(XL) fa =11an
@@ -568,41 +535,16 @@ WHILE
 
 x=%(xL+xR), f=!(x)
 
- 
-
 sign(f) =sign(fl) ?
-
- 
-
- 
 
 IF XL =X fl =f
 
- 
-
 ELSE xn =x in =f
 
- 
-
- 
-
- 
-
- 
-
- 
-
- 
 
 THEN
 
- 
-
 REPEAT
-
- 
-
- 
 
 flg. 6—3 Binary search algorinn for roots of f(x)
 
@@ -624,20 +566,6 @@ approximate the curve [(15). The new guess may be much closer
 
 the root than is the midpoint of the interval (which was the neat
 guess in binomial search).
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
 
 fig. 6—4 Graphical Illustration of ragula falsl
 
@@ -675,38 +603,6 @@ fa‘fi. '
 
 A FORTH flow diagram for this algorithm appears in fig. 6-5.
 
- 
-
-<8
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
 INITIALIZE
 ft=f(XL) fn=f(xi=i)
 Xoid = Xi.
@@ -721,8 +617,6 @@ IF XL =X fl =f
 ELSE Xn =X TR =f
 
 THEN
-
- 
 
 REPEAT
 
