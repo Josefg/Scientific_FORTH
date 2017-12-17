@@ -1,0 +1,11 @@
+\contentsline {chapter}{\numberline {1}Strings and I/O in FORTH}{2}{chapter.1}
+\ttl@starttoc {chapters@1}
+\contentsline {section}{\numberline {1.1}Standard I/O In FORTH}{2}{section.1.1}
+\contentsline {section}{\numberline {1.2}Standard I/O in Scientific FORTH}{3}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Disk file input}{4}{subsection.1.2.1}
+\contentsline {subsection}{\numberline {1.2.2}Disk file output}{5}{subsection.1.2.2}
+\contentsline {section}{\numberline {1.3}Logging screen activity}{6}{section.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Redirection by re-vectoring}{6}{subsection.1.3.1}
+\contentsline {subsection}{\numberline {1.3.2}Redirection using MS-DOS resources}{7}{subsection.1.3.2}
+\contentsline {subsection}{\numberline {1.3.3}Redirection while DEBUGging}{9}{subsection.1.3.3}
+\contentsfinish 

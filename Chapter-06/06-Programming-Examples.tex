@@ -30,7 +30,6 @@ What does it mean to say a series diverges? Consider the serices whose terms are
     1 + 1 + 1 + 1 + ...
 \end{align}
 
-
 The partial sum $f_N$ is just $N$, and therefore increases without limit as more terms are added. The series \textit{diverges}.
 
 A harder case is the series whose terms are alternately 1's and -1's:
@@ -49,7 +48,7 @@ Yet a third case is the harmonic series
     f_{N} = 1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + ... + \frac{1}{N}
 \end{align}
 
-It can be shown that for large $N$, $f_{N} is approximately $log_{e}(N)$, so the harmonic series \textit{diverges}.
+It can be shown that for large $N$, $f_{N}$ is approximately $log_{e}(N)$, so the harmonic series \textit{diverges}.
 
 \subsubsection{A convergent example}
 Are there ever mes of infinite series that \textit{do} mean something? Obviously, or there could hardly be a theory of them! An example\footnote{This is the examle of Zeno's paradox where you are at one end of a sofa and an attractive person of the opposite gender is at the other end. You move half the distance, then half the remainder. Clearly an an infinite number of moves is necessary to achieve the desired proximity. Thus, according to Zeno, you never get there. According to Eq. 6, however, you \textit{do} get there and in a finite time, to boot!} is $c_{n}=1, x = \frac{1/2}$. Here the partial sums
@@ -59,7 +58,7 @@ f_{0} =& 1                               \\
 f_{1} =& 1 + \frac{1}{2}                 \\
 f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 ........&........                        \\
-\lim_{N\to\infty} \eq \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
+\lim_{N\to\infty} f_{N} \equiv \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
 \end{align}
 
 \textit{do} have a definite limit, so the series converges.
@@ -111,32 +110,32 @@ The corresponding program is
 This is what a run looks like:
 
 \begin{lstlisting}
-flOAD TEST.SUM Loading TEST.SUM ok
+FLOAD TEST.SUM Loading TEST.SUM ok
 SUM
-n = 0 sum = 1.00000000000000
+n = 0  sum = 1.00000000000000
 Another 10 terms? Y
 n = 10 sum = 1.919902343750000
 Another 10 terms? Y
-n = 20 sum =1.99999904632568
+n = 20 sum = 1.99999904632568
 Another 10 terms? Y
 n = 30 sum = 1.99999999906867
 Another 10 terms? Y
 n = 40 sum = 1.99999999999909
-Another 10terms? N ok
+Another 10 terms? N ok
 \end{lstlisting}
 
-The partial sums converge rapidly to 2 (which, as we saw in §1.1.2 above, is the exact sum).
+The partial sums converge rapidly to 2 (which, as we saw in Ch. 1.1.2 above, is the exact sum).
 
-For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $tan^{-1}(x)$(that is, $arctan(x)$ ) has the infinite series representation\footnote{HMF, Ch. 4 4.42}
+For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $\tan^{-1}(x)$(that is, arctan(x) ) has the infinite series representation\footnote{HMF, Ch. 4 4.42}
 
 \begin{align}
-    tan^{-1}(x) = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} + \frac{x^{7}}{7} ...
+    \tan{x}^{-1} = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} - \frac{x^{7}}{7} ...
 \end{align}
-Since a 45^\circ right triangle has equal height and base, the tangent of 45^\circ is 1 (side opposite over side adjacent). That is\footnote{Since $\pi/4$ radians is 45^{\circ}.},
+
+Since a $45^\circ$ right triangle has equal height and base, the tangent of $45^\circ$ is 1 (side opposite over side adjacent). That is\footnote{Since $\pi/4$ radians is 45^{\circ}.},
 
 \begin{align}
-a = -i _ _ l 1 _ 1 l
-4_tan (1)—1 3+5 7+9... (8)
+    \frac{\pi}{4} \equiv \ta{1}^{-1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
 \end{align}
 
 Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\footnote{A better method would be to evaluate the series for $x = 1/\sqrt{3}$ which is the tangent of $\pi/6$, or $x = \sqrt{Z-1}, the tangent of $\pi/8$}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
@@ -145,306 +144,213 @@ Actually the series Eq. 8 is slowly converging and therefore a poor way to compu
 SETUP: flag=1 n=1 sum=0 (--1n::--O)
 
 BEGIN
-EXHIBIT \ display n, sum
-?CONTINUE WHILE
-DUP S->F 1/F (--fn::--sum1/n)
-SWAP FDUP FSIGN \transfer sign
-F+ \sum = sum +
-term
-NEGATE \ flip sign of f
+    EXHIBIT \ display n, sum
+    ?CONTINUE WHILE
+    
+    DUP S->F 1/F    ( -- fn :: -- sum 1/n )
+    SWAP FDUP FSIGN \ transfer sign
+    F+              \ sum = sum +
+    term
+    NEGATE          \ flip sign of f
 REPEAT
 \end{lstlisting}
-Fig. 6-2 \textit{ Computing $\pi/4$ by the infinite series for $tan^{-1}(1)}
+Fig. 6-2 \textit{ Computing $\pi/4$ by the infinite series for $\tan{1}^{-1}}
 
 The corresponding program is
-15 #PIACES I \eetEtoiSdigits
-:NEX'tTERM 12n+1--i'2n+3::sum--eum')
-DUP S-> 1/F SWAP DUP FSIGN F+
-NEGATE SWAP 2+ ;
+\begin{align}
+    15 #PIACES ! \ set F. to 15 digits
+    : NEXT.TERM ( f 2n+1 -- f1 2n+3 :: sum -- sum1 )
+        DUP S->F 1/F SWAP DUP FSIGN F+
+        NEGATE SWAP 2+ ;
+    : SETUP FINIT F=0 1 1 ;
+    : EXHIBIT CR DUP
+        ." n = " . Z SPACES
+        FDUP F2* F2* ." 4*sum = " F. ;
+    : ?CONTINUE ." Another term?' ?YN ;
 
-:SEtUP fiNIT F20 11
-:EXHIBIT CR DUP
-."n = ' . ZSPACES
-FDUP F2‘ F2' .'4'sum .. ' F. ;
-.'Anotherterm?' ?YN ;
+    : PI/4 SET.UP
+        BEGIN EXHIBIT
+        ?CONTINUE
+        WHILE NEXT.TERM REPEAT ;
+\end{lstlisting}
 
-: ?CONTINUE
+Now we run the program\footnote{Note we have set up to display $x$ rather than $x\4$.}:
 
-: PI/4 SETIUP
-BEGIN EXHIBIT
-?CONTINUE
+\begin{lstlisting}
+FLOAD PIBY4 Loading PIBY4 ok
+PI/4
 
-WHILE NEXITEfiM REPEAT ;
+n = 1  4*num = Another term? Y
+n = 3  4*num = Another term? Y
+n = 5  4*num = Another term? Y
+n = 7  4*num = Another term? Y
+n = 9  4*num = Another term? Y
+n = 11 4*num = Another term? Y
+n = 13 4*num = Another term? Y
+n = 15 4*num = Another term? Y
+n = 17 4*num = Another term? Y
+n = 19 4*num = Another term? Y
+n = 21 4*num = Another term? Y
+n = 23 4*num = Another term? Y
 
-Now we run the program]:
+n = 25 4*num = Another term? Y
+n = 27 4*num = Another term? Y
+n = 29 4*num = Another term? Y
+n = 31 4*num = Another term? Y
+n = 33 4*num = Another term? Y
+n = 35 4*num = Another term? Y
+n = 37 4*num = Another term? Y
+n = 39 4*num = Another term? Y
+n = 41 4*num = Another term? Y
+n = 43 4*num = Another term? Y
+n = 45 4*num = Another term? Y
+n = 47 4*num = Another term? Y
+\end{lstlisting}
 
-flOAD PIBY4 Loading PIBY4 0k
+The first thing we notice is that the numbers seem to be converging to \textit{something}; however, unlike the previous series, the differences between successive partial sums are fairly large.
 
-Pl/4
+An infinite series of terms that alternate in sign and decrease in
+magnitude is guaranteed to converge\footnote{This theorem, due to Weierstrass, is found in all standard intermediate-level calculus texts.}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1} is not a very good way to calculate $\pi$ A better way uses \eg,
 
-n -1 s‘eum - emmmw
-n-3 sun-smmum‘rv
-n - 5 4...!“ - zwmmrv
-n - 7 ”sum - smmmfi
-n - 9 Pain - zmmwn
-n -114§I.m - ammunnrv
-n - 13451111 - mnemonmmw
-n -154'aun - mmmmrv
-n . 17 451:» - 3.011071017117181 Moe-rm‘rY
-n - 104m - WTIQ‘IMW‘IY
-n - 21 o'er-n - 3m1m1mmm7¥
-n-as‘aun-WIWWWTV
+\begin{align}
+    \pi = 16\tan{\frac{1}{5}}^{-1} - 4\tan{\frac{1}{239}}
+\end{align}
 
-n - 254m - ammmvv
-n - 274M - urmmmm‘rv
-n - 34m - aomastmrsmm‘rv
-n - 314m - mimmmww
-n - 334'eum - sonrsmrenzmmrv
-n - Sd'aum - emaimmanmv
-n - 374m - smnmmmrv
-n - sum - 3131m194mmm7Y
-n - 414‘aum - swimmmiv
-n - ess'eum - 3191mmm71
-n - ‘54‘eum - seesiersasseaesmwmmrv
-n - 4745mm - 3.1m153253mbrm7N air
+, which converges much faster\footnote{See, \eg, J, Mathews and R.L. Walker, \textit{Mathematical Methods of Physics}, 2nd ed. (WA. Benjamin, Inc, New Jersey, 1970).}.
 
-The first thing we notice is that the numbers seem to be converg-
-ing to something; however, unlike the previous series, the differ-
-ences between successive partial sums are fairly large.
+\subsubsection{The infinite sum program}
+Evaluating a function from its infinite series representation Eq. 1 provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
 
-An infinite series of terms that alterna e in sign and decrease in
-magnitude is. guaranteed to converge . The error (that is, the
-difference between a partial sum and the limit) is of the order of
+\begin{lstlisting}
+    BEGIN
+      Calculate next term
+      Not converged?
+    WHILE
+      Update:
+        Add next term to sum
+        increment n
+    REPEAT
+\end{lstlisting}
 
- 
+To actually write the program, we begin at the end, by specifying how we want to invoke the function.
 
-Note we have set up todisplayuratherthanxlt
-'l'h'n theuent, due to Weierstrass, is found in all standard intermediate-level calculus tests.
+Functions in the standard FORTH library (Ch. 3.3) typically expect a single real number on the fstack replacing it with the function: $x \rightarrow f(x)$. Since the sum is infinite, we supply the coeifcients $c_n$ as a function of $n$ rather than as an array. For any given $c_n=f(n)$, it is easy enough to write a FORTH word that evaluates it and leaves the result on the appropriate stack (87stack, fstack, ifstack). For example, to evaluate the exponential \textit{via} the power series
 
-OMMNoflelm-Mmm.
+\begin{align}
+e^x = 1 + \frac{x^1}{1!} + \frac{x^2}{2!} + \frac{x^3}{3!} + ...
+\end{align}
 
-122 Chapter 8 - Programming Examples Scientific roam
+we would define the word NEXT.TERM as
 
-the first neglected term and has the same sign. We see that for
-this case, the error in computing rt is of order 2Jn, where n is the
-number of terms in the sum. To get It to 3 significant figures,‘
-therefore, we need about 1000 terms! This is why the series
-representation for 4tan 1( 1)‘ rs not a very good way to calculate a.
-A better way uses e. g. .,
+\begin{lstlisting}
+    : NEXT.TERM ( 87: term x n -- term*x/[n+1] x n+1 )
+        F=1 F+ \n-> n+1
+        FROT FOVER F/ ( 87: -- x n+1 term/[n+1])
+        FROT FUNDER F* F-ROT ;
+\end{lstlisting}
 
-= -11 _ -1;
-7r 16tan (5) 4tan (239),
+\subsubsubsection{Function calls In FORTRAN}
+However, FORTRAN (as well as languages that emulate it) achieves readability by passing arguments to functions in a list. In fact, function names can also be passed in the argument list. Thus, \eg, a general FORTRAN program to evaluate a function by summing an infinite series could be written
 
-which converges much faster9.
-
-§§3 The Infinite sum program
-Evaluating a function from its infinite series representation
-Eq. 1 provides an illustration both of indefinite loops and oi
-tests of floating point numbers. We anticipate a program struc- .
-ture something like this: "V
-
- 
-
-BEGIN
-Calculate next term
-Not converged?
-WHILE
-Update:
-Add next term to sum
-increment n
-REPEAT
-
-To actually write the program, we begin at the end, by specifyin, 3
-how we want to invoke the function.
-
-Functions in the standard FORTH library (Ch. 3 §3) typical]
-expect a single real number on the fstack replacing it with th I
-function: x -» {(1). Since the sum is infinite, we supply the coeif; 3,
-cients c. as a function of n rather than as an array. For any give,
-=f(r1), it is easy enough to write a FORTH word that evaluatd
-it and leaves the result on the appropriate stack (87stack, fstacii
-i
-9. See, e.g., .I. Mathews and 11.1.. Walker, Mathematical Methods of Physics, 2nd ed. (WA. Ben-
-jamin, Inc, New Jersey, 1970).
-
-Grams-WE” 123
-
-ifstack). For example, to evaluate the exponential via the power
-series
-
-I .2 .3
-€x=1+—l+'2—‘+'3—!+... (9)
-
-we would define the word NEXITERM as
-
-:NEX'IZTEfiM (87: termxn--term'x/[n+1]x n+1)
-F=1 F+ n-> n+1
-FROT FOVE F/ (87:--xn+1term/[n+1])
-FROT FUNDER F' F-ROT ;
-
-“3-1 Function calls In FORTRAN
-However, FORTRAN (as well as languages that emulate it)
-achieves readability by passing arguments to functions in a list. In
-fact, function names can also be passed in the argument list. 111115,
-e.g.. a general FORTRAN program to evaluate a function by
-summing an infinite series could be written
-
-REAL FUNCTION XINFSUM(X. E. C)
+\begin{lstlisting}
+    REAL FUNCTION XINFSUM(X. E. C)
 C
-C EVALUATE INfiNITE POWER SERIES
+C   EVALUATE INFINITE POWER SERIES
 C
-
-EXIERNALC
-REALX.E,C
-SUM=0
-TERM-1
-N=1
-
-1 SUM==SUM+TERM
-TERM -TERM'X'C(N)
-N =N +1
-IFCFERM.LE.E)RETURN
-GOTOt
-EM)
-
-124
-
-Chapter 6 — Proonmmhg Examples Scientific FORTH
+    EXIERNAL C
+    REAL X, E, C
+    SUM  = 0
+    TERM = 1
+    N = 1
+1   SUM  = SUM + TERM
+    TERM = TERM*X*C(N)
+    N = N + 1
+    IF (TERM .LE. E) RETURN
+    GOTO 1
+    END
+\end{align}
 
 where the program to evaluate the exponential would be
 
-REAL FUNCTION EXPOt)
-EXTERNAL )(INFSUM. OOEFEXP
-REAL co. XINFSUM
-
-COMMON ICBLK/OO
-
-co = 1
-
-EXP = XINFSUM(X,1.E-7,00EFEXP)
-RETURN
-
-END
+\begin{lstlisting}
+    REAL FUNCTION EXP(x)
+    EXTERNAL XINFSUM, COEFEXP
+    REAL C0, XINFSUM
+    COMMON /C8LK/C0
+    C0 = 1
+    EXP = XINFSUM(X, 1.E-7, C0EFEXP)
+    RETURN
+    END
+\end{lstlisting}
 
 given the coefficient function
 
+\begin{lstlisting}
 REAL FUNCTION OOEFEXP(N)
-COMMON ICBLK/CO
-
-co = OO/N
-
-OOEFEXP = 00
-
+COMMON /C8LK/C0
+C0 = C0/N
+COEFEXP = C0
 RETURN
-
 END
+\end{lstlisting}
 
-§§3-2 A function erI tor FORTH
+\subsubsubsection{A function protocol for FORTH}
 
-We would like to extend to FORTH FORTRAN’s ability to write
-a generic series summation function, passing the variable and the
-name of the coefficient function as arguments. In other words, we
-now face the task of devising the function protocol we plan to use
-throughout the rest of the book and in our future programming
-— a heavy responsibility since we do not know what form these
-future programs will take. For once we must engage in top-dawn
-programming!
+We would like to extend to FORTH FORTRAN’s ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
 
 We want our protocol to have several features:
-s it must be telegraphic, i.e. it must immediately suggest what it
+\begin{itemize}
+    \item It must be \textbf{telegraphic}, \ie it must immediately suggest what it is doing - a matter of choosing good names.
+    \item It must be simple to implement and easy to remember - the advantages of using it must not be outweighed by complexity.
+    \item It must be fast - a major drawback to FORTRAN's way of doing things is the overhead in function calls.
+    \item It must be portable — it cannot depend on specific details of the FORTH implementation or the machine 1t 1s running on.
+\end{itemize}
 
-is doing — a matter of choosing good names.
-
-e it must be simple to implement and easy to remember — the
-advantages of using it must not be outweighed by complexity.
-
-e it must be fast — a major drawback to FORTRAN's way ol
-doing things is the overhead in function calls.
-
-e It must be portable — it cannot depend on specific details 0
-the FORTH implementation or the machine 1t 1s running on.
-
-It is simpler to thread this particular maze in reverse: begin with
-where we want to end up, and determine what steps got us there.
-We suppose we have defined a generic power series summation
-function, using the lfstack defined in Ch. 5 52595:
-
-: SUMPOWERS (87zerr-- 21x --surn)
-E G! \storeerror
-FS>F DUP F>FS \gettypeofx
-DUP G=1 \x“0
-G=0 0 DUP --n=0 ::--x 10)
-adr.c EXECUTE G+ --0::--x1c[0])
+It is simpler to thread this particular maze in reverse: begin with where we want to end up, and determine what steps got us there. We suppose we have defined a generic power series summation function, using the ifstack defined in Ch. 5.2.5:
+\begin{lstlisting}
+    : SUMPOWERS         ( 87: err -- :: x -- sum )
+    E G!                \ store error
+    FS>F DUP F>FS       \ get type of x
+        DUP G=1         \ x**0
+        G=0 0 DUP       ( -- n=0 :: -- x 1 0 )
+    adr.c EXECUTE G+    ( -- 0   :: -- x 1 c[0] )
 BEGIN 1+ --n::~-xx“n—13um)
-FS>F GOVER G'
-(--n87:--sum::--xx“n)
-DUPadr.c EXECUTE
-(--n::--xx“nc[n])
-3 GPICK G' F>FS
-(--n::--xx“ntermsum)
-ENUF? NOT WHILE
-G+
-REPEAT G+ CLEANUP ;
+    FS>F GOVER G*
+        ( -- n 87: -- sum :: -- x x**n)
+    DUP adr.c EXECUTE
+        ( -- n :: -- x x**n )
+    3 GPICK G* F>FS
+        ( -- n :: -- x x**n term sum )
+    ENUF? NOT WHILE
+        G+
+    REPEAT G+ CLEANUP ;
+\end{lstlisting}
 
-AAA
+The words E, ENUF? and CLEANUP have straightforward definitions with obvious meanings; adr.c has not been defined because we have yet to figure out what it will do.
 
-The words E, ENUF? and CLEANUP have straightforward
-definitions with obvious meanings; mine has not been defined
-because we have yet to figure out what it will do.
+Manifestly, edr.c must place the execution address ("code-field address" — cfa) on the stack for EXECUTE to find. There are several ways to accomplish this. Clearly, we want to keep the variable that holds the cfa local, so it will not get confused with another function's cfa. While it is straightforward to define a variable and then make it headerless —hence local— (via BEHEAD", e.g.) we would prefer to avoid defining a variable at all. Here is a perfect opportunity to use the return stack (rstack).
 
-Manifestly, edr.c must place the execution address (“code-field
-address" — cfa) on the stack for EXECUTE to find. There are
-several ways to accomplish this. Clearly, we want to keep the
-variable that holds the cfa local, so it will not get confused with
-another function’s cfa. While it is straightforward to define a
-variable and then make it headerless —hence local— (via
-BEHEAD", e.g.) we would prefer to avoid defining a variable at
-all. Here is a perfect opportunity to use the return stack (rstack).
+We imagine that SUM.POWERS expects the cfa of the function c_n on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be >R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R> DROP ; ).
 
-We imagine that SUMPOWERS expects the cfa of the function
-c. on the stack. Then the first thing SUM.POWERS must do is
-stash the cfa somewhere convenient but local. One such place is
-the stack itself. Even easier, since SUMPOWERS does not use
-the rstack explicitly (e.g. in a DO LOOP), is to let the first step
-in SUMPOWERS be > R. Then the code for adr.c would be
-merely R@. The final word, after invoking CLEAN.UP (that
-drops unwanted items from the various stacks), then must be
-RDROP (for systems without it, : RDROP R > DROP ; ).
-
-owvmim-Mmm.
-
-126 Chapter 6 - Programing Enmdoc Scientific FORTH
 The revised version of SUM.POWERS is then
-: SUM.POWERS (adr.c - - 87: err - - :: x - - sum)
-> R \adr.c -> rstack
-E GI \ store error
-FS>F DUP F>FS \getx's type
-DUP G=1 \x“0
-6:0 0 DUP (--n= 0 ::--x10)
-R@ EXECUTE G+ (- -0 ::--x1 c[0])
-BEGIN 1+ (--n::--xx“n-1sum)
-(
+\begin{lstlisting}
+: SUM.POWERS    ( adr.c -- 87: err -- :: x -- sum )
+    > R             \ adr.c -> rstack
+    E G!            \ store error
+    FS>F  DUP F>FS  \ get x's type
+          DUP G=1   \ x**0
+    G=0 0 DUP       ( -- n=0 :: -- x 1 0 )
+    R@ EXECUTE G+   ( -- 0   :: -- x 1 c[0] )
+    BEGIN 1+        ( -- n   :: -- x x**n-1 sum )
+        FS>F GOVER G*  ( -- n 87: -- sum :: -- x x**r )
+        DUP R@ EXECUTE ( -- n:: -- x x**n c[n] )
+        3 GPICK G* F>FS( -- n:: -- x x**n term sum )
+        GOVER
+    ENUF? NOT   WHILE G+ REPEAT
+    G+ CLEAN.UP RDROP ;
+\end{lstlisting}
 
-FS>F GOVER G'
-DUP R@ EXECUTE (--n::
-3 GPICK G' F>FS(--n::
-
-GOVER
-ENUF? NOT
-
---n87: --sum:
---xx“n O[n])
-
-WHILE G+ REPEAT
-
-- -xx“r
-
-- - x x**n term sum)
-
-G+ CLEANUP RDROP;
-
-The full program to evaluate the exponential by summing power
-series would then have the form shown below:
+The full program to evaluate the exponential by summing power series would then have the form shown below:
 
  
 
@@ -477,12 +383,6 @@ REAL‘B SCALARC F=1 CG! \adr.constack
 DUP 1 < =
 
 IF F=1 c G! F=1 DROP
-
- 
-
-‘1 SMFORTH
-
-MO-Wm 127
 
 52 “anecenderlalequations
 
