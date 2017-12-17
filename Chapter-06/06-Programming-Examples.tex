@@ -355,682 +355,428 @@ The full program to evaluate the exponential by summing power series would then 
  
 
 \ evaluate exponential by summing series
+REAL*4 SCALAR E
+: ENUF? (::term--) (--F)
+    GABS FS>F EG@ F> ;
+: CLEAN.UP ( n-- ::x x**n sum -- sum )
+    DROP FS >F
+    GDROP GDROP F>FS ;
+\ definition of SUM.POWERS from above
+BEHEAD" E CLEAN.UP \ hide these def'ns
+REAL*8 SCALAR c F=1 c G!
+: COEEEXP (n--) (:: -- c[n] )
+    DUP 1 < =
+    IF F=1 c G! F=1 DROP
+    ELSE c G@ S->F
+        F* FDUP c G! 1/F
 
-DROP FS >F
-GDROP GDROP F>FS :
+    THEN REAL*4 F>FS ;
+BEHEAD' c \ hide this variahie
+: USE( [COMPILE] ' CFA LITERAL ;
+    IMMEDIATE
+\ this means "use address of"
+\ --crucial def'n of function lexicon
+:E**X (::x--e**x) %1.E-8
+            \ error on 87stack
+    USE( COEFF.EXP
+            \ adr.c on stack
+    SUMPOWERS ;
 
-ELSE c G@ S->F
-F‘ FDUP c G! 1/F
-
-
-THEN REAL’B F>FS;
-
-REALM SCALAR E BEHEAD' c \hidethisvariahie
-
-: ENUF? (::term--) (--1) : USE( [OOMPILE] ' CFA LITERAL;
-GABS FS>F EG@ F>; IMMEDIATE
-
-:CLEAN.UP (n-- ::xx“nsum--sum) \thlsmeam'tseaddressot'
-
-\--cruc'aldef'noifunctionle)dcon
-:E“X (::x--e"x) %1.E—B
-
-\definition of SUM.POWERS iromabove \erroron87stack
-BEHEAD" E CLEANUP \hidethese def'ns USE( COEFEEXP
-REAL‘B SCALARC F=1 CG! \adr.constack
-: COEEEXP (n--) (z: --c[n]) SUMPOWERS ;
-
-DUP 1 < =
-
-IF F=1 c G! F=1 DROP
-
-52 “anecenderlalequations
+Transcendental equations
 
 A transcendental equation has the form
 
-flx) = 0, (10)
+f(x) = 0,
 
-where f(x) is a transcendental function rather than, say, a polyno-
-mial or ratio of polynomials10 (rational function).
+where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials (rational function).
 
-There are several standard methods for finding a (or possibly, the)
-value of x that satisfies this equation, i.e. a root of Eq. 10 (which
-might have many or no roots). '1?) guarantee that we find a root
-we must know an interval of the x-axis that it certainly will be
-found in. 'Iirr'o methods that can be applied under these circum-
-stances are binomial search and regula falsl .
+There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. 10 (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
 
-ssr Binary search
+1 Binary search
 
-Let us look first at binomial search, since its algorithm is euy to
+Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, x_L \lteq x \lteq x_r, contains a root because f(x) changes sign when x goes from x_L -> x_R. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. 6-3 on page 128.
 
-understand. We know some interval, It. s x 5 xx, contains a
-root because f(x) changes sign when .1: goes from xL -xn . In
-pseudocode (and FORTH flow chart) the binomial search algo-
-rithm is shown in fig. 6-3 on page 128.
+The method begins with upper and lower bounds on x that capture the root. Next we look at f(x_AV) halfway between x_L and x_R. If f=f(x_AV) has the same sign as f_L = f(x_L), the new left end of the interval becomes x_AV. If the signs are opposite, x_AV becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
-The method begins with upper and lower bounds on x that capture
-the root. Next we look at f(xAV) halfway between xL and xglf
-f =f(xAV) has the same sign as fl= f(xL), the new left end of the
-interval becomes X". If the signs are opposite, xAV becomes the
-new right end of the interval. The algorithm is done when left and
-right ends agree within some predetermined accuracy.
+Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. 6-3 is left as an exercise.
 
-Binary search has the following virtues: the time it takes to
-achieve a given accuraqr is predictable, and it is guaranteed to
-find a captured root. Creating a FORTH program from the
-pseudocode skeleton of fig. 6-3 is left as an exercise.
-
-
-10. Wespedafiumuamcendentdequfionsheauseomrou-findingmethodswiflwkakofa
-pdynomhlgwherusthemethodsdevelopedfmpdynomhkfiflnmwakhthemegeurfl
+10. We specialize to transcendental equations because our root-finding methods will work also for polynomials, whereas the methods developed for polynomials will not work in the more general case.
 
 INITIALIZE
-ft = f(XL) fa =11an
+f_L = f(x_L) f_R= f(x_r)
 
-$9 BEGIN
+BEGIN
 
-|xL — xn| > error ?
+|x_L - x_R| > error ?
 WHILE
-
-x=%(xL+xR), f=!(x)
-
-sign(f) =sign(fl) ?
-
-IF XL =X fl =f
-
-ELSE xn =x in =f
-
-
+x=1/2(x_L+x_R), f=f(x)
+sign(f) = sign(f_L) ?
+IF x_L =X f_L =f
+ELSE x_R =x f_R=f
 THEN
 
 REPEAT
 
-flg. 6—3 Binary search algorinn for roots of f(x)
+Fig. 6-3 Binary search algorinn for roots of f(x)
 
-§§2 Regula falsl
-Now we look at regula falsi, Latin for “rule of false approach"
-Here the basic premise is:
+2 Regula falsi
+Now we look at regula falsi, Latin for "rule of false approach" Here the basic premise is:
 
-0 Assume the root lies in the interval (x1, x3, and plot a straigli
+\item Assume the root lies in the interval (x1, x3, and plot a straigli
 line between the points (XL, fl) and (XE, f . l
 
-o This line must intersect the_x-axis somewhere in the inte
+\item This line must intersect the_x-axis somewhere in the inte
 and we take that point, call It x’, as our next guess.
 
-a If x’ is to the left of the root, ad'ust the interval accordingly, an
+\item If x’ is to the left of the root, ad'ust the interval accordingly, an
 the same if x’ is to the right 0 the root.
 
-As fig. 6-4 on page 129 shows, the straight line is supposed
-approximate the curve [(15). The new guess may be much closer
+As Fig. 6-4 on page 129 shows, the straight line is supposed
+approximate the curve f(x). The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
 
-the root than is the midpoint of the interval (which was the neat
-guess in binomial search).
-
-fig. 6—4 Graphical Illustration of ragula falsl
+Fig. 6-4 Graphical Illustration of ragula falsi
 
 A straight line in the x-y plane has the analytic form
-y = at + b (11)
 
-where a and b are constants. The intercept of the straight line with
-the x-axis is gotten by setting y = 0 and solving for x:
+y = ax + b
 
-,=_-2
+where a and b are constants. The intercept of the straight line with the x-axis is gotten by setting y = 0 and solving for x:
 
-x a (12)
+x' = \frac{-b}{a}
+
 To determine a and b we use the two equations
 
-fl. = 01L + b
+f_L = ax_L + b
 
-(13)
-
-In = Uta + b
+f_R = ax_R + b
 
 giving
-1 _ ma
-0 2|:fl+f|l ‘l_xL(-1'L+Ia)] (14)
 
-emvuouum—me.
-
-130 Word—Programme. SclentlflcFORTH
+a = \frac{1}{2}[f_L + f_R - \frac{f_R - f_L}{x_L + x_R} (x_L + x_R)
 
 and thus
 
-x.=m
-fa‘fi. '
+x' = \frac{f_Rx_L - f_Lx_R}{f_R - f_L}
 
-(15)
-
-A FORTH flow diagram for this algorithm appears in fig. 6-5.
+A FORTH flow diagram for this algorithm appears in Fig. 6-5.
 
 INITIALIZE
-ft=f(XL) fn=f(xi=i)
-Xoid = Xi.
+f_L=f(x_L) f_R=f(x_R)
+x_old = X_L
 BEGIN calculate x’
-|x' — x°.d| > error
+|x' — x_old| > error
 ?
-waits
-f= '(X’)
-sgn(r") = sgn(fl) ?
-IF XL =X fl =f
+WHILE
+f\hat = f(x')
+sgn(f\hat) = sgn(f_L) ?
+IF x_L = x f_L = f
 
-ELSE Xn =X TR =f
+ELSE x_R = x f_R = f
 
 THEN
 
 REPEAT
 
-fig. 6-5 Regula falsl algorithm for roots 0! f(x)
+Fig. 6-5 Regula falsi algorithm for roots of f(x)
 
-The corresponding program is shown on page 132. 3
+The corresponding program is shown on page 132.
 
 Here is an example of the program in action:
 
-fiNIT 6 #PLACESI ok \set display to 6 digits
+FINIT 6 #PLACE ! ok \ set display to 6 digits
 \ Example: f(x) = exp(-x) - x
-
-: FNA FDUP FNEGATE FEXP FR— ;
-
+: FNA FDUP FNEGATE FEXP FR- ;
 \ Cleariy, the root lies between 0 and 3. (Why?)
 
-macaw me-Wsm 131
-
-USE(FNA 950. 963. 961.56 )FALSI
-\st(4) “(3) “(2) x' x' - xoid
-77???? 777??? 777??? .759452 ..291530
-777??? 77???? 7'27??? .588025 -.0326025
-777??? 777??? 7?)??? .569459 -.00362847
-77???? 77???? 77???? .567400 -.000403560
-77???? 77???? 77???? .567171 -.oooo443740
-?77??? 77???? 77???? .567146 -.0000050002
-72???? mm 77???? .567143 -.0000005544 ok
+USE( FNA % 0. % .3 % 1.E-6 )FALSI
+\ st(4) st(3) st(2)  x'      x'-xold
+?????? ?????? ?????? .759452 -.291530
+?????? ?????? ?????? .588025 -.0326025
+?????? ?????? ?????? .569459 -.00362847
+?????? ?????? ?????? .567400 -.000403560
+?????? ?????? ?????? .567171 -.0000448740
+?????? ?????? ?????? .567146 -.0000050002
+?????? ?????? ?????? .567143 -.0000005544 ok
 
 The display was generated by the word .FS —placed in the
-definition of APART? for debugging— we show the top 5 of the
-eight 80x87 registers. The ?????? means the contents of that
-register are not a properly defined fp number, either because of
-a mistake or because nothing was stored in them after fiNIT.
-Here, since the program is obviously working, the latter explana-
-tion is the correct one.
+definition of APART? for debugging — we show the top 5 of the eight 80x87 registers. The ?????? means the contents of that register are not a properly defined fp number, either because of a mistake or because nothing was stored in them after FINIT. Here, since the program is obviously working, the latter explanation is the correct one.
 
-53 Ordinary differential equations
+Ordinary differential equations
 We wish to solve the first-order general differential equation
 
-:2 a g =flxr) (16)
+x\dot = \frac{dx}{dt} = f(x,t)
 
-In general we can only solve Eq. 16 approximately, starting from
-the value of x - call itxo — at some initial time to , then advancing
-the time by small increments d: =h, using the differential equa-
-tion itself to give us x(t +h) given x(t).
+In general we can only solve Eq. 16 approximately, starting from the value of x — call it x_0 — at some initial time t_0, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
 
-For example, we could emand in Taylor’s series11
+For example, we could expand in Taylor’s series
 
-2
-x(t+h) = x(t) + hi(t) + 52-35(1) + (17)
+x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
 
  
 
-11. See, e.g., um [3.6.1.
+11. See, e.g., HMF 3.6.1.
 
-132 Chapters-Program Enmplea
+\ USE( Fname % a % b % err )FALSI
+( 87:--rooot )
+\ Fname is the name of a FORTH function
 
-\USE( Fname 96a 96b 98m )FALSI
-(87:--rod)
-\meeisthemmeoiaFORTl-ihnctlon
+\ function notation
+: USE( [COMPILE] ' CFA LITERAL ;
+       IMMEDIATE
 
-\iunctionnotation
-: USE( [COMPILEl' CFA LITERAL;
-IMMEDIATE
+6 REAL*4 SCALARS ERR XL XR YL YR OLDX
 
-6REAL‘4 SCALARS ERR XLXRYLYR OLDX
+0 VAR f1 \ a place to store cfa
+: SAME.SIGN? (87:xy -- -- f)
+    F* F0> ;
 
-o VAR f1 \apiacetostorecia
-:SAME.SIGN? (87:xy-- --i)
-F' F0> ;
+:INITIALIZE ( cfa -- 87: a  be -- )
+    IS f1   \ stare cfa
+    XDUP    \ interval has root?
+    SAME.SIGN?
+    ABORT" Even number of roots!!!"
+    XR G! XL G!
+    XL G@ f1 EXECUTE YL G!
+    XR G@ f1 EXECUTE YR G!
+    F=0 OLDX G! ;
 
-:INITIAIJZE (cia--87:abe--)
-is it \storecia
-XDUP \interval hasroot?
-SAME.SIGN?
-ABORT" Even number oi rootsil !"
-XR G! XL Gl
-XL G@ it EXECUTE YL G!
-XR G@ 11 EXECUTE YRGI
-F=0 OLDX G! ;
+: X' XL G@ FR G@ ( 87: -- x')
+    FUNDER F*    ( 87: -- yR xL *yR)
+    XR G@ YL G@
+    FUNDER F* ( 87: -- yR xL*yR xL xR*yL )
+    FROT   F- ( 87: -- yR yL xR*yL -xL*yR)
+    F-ROT  F- F/ ;
 
- 
+: APART? ( 87: x' -- x' -- f )
+    FDUP OLDX G@ F-
+    .FS FABS ERR G@ F> ;
 
-:X' XLG@ FRG@ (872"!)
+: REVISE ( 87: x' -- )
+    FDUP f1 EXECUTE ( 87: -- x' y')
+    FDUP YL G@
+    SAMESIGN? FOVER
+    ( --f 87: -- x'y' x')
+    IF      XL G! YL G!
+    ELSE    XR G! YR G! THEN
+    OLDX G! ; ( -- 87: -- )
 
-FUNDER F' (crummy!)
-
-XR G@ YL G@
-
-FUNDER ma :--yaxvynyi_xn'ytiil
-FROT F- (a7:--ynyi_m-yt-n.'yn:
-
-F-ROT F- fl ;
-:APART'? (arr-qr --o
-
-FDUP OLDX G@ F-
-
-.FS FABS ERR G@ F>;
-
-: REVISE (87:x'--)
-
-1
-FDUP f1 EXECUTE (872--X'Y)
-
-FDUP YL G@
-
-SAMESIGN? FOVER
-
-(--f 87:--x'y' x')
-
-IF XL 6! YL G!
-
-ELSE XR G! YR G! THEN
-OLDX G! ; (-- 87: --)
-
-Sclenflflc FORTH "
-
-d
-I
-
- 
-
-:)FALS| (cfa-- 87:abe--noa) INITIAIJZE ;
+: )FALSI ( cfa-- 87: a b e -- root ) INITIALIZE ;
 
 and keep only the lowest order terms:
 
-x(t+h) z x(t) + hf(x(t), t) .
+x(t+h) \approx x(t) + hf(x(t), t).
 
-§§1 Runge-Kutta method
+Runge-Kutta method
 
-One stande class of methods that had fallen into disfavor bi,
-now are popular again, are the Runge-Kutta algorithms”. Tit '
-algorithms can be classified according to order n (that is, if h ,
+One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms12. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be O(h^n). The second order Runge-Kutta algorithm is (x' \triple= x(t+h) , x \tripple= x(t) )
 
-(13)
+12. HMF, 25.5.6.
 
-i
+k = hf(x,t)
 
- 
-
-l
-
-the step size, the error at each step will be 00:"). The seco Er
-order Runge-Kutta algorithm is (x' E x(t+h) , x E x(t) ) ‘
-
- 
-
-12. "MP, £25.16.
-
-Mil-WE” 133
-
-k ' him) ( 9)
-1
-
-x' ax + %(k + hflx+k, (+h)) + 00?).
+x' = x + \frac{1}{2}(k + hf(x+k, t+h)) + O(h^3).
 
 How does this work? Clearly,
 
-k + hflx+k,r+h) .- Mix!) + Mb, I) + ,3?! + hk %
+k + hf(x+k,t+h) \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x}
 
-(20)
-a 2m) + #360) + 00?)
+\triple= 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
 
 Substituting 19 in 20 we now find
 
-2
-x’ = x(t+h) = x(t) + ruin) + ”3550) ;
+x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
 
-that is, the Rur¥e-Kutta x' agrees with the Taylor's series expan-
-sion 17, to 00: ).
+that is, the Runge-Kutta x' agrees with the Taylor's series expansion 17, to O(h^3).
 
-The flow chart of second-order Runge-Kutta is shown in fig. 6.6
-below. We express the algorithm in FORTH as shown in fig. 6-7
-on page 134 below.
-
- 
-
- 
+The flow chart of second-order Runge-Kutta is shown in Fig. 6.6 below. We express the algorithm in FORTH as shown in Fig. 6-7 on page 134 below.
 
 )RUNGE
-INITIALIZE: get h, ii, to , x0
+INITIALIZE: get h, tf, t0, x0
 
 BEGIN DISPLAY
-DONE? NOT
+    DONE? NOT
 WHILE
-STEP
+    STEP
 REPEAT
 
- 
+Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
 
- 
+\ STRAIGHT 2ND ORDER RUNGE-KUTTA
+\ SOLUTION OF FIRST-ORDER DIFEQ
+\ dx/dt = f(x,t)
 
-fig. 6-6 2nd-order Runae-Kutta for dxldr = f(x,t)
+\ See Abramowitz & Stegun, HMF 25.5.6
 
-134
-
-Chapter 8 - Programming Examples
-
-Scientific Foam;
-
- 
-
-\ STRAIGHT 2ND ORDER RUNGEmrTA
-\ SOLUTION or: fiRSTORDER DIFEQ
-\ dx/dt = i(x,t)
-
-\ See Abramowitz 8i Stegun. HMF 525.5.6
-
-\Usege:
-
-\ USE( FNB 96x0 960 96d 96h )RUNGE
-
+\ Usege:
+\ USE( FNB % x0 % t0 % tf % h )RUNGE
 \
-
-\ FNB (: [t]-- 87:x--t[x,t]) evalmtesi(x.t)
-
-\ x0 = starting valueoidep. var‘abIe
-
-\ t0 =initiaItime
-
-\ ti = endtime
-
+\ FNB (:[t]-- 87:x--f[x,t]) evaluates f(x.t)
+\ x0 = starting value of dep. variable
+\ t0 = initial time
+\ tf = end time
 \ h = step.size
-
 \
+\ k = hf(x,t), x' = x + (k +hf(x+k,t+h))/2
 
-\ k = hi(x,t), x' = x + (k +hl(x+k,t+h))/2
-
-6REAL‘4 SCALARS T T' H X TMAX K
-
-0 VAR i1 \tohoid cia
-
+6 REAL*4 SCALARS T T' H X TMAX K
+0 VAR f1 \ to hold cfa
 : USE( [COMPILE]' CFA LITERAL;
+       IMMEDIATE
+: INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
+    IS f1 H G! TMAX G! T G! X G! ;
 
-IMMEDIATE
+\ These words increment x & t.
+: inc.T     T G@ H G@ F+ T' G! ;
+: inc.X     X G@
+         T  f1 EXECUTE (87:--f[x,t])
+         H  G@ F*      (87:--k=hf[x,t])
+         FDUP K G!    \ save k
+         X  G@ F+      (87:-- x+k)
+         T' G@ T G!
+         T  f1 EXECUTE (87:--f[x+k,t+h])
+         H  G@ F*
+         K  G@ F+ F2/
+                       (87:--[k+i[x+k,t+h] ]/2)
+         X  G@ F+ X G! ;
 
-: INfi'IAUZE (:cta--87:)010tth--)
+: DONE? TG@ TMAXG@ F>) ; (:--f)
 
-ler HG! TMAXG! TG! XGl;
+0 VAR exact            \ cfa
+: DISPLAY   exact EXECUTE
+    XG@  T  G@ CR F. F. F. ;
+\ emit "t x exact”
 
- 
+: )RUNGE               (:cfa-- 87: x0 t0 tf h -- )
+        BEGIN DISPLAY
+                DONE? NOT
 
- 
+Fig. 6—7 Explicit 2nd-order Runge-Kutta solver
 
-\Theeeworda Iricremerxxait.
-:lnc.T T G@ HG@ F+ T'GI;
+As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
 
-:Inc.X X G@
-
-T i1 EXECUTE (a7:--f[x,t])
-
-H G@ F' (87:--k=hi[x,t])
-
-FDUP K G! \savek
-
-XG@ F+ (87:-- x+k)
-
-T' G@ T G!
-
-T 11 EXECUTE (87:--i[x+k,t+h])
-
-H G@ F'
-
-KG@ F+ F2/
-(87:--[k+i[x+k,t+h] 1/2)
-
-X G@ F+ X G!
-
-:DONE? TG@ TMAXG@ F); (:--f)
-
- 
-
-o VAR exact \cia
-
-: DISPLAY exact EXECUTE
-XG@ T G@ CR F. F. F.
-
-\emit "t x exact”
-
-:)RUNGE (:cfa-- 872x010Uhn)
-BEGIN DISPLAY
-DONE? NOT
-
- 
-
-fig. 6—7 Explicit 2nd-order Runge-Kutta solver
-
-As an example of second-order Runge-Kutta in action, let us 50le
-numerically the equation ,
-
-5c=te
-
-(21) l
+\dot{x} = t^2 e^-x
 
 with the initial condition x(t = 0) = 0 , whose exact solution is
 
-x(t) =log,(1 +%13).
+x(t) =log_e(1 +\frac{1}{3}t^3).
 
-(22) 1
+t x h. t x 1.
+Big List
 
-t x h. t x 1..
-.0000 .0000 .0000 2.51:» 1 .0254 1 .0250
-.10000 01150 .oooaa am am 2.02:!)
-.20000 .oosoo ones 27:» 2.1101 211.
-30000 0“” come am 22113 22115
-.40000 .02177 02111 am 23023 2.325
-.50000 .04104 .04002 3.09:; 23912 2.3015
-.00000 .07040 cm 3.1m 2.4701 2.4704
-.70000 .10034 .1002!) am 2501‘!) 25033
-.30000 .15075 .15757 asses 2.0459 2.0462
-90000 .21077 .21752 3.4M 2.7270 2.7273
-1 .011!) 20% .20760 3.5% 2&1 2.305
-1 .111!) .30046 .30710 am acme 20KB
-1 2000 .45012 454$ 37% 2%92 2.9593
-1 .3000 .ssoaa .54046 am 3.0333 30%
-1.41110 .0331 6464 3.9999 3.1057 3.1M
-1.5000 .75473 .75377 4.0% 3.1700 3.17m
-1.01110 .w175 .“1 4.199 324m 32403
-1.71130 97(51 seam 42999 3.313 3.3142
-1.9000 1.0810 1.0797 4.3% 3.3m4 3.3330
-13000 1.1312 1.197 4.4999 3.4450 3.4460
+Fig. 6-8 Second order Runge-Kutta — results
 
-2.0000 1 2% 1 .2992 4.5999 3.5% 3.5099
-2.1M 1.40110 1.4070 4.6% 3.5722 35725
-22000 1.5151 1.5149 4.79% 3.63:5 3.63:3
-2.299 1.6% 1.626 4.0% 3.6%9 3.0942
-2.3999 1.7242 1.7241 4.- 3.7531 37534
-2.49% 1.0250 1.0250 5.0. 3.0111 30114
-
- 
-
-fig. “Second-order Runge-Kutta — results
 Thus define
-:FNB (:[T]-- 87: x--f[x,t])
-FNEGATE FEXP G@ F“2 F*
 
-: EXACT r G@ FDUP FDUP F' F3 (87:--t"3)
-3S->F F/ F=1 F+ flN ;
+: FNB (:[T]-- 87: x--f[x,t])
+    FNEGATE FEXP G@ F**2 F*
+: EXACT T G@ FDUP FDUP F* F* (87:--t^3)
+    3 S->F F/ F=1 F+ FLN ;
 
 and say
 
 USE( EXACT IS exact ok
-USE( FNB 16 o. 96 o. as 5. 16 0.1 )RUNGE
+USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
 
 The resulting output is shown in fig. 6-8 above.
 
-emumrm-Mmm.
+2 An implicit Runge-Kutta formula
+A variation on straight Runge-Kutta is a so-called implicit algorithml3.For example, in the second-order formulae given above, suppose x + k were replaced by x’:
 
-136 Ctnptere—ngramnthxanfiaa SclentlflcFORTH
+k = hf(x,t)
 
-“2 An Implicit Runoe-Kutta formula
-A variationl3 on straight Runge-Kutta is a so-called Implicit
-algorithml3 .For example, in the second-order formulae given
-above, supposex + k were replaced byx’:
+x’ = x + \frac{1}{2}(k + hf(x',t+h)) + O(h^3)
 
-’6 = Min) (23)
-
-x’ = x + a); + hflx’, (+h)) + 00.3)
-
-and the resulting (transcendental) equation solved forx’ by —say- -
-regulafalsi. Since we have already written a regula falsr' program, .
-we can apply" it here to get the algorithm shown diagrammatically
-in fig. 6- 9 below. We program 1 as shown in fig. 6-10 on page i
-137 below.
-
-w...
-
- 
-
- 
+and the resulting (transcendental) equation solved for x’ by —say— regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it14 as shown in Fig. 6-10 on page 137 below.
 
 )RUNGE
-INITIALIZE: get h, if, to , x0
+  INITIALIZE: get h, tf, t0, x0
 
-BEGIN DISPLAY
+  BEGIN DISPLAY
+   DONE? NOT
+  WHILE
+   k=hf(x,t)
+    SOLVE: x' = x + k/2 +hf(x’,t+h)/2
+  REPEAT
 
-DONE? NOT
-WHILE
+Fig. 6-9 2nd-order implicitRunge—Kutta for dx/dt = f(x,t)
 
-k=hf(x,t)
+13. See, e.g., A. Ralston, A First Course in Numerical Analysis (McGraw-Hill Book Company, New York, 1965) Ch. 5. Implicit methods increase the stability of numerical solution, compared with explicit methods. The formula below is exact for second-order polynomials. The error is of the same order as the explicit formula, but the coeffiient may be smaller.
 
-SOLVE: x' = x + k/2 +hf(x’,t+h)/2
-REPEAT
-
- 
-
- 
-
- 
-
-i’
-fig. 6-9 2nd-order impiicit Runge—Kutta for (tr/d! = f(x,t) i
-l
-l
-i
-i
-l
-l
-,
-
- 
-
-13. See, c.g. . A. Ralston,A first Course in Numerical Analysis (McGraw-Hill Book Company, New
-York, 1965) Ch. 5. Implicit methods increase the stability of numerical solution, compared with
-explicit methods. The formula below is exact for second-order polynomials. The error is of the
-same order as the explicit formula, but the eoeffiient may be smaller.
-
-14. m “ ?( " means “conditionally execute to next right parenthesis”.
-
-WM?" Ware—PW!” 137
+14. Note: "?(" means "conditionally execute to next right parenthesis".
 
 Now we consider the same example as previously:
 
-:FNB (:[Ti-- 07:x--f[x,t])
-FNEGATE FEXP G@ F"2 F' ;
-
-: EXACT T G@ FDUP FDUP F' F' (07: --t"3)
-F-3 F/ F=1 F+ flN ;
+: FNB (:[T]-- 87:x--f[x,t])
+    FNEGATE FEXP G@ F"2 F' ;
+: EXACT T G@ FDUP FDUP F* F* (87: -- t^3)
+    F=3 F/ F=1 F+ FLN ;
 
 and say
 
 USE( EXACT IS exact ok
-USE( FNB as o. 91. o. as 5. 91. 0.1 )RUNGE ok
+USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
 
- 
+FIND )FALSI 0= ?( FLOAD FALSI.FTH)
+7REAL*4 SCALARS T T' H X X' TMAX K
+0 VAR f1    \ to hold cfa of f(xt)
+: INITIALIZE IS f1
+        H G! TMAX G! T G! X G! ;
 
-fiN) )FALSI 0:- ?(fiDADFALSIFTH) XG@ F+
-7REAL'4 SCAIARS TT' H XX'TMAXK 963. FOONSTANT F—a
-OVARn \tohoidciaotiou) :INTERVAL XG@ FDUP
-:IMTIAIJZE ISfl KG@FsaF' F+;
-HGI TMAXGI T61 X61;
-:X' USE( X" lNTERVAL 961.56
-\‘iheaewords lneremetlxait )FALSI ;
-:lnc.T TG@ HG@ F+ T'Gl; :lnc.X kX’ XGIT'G@TGI;
-:kXG@ :DONE? TG@ TMAXG@ F>;
-T 11 EXECUTE(87:--i[)tt]) (:--o
-H G@ F‘ KG! ; (57:--k=iir{x,q) OVAR exact \cia
-:DISPLAY exactEXECUTE
-:X" (07:x'--g[x’]) XG@ TG@ CR F. F. F. ;
-1" i1 EXECUTE (07:--i[x'.t+h]) \eml'tx exact'
-HG@ F“ KG@ F+ F2] :)RUNGE (:da--87:XontIh--)
-(07:--[k+fix+k,t+h] 1/2) BEGIN DISPLAY
+\ These words Increment x & t.
+: inc.T T G@ H G@ F+ T' G! ;
+: k     X G@
+    T f1 EXECUTE   ( 87:--f[x,t])
+    H G@ F* K G! ; ( 87:--k=hf(x,t)
 
- 
+: X" ( 87:x'--g[x’])
+    T f1 EXECUTE   ( 87:--f[x',t+h])
+    H G@ F* K G! F+ F2/
+     ( 87:--[k+f[x+k,t+h] ]/2)
+    X G@ F+ ;
 
- 
+% 3. FCONSTANT F=3
+:INTERVAL X G@ FDUP
+       K G@ F=3 F* F+ ;
 
- 
+: X' USE( X" INTERVAL % 1.E-6
+       )FALSI ;
+: inc.X k X’ X G! T' G@ T G! ;
+: DONE? T G@ TMAX G@ F> ;
+      (:--f)
+0 VAR exact         \ cfa
+: DISPLAY exact EXECUTE
+    X G@ T G@ CR F. F. F. ;
+\ emit "t x exact"
+: )RUNGE (:cfa--87:x0 t0 tf h -- )
+    BEGIN DISPLAY
 
- 
+Fig. 6-10 Implicit 2nd-order Runge-Kutta program
 
-fig. 6-10 lrnpllclt 2nd-order Runge-Kutta program
+The resulting output is shown in Fig. 6-11 on page 138.
 
-The resulting output is shown in fig. 6-11 on page 138.
+Clearly the implicit form is more accurate; whether the putative gain in stability justifies solving a transcendental equation is unclear, however.
 
-Clearly the implicit form is more accurate; whether the putative gain
-in stability justifies solving a transcendental equation is unclear,
-however.
+t X X_ex t X X_ex
+Big List
 
-138
+Fig. 6-11 Second order implicitRunge—Kutta — results
 
- 
+Let us now compare the two algorithms for functions f(x,t) that lead to singular solutions. This time we consider the equation
 
-ChapterB-ProgrammlngExampiea Scientific-FORM:
-t X 11.,l t x X.
-00000 .00000 .00000 2.5% 1.9253 1.9255
-.10000 .(XXJ50 0003:! 2mm 2.0228 2.0230
-.20000 .00299 .m266 2.7909 2.1181 2.1183
-.30000 .(XJ945 DOM am 2.2113 2.2115
-.40000 .02173 .02111 am 2.3324 2.3.125
-.50000 .04155 .04082 3.0% 2.3914 2.315
-.60000 .07032 1353 3.1% 2.4783 2.4784
-.TWO Am .10825 3.2% 2.5632 2.5633
-.BCXJOO .15834 .15757 3.39% 2.6461 2.6462
-.90000 .21822 .21752 3.4% 2.7272 2.7273
-1.0000 .28825 .28768 3.59% 23164 2.“
-1.1000 .36762 .36718 3&9 2.8838 2."
-1.2000 .45518 .45489 3.7% 2.9595 2.596
-1.3000 .54962 .54946 3.0999 3.0336 30005 i
-1.4000 64%8 .64954 3.99% 3.1060 3.1m ‘
-1.5000 .75370 .75377 4.“ 3.1769 3.1769
-1.0000 .%O77 06191 4.19% 3.2463 3.2463
-1.7000 .m .WBS 4.2% 3.3142 3.3142
-1.&)00 1.0795 1.0797 4.3% 3.3838 3.3000
-1.9000 1.1%5 1.1897 4.49% 3.4460 3.4460
-2.0000 1.2%0 1.2992 4.5999 3.5099 3.5099
-2.1000 1.4075 1.4070 4.3:.- 3.5725 3.5725
-2.2000 1.5147 1.5149 4.7% 35340 3.6339
-2.29% 1.6202 1.6205 4.0999 3&42 3&42
-2.3999 1.7239 1.7241 4.9Q9 3.7534 3.7534
-2.4% 1.8256 1.8258 5.0% 3.8114 3.8114
-
- 
-
-fig. 6-11 Second order Wunge—Kutta — results
-
-Let us now compare the two algorithms for functions f(x,t) th:
-lead to singular solutions. This time we consider the equation
-
-1:1. (20'
+\dot{x} = t^2e^x
 
 whose exact solution is
 
-x(t) = -log,(1—%t3). (25)
+x(t) = -log_e(1-\frac{1}{3}t^3).
 
-Manifestly, 25 blows up at 1= 3"“ =1.442... We expect 111
-behavior to become apparent in the numerical solution. So we s
+Manifestly, 25 blows up at t = 3^\frac{1}{3}=1.442... We expect the behavior to become apparent in the numerical solution. So we say
 
 \begin{lstlisting}
-:FNB FEXP G@ F"2 F';
-([t] -- 07: x --i[x,t])
+: FNB FEXP G@ F**2 F*;
+    ([t] -- 07: x --i[x,t])
 
-:EXACT F-1 TG@ (07:--t"3)
-FDUP FDUP F’ F' F-3 fl F+ flN -
+: EXACT F=1 T G@ (87:--t^3)
+    FDUP FDUP F* F* F=3 F/ F+ FLN ;
 \end{lstlisting}
 
 and say again
@@ -1045,205 +791,9 @@ The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t
 
 The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method’s power, we must increase the precision beyond one part in 10^{6}. This requires changing all scalars to 64—bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
 
-a-o
+t X X_EX t X X_EX
+Big list
 
-1.01%
-1.02%
-1.03%
-1.04%
-1.05%
-1.0%
-1.07%
-
-X
-.13287
-138%
-.14512
-.15156
-.15&1
-.16509
-.17220
-17%5
-.18714
-.194%
-
-.21 147
-.22012
-
-238%
-247%
-257%
-.26788
-.27841
-28928
-
-.31215
-.32417
-
-.48757
-505%
-.5245
-.54458
-
-Fig 6—12 \textit{Straight Runge-Kutta for singular case}
-
-132%
-.13888
-.14511
-.15154
-.15Q0
-.16508
-.17219
-.17%4
-.18713
-.19497
-
-21145
-22010
-
-23828
-.24782
-25767
-267%
-.27 K9
-
-.30051
-.31213
-.32415
-.33657
-.34943
-.36272
-.37648
-.3%72
-.40546
-.42073
-.4354
-.4523!
-Am
-.48755
-50584
-524%
-.54456
-
- 
-
-1.0m
-1.0m
-1.10m
-1.11%
-1.129
-1.139
-1.14%
-1.15%
-1.1m
-1.17%
-1.109
-1.1%
-1.20%
-1.21%
-1.22%
-1.23%
-124%
-1.25%
-1.2%
-1.27%
-121m
-1.29%
-1.3%
-1.31%
-1.32%
-1.33%
-1.34%
-1.35%
-1.3M
-1.37%
-1.3a
-1.3%
-1.4M
-1.41%
-1.42%
-1.4m
-
-OJUIMVNobIetfl-Almw.
-
-x ”at
-W 50500
-50040 same
-mean .0057
-..171 001$
-new .$578
-.0003: .6331
-.70718 .70715
-.73461 .73458
-.m1 .m
-.79007 .79335
-.&491 .&4%
-05000 .5531
-.%287 .W
-92959 ms
-.W 95004
-
-1.00% 1 mm
-1 .0527 11527
-1 09% 1 as.
-1 .1481 1 .14&
-1 .2307 1 21118
-1 2571 1 .2572
-1 .31 7'9 1.31 m
-1 .3815 1.3837
-1 .4550 1 .4552
-1.5332 1 .5334
-1.61 % 1 .61 %
-1.7151 1 .7154
-1 .&26 1 .8231
-1 .9449 1 .9457
-2.0%5 2.1376
-2.5% 2.557
-2.4581 2.461 1
-2.71 87 2.7242
-3.07m 3%
-3.76 3.6782
-4.8831 5.1557
-
-Mao-WW
-
-1 x 11.: 1 x for
-
-.71“ .132U .132! 1.0m .54464 .54466
-.739 .13“ .13” 1.0a .515 .561!
-.7“ .14613 .14511 1.01m m .m
-.74“ .15156 .15154 1.101» .m 30057
-.75“ .1592 .15820 1.11% .631!) .6319
-.7“ .1510 .1506 1.129 55590 .66578
-.77“ .17221 .17210 1.1399 .66104 .6831
-.7“ .1756 .1754 1.14m .70729 .70715
-.7“ .16715 .18713 1.15m .73473 .73458
-.aanoo .19500 .19407 1.1m .7“ 7&129
-mm 20310 2m 1.1m 78353 19995
-.62“ 21146 .21145 1.1399 82.506 .8243
-33999 .22013 .22010 1.1m 35822 .858”
-114999 22!)? 22904 1.2099 .asaoo 39285
-.85” 23631 23828 1.21% .m 92%6
-seas .2475 24782 1229 .96w1 36804
-37999 25771 25767 1m 1.00% 1.0090
-.awaa .267. 267% 1.2499 1.0531 1.0527
-.me 27842 27839 1.25% 1.0993 1.0939
-.5“ 2K!) 2&26 1.2699 1.14% 1.1482
-91% 30055 .30051 1.2799 1.2013 1.2008
-.... .31217 .31213 1.2199 12578 12572
-.9399 .32419 .32415 1.2% 1.31% 1.316)
-949% .33m2 .3365? 1.3099 1.3645 1.3637
-35999 .3494? .34943 1.31% 1.4561 1.4552
-.9609 .36277 .36272 1.32% 1.5345 1.534
-.97999 .37653 .37646 1.33% 1.6209 1.61%
-sagas .39077 33172 1.34% 1.7171 1.7154
-.9999 .40551 .40546 1.3599 1.8252 1.8231
-1.00m .42078 42073 1.3m 1.94% 1.9457
-1.0199 Am .43654 1.3799 2.0914 20676
-1.- 45300 .4583 1.3899 2.2612 2.2557
-1.03% .4” Am 1m 2.4% 24611
-1.049 .46762 .46755 1.4099 2.7395 2.7242
-1.050 51592 50564 1.4199 3.1222 3.0664
-1.0m .52491 52463 1.42% 3.8149 3.6782
+Fig. 6-12 \textit{Straight Runge-Kutta for singular case}
 
 Fig. 6-13 \textit{Implicit Range-Kym for singular case}
