@@ -64,7 +64,7 @@ f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 \textit{do} have a definite limit, so the series converges.
 
 \subsection{Numerical examples of convergent series}
-How do we tell whether a series has converged? As a practice matter, we keep adding terms to the partial sum until it no longer changes, within the desired precision. Sometimes this can involve a great many terms, even when the series converges. There exists an extensive mathematical literature on testing for the convergence of an infinite series. Mathematicians have also developed many tricks for accelerating the convergence of slow converging series\footnote{HMF, Ch. 3 6 ff.}. Consulting the literature in difficult cases I strongly recommended - it can save time galore!
+\TallC{H}{ow} do we tell whether a series has converged? As a practice matter, we keep adding terms to the partial sum until it no longer changes, within the desired precision. Sometimes this can involve a great many terms, even when the series converges. There exists an extensive mathematical literature on testing for the convergence of an infinite series. Mathematicians have also developed many tricks for accelerating the convergence of slow converging series\footnote{HMF, Ch. 3 6 ff.}. Consulting the literature in difficult cases I strongly recommended - it can save time galore!
 
 As an heuristic exercise, let us write some simple programs to evaluate partial sums and see how convergence works.
 
@@ -706,13 +706,16 @@ Fig. 6-9 2nd-order implicitRunge—Kutta for dx/dt = f(x,t)
 
 Now we consider the same example as previously:
 
+\begin{lstlisting}
 : FNB (:[T]-- 87:x--f[x,t])
     FNEGATE FEXP G@ F"2 F' ;
 : EXACT T G@ FDUP FDUP F* F* (87: -- t^3)
     F=3 F/ F=1 F+ FLN ;
+\end{lstlisting}
 
 and say
 
+\begin{lstlisting}
 USE( EXACT IS exact ok
 USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
 
@@ -749,6 +752,7 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 \ emit "t x exact"
 : )RUNGE (:cfa--87:x0 t0 tf h -- )
     BEGIN DISPLAY
+\end{lstlisting}
 
 Fig. 6-10 Implicit 2nd-order Runge-Kutta program
 

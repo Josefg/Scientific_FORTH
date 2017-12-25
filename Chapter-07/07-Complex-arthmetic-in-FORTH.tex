@@ -1,667 +1,363 @@
-WM”! M7-WMhFOﬁTl-t
+\chapter{Complex arithmetic in FORTH}
+\startcontents[chapters]
+\printcontents[chapters]{}{1}{}
 
-Complex arithmetic in FORTH
+\TallC{O}{ne} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this featurel. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal via subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)2 . The same problem would afflict C and the new structured BASICs.
 
-Comm.
+Recently, a mechanism for adding complex arithmetic to Pascal by defining a stack and using postfix notation has been proposed3. Does this sound at all familiar?
 
-§1 The complex number system 144
-§§1 Cartesian representation of complex numbers 144
-552 Polar representation of complex numbers 147
-
-52 Load. store, manipulate tstack 148
-
-53 Arithmetic operations 149
-
-54 Roots of complex numbers 151
-§§1 Complex square roots 152
-§§2 The complex square root program 154
-
-§5 Complex exponentials and trigonometric functions 154
-
-56 Logarithms 155
-
-143
-
-ne of the most crucial features of FORTRAN for scientiﬁc
-computation is the ease with which it embeds complex arith-
-
-metic into formulae. No other compiled language has this fea-
-turel. From time to time someone gets a bright idea, and adds
-complex arithmetic to Pascal via subroutines (since Pascal func-
-tions can return only a sir¥le number, and complex functions
-must return two numbers) . The same problem would afﬂict C
-and the new structured BASICS.
-
-Recently, a mechanism for adding complex arithmetic to Pacal
-by deﬁning a stack and using postfix notation has been proposed3.
-Does this sound at all familiar?
-
-This chapter deals with complex arithmetic and its implementa-
-tion in FORI'H. We do not consider complex numbers whose real
+This chapter deals with complex arithmetic and its implementation in FORTH. We do not consider complex numbers whose real and imaginary parts are integers, since these are virtually useless in scientific computing. Therefore we perform complex arithmetic solely in single- or double-precision floating point format. We begin with a brief review of the complex number system.
 
  
 
-1- APL yacefully admits complex numbers and functions, but is an interpreted language.
+1. APL gracefully admits complex numbers and functions, but is an interpreted language.
 
-1 Dr). Clark, “Simple Calallations with Complex Numbers",Dr. Dobb': Journal, October 1984. p. 30.
-3.
+2. D.D. Clark, "Simple Calallations with Complex Numbers ,Dr. Dobb's: Journal, October 1984. p. 30.
 
-D. Gedeon, “Complex Math in Pascal”. Byte Magazine, July 1987. p.121.
+3. D. Gedeon, "Complex Math in Pascal", Byte Magazine, July 1987, p.121.
 
-eJumVNounaaz—ungmm.
+\section{The complex number system}
+\TallC{T}{he} algebraic equation
 
-Chapter 7 - Complex arlthmetle In FORTH Scientiﬁc FORTH
+x^2 - 1 = 0
 
-and imaginary parts are integers, since these are virtually useless.
-in scientiﬁc computing. Therefore we perform complex arith-
-metic solely in single— or double-precision ﬂoating point format.
-We begin with a brief review of the complex number system.
+has 2 roots, +-1, in the standard number system (real numbers). But the (otherwise quite similar) equation
 
-The complex number system
-he algebraic equation
-x2-1=0 (n
+x^2 + 1 = 0
 
-has 2 roots, :1, in the standard number system (real numbers).
-But the (otherwise quite similar) equation
+has no roots. That is, there is no ordinary number which, where squared, gives a negative result. Eighteenth century mathematicians misliked a state of affairs wherein some polynomial equations of n’th degree had n roots, whereas others had n-2, n-4, etc. This seemed disorderly and unpredictable. How much simpler life would be if every polynomial of n’th Order could always be factored into n primitives of the form (x_n are roots)
 
-f+1=0 (»
+a_0x^0 + a_1x^1 + a_2x^2 + ... + a_nx^n
+\triple= a_n(x-x_1)(x_x_2) ... (x-x_n)
 
-has no roots. That is, there is no ordinary number which, whet
-squared, gives a negative result. Eighteenth century mathemat-
-icians misliked a state of affairs wherein some polynomial equa-
-tions of n’th degree had n roots, whereas others had n-2, n-4, etc-
-This seemed disorderly and unpredictable. How much simple.
-life would be if every polynomial of n’th Order could always b1
-factored into n primitives of the form (xll are roots)
+\subsection{Cartesian representation of complex numbers}
+\TallC{I}{n} order that every polynomial have n roots it was necessary to extend the idea of number to include objects of the form
 
-ao+alx+a2x2+m+a.,x'l
+z = x 1 + y i
 
-(3)
+where i is —by definition— a “number" whose square is —1; 1 a “number” whose square is +1, and x and y are ordinary numbers. Conventionally, x is called the real part of z, and y the imaginary part:
 
-E an(x — x1)(x — x2) (x — x“)
-
-§§1 Cartesian representation of complex numbers
-
-In order that every polynomial have n roots it was necessary tn
-extend the idea of number to include objects of the form
-
-z=xl+yi (4)
-
-where i is —by definition— a “number" whose square is —1; 1 it
-a “number” whose square is + 1, and x and y are ordinary num!
-bers. Conventionally, x is called the real part of z, and y thl
-imaginary part:
-
-I = R£(Z) . y = Im(2)- (5) !
-
-amr-cmwmmomn 145
+x = Re(z) , y = Im(z).
 
 Thus the solutions of the polynomial equation
-21 + 1 - o (6)
+z^2 + 1 = 0
+
 are
-2 - 01 3: n (7)
-(that is,x=0,y= :1).
-Tb reassure readers who ﬁnd uncomfortable the notion of a
 
-“number” i = FT whose square is negative, it is possible to ﬁnd
-a 2X2 matrix representation for 1 (unit matrix) and l :
+z = 01 +/- 1i
 
-10 01
-1=(..).:=(-..)
+(that is, x=0,y= +/-1).
 
-It is easy to verify that —in the sense of matrix multiplication —
-ixi=—1,1xi=ixl=l,andlx1=1. (9)
+To reassure readers who find uncomfortable the notion of a “number” i = \sqrt{-1} whose square is negative, it is possible to find a 2\x2 matrix representation for 1 (unit matrix) and i :
 
-These are just the usual multiplication rules for complex num-
-bers. Note that x l and y i then mean multiplication of a matrix
-by a scalar:
+1 = ( 1 0 0 1 ) , i = ( 0 1 -1 0)
 
-“(33), mil 3)
+It is easy to verify that —in the sense of matrix multiplication—
 
-z=x+iy5 (3y i)
+i x i = -1, 1 x i = i x 1, and 1 x 1 = 1.
 
-The complex numbers obey all the algebraic rules of ordinary
+These are just the usual multiplication rules for complex numbers. Note that x l and y i then mean multiplication of a matrix by a scalar:
 
-arithmetic — commutative and associative laws of multiplica-
-tion and addition. They are complete in the sense that when we
-multiply or add two complex numbers we get a complex number,
-not some other kind of number:
+x 1 \triple= ( x 0 0 x ) , y i \triple= ( 0 y -y 0 )
 
-(a+ib)(x+iy)=(ax—by) +i(ay+hx) (10)
+\TallC{T}{he} complex numbers obey all the algebraic rules of ordinary arithmetic — commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
 
-OMVNoualﬂz-Almnaarvad.
+(a + ib)(x + iy) = (ax - by) + i(ay + bx)
 
-146
+(a + ib)(x + iy) = (ax - by) + i(ay + bx)
 
-4.
+For every complex number, $z = X + iy$ there is a corresponding complex conjugate complex number,
 
-Chapter 7 - Cornﬂex arlthrnetlc In FORTH Selenﬂflc FORTH!
+z^* = x - iy.
 
-(a+ib)(x+iy)=(ax-by) +i(ay+bx) (10)
+Each non-zero complex numberz has a multiplicative inverse 1/z... To see this, multiply numerator and denominator of NZ by the complex conjugate Eq. 11, and note that
 
-For every complex number, 2 =x + r‘y, there is a corresponding.
+zz^* \equiv z^*z = x^2 + y^2
 
-complex conjugate complex number,
-2' = x - iy. (11)
+is a non-zero real number. We can therefore calculate its inverse by ordinary division, and (scalar-) multiply z^* by the result:
 
-Each non-zero complex numberz has a multiplicative inverse 1/z.,
+\frac{1}{z_2} \equiv
 
-To see this, multiply numerator and denominator of NZ by thd .
+To divide one complex number z_1 by another, z_2, invert z_2 and multiply: $z_1/z_2 \equiv z_1 X (1/z_2), i.e.
 
-complex conjugate Eq. 11, and note that
+\frac{z_1}{z_2} \equiv (x_1 + iy_1 ) x (\frac{x_2}{x{^2}{_2} + y{^2}{_2}} - i \frac{y_2}{x{^2}{_2} + y{^2}{_2}}
 
-22' Ez'z=x2+y2
+(Numbers that satisfy the addition, multiplication and closure properties of real or complex numbers are said to form a field.)
 
-is a non-zero real number. We can therefore calculate its inversc‘
+It is easy to prove that evenwhen the coefficients of an n'th degree polynomial are complex, it has n roots that can be represented as complex numbers.
 
-‘_4
+Complex numbers can be used to represent points in the x-y plane with y plotted vertically and x horizontally. ( Sometimes this graphical representation is called an Argand plot or Argand diagram. The x-y plane is then called the Argand plane.)
 
-A
+4. The 2-dimensional graphical representation of complex numbers makes complex arithmetic attractive for computer graphics.
 
- 
-
-by ordinary division, and (scalar-) multiply 2 ° by the result:
-
-1 z‘_ x _y
-— 2,:[22 —1222]. (12)
-
- 
-
-22 2222 x; ‘7’? X2 +.Y2
-
-To divide one complex number 21 by another, 22, invert 22 an:
-multiply: 21/22 E 21 X (1/22), i.e.
-
- 
-
- 
-
-Z
-12(x1+iyl) x 2‘2 2 -t' 2" 2 (13)
-22 x2 +)’2 13: +Y2
-
-(Numbers that satisfy the addition, multiplication and closure
-properties of real or complex numbers are said to form a ﬁeld.)
-
-It is easy to prove that evenwhen the coefficients of an n’th degrc l
-polynomial are complex, it has n roots that can be represented a;
-complex numbers.
-
-Complex numbers can be used to represent points in the x-y plant:
-with y plotted vertically and x horizontally‘. ( Sometimes thi
-graphical representation is called an Argand plot or Argantl
-diagram. The x-y plane is then called the Argand plane.)
-
-J
-
-L
-
-The 2vdimensional graphical representation of complex numbers makes complex arithmetic at-
-tractive for computer graphics.
-
- 
-
-{meant-n
-
- 
-
-mv-Wmmronm 147
-
- 
-
-Im(z) z
-
- 
-
- 
-
-x Re(z)
-
- 
-
- 
-
- 
-
-F .7-1Representl acom numberasapolntlntheArgand
+Fig. 7-1Representl acom numberasapolntlntheArgand
 lg plane, In Gangeslan apnlgx polar coordinates
 
-§§2 Polar representation of complex numbers
+\subsection{Polar representation of complex numbers}
 
-The complex number 2 = x + iy is said (remember the Argand
+The complex number $z = x + iy$ is said (remember the Argand plane) to be represented in Cartesian form (after Rene Descartes, the inventor of analytic geometry, i.e. the idea of graphing equations). However, it is equally valid to use the relationship (Euler’s theorem)
 
-plane) to be represented in Cartesian form (after Rene Des-
-cartes, the inventor of analytic geometry, Le. the idea of graphing
-equations). However, it is equally valid to use the relationship
-(Euler’s theorem)
+e\theta \equiv cos \theta + i sin \theta
 
-e'05c0s0+ isin0 (14)
-to write the polar representation of z,
+to write the polar representation of $z$,
 
-z=nr , r20. (15)
+z = re^{i\theta}, r \gt 0.
 
-Clearly, since 2' 5 M4), we have
+Clearly, since $z^* \equiv re^{i\theta}$, we have
 
-NI—
+r = \sqrt{zz^*} = (x^2 + y^2)^\frac{1}{2}
 
-r = J? = (x2 + yz) (16)
-ands
-9 = tan—1(y/x). (17)
+and5
 
- 
+\theta = tan^-1(y/x). 
 
-See Ch. 3 “"1 for deﬁnitions of the inverse trigonometric functions.
+5. See Ch. 3.4.1 for definitions of the inverse trigonometric functions.
 
-OJuthNobletm-Alnohtareaewed.
+Note that $\theta$, sometimes called Arg(z), is defined only up to multiples of $2\pi$ — that is, adding $2\pi$ to an angle changes neither sine nor cosine because of their periodicity. The relations between $(x,y)$ and $(r,\theta) are illustrated in Fig. 7-1 above:
 
-148
+\section{Load, store, manipulate fstack}
+\TallC{W}{e} now define FORTH words to perform complex arithmetc. All complex operations will be prefixed by the letter X6. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
 
-Chapter 7 — Complex arhhmetlc In FORTH Scientific FORTF
+In 87stack (or fstack) diagrams 2 stands for complex number, x for real part, and y for imaginary part. Where useful, the 87stack diagrams show the operations decomposed into real and imaginary parts. By convention the imaginary part is higher on the fstack than the real part.
 
-Note that 0, sometimes called Arg(z), is deﬁned only up ta
-multiples of 2:! — that is, adding 23 to an angle changes neither
-sine nor cosine because of their periodicity. The relations between
-(try) and (r, 0) are illustrated in Fig. 7- 1 above: '
-
-52 Load, store, manipulate fstack
-
-We now deﬁne FORTH words to perform complex arithmetc.’
-
-All complex operations will be preﬁxed by the letter X6. We
-assume all complex operations are performed on the FPU ice
-speed, hence we shall give 87stack diagrams.
-
-In 87stack (or fstack) diagrams 2 stands for complex number, i
-for real part, and y for imaginary part. Where useful, the 87stacl
-diagrams show the operations decomposed into real and imagii
-nary parts. By convention the imaginary part is higher on the
-fstack than the real part.
-
-By now most FORTH code should be self-explanatory. Mair.
-words have been coded in high-level FORTH because the over
-head of threading is negligible compared with the time spent
-executing.
+By now most FORTH code should be self-explanatory. Many words have been coded in high-level FORTH because the overhead of threading is negligible compared with the time spent executing.
 
 With by-now obvious meanings we have
 
-\ - - single 81 double-precision complex fetch and store.
-: X@ DUP 832@ 4+ 832@: (adr-- 87:--z)
-
-: X! DUP 4+ R32! R32! ; (adr-- 87zz--)
-
-CODE 8+ BX 08 IW ADD. END-CODE
-
-:DX@ DUP R64@ 8+ RS4@; (adr--87:--z)
-
-:DXl DUP 8+ RS4| R64l; (adr-- 87:z--)
-\ - - and complex fetch and store.
-
+\begin{listing}
+\ -- single & double-precision complex fetch and store.
+: X@    DUP R32@ 4+ R32@ ; ( adr-- 87:--z )
+: X!    DUP 4+ R32! R32! ; ( adr-- 87:z-- )
+CODE    8+ BX 08 IW ADD. END-CODE
+: DX@   DUP R64@ 8+ R64@ ; ( adr-- 87:--z )
+: DX!   DUP 8+ R64! R64! ; ( adr-- 87:z-- )
+\ -- and complex fetch and store.
+\end{listing}
  
 
-The letter C is more mnemonic, but FORTH conventionally reserves C for preﬁaing byte (“ch82
-acter”) operations — as in C@, Cl, etc. The complex extension supplied with ITS/FORTH Ilsa!
-thepreﬁwahenit isunambiguous (asinC+,C—.C',C/,etc.),andCPwhenCalonewon‘t
-do, as in CP@, etc.
+The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing byte ("character") operations — as in C@, C!, etc. The complex extension supplied with HS/FORTH uses the prefix C when it is unambiguous (as in C+, C-, C*, C/, etc.),and CP when C alone won't do, as in CP@, etc.
 
-WFOMH MLWMMFOHTH
+\ fstack manipulation
+:REAL   FDROP ;      ( 87:z--x )
+:IMAG   FPLUCK ;     ( 87:z--y )
+:CONJG  FNEGATE ;    ( 87:xy--x,-y )
 
-\Madt
+:XDROP FDROP FDROP ; ( 87:z-- )
+:XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
+:XDUP FOVER FOVER ;  ( 87:z--z z )
 
-:REAL FD OP;
-:IMAG FPLUCK;
-:CONJG FNEGATE ;
+\section{Arithmetic operations}
+\TallC{T}{he} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex X complex and complex/complex.
 
-:XDROP FDROP FDROP ;
-:XSWAP F4R F4R ;
-:XDUP FOVER FOVER
+:CMPLX F=0 ;     ( 87: x--x 0 )
+: X+ FROT F+  F-ROT F+ FSWAP ;
+: X- FROT FR- F-ROT F- FSWAP ;
+: XOVER FSP F3P; ( 87:z1 z2--z1 z2 z1 )
+: X*F            ( 87:x y a -- ax ay )
+    FUNDER F*    ( 87:--a x bx )
+    F-ROT  F* FSWAP ;
+: F*X FROT X*F ; ( 87:x a b--ax bx )
+\ CODE X*F 2FMUL'. 1FMULP. END-CODE
+: X*I FNEGATE FSWAP ;
+: X/F 1/F X*F ;
 
-93 Arlthmatle operations
+The critical operation of complex X complex can be defined in high level FORTH for portability:
 
-149
-(87zz--x)
-(87:z--y)
-(87:xy--x,-y)
-(87zz--)
-(87:2122--z2z1)
-(87zz--zz)
+: X*                ( 87:z1 z2--z1*z2 )
+    XOVER X*I FROT  ( 87:--a b x -b a y )
+    X*F             ( 87:--a b x -by ay )
+    F3X FSWAP       ( 87:--a ay x b -by )
+    F4X FSWAP       ( 87:-- -by ay x a b )
+    F*X             ( 87:-- -by ay xa xb )
+    X+ ;
 
-be standard complex operations should be virtually self-ex-
-planatory. For efﬁciency we deﬁne multiplication and division
-of a complex number by a scalar, as well as complexx complex
+Actually, complex multiplication is sufficiently involved to be worth defining in code. Here is a code definition for the 80x87 family of FPUs. The equivalent for the Motorola 68881/2 family is virtually identical, allowing for minor differences in Intel and Motorola assembler mnemonics, as well as for the fact that the 68881/2 has registers but no stack.
 
-and complex/complex.
+\ operation     87stack contents
+CODE X*         \ x  y a b
+    3 FLD.      \ x  y a b x
+    2 FMUL.     \ x  y a b 1:3
+    4 FXCH.     \ xa y a b x
+    1 FMUL.     \ xa y a b xb
+    1 FXCH.     \ xa y a xb b
+    3 FMUL.     \ xa y a bx yb
+    4 FSUBRP.   \ xa-yb y a bx
+    2 FXCH.     \ xa-yb bx a y
+    1 FMULP.    \ xa-yb bx ay
+    1 FADDP.    \ xa-yb bx+ay
+ENDCODE ( x y a b--xa-yb xb+ya )
 
-:CMPLX F=O ; (e7:
+\TallC{O}{nce} we have multiplication, division is easy:
 
-x--x0)
-
-: X+ FROT F+ F-ROT F+ FSWAP;
-
-: x- FROT FR- F-FlOT F-
-
-: XOVER FSP F3P; (87:
-: XtF (87:
-FUNDER F* ( 87:
-
-F-ROT F‘ FSWAP -
-
-: Fax FROT XtF ; (87:
-
-FSWAP;
-2122-- Z122 21)
-xya --ax ay)
---a x bx)
-
-x ab--ax bx)
-
-\CODE XIF 2FMUL'. 1FMUU’. END-CODE
-
-: th FNEGATE FSWAP ;
-: X/F 1/F XtF ;
-
-The critical operation of complexx complex can be deﬁned in
-
-high level FORTH for portability:
-
-: X'
-XOVER X‘I FROT
-
-F3X FSWAP
-F4X FSWAP
-F'X
-
-X+ ;
-
-(87: 2122 --z1"22)
-
-(87:--abx -bay)
-
-X'F (87:--abx—by ay)
-(87:--a ayx b -by)
-(87:-- —by ayx a b)
-(87:-- -by ay xaxb)
-
-Actually, complex multiplication is sufﬁciently involved to be
-worth deﬁning in code. Here is a code deﬁnition for the 801187
-family of FPUs. The equivalent for the Motorola 68881/2 family
-is virtually identical, allowing for minor differences in Intel and
-
-omvuouhtm-Mmm.
-
-150 Chaptar7-CanplaxarltlnatlehFORﬂ-l wrath
-
- 
-
-Motorola assembler mnemonics, as well as for the fact that 1%
-68881f2 has registers but no stack.
-\oneration 31mm
-CODE X' \x y a b
-3 FLD. \x y a b x
-2 FMUL. \x y a b 1:3
-4 FXCH. \xa y a b x
-1FMUL. \xayabxb g
-1 FXCH. \xa y a xb b ;_
-3FMUL. \xayabxyb ;
-4 FSUBRP. \ xa-yb y a bx
-2 FXCH. \xa-yb bx a y
-1 FMULP. \xa-yb bx ay -
-1 FADDP. \xa-yb bx+ay
-ENDCODE (xyab--xa—ybxb+ya)t
-
-Once we have multiplication, division is easy:
-
-: XMODSQ (87: xy-- x“2+y“2)
-F“2 FSWAP F“2 F+ ;
+: XMODSQ            ( 87:x y--x**2+y**2 )
+    F**2 FSWAP F**2 F+ ;
 : 1/X CONJG XDUP XMODSQ
-FDUP FO= ABORT' Can'tdividebyO‘ X/F ;
-:X/ 1/X X’ ; (87:2122--21/22)
+    FDUP F0= ABORT" Can't divide by 0" X/F ;
+:X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
 
-With the preceding discussion and referring to Fig. 7-1 at
-page 147 the FORTH words to accomplish Cartesian-polar" trans
-formation and vice versa should also be fairly transparent :
+With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH words to accomplish Cartesian-polar transformation and vice versa should also be fairly transparent:
 
-: ARG FSWAP FPATAN ; (87: x y - - atan[y/X])
-SYNONYM FATANZ ARG
-\ FORTRAN defines FATANZ so we do also.
+: ARG FSWAP FPATAN ; ( 87:x y--atan[y/x] )
+SYNONYM FATAN2 ARG
+\ FORTRAN defines FATAN2 so we do also.
 
-:XABS (B7:z--|z|)
-XMODSQ FSQRT ;
+:XABS                ( 87:z--|z| )
+    XMODSQ FSQRT ;
 
-: >POLAR (87:xy--r0[radians])
-XDUP XABS F-ROT ARG ;
+: >POLAR             ( 87:x y--r \theta[radians] )
+    XDUP XABS F-ROT ARG ;
+:POLAR>              ( 87:r \theta[radians]--x y )
+    FSINCOS FROT X*F ;
 
-:POLAR> (87:r0[radians]--xy) 5
+7. SYNONYM is an HS/FORTH innovation to save some code by avoiding : FATAN2 ARG ;
 
-FSINCOS FROT X'F ;
+\section{Roots of complex numbers}
+\TallC{T}{he} n'th root of a complex number $z$ is that complex number, $z^{1/n}$, whose n'th power is the original number. That is, as for realnumbers,
 
-7. SYNONYIlisanHS/FORTHinnovationtonveaomecodebyavoidinngATm no:
+(z^{1/n})^n \equiv z
 
-mam anathema-mama 181
+It might seem almost trivial to define the n’th root of a complex number in polar representation:
 
-'4 Roots of complex manners
-n'th root of a complex number 2 is that complex number,
-2“, whose n'th power is the original number. That is, as for
+z = r e^{i\theta}
 
-realnumbers,
-(1%).I Hz (18)
-
-it might seem almost trivial to deﬁne the n’th root of a complex
-number in polar representation:
-
-z-re” (19)
 hence
-2 VII 3 r Vile i9/n (20)
 
-Certainly we know what we mean by the n‘th root of a positive
-real number, and from Euler’s theorem we know how to evaluate
+z^{1/n} = r^{1/n} e^{i\theta/n}
 
-e"""'=-=cos9+t'sin2 (21)
-I: II
+Certainly we know what we mean by the n‘th root of a positive real number, and from Euler’s theorem we know how to evaluate
 
-However, we can also think of the n'th root 3 a solution of the
-polynomial equation in the variable to
+e^{i\theta/n} \equiv \cos\frac{\theta}{n} + i \sin\frac{\theta}{n}
 
-w" — z = 0. (22)
-The lbndamental theorem ofalgebra proves that a polynomial of
-n'th degree has exactly 11 roots; this implies there are n distinct
+However, we can also think of the n'th root as a solution of the polynomial equation in the variable $w$
 
-values of w that satisfy Eq. 22; ie., there are n distinct roots of 2.
-How can we generate them? Let us call the root shown above
+w^n — z = 0.
 
-(in Eq- 20)
-we I: r 1/n e iO/n
-Then we can multiply wo by a factor
+The fundamental theorem of algebra proves that a polynomial of n'th degree has exactly n roots; this implies there are n distinct values of $w$ that satisfy Eq. 22; i.e., there are n distinct roots of $z$. How can we generate them? Let us call the root shown above (in Eq- 20)
 
-x.=e”"*’",k=o, l,...,n-1 (23)
+w_0 = r^{1/n} e^{i\theta/n}
 
-to obtain it different numbers,
+Then we can multiply $w_0$ by a factor
 
-OJtIU'IVNoﬂatm-Alrldaaraaarvad
+Z_k = e^{2\pi ik/n}, k = 0, 1, ..., n-1
 
-152
+to obtain n different numbers,
 
-Chapter7-ComplexarlthmetlclnFORTl-l SclentlﬂcFOFlTh]
-Wk=Woxk, k=0,...,n-1 '
-the n’th power of each of which is z. Clearly, if k increases pas
+w_k = w_0Z_k, k=0, ..., n-1
 
-n-1, the numbers wk simply repeat . Since it is neither possible:
-nor desirable for a complex function to return all n roots of 2, we!
-choose the principal one, wo. All complex root- ﬁnding functions:
-should obey this convention. In general the simplest algorithm tat
-calculate the n’th root of a positive real number is
+the n’th power of each of which is $z$. Clearly, if k increases past n-1, the numbers $w_k$ simply repeat8. Since it is neither possible, nor desirable for a complex function to return all n roots of $z$, we choose the principal one, $w_0$. All complex root-finding functions should obey this convention. In general the simplest algorithm to calculate the n’th root of a positive real number is
 
-r U" = eln(r)/n ' (24)
+r^{1/n} = e^{ln(r)/n}.
 
-Then to complete the job of evaluating wo we would need to
-calculate a sine and a cosine. Thus, 3 divisions, 2 multiplication;-
-and 4 transcendental function calls are generally needed to eval-
-uate the n'th root of a complex number.
+Then to complete the job of evaluating wo we would need to calculate a sine and a cosine. Thus, 3 divisions, 2 multiplications and 4 transcendental function calls are generally needed to evaluate the n'th root of a complex number.
 
-However, for square roots (n = 2) there is a much more efficient
-method based on ordinary square roots, which we shall now
-describe.
+However, for square roots (n = 2) there is a much more efficient method based on ordinary square roots, which we shall now describe.
 
-§§1 Complex square roots
+\subsection{Complex square roots}
 
-Our phase convention means the phase 0 of the square root of 2:
-must lie between 0 and 7:, since that of z lies between 0 and 27!.
+Our phase convention means the phase $\theta$ of the square root of $z$ must lie between 0 and $\pi$, since that of $z$ lies between 0 and $2\pi$.
 
-The algorithm can be understood using the half-angle formulae:
-for sines and cosines (we used these to develop the trigonometric
-functions in Ch. 4 §6):
+The algorithm can be understood using the half-angle formulae for sines and cosines (we used these to develop the trigonometric functions in Ch. 4.6):
 
-1
+\cos(\frac{\theta}{2}) = \frac{1+\cos\theta}{2}^\frac{1}{2}
 
-cos (g) = (“Li-5A6) 2 (258)
-1
+\sin(\frac{\theta}{2}) = \frac{1-\cos\theta}{2}^\frac{1}{2}
 
-sin (g) = (—1‘;°s 9): (25b)
+8. Recall $e^0 \equiv e^{2\pi ni} = 1
 
- 
+Now we use the fact that if $z = x + iy$, and if $w = a + ib$ is its square root, then their polar representations are
 
-8.
-
-Recalleoiez'” - 1.
-
-amt-Gammmronm 153
-
-Nowweusethefactthatifz -x + r'y,andifw - a + ibisits
-square root, then their polar representations are
-
-x r cos 9
-(y) - (nine) (26")
-a _ V— cos(0/2)
-
-(b) («E sin(9/2) ) (26")
+x r \cos \theta
+y r \sin \theta
+a \sqrt{r} cos(\theta/2)
+b \sqrt{r} sin(\theta/2)
 
 Therefore the principal root is
-1
 
-a mm) [g0 +x):|2, (272»
+a = sgn(y)[\frac{1}{2}(r + x)]^\frac{1}{2}
 
-= [awn]? (27b)
+b = [\frac{1}{2}(r - x)]^\frac{1}{2}
 
-That is, as we can easily see from the Argand diagram, Fig. 7-2
-below, if Im(z) is negative, then Re(w) will be negative, and vice
-versa.
+That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$) is negative, then Re($w$) will be negative, and vice versa.
 
- 
+Figure 7-2
 
- 
+Fig. 7-2 Complex number with negative imaginary part, and its principal square root
 
-Im (z)
+\subsection{The complex square root program}
+\TallC{W}{e} now translate these equations into high-level FORTH with comments:
 
-Re(z)
+: XSORT                 ( 87:z --z**1/2 )
+    FSWAP XDUP XABS     ( 87:--y x r )
+    FDUP F0=            \ retun 0 if |z| = 0
+    IF FDROP XDROP X=0 EXIT THEN
+    XDUP F+             ( 87:--y x r r+x )
+    F2X  F-             ( 87:--y r+x r-x )
+    F2/  FSORT          ( 87:--y r+x b )
+    F2X                 ( 87:--b r+x )
+    F0<                 \ get sign of Im(z)
+    F2/  FSQRT          (--f 87:--b |a| )
+    IF FNEGATE THEN \ fix sign of Re(z**1/2)
+    FSWAP ;
 
- 
+We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small through roundoff, thereby generating an error in the square root routine.
 
- 
+\section{Complex exponentials and trigonometric functions}
+\TallC{C}{omplex} exponentials and trigonometric functions are nearly self-explanatory. They are based on Euler’s theorem,
 
- 
+e^{i\theta} = \cos\theta + i \sin\theta
 
- 
-
-.7-ZCompIaxnunbeIanthlaalnalyMandlts
-Fig WWW“
-
-onlanltNoblalﬂz—Almreaarvad.
-
-154 ChapterT—ComplexarlthmetlclnFORTH summon}
-
-§§2 The complex square root program =
-We now translate these equations into high- -level FORTH witlr:
-
-comments:
-
-: XSORT ( 87: z - - z“1/2)
-FSWAP XDUP XABS (87: -- yxr)
-FDUP F0= \retumO if |z| = q
-lF FDROP XDROP X=O EXIT THEN
-XDUP F+ (87:--yxrr+xr
-F2X F- (87:-- yr+x r-x)
-F2/ FSORT (87:-- yr+x b)
-F2X (87:--br+x)
-
-F0 < \ get sign of |m(z)
-F2] FSQRT (--f87:--b |a|L
-IF FNEGATE THEN \ﬁx signofRe(z“1/2)
-FSWAP ;
-
-We test to make sure I: | > 0, since we do not want the possibility
-that |z| -x or |z| + x works out to be negative (albeit small!
-through roundoff, thereby generating an error in the square root
-routine.
-
-§5 Complex exponentials and trigonometric functions
-
-Complex exponentials and trigonometric functions are nearly
-self-explanatory. They are based on Euler’s theorem,
-
-ew=c050+isin6.
 Thus,
 
-ezEe x+iY=ex 39': e’(cosy+isiny) (28)
+e^z \equiv e^{x + iy} \equiv e^x e^{iy} = e^x(\cos(y) + i \sin(y))
+
 Similarly,
 
--1 ix-y y-it
+\cos(z) = \frac{1}{2 }(e^{ix-y} + e^{y - ix})
 
-Whip +. ) (29a)
-
-- -1 ix-y_ y-ir
-
-srnz — E (e e ). (29b)
+\sin(z) = \frac{1}{2i}(e^{ix-y} - e^{y - ix})
 
 Hence the code for the complex trigonometric functions is
 
-oJuunVNoblelm—Alrlghtareeerved.
+\begin{listing}
+: FSINCOS        ( 87:x--cos[x] sin[x] )
+    F2/  FTAN    ( 87:--a=tan[x/2] )
+    FDUP F**2    ( 87:--a a**2 )
+    F=1 XDUP F+  ( 87:--a a**2 1 1+a**2 )
+    F2X F-       ( 87:--a 1+a**2 1-a**2 )
+    FOVER F/     ( 87:--a 1+a**2 cos[x] )
+    F-ROT F/ F2* ( 87:x--cos[x] sin[x] )
+; \ note FSINCOS ts mlcrocoded on the 80387
 
-: FSINCOS (87: x - - cos[x sin[x] )
+:XEXP    ( 87:x y--e**x*cos[y] e**x*sin[y] )
+    FSINCOS FROT FEXP X*F ;
 
-F2/ FTAN (87: -- ass-tan 11/21)
-FDUP F"2 (87: -- aa“2)
+: X2/ F2/ FSWAP F2/ FSWAP ;
 
-F-1 XDUP F+ (87: -- ea“2 1 1+a“2)
-Fax F- (87: -- a 1+a“2 1-a“2)
-FOVER F/ (87: -- a 1+a“2 cos[x))
+: XSIN   ( 87:x y--sin[x]cosh[y] cos[x]sinh[y] )
+    FNEGATE FEXP FSWAP FSINCOS F*X
+    XDUP 1/X X- X2/ ;
 
-F-ROT F/ F2' ; (87: x - - cos[x] sln[x] )
-\ note FSINCOS ts mlcrocoded on the 80387
+: XCOS   ( 87:x y--cos[x]cosh[y] -sin[x]sinh[y] )
+    FNEGATE FEXP FSWAP FSINCOS F*X
+    XDUP 1/X X+ X2/ ;
+\end{listing}
 
-:XEXP (872x y--e“x'cos[y] e“x"sin[y])
-FSINCOS FROT FEXP X'F ,
+\section{Logarithms}
+\Tall{T}{he} logarithm of a complex number must be defined by the polar representation of the number. Thus, using the fact that
 
-: X2] F2/ FSWAP F2] FSWAP ;
+log_e(ab) = log¢(a) + logc(b) ,
 
-: XSIN (87. x y - - sin[x]cosh[y] cos[x]sinh[y])
-FNEGATE FEXP FSWAP FSINCOS F‘ X
-XDUP 1/X X- X2/ FSWAP FNEGATE ,
-
-: XCOS (87: x y - - cos[x]cosh[y] -sin[x]sinh[y] )
-FNEGATE FEXP FSWAP FSINCOS FX
-XDUP 1/X X+ X2/ ;
-
-§6 Logarithms
-The logarithm of a complex number must be deﬁned by the
-polar representation of the number. Thus, using the fact that
-
-log,(ab) = log¢(a) + logc(b) , (30)
 and that
-log.(ez) = z , (31)
 
-we ﬁnd it consistent to define the complex logarithm as
-log.(z) =1og,(re‘”) s log,(r) + i0. (32)
+log.(ez) = z ,
+
+we find it consistent to define the complex logarithm as
+
+log_e(z) =1og_e(re^{i\theta}) \equiv log_e(r) + i\theta.
+
 Thus,
 
-:XLOG (87: x y - - |n[r] atanly/Xl)
->POLAR FSWAP FLN FSWAP ;
+:XLOG (87:x y--ln[r] atan[y/x] )
+    >POLAR FSWAP FLN FSWAP ;
 
 This completes our dissertation on complex arithmetic.
-
-cmvuouotm-Alugmm.
-
-Chanel’T—CmpiexarlhmetlclnFORTH
-
-cluanvuouotm-Almm.
-
-SclendﬂcFOflTH
-
