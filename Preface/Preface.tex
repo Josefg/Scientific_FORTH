@@ -1,0 +1,81 @@
+\chapter{Preface}
+\startcontents[chapters]
+\printcontents[chapters]{}{1}{}
+
+\TallC{This} book, \textit{Scientific FORTH}, had its genesis in a sabbatical year in Europe, where, I tried with extremely limited success to perform several calculations using a FORTRAN compiler on a (trans)portable PC clone that represented my main computing resource. The glacial pace of the multi-pass compiler, the inadequacy of its function library, and the balkiness of the machine, combined to make programming feel like a fly struggling in a spider web.
+
+Luckily I had recently obtained a fairly complete FORTH system, HS/FORTH \sepfootnote{Pre_01} and, at some point when my patience was exhausted, resorted to it in desperation. FORTH turned my sabbatical around and made it fruitful: once past the rudiments of the new language, I never looked back. For me, FORTRAN had joined the dinosaurs.
+
+Apparently FORTH is much better known and more widely appreciated among European scientists than among Americans. On this side of the Atlantic FORTRAN remains the mainstay of scientific computation. While some argue that FORTRAN only retains its hold through its tremendous base (and investment) in existing well-debugged code, this cannot be the sole reason why new programs are written in FORTRAN; why new versions of FORTRAN are developed; or why FORTRAN (or a FORTRAN-like interface) is supplied with each new machine, even exotic ones like array- and parallel processors.
+
+FORTRAN remains popular among scientists and engineers because it provides the functionality needed for technical applications -- capabilities simply not found in more modern and/or "rational" languages. Despite its manifold deficiencies FORTRAN suits the majority of scientific computation.
+
+\TallC{Post-FORTRAN} languages embody precepts of portability, structure, modularity and information-hiding. They generally permit self-reference (recursion), dynamic storage allocation and of new data types. But languages like C, Pascal, Modula-2 and BASIC cannot deal with complex numbers, nor can they be extended easily to do so. Neither do these languages permit graceful machine-code programming of selected functions, something one must occasionally do to augment a function library, or when tuning for ultimate speed.
+ 
+\TallC{Scientific} computation deserves a language that is easy to program, debug and maintain; that embodies the desirable features of modern structured languages without sacrificing the best parts of FORTRAN.
+
+My ideal language would simplify linking with machine code and with compiled subroutines (from other languages).
+ 
+It would execute quickly while using memory parsimoniously (clearly, the more memory devoted to program, the less available for data).
+
+And finally, this new language would be \textbf{extensible} both to new data structures and to new operations, so it could grow and evolve without having to be redesigned.
+
+\TallC{Despite} its small size and simple structure, FORTH has all but one of the characteristics of my ideal scientific programming language: In its pristine form FORTH lacks any resemblance to FORTRAN either in structure or functionality. Fortunately, FORTH is an easily extensible language. This book presents the FORTH extensions I have developed over the past six years, the sum a dialect one might call "Scientific FORTH". 
+
+\TallC{FORTH} is not usually encountered within the context of scientific or engineering computation, although most users of personal computers or workstations have unwittingly experienced it in one form or another. FORTH has been called "one of the best-kept secrets in computing". It lurks unseen in automatic bank teller machines, computer games, industrial control devices and robots. The specialized printing language, PostScript\textsuperscript{\textregistered}, is a dialect of FORTH, as is the ASYSTC\textsuperscript{\textregistered} language for laboratory automation. Commercial products sue as the VP-Planner\textsuperscript{\textregistered} spreadsheet and Peachtree Accounting\textsuperscript{\textregistered} written in FORTH
+
+\TallC{Some} scientists and engineers have gained familiarity with FORTH because it is fast, compact, and easily debugged; and because it simplifies interfacing microprocessors with machines and laboratory equipment (FORTH was invented for just that purpose).
+ 
+FORTH has not found great favor in number-crunching applications, however. There are several reasons for this:
+
+\begin{itemize}
+    \item FORTH's creator, Charles Moore, preferred integer to floating point arithmetic for speed of execution. His successors mostly followed this philosophy. However, the large dynamical range of many physical problems precludes integer arithmetic: \textbf{Scientific computation demands floating point arithmetic}.
+    \item Systems designers have avoided porting FORTH to mainframes: FORTH permits such intimate hardware control that irresponsible users can easily misuse the machine. Operating systems that maintain the necessary discipline are hard to design without altering the very nature of the language. (Nevertheless FORTH is now available on many multiuser systems such VAX's, PRIMES and AT\&T's.)
+    \item FORTH is a tool (metalanguage) for constructing applications languages. Thus the kernel supplied by vendors is standard (within the confines of a given dialect) but any extension --whether vendor-supplied or user-created-- tend to be wildly variable even when end result is the same. This variability hinders software portability and interchange.
+\end{itemize}
+
+\TallC{Recent} developments have improved somewhat this state of affairs, removing many objections to FORTH:
+
+\begin{itemize}
+  \item Floating point hardware (including transcendental functions) is now available even for microcomputers, thereby eliminating the speed advantage of integer arithmetic.
+  \item Microcomputers rival the speed and memory of mainframes, at far lower cost user. serious scientific calculations can be undertaken on single-user workstations and the problem of misuse irrelevant.
+  \item Efforts to produce an ANSII standard FORTH are underway; a final draft version should be available concurrently with this book.
+  \item This book, \textbf{\textit{Scientific FORTH}}, provides a clear notational and stylistic standard for scientific and technical computing, together with programming examples and useful programs.
+  \item In conjunction with the new ANSII Standard FORTH, this book can simplify cooperative program development and program interchange.
+\end{itemize}
+
+\TallC{Every} operation that FORTRAN is capable of can be programmed easily in FORTH. For example, the EXTERNAL specification of FORTRAN has its FORTH analogue in "vectoring".
+
+But FORTH has the ability not only to reproduce all the functionality of FORTRAN --using less memory, compiling much faster and often executing faster also-- but to do things that FORTRAN could not accomplish easily or even at all.
+
+\leftbar[1\linewidth]
+This power comes at a price, however--FORTH normally incorporates little error checking especially bounds checking on arrays, hence it is easy to overwrite the operating system in most computers, causing a \textbf{computer crash or worse}. The responsibility to avoid such problems lies entirely with the programmer.
+\endleftbar
+
+One reason FORTH has not yet realized its potential in scientific computing is that scientists and programmers tend to reside in orthogonal communities, so that no one has until now troubled to write the necessary extensions. One aim of this book is to provide such extensions in a form I hope will prove appealing to current FORTRAN users.
+
+Since time and chance happen \sepfootnote{Pre_02} to everything, even FORTH, I have devoted considerable effort to explaining the algorithms and ideas behind these extensions, as well as their nuts bolts.
+
+\TallC{This} book is intended primarily for users with some familiarity with FORTH --perhaps gained in robotics, interfacing or microprocessor-controlled machinery-- who had not suspected how useful the language could be for scientific problem-solving. I hope it will also prove useful to scientists who need to do things beyond FORTRAN's scope, but who find C restrictive, unaesthetic and hard to learn.
+
+Chapter 2 briefly reviews standard FORTH, so readers whose main motivation is curiosity will be able to understand the program fragments given later on. It is not intended as a FORTH tutorial. To learn FORTH, get hold of a FORTH system and play with it while consulting one or more of the excellent references on the subject.
+
+Chapter 3 is devoted to floating point arithmetic and the floating point stack In it we develop standard library of that duplicates FORTRAN's capabilities. The functions include three random number generators, with some simple tests thereof. The problem of generating random numbers from an arbitrary distribution is made the framework of a new kind of data structure, akin to the object familiar from SMALLTALK and C++ programming languages.
+ 
+Chapter 4 describes how to extend FORTH on a machine that can use a floating-point arithmetic co-processor, to produce a full lexicon of mathematical functions -- equivalent to those found in the libraries of other languages. We illustrate system debugger/assembler routines can be used to develop machine-cod co-processor routines. While specific to Intel these techniques could obviously be applied to newer families such u the MC68881 or NS32081 chips.
+
+In Chapter 5 we devise data structures useful in scientific work, including typed data, arrays and user stacks. The object is to achieve a balance between ease of use \textit{a la} FORTRAN, and making the operations so "smart" they slow up the machine or become inflexible. The chapter proposes several methods of making array addressing more readable, as well as a generic technique for "fetch" and "store" of scientifically useful data types.
+ 
+Chapter 6 gives programming examples using floating point techniques. The examples are: summing infinite series; solving transcendental equations; and solving differential equations.
+ 
+Because scientific work makes such heavy use of complex arithmetic, Chapter 7 extends the floating point functions and operations to the complex number field.
+
+Chapter 8 is devoted to additional programming examples that illustrate the scientific data structures Of Chapters 6 and 7. These include numerical quadrature, contour integration and fast Fourier transform (FFT). The quadrature programs are adaptive, and both recursive and non-recursive versions are given.
+ 
+Linear algebra is such a standard problem in scientific work that we give it its own chapter (9). We illustrate the data structures developed in Chapter 7 with programs to solve linear equations and invert matrices. The optimized version of the program will solve 350 simultaneous linear equations (in single precision) in about 16 minutes on a 10 MHz 8086/8087 machine.
+
+Chapter 9 further serves to illustrate the development-test-debug cycle in a FORTH system. The first-pass programs actually work, although not optimized for speed or elegance. Special cases for timing and precision are included to ensure that variants developed by the reader also work. We also discuss optimization and illustrate the principles of inner-loop optimization with a detailed analysis of execution time. 
+
+Chapter 10 is a very brief look at file handling. This aspect of FORTH is non-standard, and each commercially available system will have its own methods of tackling the problem of reading data from a disk- (or other device-) file, and then of storing the output back in a file. The methods given in Chapter 10 assume a file-based version of FORTH (such as HS/FORTH) running under MS-DOS. The subroutines are written in high-level FORTH to maximize the chance they will be adaptable to FORTHs other than HS/FORTH.
+
+Chapter 11 describes a simple FORmula TRANslator, that translates FOTRAN arithmetic assignment statements into corresponding FORTH. In developing the translator we shall explore more advanced programming techniques such as finite state machines and recursive-descent parsing. Chapter 11 also applies these techniques to computer algebra.
