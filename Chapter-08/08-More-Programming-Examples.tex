@@ -65,483 +65,276 @@ The chief disadvantage of using a differential equation solver to evaluate a de�
 
 Then
 
-1 N
-7" ‘ﬁ Iglﬂxn) (5)
+\bar{f} \approx \frac{1}{N} \sum_{n=1}^{N} f(x_n)
+
 and
-ﬂax) dx - (b — a)? (6)
 
-This random-sampling method is called the Monte-Carlo method
-(because of the element of chance).
+\int_{a}^{b} f(x) dx \approx (b-a)f
 
-“3-1 UncertaintyottheMonte-Canomethod
+This random-sampling method is called the Monte-Carlo method (because of the element of chance).
 
-The statistical notion of variance lets us estimate the accuracy of
-the Monte-Carlo method: The variance in f(x) is
+\subsubsection{Uncertainty of the Monte-Carlo method}
+The statistical notion of variance lets us estimate the accuracy of the Monte-Carlo method: The variance in $f(x)$ is
 
-W) =If:p(f)(f-r)2df
-N (7)
-=5): (run—IV
+Var(f) = \int_{-\inf}^{+\inf} \rho(f) (f- \bar{f})^2 df
 
-n-l
+\approx \frac{1}{N} \sum_{n=1}^{N} (f(x_n) - \bar{f})^2
 
-(here p(f )df is the probability of measuring a value off between
-f and f + df).
+(here $\rho(f)df$ is the probability of measuring a value of $f$ between $f$ and $f + df$).
 
-Statistical theory says the variance in estimating 7 by random
-sampling is
+Statistical theory says the variance in estimating \bar{f} by random sampling is
 
-Vera) = ﬁvw) (8)
+Var(\bar{f}) = \frac{1}{N} Var(f)
 
-Le, the more points we take, the better estimate offwe obtain.
-Hence the uncertainty in the integral will be of order
+\ie, the more points we take, the better estimate of \bar{f} we obtain. Hence the uncertainty in the integral will be of order
 
-A(Iff(x)dr) Jaw: (9)
+\Delta (int_{a}^{b}f(x)dx) \approx \frac{(b-a)\sqrt{Var(f)}}{\sqrt{N}}
 
-and is therefore guaranteed to decrease as W'
-
-162
-
-CMpterB—MoreProgrnnmﬂngExnmplea SclentlﬂcFORTH
+and is therefore guaranteed to decrease as $\sqrt{N}$
 
 It is easy to see that the Monte-Carlo method converges slowly.
 
-. 1
-Smce the error decreases only as W , whereas even so crude a
+Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a rule as adding up rectangles (as in 1.1) has an error term that decreases as $1/N$, what is Monte-Carlo good for?
 
-rule as adding up rectangles (as in §1§§1) has an error term that
-decreases as UN, what is Monte-Carlo good for?
+Monte-Carlo methods come into their own for multidimensional integrals, where they are much faster than multiple one-dimensional integration subroutines based on deterministic rules.
 
-Monte-Carlo methods come into their own for multidimensional
-integrals, where they are much faster than multiple one-dimen-
-sional integration subroutines based on deterministic rules.
+\subsubsection{A slmple Monte-Carlo program}
+Following the function protocol and naming convention developed in Ch. 6 1.3.2, we invoke the integration routine \textit{via}
 
-§§3—2 A slmple Monte-Cane program
+USE( F.name % L.lim % U.lim % err )MONTE
 
-Following the function protocol and naming convention devel-
-oped in Ch. 6 §1§§3.2, we invoke the integration routine via
+We pass )MONTE the name F.name of the function $f(x)$, the limits of integration, and the absolute precision of the answer. The answer should be left on the ifstack. L.lim, U.lim, and err stand for explicit floating point numbers that are placed on the 87stack by %5. The word % appears explicitly because in a larger program — of which )MONTE could be but a portion— we might want to specify the parameters as numbers already on the 87stack. Since this is intended to be an illustrative program we keep the fstack simple by defining SCALARs to put the limits and precision into.
 
-USE( Ename % L.lim 96 U.lim % err )MONTE
+3 REAL*4 SCALARS A B-A E
 
-We pass )MONTE the name Ename of the function f(x), the
-limits of integration, and the absolute precision of the answer.
-The answer should be left on the ifstack. L. Ilm, U. Ilm and err
-stand for explicit ﬂoating point numbers that are placed on the
-87stack by 965 Th.e word 96 appears explicitly because 1n a larger
-program — of which )MONTE could be but a portion— we might
-want to specify the parameters as numbers already on the 87stack.
-Since this is intended to be an illustrative program we keep the
-fstack simple by defining SCALARs to put the limits and
-precision into.
+The word INITIALIZE will be responsible for storing these numbers.
 
-3REAL'4 SCALARS A B-A E
+The program uses one of the pseudo-random number generators (prng’s) from Ch. 3.5. We need a word to transform prn's —uniformly distributed on the interval (0,1)— to prn's on the interval (A, B):
 
-The word INITIALIZE will be responsible for storing these num-
-bers.
+5. The word % pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.
 
-The program uses one of the pseudo-random number generators
-(prng’s) from Ch. 3 55. We need a word to transform pm’s
-—uniformly distributed on the interval (0,1)— to prn's on the
-interval (A, B):
+: NEW.X RANDOM B-A G@ F* A G@ F+ ;
 
- 
+The program is described by the simple ﬂow diagram of Fig. 8-2 below:
 
-‘I‘hewordﬁ‘ pusheswhatfollomintheinputstreamontotheﬂstack,assumingiteanbeinter-
-pretedasalloatingpointnumber.
+Diagram yo:
+    INITIALIZE
+    BEGIN
+        (B-A)*sigma > E ?
+    WHILE
+        New.x f(x)
+        N = N + 1
+        \bar{f} Var(f)
+    REPEAT
+        I = (B-A)*<f>
 
-OJdlanVNoblefm-Mmmorved.
+Fig. 8-2 Flow diagram of Monte Carlo Integration
 
-1...»...
+From the ﬂow diagram we see we have to recompute $\bar{f} and $Var(\bar{f})$ at each step. From Eq. 5 we see that
 
- 
-
-Immm MLMPWEW 163
-
-:NEW.X RANDOM B-A G@ F‘ A G@ F+;
-
-The program is described by the simple ﬂow diagram of Fig. 8-2
-below:
-
- 
-
-INITIALIZE
-
-db
-
-BEGIN
-(B-A)'sigma > E 7
-WHILE
-New.x f(x)
-N=N+1
-T. Var(f)
-REPEAT
-I = (B-A)*<f>
-
- 
-
- 
-
- 
-
- 
-
- 
-
-Fig. 8-2 FIow diagram of Monte Carlo Integration
-
-From the ﬂow diagram we see we have to recompute f and
-Var(f' ) at each step. From Eq. 5 we see that
-
-In“ =7»: + ﬂ—xrpﬂ Iii—N
+\bar{f}_{N+1} = \bar{f}_N + \frac{f(x_{N+1} - \bar{f}_{N}}{N + 1}
 
 and
 
-_ _ - V
-VaIN+1 = VarN + UN” IN)UI;;I+ 171s“) arN
+Var_{N+1} = Var_{N} + \frac{(f_{N+1}-\bar{f}_{N})(f_{N+1} - \bar{f}_{N+1})-Var_{N}}{}
 
 Writing the program is almost automatic:
 
-:USE( [COMPILE] ' CFA UTERAL ; IMMEDIATE
-3REAL‘4 SCALARS AV.F dd.Av.F VarF
+\begin{lstlisting}
+: USE( [COMPILE] ' CFA LITERAL ; IMMEDIATE
+3 REAL*4 SCALARS Av.F old.Av.F Var.F
 
-:DoAvernge (n--n+1B7:f--t)
-Av.F G@ ddAvF GI \seveoldAv
-FDUP 1+ (--n+187:--fl)
-oldAvF G@ (87:--ffddAv.F)
+: DoAverage             ( n-- n+1 87:f--f )
+    Av.F G@ dd.Av.F G!  \ save old.Av
+    FDUP 1+             (--n+187:--fl)
+    old.Av.F G@         ( 87:--f f old.Av.F )
+    FUNDER F-
+    DUP S->F F/ F+      ( 87:--f Av.F )
+    Av.F G! ;           \ put away \ cont'd below
 
-FUNDER F-
-DUP s->F Fl F+ (87:--fAv.F)
-MFGI ; \pusway \corl'dbdow
+: Do.Varlance           (n--n 87:f-- )
+    FDUP old.Av.F G@    (87:f f old.Av )
+    FUNDER F- FSWAP
+    Av.F G@ F- F*
+    (87:[f-old.Av]*[f-Av] )
+    Var.F G@ FUNDER F-
+    DUP S->F F/ F+      (87:--Var’)
+Var.F G! ;
 
-OJdIanVNmfm-Alrldnareurved.
+:INITIALIZE             (:adr-- 87: a b e -- )
+    IS adr.f
+    E G!
+    FOVER F- B-A G! A G!
+    FINIT
+    F=0 Var.F    G!
+    F=0 Av.F     G!
+    F=0 old.Av.F G!
+    0 5 0 DO \ exercise 5 times
+        NEW.X adr.f EXECUTE
+        Do.Average Do.Varlance
+    LOOP ;
 
-Chapter 8 - More Programming Exnrnpleo
+: NotConverged? Var.F G@ FSORT
+    B-A G@ F* E G@ F> ;
+: DEBUG DUP
+    10 MOD              \ every 10 steps
+  0= IF CR DUP.
+    Av.F  G@ F.
+    Var.F G@ F. THEN ;
 
-:Do.Verhnce (n--n 37:1")
-FDUP old.Av.F G@ (87:ffold.Av)
-FUNOER F— FSWAP
-Av.F G@ F- F'
+: )MONTE
+    INITIALIZE
+    BEGIN DEBUG NotConverged?
+    WHILE NEW.X adr.f EXECUTE
+        Do.Average Do.Varlance
+    REPEAT
+    DROP Av.F G@ B-A G@ F* ;
+\end{lstlisting}
 
-(37: [l-Oid.AV]‘[l~AV] )
-VarF G@ FUNDER F-
+The word DEBUG is included to produce useful output every 10 points as an aid to testing. The ﬁnal version of the program need not include DEBUG, of course. Also it would presumably be prudent to BEHEAD all the internal variables.
 
-DUP S->F Fl F+(87:--Var’)
-VarF G!
-:INITIAIJZE (:adr-- 87zabe --)
-IS adrf
-E G!
-FOVEFI F- B-A G! A G!
-FINIT
-F=0 VarF G!
-F=0 Av.F G!
-F=0 oId.Av.F G!
+The chief virtue of the program we have just written is that it is easily generalized to an arbitrary number of dimensions. The generalization is left as an exercise.
 
-o 5 COO \exerclseStImes
+\section{Adaptlve methods}
+\TallC{O}{bviously}, to minimize the execution time of an integration subroutine requires that we minimize the number of times the function $f(x)$ has to be evaluated. There are two aspects to this:
+\begin{itemize}
+    \item First, we must evaluate $f(x)$ only once at each point $x$ in the interval.
+    \item Second, we evaluate $f(x)$ more densely where it varies rapidly than where it varies slowly. Algorithms that can do this are called adaptive.
+\end{itemize}
 
- 
+To apply adaptive methods to Monte Carlo integration, we need an algorithm that biases the sampling method so more points are chosen where the function varies rapidly. Techniques for doing this are known generically as stratified sampling6. The difficulty of automating stratified sampling for general functions puts adaptive Monte Carlo techniques beyond the scope of this book.
 
-I
+However, adaptive methods can be applied quite easily to deterministic quadrature formulae such as the trapezoidal rule or Simpson’s rule. Adaptive quadrature is both interesting in its own right and illustrates a new class of programming techniques, so we pursue it in some detail.
 
-Sclendﬁc FORTH
+\section{Adaptive Integration on the real line}
+\TallC{W}{e} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision speciﬁed in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. 6 1.3.2:
 
-NEW)! adrf EXECUTE
-DoJNernge Do.Varhnce
-LOOP ;
+\begin{lstlisting}
+USE( F.name % L.lim % U.lim % err )INTEGRAL
+\end{lstlisting}
 
-:NotConverged? VarF G@ FSORT
+Now, how do we ensure that the routine takes a lot of points when the function $f(x)$ is rapidly varying, but few when $f(x)$ is smooth? The simplest method uses recursion7.
 
-B-AG@F"EG@F>;
+\subsection{Digression on recursive algorithms}
+\TallC{W}{e} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the ﬁrst).
 
-2 DEBUG DUP
-
-10 M00
-0= IF CR DUP.
-Av.F G@ F.
-VarF G@ F. THEN ;
-
-\every1oaepe
-
-:)MONTE
-
-INITIAUZE
-
-BEGIN DEBUG NotConverged?
-
-WHILE NEW.X adr.f EXECUTE
-Do.Average Dome
-
-REPEAT
-
-DROP Av.F G@ B-A G@ F';
-
-§§4 Adaptlve methods
-
-The word DEBUG is included to produce useful output every 10
-points as an aid to testing. The ﬁnal version of the program need
-not include DEBUG, of course. Also it would presumably be ‘
-prudent to BEHEAD all the internal variables.
-
-The chief virtue of the program we have just written is that it is
-easily generalized to an arbitrary number of dimensions. The
-generalization is left as an exercise.
-
-Obviously, to minimize the execution time of an integration
-subroutine requires that we minimize the number of times the 3
-function f(x) has to be evaluated. There are two aspects to this:
-
-0 First, we must evaluate f(x) only once at each point x in the
-
-interval. .
-
-TI
-
-0 Second, we evaluate f(x) more densely where it varies rapidly
-than where it varies slowly. Algorithms that can do this are
-called adaptive.
-
-To apply adaptive methods to Monte Carlo integration, we need:
-
-mafia
-
- 
-
-an algorithm that biases the sampling method so more points are :5
-
-W
-a.
-
-?
-
-eJuunVNounm-Arngmrmmd. f‘
-
-WM?"
-
-“5
-
-Ml-MWW 1“
-
-chosen where the function varies rapidly. Techniques for doing
-this are known generically as stratified sampling6.111e difﬁculty
-of automating stratiﬁed sampling for general functions puts adap-
-tive Monte Carlo techniques beyond the scope of this book.
-
-However, adaptive methods can be applied quite easily to deter-
-ministic quadrature formulae such as the trapezoidal rule or
-Simpson’s rule. Adaptive quadrature is both interesting in its own
-right and illustrates a new class of programming techniques, so
-we pursue it in some detail.
-
-Adaptive Integration on the real line
-
-We are now going to write an adaptive program to integrate an
-arbitrary function ﬂx), specified at run- -time, over an
-arbitrary interval of the x- axis, with an absolute precision
-speciﬁed in advance. We write the integral as a function of several
-arguments, once again to be invoked following Ch. 6 §1.3.2:
-
-USE( Ename % L.lim % U.lim 96 err )INTEGRAL
-
-Now, how do we ensure that the routine takes a lot of points when
-the function f(x) is rapidly varying, but few when f(x) is smooth?
-The simplest method uses recursion7.
-
-“5-1 Dlgresslon on recursive algorithms
-
-We have so far not discussed recursion, wherein a program calls
-itself directly or indirectly (by calling a second routine that
-then calls the ﬁrst).
-
-Since there is no way to know a priori how many times a program
-will call itself, memory allocation for the arguments must be
-dynamic. That is, a recursive routine places its arguments on a
-
- 
-
-6.
-7.
-
-.I.M. Hammersley and DC. Hanscomb, Monte Carlo Methods (Methuen, london, 1964).
-See, ¢.g., R. SedgewichAWn: (Addison-Wesley Publishing Company, Reading, MA,
-
-19113), p. as.
-
-166
-
-Chapter 11 — Mora Programing Examples Scientiﬁc FORTH
-
-stack so each invocation of the program can ﬁnd them. This is the
-method employed in recursive compiled languages such as Pascal,
-C or modern BASIC. Recursion is of course natural in FORTH
+Since there is no way to know \textit{a priori} how many times a program will call itself, memory allocation for the arguments must be dynamic. That is, a recursive routine places its arguments on a stack so each invocation of the program can ﬁnd them. This is the method employed in recursive compiled languages such as Pascal, C, or modern BASIC. Recursion is of course natural in FORTH
 since stacks are intrinsic to the language.
 
-We illustrate with the problem of ﬁndin the greatest common
-divisor (gcd) of two integers. Euclid devised a rapid algo-
+6. J.M. Hammersley and D.C. Hanscomb, \textit{Monte Carlo Methods} (Methuen, London, 1964).
+7. See, \eg, R. Sedgewick, \textit{Algorithms} (Addison-Wesley Publishing Company, Reading, MA, 1983), p. 85.
 
-rithm for ﬁnding the gcd9 which can be expressed symbolically
-as
+\TallC{W}{e} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid8 devised a rapid algorithm for ﬁnding the gcd9 which can be expressed symbolically as
 
-_ u, v=0
-gcd 0‘” ‘ {gcd (v,u mod v) else (10)
+gcd(u,v) = u, v= 0
+           gcd(v, u mod v) else
 
-That is, the problem of ﬁnding the gcd of u and v can be replaced
-by the problem of ﬁnding the gcd of two much smaller numbers.
-A 1:0an word that does this 151°
+That is, the problem of ﬁnding the gcd of $u$ and $v$ can be replaced by the problem of ﬁnding the gcd of two much smaller numbers. A FORTH word that does this is10
 
-:GCD (uv--9cd)
-?DUP 0 > \ stopping criterion
-IF UNDER MOD RECURSE THEN ;
+\begin{lstlisting}
+: GCD           ( u v--gcd )
+    ?DUP 0 >    \ stopping criterion
+    IF UNDER MOD RECURSE THEN ;
+\end{lstlisting}
 
-Here is a sample of GOD in action, using TRACE11 to exhibit the
-rstack (in hex) and stack (in decimal):
+Here is a sample of GCD in action, using TRACE11 to exhibit the rstack (in hex) and stack (in decimal):
 
- 
-
+8. An ancient Greek mathematician known for one or two other things!
+9. See, \eg Sedgewick, \textit{op. cit.}, p. 11.
 new
+10. Most FORTHs do not permit a word to call itself by name; the reason is that when the compiler tries to compile the self-reference, the deﬁnition has not yet been completed and so cannot be looked up in the dictionary. Instead, we use RECURSE to stand for the name of the self-calling word. See Note 14 below.
+11. TRACE is specific to HS/FORTH, but most dialects will support a similar operation. SSTRACE is a modiﬁcation that sinde-steps through a program.
 
-11.
+784 48 TRACE GCD
+                            rstack      stack
+: GCD                                   784 48
+    DUP                                 784 48  48
+    0=                                  784 48   0
+    0BRANCH< 8 >0                       784 48
+    UNDER                               48  784 48
+    MOD                                 48  16
+    : GCD                               48  16
+      DUP                   4B76        48  16  16
+      0=                    4B76        48  16   0
+      0BRANCH< 8 >0         4B76        48  16
+      UNDER                 4B76        16  48  16
+        MOD                 4B76        16   0
+        : GCD               4B76        16   0
+          DUP               4B76 4B76   16   0   0
+          0=                4B76 4B76   16   0  65535
+          0BRANCH< 8 >-1    4B76 4B76   16   0
+          DROP              4B76 4B76   16
+        EXIT                4B76        16
+    EXIT                                16
 
-An ancient Greek mathematician known for one or two other things!
+Note how GCD successively calls itself, placing the same address (displayed in hexadecimal notation) on the rstack, until the stopping criterion is satisfied.
 
-Sec, e.g. Sedgewick, op. cit, p. 11.
+Recursion can get into difficulties by exhausting the stack or rstack. Since the stack in GCD never contains more than three numbers, only the rstack must be worried about in this example.
 
-Most FORTHs do not permit a word to call itself by name; the reason is that when the compiler
-tries to compile the self-reference, the deﬁnition has not yet been completed and so cannot be
-looked up in the dictionary. Instead, we use RECURSE to stand for the name of the self-calling
-word. See Note 14 below.
+\TallC{R}{ecursive} programming possesses an undeserved reputation or slow execution, compared with nonrecursive equivalent programs12. Compiled languages that permit recursion —\eg, BASIC, C, Pascal— generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
 
-TRACE is speciﬁc to HS/FORTH, but most dialects will support a similar operation. SSTRACE
-is a modiﬁcation that sinde-stcps through a program.
+12. For examlpe, it is often claimed that removing recursion almost always produces a faster algorithm. See, \eg Sedgewick, \textit{op. cit.}, p. 12.
 
-MM"!
+Nevertheless, not all algorithms should be formulated recursively. A disastrous example is the Fibonacci sequence
 
-MI—MWW
+\begin{lstlisting}
+F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n-2}
+\end{lstlisting}
 
-marmosets:
-
-187
-
-m and:
-:GCO 784 48
-M 784 48 48
-0- 784 48 0
-W<8>0 784 48
-“DER 48 784 48
-MOD 48 16
-:00) 48 16
-M 4878 48 18 18
-0- 4878 48 18 0
-m<8>0 4878 48 18
-UNDER 4878 18 48 18
-MG) 4878 18 0
-.600 4878 18 0
-DUP 4878 4878 18 0 0
-= 4878 4878 18 0 6535
-OBRANCH<B>-1 4878 4876 16 0
-DROP 4878 4878 18
-EXIT 4876 16
-EMT 18
-
-Note how GCD successively calls itself, placing the same address
-(displayed in hexadecimal notation) on the rstack, until the stop-
-ping criterion is satisﬁed.
-
-Recursion can get into difﬁculties by exhausting the stack or
-rstack. Since the stack in 600 never contains more than three
-numbers, only the rstack must be worried about in this example.
-
-ecursive programming possesses an undeserved reputation
-
-or slog execution, compared with nonrecursive equivalent
-programs . Compiled languages that permit recursion —e.g.,
-BASIC, C, Pascal— generally waste time passing arguments to
-subroutines, Le. recursive routines in these languages are slowed
-by parasitic ailing overhead. FORTH does not suffer from this
-speed penalty, since it uses the stack directly.
-
- 
-
-12. Pmenmphhhoﬂadaimedthnnmovingmeuaionahnoualwaysproduwsafmeulgo
-rithm.See,e.g.Sedgewick,ap.ciL,p.12.
-
-ammonium-Arm“.
-
-ChapterB—MoraProgmmming Exam Scientiﬁc FORTH
-
-Nevertheless, not all algorithms should be formulated recursive-
-ly. A disastrous example is the Fibonacci sequence
-
-F0 = 0, F1: 1, F“ = Fn—l '1' Fn-2 (11)
 expressed recursively in FORTH as
+\begin{lstlisting}
+: FIB                   ( :n--F[n] )
+    DUP 0> NOT
+    IF DROP 0 EXIT THEN
+    DUP 1 = 
+    IF DROP 1 EXIT THEN \ n > 1
+    1- DUP 1-           ( -- n-1 n-2 )
+    RECURSE SWAP        ( -- F[n-2] n-1 )
+    RECURSE + ;
+\end{lstlisting}
 
-:FIB (:n--F[n])
-DUP 0> NOT
-IF DROP o EXIT THEN
+This program is vastly slower than the nonrecursive version below, that uses an explicit DO loop:
+\begin{lstlisting}
+: FIB                   ( :n--F[n] )
+    0 1 ROT             ( :0 1 n)
+    DUP 0> NOT
+    IF DDROP EXIT THEN
+    DUP 1 =
+    IF DROP PLUCK EXIT THEN
+    1 DO UNDER + LOOP PLUCK ;
+\end{lstlisting}
+Why was recursion so bad for Fibonacci numbers? Suppose the running time for $F_n$ is $T_n; then we have
 
-IF DROP 1 EXIT THEN \n > 1
+T_{n} \approx T_{n-1} + T_{n-2} + \tau
 
-1- DUP 1- (-- n-1 n-2)
-RECURSE SWAP (- - F[n-2] n-1 )
-RECURSE + ;
+where 4\tau$ is the integer addition time. The solution of Eq. 12 is
 
-This program is vastly slower than the nonrecursive version
-below, that uses an explicit DO loop:
+T_{n} = \tau[(\frac{1+\sqrt{5}}}{2})^n - 1]
 
-:FIB (:n--F[n])
-0 1 HOT (:01 n)
-DUP O> NOT
-IF DDROP EXIT THEN
-DUP 1 =
+That is, the execution time increases exponentially with the size of the problem. The reason for this is simple: recursion managed to replace the original problem by two of nearly the same size, \ie recursion nearly doubled the work at each step!
 
-IF DROP PLUCK EXIT THEN
-1 DO UNDER + LOOP PLUCK ;
+\TallC{T}{he} preceding analysis of why recursion was bad suggests how recursion can be helpful: we should apply it whenever a given: problem can be replaced by -say- two problems of half the original size, that can be recombined in n or fewer operations. An example is mergesort, where we divide the list to be sorted into two roughly equal lists, sort each and then merge them:
 
-Why was recursion so bad for Fibonacci numbers? Suppose the
-running time for F n is T,, ; then we have
-
-T, ~ T.,_1 + T,,_2 + r (12)
-
-where r is the integer addition time. The solution of Eq. 12 is
-
-n
-r, = «Dz—‘5) — 1] (13)
-
-That is, the execution time increases exponentially with the size
-of the problem. The reason for this is simple: recursion managed
-to replace the original problem by two of nearly the same size, Le.
-recursion nearly doubled the work at each step!
-
-The preceding analysis of why recursion was bad suggests how ,
-recursion can be helpful: we should apply it whenever a given :
-
-OJUIInVNobletm-Nirigﬂsrsssrwd.
-
- 
-
-ms-MWW 189
-
-problem can be replaced by -say- two problems of half the
-original size, that can be recombined in n or fewer operations. An
-example is mergesort, where we divide the list to be sorted into
-two roughly equal lists, sort each and then merge them:
+\begin{verbatim}
 subroutine sort(|ist[0,n])
-
-partition' (list, 11811, 11312)
-
-sortaistl)
-
-sort(list2)
-
-mergeaisn, list2, list)
+    partition(list, list1, list2)
+    sort(list1)
+    sort(list2)
+    merge(list1, list2, list)
+end
+\end{verbatim}
 
 In such cases the running time is
-Tn'Tv2+Tv2+ﬂ=Zruz+n (14)
+
+T_{n} \approx T_{n/2} + T_{n/2} + n = 2T_{n/2} + n
+
 for which the solution is
-Tn~nlog1(n) (15)
 
-(In fact, the running time for mergeson is comparable with the
-fastest sorting algorithms.) Algorithms that subdivide problems
-in this way are said to be of divide and conquer type.
+T_{n} \approx n log_2 (n)
 
-Adaptive integration can be expressed as a divide and conquer
+(In fact, the running time for mergeson is comparable with the fastest sorting algorithms.) Algorithms that subdivide problems in this way are said to be of divide and conquer type.
+
+\TallC{A}{daptive} integration can be expressed as a divide and conquer
 
 algorithm, hence recursion can simplify the program. In pseu-
 docode (actually QuicltBasicO ) we have the program shown

@@ -24,6 +24,9 @@
 
 \let\cleardoublepage\clearpage
 
+% Separate footnotes to own section
+\usepackage{sepfootnotes}
+
 % Place a blank line with every space between paragraphs
 \edef\restoreparindent{\parindent=\the\parindent\relax}
 \usepackage{parskip}
@@ -31,8 +34,12 @@
 
 % Have a paragraph's first letter span 2 lines
 \usepackage{lettrine}
-    \newcommand{\TallC}[2]{\lettrine[lines=2]{\textbf{#1}}{#2}}
-% \TallC{T}{he} to create a large T
+    \renewcommand{\LettrineTextFont}{\normalfont}
+\usepackage{xstring}
+    \newcommand{\TallC}[1]{
+        \lettrine[realheight=true]{\StrLeft{#1}{1}}{\StrGobbleLeft{#1}{1}}
+    }
+% \TallC{The} to create a large T and small he
 
 % Dotted lines across the page
 \newcommand{\dotrule}[1]{%
@@ -55,55 +62,66 @@
 % Use \leftbar[1\linewidth] at the beginning
 % Ues \endleftbar at the end
 
-%Highlight cell color
+% Highlight cell color
 \usepackage[table]{xcolor}
-    \newcommand{\lgray} {\cellcolor[HTML]{D3D3D3}}
+    \newcommand{\lgray }{\cellcolor[HTML]{D3D3D3}}
     \newcommand{\Aggray}{\cellcolor[HTML]{C0C0C0}}
-    \newcommand{\gray}  {\cellcolor[HTML]{808080}}
-    \newcommand{\dgray} {\cellcolor[HTML]{A9A9A9}}
+    \newcommand{\gray  }{\cellcolor[HTML]{808080}}
+    \newcommand{\dgray }{\cellcolor[HTML]{A9A9A9}}
     \newcommand{\digray}{\cellcolor[HTML]{696969}}
 % use \cellcolor[HTML]{AA0044} in the prefered cell
 
-%Create charts with tikz
+% Create charts with tikz
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
     \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
     \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
     \tikzstyle{arrow}   = [thick,->,>=stealth]
 
-%Prefixing chapter/section numbers with 
-\usepackage{cleveref}
-  \crefname{section}{\S}{\S\S}
-  \Crefname{section}{\S}{\S\S}
-  \crefformat{section}{\S#2#1#3}
+% Prefixing chapter/section numbers with 
+%\usepackage{cleveref}
+ % \crefname{section}{\S}{\S\S}
+  %\Crefname{section}{\S}{\S\S}
+  %\crefformat{section}{\S#2#1#3}
 
-%Mini table of contents
+% Mini table of contents
 \usepackage{titlesec}
+    \renewcommand{\thesection}{\arabic{section}}
+    \renewcommand{\thesubsection}{\arabic{subsection}}
+    \titleformat{\section}
+        {\normalfont\large\bfseries}
+        {\S\ \thesection }{0.5em}{}
+    \titleformat{\subsection}
+        {\normalfont\bfseries}
+        {\S\ \S\ \thesubsection }{.5em}{}
 \usepackage{titletoc}
 
-%Thinking FORTH
-\newcommand{\TF}{\textbf{TF}}
-%Starting FORTH
-\newcommand{\SF}{\textbf{SF}}
-%FORTH: a Text and Reference
+% Thinking FORTH
+\newcommand{\TF}{\textbf{TF }}
+% Starting FORTH
+\newcommand{\SF}{\textbf{SF }}
+% FORTH: a Text and Reference
 \newcommand{\FTR}{\textbf{FTR}}
-%e.g. in italics
+% e.g. in italics
 \newcommand{\eg}{\textit{e.g.}}
-%i.e. in italics
+% i.e. in italics
 \newcommand{\ie}{\textit{i.e.}}
+% etc. in italics
+\newcommand{\etc}{\textit{etc.}}
 %Note
 \newcommand{\Note}{\textbf{\underline{Note}}}
 
 %References
 \usepackage{hyperref}
 
-%Current Chapter on which you are working.
-\includeonly{Chapter-10/10-Strings-and-IO-in-FORTH}
-
 \begin{document}
 \tableofcontents
-%\include{Chapter-01/01-Toward-Scientific-FORTH}
-%\include{Chapter-02/02-Programming-in-FORTH}
-%\include{Chapter-04/04-The-80x87-Family}
-\include{Chapter-10/10-Strings-and-IO-in-FORTH}
+    % must include footnotes for all Chapters
+    \input{footnotes}
+    % include{chapter on which you are working}
+    % \include{Chapter-01/01-Toward-Scientific-FORTH}
+    \include{Chapter-02/02-Programming-in-FORTH}
+    %\include{Chapter-03/03-Floating-Point-Arithmetic}
+    %\include{Chapter-04/04-The-80x87-Family}
+    %\include{Chapter-10/10-Strings-and-IO-in-FORTH}
 \end{document}

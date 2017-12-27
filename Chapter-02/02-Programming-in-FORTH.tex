@@ -2,11 +2,11 @@
 \startcontents[chapters]
 \printcontents[chapters]{}{1}{}
 
-\TallC{T}{his} chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
+\TallC{This} chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
 
-Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \footnote{L. Brodie, \textit{Starting FORTH}, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as \SF.} and \textit{Thinking FORTH} \footnote{L. Brodie, \textit{Thinking FORTH} (Prentice-Hall, NJ 1984), referred to hereafter as \TF.} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \footnote{M. Kelly and N. Spies, FORTH: a Tea and Reference (Prentice-Hall, NJ , 1986), referred to hereafter as \FTR.} by M.Kelly and N.Spies. I strongly recommend reading \FTR or \SF (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
+Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \sepfootnote{02_01} and \textit{Thinking FORTH} \sepfootnote{02_02} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \sepfootnote{02_03} by M.Kelly and N.Spies. I strongly recommend reading \FTR or \SF (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
 
-\TallC{T}{he} (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
+\TallC{The} (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
 
 FIG publishes a journal \textit{Forth Dimensions} whose object is the exchange of programming ideas and clever tricks.
 
@@ -18,7 +18,7 @@ finally, an attempt to codify and standardize FORTH is underway, so by the time 
 
 \section{The structure of FORTH}
 
-\TallC{T}{he} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word \footnote{Successive words in the input stream are separated from each other by blank spaces, ASCII 20hex, the standard FORTH delimiter.} in the dictionary the interpreter immediately executes that word.
+\TallC{The} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word\sepfootnote{02_04} in the dictionary the interpreter immediately executes that word.
 
 \begin{figure}[ht]
     \framebox[\textwidth]{
@@ -73,28 +73,28 @@ We now give a trivial illustration:
     DECIMAL <cr> ok
 \end{lstlisting}
 
-\underline{\textbf{Notes}}:
+\Note \textbf{\underline{s:}}
 \begin{itemize}
   \item \bc{<cr>} means "the user pushes the ENTER or $\Leftarrow$ button".
   \item \bc{ok} is what FORTH says in response to an input line, if nothing has gone wrong.
   \item \regc{DECIMAL} is an instruction to use base 10 arithmetic. FORTH will use any base on tell it, within reason, but usually only \regc{DECIMAL} and \regc{HEX} (hexadecimal) are predefined.
 \end{itemize}
 
-When the outer interpreter (see fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \bc{NUMBER}.
+When the outer interpreter (see Fig. 2.1 on p. 13) encounters text with no dictionary entry, it tries to interpret it as a \bc{NUMBER}.
 
-It places the number in a special memory location called "the top of the stack" (TOS)\footnote{We will explain about the stack in §2.3.}
+It places the number in a special memory location called "the top of the stack" (TOS)\sepfootnote{02_05}
 \begin{lstlisting}
-2 17 +. <cr> 19 ok
+    2 17 +. <cr> 19 ok
 \end{lstlisting}
 
-\underline{\textbf{Notes}}:
+\Note \textbf{\underline{s:}}
 \begin{itemize}
   \item FORTH interprets 2 and 17 as numbers, and pushes them onto the stack. "\bc{+}" is a word and so is "\bc{.}" so they are \bc{EXECUTE}d.
   \item \lstinline$+$ adds 2 to 17 and leaves 19 on the stack.
   \item The word \bc{.} (called "emit") removes 19 from the stack and displays it on the screen.
 \end{itemize}
 
-We might also have said \footnote{since FORTH uses words, when we enter an input line we say the corresponding phrase.}
+We might also have said\sepfootnote{02_06}
 
 \begin{lstlisting}
 HEX 0A 14 * . <cr> C8 ok
@@ -107,14 +107,14 @@ If the incoming text can neither be located in the dictionary nor interpreted as
 
 \section{Extending the dictionary}
 
-\TallC{T}{he} compiler is one of FORTl-I’s most endearing features. It is elegant, simple, and mostly written in FORTH. Although the technical details of the FORTH compiler are generally more interesting to systems developers than to scientists, its components can often be used to solve programming problems. When this is the case, we necessarily discuss details of the compiler. In this section we discuss how the compiler extends the dictionary. In §2§§8 below we examine the parts of the compiler in greater detail.
+\TallC{The} compiler is one of FORTH's most endearing features. It is elegant, simple, and mostly written in FORTH. Although the technical details of the FORTH compiler are generally more interesting to systems developers than to scientists, its components can often be used to solve programming problems. When this is the case, we necessarily discuss details of the compiler. In this section we discuss how the compiler extends the dictionary. In \S\ 2 \S\ \S\ 8 below we examine the parts of the compiler in greater detail.
 
-FORTH has special words that allow the creation of new dictionary entries, \textit{i.e.}, new words. The most important are "\bc{:}" ("start a new definition") and "\bc{;}" ("end the new definition").
+FORTH has special words that allow the creation of new dictionary entries, \ie, new words. The most important are "\bc{:}" ("start a new definition") and "\bc{;}" ("end the new definition").
 
 Consider the phrase
 
 \begin{lstlisting}
-: NEW-WORD WORD1 17 WORDZ . . . WORDn ; ok
+    : NEW-WORD WORD1 17 WORDZ . . . WORDn ; ok
 \end{lstlisting}
 
 The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. Upon execution, "\bc{:}" does the following:
@@ -123,43 +123,43 @@ The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. U
     \item Creates a new dictionary entry, \bc{NEW-WORD}, and switches from \textbf{interpret}- to \textbf{compile} mode.
     \item In compile mode, the interpreter looks up words and — rather than executin them — installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
     \item The action of \bc{NEW-WORD} will be to \bc{EXECUTE} sequentially the previously-defined words \bc{WORD1}, \bc{WORD2}, ...\bc{WORDn}, placing any built-in numbers on the stack as they occur.
-    \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\footnote{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
+    \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\sepfootnote{02_07}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
 
 In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.
 
 The above definition of \textbf{NEW-WORD} is extremely structured compared with FORTRAN or BASIC. Its definition is just a series of subroutine calls.
 
-\TallC{W}{e} now illustrate how to define and use a new word using the previously defined words "\bc{:}"and "\bc{;}". Enter the phrase (this new word \bc{*+} expects 3 numbers, \textit{a}, \textit{b}, and \textit{c} on the stack)
+\TallC{We} now illustrate how to define and use a new word using the previously defined words "\bc{:}"and "\bc{;}". Enter the phrase (this new word \bc{*+} expects 3 numbers, \textit{a}, \textit{b}, and \textit{c} on the stack)
 
 \begin{lstlisting}
-: *+   * + ; ok
+    : *+   * + ; ok
 \end{lstlisting}
 
-\underline{Notes:}
+\Note \underline{\textbf{s:}}
 \begin{itemize}
-    \item \bc{*} multiplies b with c, leaving b*c.
-    \item \bc{+} then adds b*c to a, leaving a + b*c behind.
+    \item \bc{*} multiplies \verb|b| with \verb|c|, leaving \verb|b*c|.
+    \item \bc{+} then adds \verb|b*c| to \verb|a|, leaving \verb|a + b*c| behind.
 \end{itemize}
 
 Now we actually try out \bc{*+} :
 
 \begin{lstlisting}
-DECIMAL 5 6 7 *+ . 47 ok
+    DECIMAL 5 6 7 *+ . 47 ok
 \end{lstlisting}
 
-\underline{\textbf{Notes:}}
+\Note \underline{\textbf{s:}}
 \begin{itemize}
-    \item The period \bc{.} is not a typo, it EMlTs the result.
-    \item FORTH's response to \bc{a b c *+ .} is \bc{a + b*c ok}.
+    \item The period \bc{.} is not a typo, it EMITs the result.
+    \item FORTH's response to \bc{a b c *+ .} is \verb|a + b*c| \bc{ok}.
 \end{itemize}
 
-What if we were to enter *+ with nothing on the stack? Let's try it and see (\bc{.S} is a word that displays the stack without changing its contents):
+What if we were to enter \bc{*+} with nothing on the stack? Let's try it and see (\bc{.S} is a word that displays the stack without changing its contents):
 
 \begin{lstlisting}
-.S empty stack ok
+    .S empty stack ok
 
-*+ empty stack ok
+    *+ empty stack ok
 \end{lstlisting}
 
 \dotrule{1\textwidth}
@@ -169,7 +169,7 @@ What if we were to enter *+ with nothing on the stack? Let's try it and see (\bc
 Suppose you entered the input line
 
 \begin{lstlisting}
-HEX 5 6 7 *+ . <cr> xxx ok
+    HEX 5 6 7 *+ . <cr> xxx ok
 \end{lstlisting}
 
 What would you expect the response \textbf{xxx} to be?
@@ -179,8 +179,7 @@ What would you expect the response \textbf{xxx} to be?
 \dotrule{1\textwidth}
 
 \section{Stacks and reverse Polish notation (RPN)}
-
-\TallC{W}{e} now discuss the stack and the "reverse Polish" or "postfix" arithmetic based on it. (Anyone who has used one of the Hewlett-Packard calculators should already be familiar with the basic concepts.)
+\TallC{We} now discuss the stack and the "reverse Polish" or "postfix" arithmetic based on it. (Anyone who has used one of the Hewlett-Packard calculators should already be familiar with the basic concepts.)
 
 A Polish mathematician (J .Lukasewcleia) showed that numerical calculations require an irreducible minimum of elementary operations (fetching and storing numbers as well as addition, subtraction, multiplication and division). The minimum is obtained when the calculation is organized by "stack" arithmetic.
 
@@ -189,21 +188,20 @@ Thus virtually all central processors (CPU's) intended for arithmetic operations
 But what \textit{is} a stack? As the name implies, a stack is the machine analog of a pile of cards with numbers written on them. Numbers are always added to, and removed from, the top of the pile. (That is, a stack resembles a job where layoffs follow seniority: last in, first out.) Thus, the FORTH input line
 
 \begin{lstlisting}
-DECIMAL 2 5 73 -16 ok
+    DECIMAL 2 5 73 -16 ok
 \end{lstlisting}
 
 followed by the line
 
 \begin{lstlisting}
-+ - * . yyy ok
+    + - * . yyy ok
 \end{lstlisting}
-
 leaves the stack in the successive states shown in Table 2-1 below
 
 \begin{center}
     \begin{tabular}{|c c c c c c c|}
         \hline
-   Cell\# & Initial    & Ops$\rightarrow$ & +       & -          & *       & . \\ [0.5ex] 
+   Cell\# & Initial    & Ops$\rightarrow$ & +       & -          & *       & . \\ 
         \hline
         0 & \lgray -16 & Result        & \Aggray 57 & \dgray -52 & \gray 104 & ... \\ 
         1 & \lgray 73  & $\rightarrow$ & \Aggray 5  & \dgray 2   & ...       & ... \\
@@ -215,13 +213,13 @@ leaves the stack in the successive states shown in Table 2-1 below
 
 Table 2-1 \textit{Picture of the stack during operations}
 
-We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables, \textit{etc}.— so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \textit{\textit{etc}}.
+We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables, \etc so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \etc
 
 The operation "\bc{.}" ("emit") displays -104 to the screen, leaving the stack empty. That is, \bc{yyy} above is \bc{-104}.
 
 \subsection{Manipulating the parameter stack}
 
-\TallC{F}{ORTH} system incorporate (at least) two stacks: the \textbf{parameter} stack which we now discuss, and the \textbf{return stack} which we defer to 2.3.2.
+\TallC{FORTH} system incorporate (at least) two stacks: the \textbf{parameter} stack which we now discuss, and the \textbf{return stack} which we defer to 2.3.2.
 
 In order to use a stack-based system, we must be able to put numbers on the stack, remove them, and rearrange their order. FORTH includes standard words for this purpose.
 
@@ -238,7 +236,7 @@ Tb exchange the top 2 numbers we have .
 \begin{center}
     \begin{tabular}{|c c c c c c c|}
         \hline
-   Cell\# & Initial    & Ops$\rightarrow$ & DROP   & SWAP        & ROT       & DUP\\ [0.5ex] 
+   Cell\# & Initial    & Ops$\rightarrow$ & DROP   & SWAP        & ROT       & DUP\\  
         \hline
         0 & \lgray -16 & Result        & \Aggray 73 & \dgray 73  & \gray 5   & \digray -16 \\ 
         1 & \lgray 73  & $\rightarrow$ & \Aggray 5  & \dgray -16 & \gray -16 & \digray -16 \\
@@ -251,14 +249,14 @@ Tb exchange the top 2 numbers we have .
 
 Table 2-2 \textit{Stack manipulation operators}
 
-These actions are shown on page 19 above in Thble 2—2 (we show what each word does to the initial stack).
+These actions are shown on page 19 above in Table 2—2 (we show what each word does to the initial stack).
 
 In addition the words \bc{OVER}, \bc{UNDER}, \bc{PICK} and \bc{ROLL} act as shown in Table 2-3 below (note \bc{PICK} and \bc{ROLL} must be preceded by an integer that says where on the stack an element gets  \bc{PICK}ed or \bc{ROLL}ed).
 
 \begin{center}
     \begin{tabular}{|c c c c c c c|}
         \hline
-   Cell\# & Initial    & Ops$\rightarrow$ & OVER   & UNDER        & 4 PICK  & 4 ROLL \\ [0.5ex] 
+   Cell\# & Initial    & Ops$\rightarrow$ & OVER   & UNDER        & 4 PICK  & 4 ROLL\\ [0.5ex] 
         \hline
         0 & \lgray -16 & Result        & \Aggray 73  & \dgray -16 & \gray 2   & \digray 2   \\ 
         1 & \lgray 73  & $\rightarrow$ & \Aggray -16 & \dgray 73  & \gray -16 & \digray -16 \\
@@ -273,10 +271,10 @@ Table 2-3 \textit{More stack manipulation operators}
 
 Clearly, \bc{1 PICK} is the same as \bc{DUP}, \bc{2 PICK} is a synonym for \bc{OVER}, \bc{2 ROLL} means \bc{SWAP}, and \bc{3 ROLL} means \bc{ROT}.
 
-As Brodie has noted (\TF), it is rarely advisable to have aword use a stack so deep that \bc{PICK} or \bc{ROLL} is needed. It is generally better to keep word definitions short, using only a small number of arguments on the stack and consuming them to the extent possible. On the other hand, \bc{ROT} and its opposite, \bc{-ROT}\footnote{defined as \bc{: -ROT ROT ROT ;}}, are often useful.
+As Brodie has noted (\TF), it is rarely advisable to have aword use a stack so deep that \bc{PICK} or \bc{ROLL} is needed. It is generally better to keep word definitions short, using only a small number of arguments on the stack and consuming them to the extent possible. On the other hand, \bc{ROT} and its opposite, \bc{-ROT}\sepfootnote{02_08}, are often useful.
 
 \subsection{The return stack and Its uses}
-\TallC{W}{e} have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism ——during actual execution- is the \textbf{return stack} (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the \textbf{next} address, it is actually called the \textbf{return} address for historical reasons.
+\TallC{We} have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism ——during actual execution- is the \textbf{return stack} (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the \textbf{next} address, it is actually called the \textbf{return} address for historical reasons.
 
 In addition to serving as a reservoir of return addresses (since words can be nested, the return addresses need a stack to be put on) the rstack is where the limits of a \bc{DO ... LOOP} construct are placed\footnote{We discuss looping in 2.7 below.}
 
@@ -319,7 +317,7 @@ Then we could duplicate and access x and y with no trouble.
 
 \section{Fetching and storing}
 
-\TallC{O}{rdinary} (16-bit) numbers are f\textit{etc}hed from memory to the stack by "\bc{@}" ("fetch"), and stored by "\bc{!}" ("store"). The word @ expects an address on the stack and replaces that address by its contents using, \textit{e.g.}, the phrase \bc{X @}. The word "\regc{!}" expects a number (NOS) and an address (T OS) to store it in, and places the number in the memory location referred to by the address, consuming both arguments in the process, as in the phrase \bc{32 X !}
+\TallC{Ordinary} (16-bit) numbers are f\textit{etc}hed from memory to the stack by "\bc{@}" ("fetch"), and stored by "\bc{!}" ("store"). The word @ expects an address on the stack and replaces that address by its contents using, \textit{e.g.}, the phrase \bc{X @}. The word "\regc{!}" expects a number (NOS) and an address (T OS) to store it in, and places the number in the memory location referred to by the address, consuming both arguments in the process, as in the phrase \bc{32 X !}
 
 Double length (32-bit) numbers can similarly be f\textit{etc}hed and stored, by \bc{D@} and \bc{DI} . (FORTH systems designed for the newer 32-bit machines sometimes use a 32-bit-wide stack and may not distinguish between single- and double-length integers.)
 
@@ -329,11 +327,11 @@ In Chapters 3, 4, S and 7 we shall extend the lexicon of \regc{@} and \regc{!} w
 
 \section{Arlthmetlc operations}
 
-\TallC{T}{he} 1979 or 1983 standards, not to mention the forthcoming ANSII standard, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ — * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
+\TallC{The} 1979 or 1983 standards, not to mention the forthcoming ANSII standard, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ — * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
 
 \section{Comparing and testlng}
 
-TallC{I}{n} addition to arithmetic, FORTH lets us compare numbers on the stack, using relational operators \bc{> < =}.These operators work as follows: the phrase
+TallC{In} addition to arithmetic, FORTH lets us compare numbers on the stack, using relational operators \bc{> < =}.These operators work as follows: the phrase
 
 \begin{lstlisting}
     2 3 > < cr > ok
@@ -373,7 +371,7 @@ In either example, \bc{THEN} marks the end of the branch, rather than having its
 
 \section{Looping and structured programming}
 
-\TallC{F}{ORTH} contains words for setting up loops that can be definite or indefinite:
+\TallC{FORTH} contains words for setting up loops that can be definite or indefinite:
 
 \begin{lstlisting}
     BEGIN xxx ﬂag UNTIL
@@ -392,7 +390,7 @@ Here \bc{xxx} is executed, \bc{WHILE} tests the ﬂag and if it is 0 (F) leaves 
     : ENDLESS BEGIN xxx 0 UNTIL ;
 \end{lstlisting}
 
-\TallC{F}{ORTH} also implements indexed loops using the words \bc{DO LOOP +LOOP /LOOP}. These appear within definitions, \textit{e.g.}
+\TallC{FORTH} also implements indexed loops using the words \bc{DO LOOP +LOOP /LOOP}. These appear within definitions, \textit{e.g.}
 
 \begin{lstlisting}
     : LOOP-EXAMPLE 100 0 DO xxx LOOP ;
@@ -458,7 +456,7 @@ A similar procedure lets a subroutine call itself recursively, an enormous help 
 
 \subsection{Defining "defining" words}
 
-\TallC{T}{he} title of this section is neither a typo nor a stutter: \bc{CREATE} finds its most important use in extending the powerful class of FORTH words called "defining" words. The colon compiler "\bc{:}" is such a word, as are \bc{VARIABLE} and \bc{CONSTANT}. The definition of \bc{VARIABLE} is simple
+\TallC{The} title of this section is neither a typo nor a stutter: \bc{CREATE} finds its most important use in extending the powerful class of FORTH words called "defining" words. The colon compiler "\bc{:}" is such a word, as are \bc{VARIABLE} and \bc{CONSTANT}. The definition of \bc{VARIABLE} is simple
 
 \begin{lstlisting}
     : VARIABLE CREATE 2 ALLOT ;
@@ -490,7 +488,7 @@ Double-length variables are defined \textit{via} \bc{DVARIABLE}, whose definitio
     : DVARIABLE CREATE 4 ALLOT ;
 \end{lstlisting}
 
-\TallC{F}{ORTH} has a method for defining words initialized to contain specific values: for example, we might want to define the number 17 to be a word. \bc{CREATE} and "\bc{,}" ("comma") let us do this as follows:
+\TallC{FORTH} has a method for defining words initialized to contain specific values: for example, we might want to define the number 17 to be a word. \bc{CREATE} and "\bc{,}" ("comma") let us do this as follows:
 
 \begin{lstlisting}
     17 CREATE SEVENTEEN , <cr> ok
@@ -508,7 +506,7 @@ A word \bc{C}, ("see-comma") puts a byte-value into the next byte of the diction
 
 \subsection{Run-time vs. compile-time actions}
 
-\TallC{I}{n} the preceding example, we were able to initialize the variable \bc{SEVENTEEN} to 17 when we \bc{CREATE}d it, but we still have to fetch it to the stack \textit{via} \bc{SEVENTEEN @} whenever we want it. This is not quite what we had in mind: we would like to find 17 in T0S when we say \bc{SEVENTEEN}. The word \bc{DOES>} gives us precisely the tool to do this.
+\TallC{In} the preceding example, we were able to initialize the variable \bc{SEVENTEEN} to 17 when we \bc{CREATE}d it, but we still have to fetch it to the stack \textit{via} \bc{SEVENTEEN @} whenever we want it. This is not quite what we had in mind: we would like to find 17 in T0S when we say \bc{SEVENTEEN}. The word \bc{DOES>} gives us precisely the tool to do this.
 
 As noted above, the function of \bc{DOES>} is to specify a run-time action for the "child" words of a defining word. Consider the defining word \bc{CONSTANT}, defined in high-level\footnote{Of course \bc{CONSTANT} is usually a machine—code primitive, for speed.} FORTH by
 
@@ -534,7 +532,7 @@ What happened?
 
 \subsubsection{Klingons}
 
-\TallC{L}{et} us make a more complex example. Suppose we had previously defined a word \bc{BOX ( n x y -- )} that draws a small square box of n pixels to a side centered at (x, y) on the graphics display. We could use this to indicate the instantaneous location of a moving object -- say a Klingon space-ship in a space-war game.
+\TallC{Let} us make a more complex example. Suppose we had previously defined a word \bc{BOX ( n x y -- )} that draws a small square box of n pixels to a side centered at (x, y) on the graphics display. We could use this to indicate the instantaneous location of a moving object -- say a Klingon space-ship in a space-war game.
 
 So we define a defining word that creates (not very realistic looking) space ships as squares n pixels on a side:
 
@@ -630,7 +628,7 @@ This is an improvement, but FORTH lets us do even better: here is a simple exten
 
 \subsection{Advanced methods of controlllng the compiler}
 
-\TallC{F}){ORTH} includes a technique for switching from compile mode to interpret mode while compiling or interpreting. This is done using the words \bc{]} and \bc{[} . (Contrary to intuition, \bc{]} turns the compiler on, \bc{[} turns it off.)
+\TallC{FORTH} includes a technique for switching from compile mode to interpret mode while compiling or interpreting. This is done using the words \bc{]} and \bc{[} . (Contrary to intuition, \bc{]} turns the compiler on, \bc{[} turns it off.)
 
 One use of \bc{]} and \bc{[} is to create an "action table" that allows us to choose which of several actions we would like to perform\footnote{Better methods will be described in Chapter 5.}.
 
@@ -681,7 +679,7 @@ A similar facility with pointers gives the C language its abstractive power, and
 
 \section{Strings}
 
-\TallC{B}{y} now it should be apparent that FORTH can do anything any other language can do. One feature we need in any sort of programming --scientific or otherwise-- is the ability to handle alphanumeric strings. We frequently want to print messages to the console, or to put captions on figures, even if we have no interest in major text processing.
+\TallC{By} now it should be apparent that FORTH can do anything any other language can do. One feature we need in any sort of programming --scientific or otherwise-- is the ability to handle alphanumeric strings. We frequently want to print messages to the console, or to put captions on figures, even if we have no interest in major text processing.
 
 While every FORTH system must include words to handle strings(see, e.g., \FTR Ch. 9) --the very functioning of the outer interpreter, compiler, \textit{etc.}, demands this-- there is little unanimity in defining extensions. BASIC has particularly good string-handling features, so HS/FORTH and others provide extensions designed to mimic BASIC’s string functions.
 
@@ -714,7 +712,7 @@ One might contemplate modifying the \FTR lexicon by using a full 16-bit cell for
 
 \section{FORTH programming style}
 
-\TallC{A}{} FORTH program typically looks like this
+\TallC{A} FORTH program typically looks like this
 \begin{lstlisting}
     \ Example of FORTH program
     :WORD1 ... ;
@@ -736,7 +734,7 @@ Brodie notes in \TF that high-level programming languages are considered good if
 
 \subsection{Structure}
 
-\TallC{T}{he} philosophy of "structured programming" entered the general consciousness in the early 1970’s. The idea was to make the logic of program control flow immediately apparent, thereby aiding to produce correct and maintainable programs. The language Pascal was invented to impose by fiat the discipline of structure. To this end, direct jumps (GOTOs) were omitted from the language\footnote{Ironially, most programmers refuse to get along without spaghetti code, so commercial Pascal's now include GOTO. Only FORTH among major languages completely eschews both line labels and GOTOs, making it the most structured language available.}.
+\TallC{The} philosophy of "structured programming" entered the general consciousness in the early 1970’s. The idea was to make the logic of program control flow immediately apparent, thereby aiding to produce correct and maintainable programs. The language Pascal was invented to impose by fiat the discipline of structure. To this end, direct jumps (GOTOs) were omitted from the language\footnote{Ironially, most programmers refuse to get along without spaghetti code, so commercial Pascal's now include GOTO. Only FORTH among major languages completely eschews both line labels and GOTOs, making it the most structured language available.}.
 
 FORTH programs are automatically structured because word definitions are nothing but subroutine calls. The language contains no direct jump statements (that is, no GOTO's) so it is \textit{impossible} to write "spaghetti" code.
 
@@ -744,7 +742,7 @@ A second aspect of structure that FORTH imposes (or at least encourages) is \tex
 
 subsection{"Top-down" design}
 
-TallC{M}{ost} authors of "how to program" books recommend designing the entire program from the general to the particular. This is called "top-down" programming, and embodies these steps:
+TallC{Most} authors of "how to program" books recommend designing the entire program from the general to the particular. This is called "top-down" programming, and embodies these steps:
 
 \begin{itemize}
     \item Make an outline, ﬂow chart, data-ﬂow diagram or whatever, taking a broad overview of the whole problem.
@@ -763,7 +761,7 @@ We will observe this evolutionary style in later chapters as we design actual pr
 
 \subsection{Information hiding}
 
-\TallC{I}{nformation} (or data) "hiding" is another doctrine of structured programming. It holds that no subroutine should have access to, or be able to alter (corrupt!) data that it does not absolutely require for its own functioning\footnote{Rather like the "cell" system in revolutionary conspiracies, where members of a cell know only each other but not the members of other cells. Mechanisms for receiving and transmitting messages between cells are double-blind. Hence, if an individual is captured or is a spy, he can betray at most his own cell and the damage is limited.}.
+\TallC{Information} (or data) "hiding" is another doctrine of structured programming. It holds that no subroutine should have access to, or be able to alter (corrupt!) data that it does not absolutely require for its own functioning\footnote{Rather like the "cell" system in revolutionary conspiracies, where members of a cell know only each other but not the members of other cells. Mechanisms for receiving and transmitting messages between cells are double-blind. Hence, if an individual is captured or is a spy, he can betray at most his own cell and the damage is limited.}.
 
 Data hiding is used both to prevent unforeseen interactions between pieces of a large program; and to ease designing and debugging a large program. The program is broken into small, manageable chunks ("black boxes") called \textbf{modules} or \textbf{objects} that communicate by sending messages to each other, but are otherwise mutually impenetrable. Information hiding and modularization are now considered so important that special languages --Ada, MODULA-Z, C++, and Object Pascal-- have been devised with it in mind.
 
@@ -803,7 +801,7 @@ What has this to do with FORTH?
 
 \subsection{Documenting and commenting FORTH code}
 
-\TallC{F}{ORTH} is sometimes accused of being a "write-only language. In other words, some complain that FORTH is cryptic. I feel this is basically a complaint against poor documentation and unhelpful word names, as Brodie and others have noted.
+\TallC{FORTH} is sometimes accused of being a "write-only language. In other words, some complain that FORTH is cryptic. I feel this is basically a complaint against poor documentation and unhelpful word names, as Brodie and others have noted.
 
 Unreadability is equally a flaw of poorly written FORTRAN, Pascal, C, \textit{et al}.
 
