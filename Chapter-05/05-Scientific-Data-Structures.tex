@@ -2,7 +2,7 @@
 \startcontents[chapters]
 \printcontents[chapters]{}{1}{}
 
-\TallC{D}{ata} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
+\TallC{Data} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
 
 \begin{itemize}
     \item The re-defined structures are what most users need to solve stan ard problems, so meet 80-90\% of the cases in practice. That 15, they are not terribly restrictive.
@@ -24,11 +24,11 @@ Z = -37.2E-17*CEXP(CMPLX((R**2,W)/32)/DSIN(W)
 
 place great demands on a compiler. The compiler first tabulates the types of the variables and literals in the expression, and then decide which run-time routines to insert. With two types of integers and four types of floating-point numbers (REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16) a typical binary operator such as exponentiation (** offers 36 possibilities. No wonder FORTRAN compilers are slow. 
 
-\TallC{F}{ORTH} sacrifices automation opting for a small, fast, flexible compiler. The traditional FORTH style gives each type of data its own operators. However, if a program demands all the standard REAL*4, REAL*S, COMPLEX*8 and COMPLEX*16 data types (not to mention INTEGER*2 and *4), having to remember them all and use them appropriately is a chore. This problem has
+\TallC{FORTH} sacrifices automation opting for a small, fast, flexible compiler. The traditional FORTH style gives each type of data its own operators. However, if a program demands all the standard REAL*4, REAL*S, COMPLEX*8 and COMPLEX*16 data types (not to mention INTEGER*2 and *4), having to remember them all and use them appropriately is a chore. This problem has
 
 led me to experiment with generic access operators, \bc{G@} and \bc{G!}. These let FORTH keep track of which words to use in fetching and storing the "scientific" data types to the fstack (which may partly reside on a co-processor like the 80x87 or MC68881 chips). Corresponding generic unary and binary floating point operators \bc{GDUP}, \bc{G*}, \textit{etc}. allow programs themselves to be generic.
 
-\TallC{I}{} have lately further modified the scheme to permit more complete automation. The kernel of the method is an "intelligent" fstack, or ifstack, that recordns the type of each number on it. The generic arithmetic operators and library functions decide from the information on the ifstack how to treac their operands.
+\TallC{I} have lately further modified the scheme to permit more complete automation. The kernel of the method is an "intelligent" fstack, or ifstack, that recordns the type of each number on it. The generic arithmetic operators and library functions decide from the information on the ifstack how to treac their operands.
 
 An ifstack-base protocol for floating point and complex arithmetic has drawbacks and advantages. A major drawback is the run-time overhead in maintaining the ifstack and in choosing the appropriate operator for a given situation. In other words we trade convenience for a non-negligible execution speed penalty. To some extent this can be mitigated by \textit{computing} decisions and by vectoring rather than branching (\textit{i.e.} no Eaker \bc{CASE} statements or \bc{IF ... ELSE ... THEN}s). Moreover, although the definitions are coded in high-level FORTH for portability, the key words should be hand-assembled for the target machine. Finally, my high-level ifstack manager has plenty of error checking that could be dispensed ith when speed is an issue.
 
@@ -40,7 +40,7 @@ The chief advantages of the ifstack are:
 \end{itemize}
 
 \subsection{Type descriptors}
-\TallC{T}{o} decide at run-time which \regc{@} or \regc{!} to use for a particular datum, FORTH needs to know what type of datum it is. The scheme described here wastes a little memory by attaching to each variable a label that tells \bc{G@} and \bc{G!} how to get hold of it.
+\TallC{To} decide at run-time which \regc{@} or \regc{!} to use for a particular datum, FORTH needs to know what type of datum it is. The scheme described here wastes a little memory by attaching to each variable a label that tells \bc{G@} and \bc{G!} how to get hold of it.
 
 Here is how we label types:
 \begin{lstlisting}
@@ -57,7 +57,7 @@ Here is how we label types:
 
 \subsection{Typed scalars}
 
-\TallC{W}{e} want the machine to remember for us the data-specific fetches and stores to the co-processor. To accomplish this, the typed variable has to place its address and type on the stack. Thus we need a data structure that we might visualize diagramatically in Fig. 5-1 below (a cell  represents 2 bytes):
+\TallC{We} want the machine to remember for us the data-specific fetches and stores to the co-processor. To accomplish this, the typed variable has to place its address and type on the stack. Thus we need a data structure that we might visualize diagramatically in Fig. 5-1 below (a cell  represents 2 bytes):
 
 Fig. 5-1 Memory structure a! a typed scalar
 
@@ -79,7 +79,7 @@ DCOMPLEX SCALAR ZZ
 \end{lstlisting}
 
 \subsection{Defining several scalars at once}
-\TallC{O}{ne} aspect of the FORTH method of handling variables, that seems strange to programmers familiar with Pascal, BASIC, or FORTRAN, is that \bc{VARIABLE}, \bc{CONSTANT} or a new defining word like \bc{SCALAR} need to be repeated for each one defined, as above. That is, such defining words generally do not accept name-lists.
+\TallC{One} aspect of the FORTH method of handling variables, that seems strange to programmers familiar with Pascal, BASIC, or FORTRAN, is that \bc{VARIABLE}, \bc{CONSTANT} or a new defining word like \bc{SCALAR} need to be repeated for each one defined, as above. That is, such defining words generally do not accept name-lists.
 
 This idiosyncracy can be traced to FORTH's abhorrence of variables:
 \begin{itemize}
@@ -110,13 +110,13 @@ Variables are essential for scientific programming. Since we must often have mor
 I find the use of \bc{SCALARS} with modifiers and lists more convenient and readable than many repetitions of \bc{SCALAR}. Its resemblance to FORTRAN (thereby helping me live with my FORTRAN-inspired habits) is pure coincidence. Although possible to use a terminator (",\eg) rather than a count (to define the variable list) I feel it is desirable for the programmer to know how many variable names he has supplied, hence the counted version.
 
 \subsection{Generic access}
-\TallC{A}{} major theme of FORTH is to replace decisions by calculation henever possible\footnote{Leo Brodie, \textit{Thinkning FORTH} (Prentice-Hall, Inc., Englewood Cliff, NJ, 1984), p. 118ff. See also J.V. Noble, "Avoid Decisions", \textit{Computers in Physics} 5,4 (1991) 386.}. This philosophy usually pays dividends in execution speed and brevity of code.
+\TallC{A} major theme of FORTH is to replace decisions by calculation henever possible\footnote{Leo Brodie, \textit{Thinkning FORTH} (Prentice-Hall, Inc., Englewood Cliff, NJ, 1984), p. 118ff. See also J.V. Noble, "Avoid Decisions", \textit{Computers in Physics} 5,4 (1991) 386.}. This philosophy usually pays dividends in execution speed and brevity of code.
 
 But there is an even more important reason to avoid \bc{IF ... THEN} decisions, especially when working with modern microprocessors. CPUs like 80x86 and MC680x0 achieve their speed in part by pre-fetching instructions and storing them in a queue in high speed on-chip cache memory. A conditional-branch machine instruction (the crux of \bc{IF ... THEN}) empties the queue whenever the branch is taken. Branches should be avoided because they slow execution far more than one might expect based on their clock-counts alone.
 
 To replace decisions, we use the standard FORTH technique of the execution array (analogous to the familiar assembly language jump table). This lets us compute from the type descriptor which fetch or store to use.
 
-\TallC{W}{e} now define \bc{G@} and \bc{G!} as execution arrays using\footnote{HS/PORTH uses a word pair \bc{CASE: ... ;CASE} that performs the same task as \bc{G: .. ;} below. \bc{G:} was inspired by Michael Ham (\textit{Dr. Dobb's Journal}, October 1986).} anexecution-array-defining word \bc{G:}
+\TallC{We} now define \bc{G@} and \bc{G!} as execution arrays using\footnote{HS/PORTH uses a word pair \bc{CASE: ... ;CASE} that performs the same task as \bc{G: .. ;} below. \bc{G:} was inspired by Michael Ham (\textit{Dr. Dobb's Journal}, October 1986).} anexecution-array-defining word \bc{G:}
 
 \begin{lstlisting}
     : G: CREATE ]
@@ -149,7 +149,7 @@ Microprocessors like the MC680x0 and 80386 that can address large, level memorie
 \end{lstlisting}
 
 \subsection{The intelligent floating point stack (ifstack)}
-\TallC{T}{he} \textbf{ifstach} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
+\TallC{The} \textbf{ifstach} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
 
 But the typed data have varying lengths, from 4 to 16 bytes. We can deal with this two different ways: either \bc{ALLOT} enough memory to hold a stack of the longest type, making each position on the ifstack 18 bytes wide (to hold datum plus type); or manage the ifstack as a modified heap, with the address of a given datum being computable from the ifstack-pointer and the data type.
 
@@ -237,7 +237,7 @@ The stack comments and comments should make the preceding code self-explanatory.
 
 \subsection{Unary and binary generic operators}
 
-\TallC{W}{e} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table 5-1 on page 101, in binary notation.
+\TallC{We} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table 5-1 on page 101, in binary notation.
 
 Real and complex can then be distinguished via the code fragment
 
@@ -343,10 +343,10 @@ The only instance where one might forego the overhead penalty paid for the conve
 
 \section{Arrays of typed data}
 
-\TallC{N}{umerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
+\TallC{Numerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
 
 \section{Improved (FORTRAN-like) array notation}
-\TallC{S}{omething} like V(15) —the 15'th element of V- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} —but this is both hard to read and unintuitive\footnote{Other authors have noted this and proposed more readable matrix notations. See, \eg, Joe Bentham, "FORTH and the Fast Fourier Transform" \textit{Dr. Dobb‘s Journal}, September, 1984, p. 34. Also Dick Pountains's book \textit{Object-oriented FORTH (op cit.)} uses an array naming convention with brackets.}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
+\TallC{Something} like V(15) —the 15'th element of V- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} —but this is both hard to read and unintuitive\footnote{Other authors have noted this and proposed more readable matrix notations. See, \eg, Joe Bentham, "FORTH and the Fast Fourier Transform" \textit{Dr. Dobb‘s Journal}, September, 1984, p. 34. Also Dick Pountains's book \textit{Object-oriented FORTH (op cit.)} uses an array naming convention with brackets.}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
 FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\footnote{Recall that the standard FORTH delimiter is the ASCII blank (20h = 32d).}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary —which would let us redefine anything we want- "(" is too useful as a comment delineator to dispense with.
 
@@ -399,7 +399,7 @@ as
 which translates in words to "add the offset in BX to that in SI and then add 8 to get the total offset; take the segment descriptor in CS, multiply by 16 and add to produce the absolute address.
 
 \subsection{Using high memory}
-\TallC{H}{S}/FORTH permits accessing all the memory in a PC/AT (up
+\TallC{HS/FORTH} permits accessing all the memory in a PC/AT (up
 to 1 megabyte) in the following manner:
 \begin{itemize}
     \item Define a named segment of length 1 byte: this marks the beginning of available memory.
@@ -451,7 +451,7 @@ The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to t
 The 32-bit address is placed on the stack as a double-length integer, with the low-order (\ie offset part) above the segment part. The phrase \bc{OVER 15 AND} saves bits 0-3 (of the 32-bit address); \bc{-ROT D/16 DROP} then shifts the (32-bit) address right 4 bits and drops the least-significant part, to produce the offset. This conversion method produces offsets in the range 00-0F (hex), that clearly have nothing to do with the original offsets (that led to the 32-bit absolute address \textit{via} 16*seg + off ).
 
 \subsection{A general typed-array definition}
-\TallC{F}{or} the new syntax to work the word \bc{}} must compute the addresses of the n'th element of \bc{V{} from the information on the stack, and \bc{}}} must do the same for \bc{M{{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V{ n }}and \bc{M{{ m n }}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
+\TallC{For} the new syntax to work the word \bc{}} must compute the addresses of the n'th element of \bc{V{} from the information on the stack, and \bc{}}} must do the same for \bc{M{{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V{ n }}and \bc{M{{ m n }}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
 
 Before we can define \bc{}}, however, we must specify the data: structure it operates on, \ie the array header.
 
@@ -559,7 +559,7 @@ Finally, here is a useful diagnostic word
 \end{lstlisting}
 
 \subsection{2ARRAY and \}\} }
-\TallC{W}{e} now want to define arrays of higher dimensionality. For example, to define a 2-dimensional array we might say
+\TallC{We} now want to define arrays of higher dimensionality. For example, to define a 2-dimensional array we might say
 
 \begin{lstlisting}
     90 LONG BY 90 WIDE COMPLEX 2ARRAY XA{{
@@ -589,7 +589,7 @@ Some of the words in our typed-data/matrix lexicons should be optimized or redef
 
 Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
-\TallC{S}{ignificant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \texit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile—time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \texit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
+\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \texit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile—time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \texit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
 
 \leftbar[1\linewidth]
 FORTH data structures, especially as defined in this Chapter, do little- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.

@@ -2,7 +2,7 @@
 \startcontents[chapters]
 \printcontents[chapters]{}{1}{}
 
-\TallC{O}{ne} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this featurel. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal via subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)2 . The same problem would afflict C and the new structured BASICs.
+\TallC{One} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this featurel. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal via subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)2 . The same problem would afflict C and the new structured BASICs.
 
 Recently, a mechanism for adding complex arithmetic to Pascal by defining a stack and using postfix notation has been proposed3. Does this sound at all familiar?
 
@@ -17,7 +17,7 @@ This chapter deals with complex arithmetic and its implementation in FORTH. We d
 3. D. Gedeon, "Complex Math in Pascal", Byte Magazine, July 1987, p.121.
 
 \section{The complex number system}
-\TallC{T}{he} algebraic equation
+\TallC{The} algebraic equation
 
 x^2 - 1 = 0
 
@@ -31,7 +31,7 @@ a_0x^0 + a_1x^1 + a_2x^2 + ... + a_nx^n
 \triple= a_n(x-x_1)(x_x_2) ... (x-x_n)
 
 \subsection{Cartesian representation of complex numbers}
-\TallC{I}{n} order that every polynomial have n roots it was necessary to extend the idea of number to include objects of the form
+\TallC{In} order that every polynomial have n roots it was necessary to extend the idea of number to include objects of the form
 
 z = x 1 + y i
 
@@ -60,7 +60,7 @@ These are just the usual multiplication rules for complex numbers. Note that x l
 
 x 1 \triple= ( x 0 0 x ) , y i \triple= ( 0 y -y 0 )
 
-\TallC{T}{he} complex numbers obey all the algebraic rules of ordinary arithmetic — commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
+\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic — commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
 
 (a + ib)(x + iy) = (ax - by) + i(ay + bx)
 
@@ -116,7 +116,7 @@ and5
 Note that $\theta$, sometimes called Arg(z), is defined only up to multiples of $2\pi$ — that is, adding $2\pi$ to an angle changes neither sine nor cosine because of their periodicity. The relations between $(x,y)$ and $(r,\theta) are illustrated in Fig. 7-1 above:
 
 \section{Load, store, manipulate fstack}
-\TallC{W}{e} now define FORTH words to perform complex arithmetc. All complex operations will be prefixed by the letter X6. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
+\TallC{We} now define FORTH words to perform complex arithmetc. All complex operations will be prefixed by the letter X6. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
 
 In 87stack (or fstack) diagrams 2 stands for complex number, x for real part, and y for imaginary part. Where useful, the 87stack diagrams show the operations decomposed into real and imaginary parts. By convention the imaginary part is higher on the fstack than the real part.
 
@@ -147,7 +147,7 @@ The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing
 :XDUP FOVER FOVER ;  ( 87:z--z z )
 
 \section{Arithmetic operations}
-\TallC{T}{he} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex X complex and complex/complex.
+\TallC{The} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex X complex and complex/complex.
 
 :CMPLX F=0 ;     ( 87: x--x 0 )
 : X+ FROT F+  F-ROT F+ FSWAP ;
@@ -187,7 +187,7 @@ CODE X*         \ x  y a b
     1 FADDP.    \ xa-yb bx+ay
 ENDCODE ( x y a b--xa-yb xb+ya )
 
-\TallC{O}{nce} we have multiplication, division is easy:
+\TallC{Once} we have multiplication, division is easy:
 
 : XMODSQ            ( 87:x y--x**2+y**2 )
     F**2 FSWAP F**2 F+ ;
@@ -212,7 +212,7 @@ SYNONYM FATAN2 ARG
 7. SYNONYM is an HS/FORTH innovation to save some code by avoiding : FATAN2 ARG ;
 
 \section{Roots of complex numbers}
-\TallC{T}{he} n'th root of a complex number $z$ is that complex number, $z^{1/n}$, whose n'th power is the original number. That is, as for realnumbers,
+\TallC{The} n'th root of a complex number $z$ is that complex number, $z^{1/n}$, whose n'th power is the original number. That is, as for realnumbers,
 
 (z^{1/n})^n \equiv z
 
@@ -284,7 +284,7 @@ Figure 7-2
 Fig. 7-2 Complex number with negative imaginary part, and its principal square root
 
 \subsection{The complex square root program}
-\TallC{W}{e} now translate these equations into high-level FORTH with comments:
+\TallC{We} now translate these equations into high-level FORTH with comments:
 
 : XSORT                 ( 87:z --z**1/2 )
     FSWAP XDUP XABS     ( 87:--y x r )
@@ -302,7 +302,7 @@ Fig. 7-2 Complex number with negative imaginary part, and its principal square r
 We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small through roundoff, thereby generating an error in the square root routine.
 
 \section{Complex exponentials and trigonometric functions}
-\TallC{C}{omplex} exponentials and trigonometric functions are nearly self-explanatory. They are based on Euler’s theorem,
+\TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on Euler’s theorem,
 
 e^{i\theta} = \cos\theta + i \sin\theta
 

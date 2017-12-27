@@ -2,7 +2,7 @@
 \startcontents[chapters]
 \printcontents[chapters]{}{1}{}
 
-\TallC{I}{n} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a deﬁnite interval; determining the function of a given form that most closely fits a set of data.
+\TallC{In} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a deﬁnite interval; determining the function of a given form that most closely fits a set of data.
 
 \section{Numerlcal Integration}
 We begin by defining the definite integral of a function f($x$). Then we discuss some methods for (numerically) approximating the integral. This process is called numerical integration or numerical quadrature. Finally, we write some FORTH programs based on the various methods we describe.
@@ -30,7 +30,7 @@ It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)
 Similarly, the lower bound will be low by about the same amount. This means that if we halve $w$ (by taking twice as many points), the accuracy of the approximation will double. The mathematical definition of $\int_{a}^{b} f(x) dx$ is the number we get by taking the limit as the width $w$ of the rectangles becomes arbitrarily small. We know that such a limit exists because the actual area has been captured between lower and upper bounds that shrink together as we take more points.
 
 \subsection{The fundamental theorem of calculus}
-\TallC{S}{uppose} we think of $\int_{a}^{b}f(x) dx$ as a function —Call it $F(b)$— of the upper limit, $b$. What would happen if we compared the area $F(b)$ with the area $F(b + \Delta b)$: We see that the difference between the two is (for small $\Delta b$)
+\TallC{Suppose} we think of $\int_{a}^{b}f(x) dx$ as a function —Call it $F(b)$— of the upper limit, $b$. What would happen if we compared the area $F(b)$ with the area $F(b + \Delta b)$: We see that the difference between the two is (for small $\Delta b$)
 
 \Delta F(b) = F(b+\Delta b) - F(b) \approx f(b)\Delta b + O((\Delta b)^2) 
 
@@ -57,7 +57,7 @@ The desired integral is $F(b)$.
 The chief disadvantage of using a differential equation solver to evaluate a deﬁnite integral is that it gives us no error criterion. We would have to solve the problem at least twice, with two different step sizes, to be sure the result is sufficxently precise3.
 
 \subsection{Monte-Carlo method}
-\TallC{T}{he} area under $f(x)$ is exactly equal to the average height $f$ of $f(x)$ on the interval $[a, b]$, times the length, $b—a$, of the interval4. How can we estimate $f$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator.
+\TallC{The} area under $f(x)$ is exactly equal to the average height $f$ of $f(x)$ on the interval $[a, b]$, times the length, $b—a$, of the interval4. How can we estimate $f$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator.
 
 3. This is not strictly correct: one could use a differential equation solver of the "predictor/corrector" variety, with variable step-size, to integrate Eq. 4. See, e.g., Press, et al., Numerical Recipes (Cambridge University Press, Cambridge, 1986), pp. 102 ff.
 
@@ -196,7 +196,7 @@ The word DEBUG is included to produce useful output every 10 points as an aid to
 The chief virtue of the program we have just written is that it is easily generalized to an arbitrary number of dimensions. The generalization is left as an exercise.
 
 \section{Adaptlve methods}
-\TallC{O}{bviously}, to minimize the execution time of an integration subroutine requires that we minimize the number of times the function $f(x)$ has to be evaluated. There are two aspects to this:
+\TallC{Obviously}, to minimize the execution time of an integration subroutine requires that we minimize the number of times the function $f(x)$ has to be evaluated. There are two aspects to this:
 \begin{itemize}
     \item First, we must evaluate $f(x)$ only once at each point $x$ in the interval.
     \item Second, we evaluate $f(x)$ more densely where it varies rapidly than where it varies slowly. Algorithms that can do this are called adaptive.
@@ -207,7 +207,7 @@ To apply adaptive methods to Monte Carlo integration, we need an algorithm that 
 However, adaptive methods can be applied quite easily to deterministic quadrature formulae such as the trapezoidal rule or Simpson’s rule. Adaptive quadrature is both interesting in its own right and illustrates a new class of programming techniques, so we pursue it in some detail.
 
 \section{Adaptive Integration on the real line}
-\TallC{W}{e} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision speciﬁed in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. 6 1.3.2:
+\TallC{We} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision speciﬁed in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. 6 1.3.2:
 
 \begin{lstlisting}
 USE( F.name % L.lim % U.lim % err )INTEGRAL
@@ -216,7 +216,7 @@ USE( F.name % L.lim % U.lim % err )INTEGRAL
 Now, how do we ensure that the routine takes a lot of points when the function $f(x)$ is rapidly varying, but few when $f(x)$ is smooth? The simplest method uses recursion7.
 
 \subsection{Digression on recursive algorithms}
-\TallC{W}{e} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the ﬁrst).
+\TallC{We} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the ﬁrst).
 
 Since there is no way to know \textit{a priori} how many times a program will call itself, memory allocation for the arguments must be dynamic. That is, a recursive routine places its arguments on a stack so each invocation of the program can ﬁnd them. This is the method employed in recursive compiled languages such as Pascal, C, or modern BASIC. Recursion is of course natural in FORTH
 since stacks are intrinsic to the language.
@@ -224,7 +224,7 @@ since stacks are intrinsic to the language.
 6. J.M. Hammersley and D.C. Hanscomb, \textit{Monte Carlo Methods} (Methuen, London, 1964).
 7. See, \eg, R. Sedgewick, \textit{Algorithms} (Addison-Wesley Publishing Company, Reading, MA, 1983), p. 85.
 
-\TallC{W}{e} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid8 devised a rapid algorithm for ﬁnding the gcd9 which can be expressed symbolically as
+\TallC{We} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid8 devised a rapid algorithm for ﬁnding the gcd9 which can be expressed symbolically as
 
 gcd(u,v) = u, v= 0
            gcd(v, u mod v) else
@@ -271,7 +271,7 @@ Note how GCD successively calls itself, placing the same address (displayed in h
 
 Recursion can get into difficulties by exhausting the stack or rstack. Since the stack in GCD never contains more than three numbers, only the rstack must be worried about in this example.
 
-\TallC{R}{ecursive} programming possesses an undeserved reputation or slow execution, compared with nonrecursive equivalent programs12. Compiled languages that permit recursion —\eg, BASIC, C, Pascal— generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
+\TallC{Recursive} programming possesses an undeserved reputation or slow execution, compared with nonrecursive equivalent programs12. Compiled languages that permit recursion —\eg, BASIC, C, Pascal— generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
 
 12. For examlpe, it is often claimed that removing recursion almost always produces a faster algorithm. See, \eg Sedgewick, \textit{op. cit.}, p. 12.
 
@@ -313,7 +313,7 @@ T_{n} = \tau[(\frac{1+\sqrt{5}}}{2})^n - 1]
 
 That is, the execution time increases exponentially with the size of the problem. The reason for this is simple: recursion managed to replace the original problem by two of nearly the same size, \ie recursion nearly doubled the work at each step!
 
-\TallC{T}{he} preceding analysis of why recursion was bad suggests how recursion can be helpful: we should apply it whenever a given: problem can be replaced by -say- two problems of half the original size, that can be recombined in n or fewer operations. An example is mergesort, where we divide the list to be sorted into two roughly equal lists, sort each and then merge them:
+\TallC{The} preceding analysis of why recursion was bad suggests how recursion can be helpful: we should apply it whenever a given: problem can be replaced by -say- two problems of half the original size, that can be recombined in n or fewer operations. An example is mergesort, where we divide the list to be sorted into two roughly equal lists, sort each and then merge them:
 
 \begin{verbatim}
 subroutine sort(|ist[0,n])
@@ -334,7 +334,7 @@ T_{n} \approx n log_2 (n)
 
 (In fact, the running time for mergeson is comparable with the fastest sorting algorithms.) Algorithms that subdivide problems in this way are said to be of divide and conquer type.
 
-\TallC{A}{daptive} integration can be expressed as a divide and conquer
+\TallC{Adaptive} integration can be expressed as a divide and conquer
 
 algorithm, hence recursion can simplify the program. In pseu-
 docode (actually QuicltBasicO ) we have the program shown
