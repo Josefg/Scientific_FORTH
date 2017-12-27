@@ -1,6 +1,6 @@
 % All footnotes are here.
 
-% Chapter 1 footnotes
+% **** Chapter 1 footnotes ****
 \sepfootnotecontent{01_01}{This description refers to FORTH's compilation scheme. See, e.g. R.G. Loeliger, \textit{Threaded Interpretive Languages} (Byte Publications, Inc., Peterborough, NH, 1981). We shall have more to say about it in Chatper 2.}
 
 \sepfootnotecontent{01_02}{Although some interpreted FORTRANs such as WATFOR have been developed.}
@@ -13,6 +13,9 @@
 
 \sepfootnotecontent{01_06}{L. Brodie, \textit{Thinking Forth} (Prentice-Hall, Inc., Englewood Cliffs, New Jersey, 1984). M. Ham, "Structured Programming", \textit{Dr. Dobb's Journal}, July 1986.}
 
+
+
+% **** Chapter 2 footnotes ****
 \sepfootnotecontent{02_01}{L. Brodie, \textit{Starting FORTH}, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as \SF.}
 
 \sepfootnotecontent{02_02}{L. Brodie, \textit{Thinking FORTH} (Prentice-Hall, NJ 1984), referred to hereafter as \TF.}
@@ -28,3 +31,45 @@
 \sepfootnotecontent{02_07}{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}
 
 \sepfootnotecontent{02_08}{defined as \bc{: -ROT ROT ROT ;}}
+
+
+
+% **** Chapter 8 footnotes ****
+\sepfootnotecontent{08_01}{If a rectangle lies below the horizontal axis, its area is considered to be \textbf{negative}.}
+
+\sepfootnotecontent{08_02}{f'(x)is the slope of the line tangent to the curve at the point $x$. It is called the first derivative of $f(x)$.}
+
+\sepfootnotecontent{08_03}{This is not strictly correct: one could use a differential equation solver of the "predictor/corrector" variety, with variable step-size, to integrate Eq. 4. See, e.g., Press, et al., Numerical Recipes (Cambridge University Press, Cambridge, 1986), pp. 102 ff.}
+
+\sepfootnotecontent{08_04}{That is, this statement defines $\bar{f}$.}
+
+\sepfootnotecontent{08_05}{The word % pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.}
+
+\sepfootnotecontent{08_06}{J.M. Hammersley and D.C. Hanscomb, \textit{Monte Carlo Methods} (Methuen, London, 1964).}
+
+\sepfootnotecontent{08_07}{See, \eg, R. Sedgewick, \textit{Algorithms} (Addison-Wesley Publishing Company, Reading, MA, 1983), p. 85.}
+
+\sepfootnotecontent{08_08}{An ancient Greek mathematician known for one or two other things!}
+
+\sepfootnotecontent{08_09}{See, \eg Sedgewick, \textit{op. cit.}, p. 11.}
+
+\sepfootnotecontent{08_10}{Most FORTHs do not permit a word to call itself by name; the reason is that when the compiler tries to compile the self-reference, the deﬁnition has not yet been completed and so cannot be looked up in the dictionary. Instead, we use \textbf){RECURSE} to stand for the name of the self-calling word. See Note 14 below.}
+
+\sepfootnotecontent{08_11}{TRACE is specific to HS/FORTH, but most dialects will support a similar operation. \textbf{SSTRACE} is a modiﬁcation that sinde-steps through a program.}
+
+\sepfootnotecontent{08_12}{For examlpe, it is often claimed that removing recursion almost always produces a faster algorithm. See, \eg Sedgewick, \textit{op. cit.}, p. 12.}
+
+\sepfootnotecontent{08_13}{For generality we do not specify the integration rule for sub-intervals, but factor it into its own word. If we want to change the rule, we then need redeﬁne but one component (actually two, since the Richardson extrapolation --see Appendix 8.C-- needs to be changed also).}
+
+\sepfootnotecontent{08_14}{We may deﬁne \bc{RECURSE} (in reverse order) as
+\begin{lstlisting}
+    : RECURSE ?COMP LAST-CFA , ;
+    : ?COMP STATE @ 0= ABORT" Compile only!" ;
+    : LAST-CFA LATEST PFA CFA ; IMMEDIATE
+    \ These defintions are appropriate for HS/FORTH
+\end{lstlisting}
+Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
+
+\sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S\ 3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
+
+\sepfootnotecontent{08_16}{The memory usage is shout the same: the recursive method pushes limits, \etc onto the fstack.}
