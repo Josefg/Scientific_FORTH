@@ -2,7 +2,7 @@
 \startcontents[chapters]
 \printcontents[chapters]{}{1}{}
 
-\TallC{In} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a deﬁnite interval; determining the function of a given form that most closely fits a set of data.
+\TallC{In} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a definite interval; determining the function of a given form that most closely fits a set of data.
 
 \section{Numerlcal Integration}
 We begin by defining the definite integral of a function $f(x)$. Then we discuss some methods for (numerically) approximating the integral. This process is called \textbf{numerical integration} or \textbf{numerical quadrature}. Finally, we write some FORTH programs based on the various methods we describe.
@@ -25,7 +25,7 @@ w \sum_{n=0}^{(b-a/w)} &min[f(a+nw),f(a+nw+w)] \\
 \end{align}
 \end{equation}
 
-It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert]$. There are $(b—a)/w$ such rectangles, so if $\lvert f'(x)\rvert]$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
+It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert]$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert]$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
 
 \begin{align}
 \frac{1}{2}w(b-a) max_{a\leq x \leq b} $\lvert f'(x)\rvert]$.
@@ -67,7 +67,7 @@ The desired integral is $F(b)$.
 The chief disadvantage of using a differential equation solver to evaluate a definite integral is that it gives us no \textbf{error criterion}. We would have to solve the problem at least twice, with two different step sizes, to be sure the result is sufficxently precise\sepfootnote{08_03}.
 
 \subsection{Monte-Carlo method}
-\TallC{The} area under $f(x)$ is exactly equal to the average height $\bar{f}$ of $f(x)$ on the interval $[a, b]$, times the length, $b—a$, of the interval\sepfootnote{08_04}. How can we estimate $\bar{f}$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator. Then
+\TallC{The} area under $f(x)$ is exactly equal to the average height $\bar{f}$ of $f(x)$ on the interval $[a, b]$, times the length, $b-a$, of the interval\sepfootnote{08_04}. How can we estimate $\bar{f}$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator. Then
 
 \begin{align}
 \bar{f} \approx \frac{1}{N} \sum_{n=1}^{N} f(x_n)
@@ -238,11 +238,11 @@ However, adaptive methods can be applied quite easily to deterministic quadratur
 Now, how do we ensure that the routine takes a lot of points when the function $f(x)$ is rapidly varying, but few when $f(x)$ is smooth? The simplest method uses \textbf{ecursion}\sepfootnote{08_07}.
 
 \subsection{Digression on recursive algorithms}
-\TallC{We} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the ﬁrst).
+\TallC{We} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the first).
 
-Since there is no way to know \textit{a priori} how many times a program will call itself, memory allocation for the arguments must be dynamic. That is, a recursive routine places its arguments on a stack so each invocation of the program can ﬁnd them. This is the method employed in recursive compiled languages such as Pascal, C, or modern BASIC. Recursion is of course natural in FORTH since stacks are intrinsic to the language.
+Since there is no way to know \textit{a priori} how many times a program will call itself, memory allocation for the arguments must be dynamic. That is, a recursive routine places its arguments on a stack so each invocation of the program can find them. This is the method employed in recursive compiled languages such as Pascal, C, or modern BASIC. Recursion is of course natural in FORTH since stacks are intrinsic to the language.
 
-\TallC{We} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid\sepfootnote{08_08} devised a rapid algorithm for ﬁnding the gcd\sepfootnote{08_09} which can be expressed symbolically as
+\TallC{We} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid\sepfootnote{08_08} devised a rapid algorithm for finding the gcd\sepfootnote{08_09} which can be expressed symbolically as
 
 \begin{align}
     gcd(u,v) = u, v= 0
@@ -392,7 +392,7 @@ evaluate the integrand. Clearly the limits and error (or \textbf{tolerance}) mus
 
 The program then takes the form\sepfootnote{08_13} shown on p. 171 below.
 
-Note that in going from the pseudocode to FORTH we replaced \bc{)INTEGRAL} by \bc{RECURSE} inside the word \bc{)INTEGRAL}. The need for this arises from an ideosyncrasy of FORTH: normally words do not refer to themselves, hence a word being deﬁned is hidden from the dictionary search mechanism (compiler) until the ﬁnal \bc{;} is reached. The word \bc{RECURSE} unhides the current name, and compiles its \textbf{cfa} in the proper spot\sepfootnote{08_14}.
+Note that in going from the pseudocode to FORTH we replaced \bc{)INTEGRAL} by \bc{RECURSE} inside the word \bc{)INTEGRAL}. The need for this arises from an ideosyncrasy of FORTH: normally words do not refer to themselves, hence a word being defined is hidden from the dictionary search mechanism (compiler) until the final \bc{;} is reached. The word \bc{RECURSE} unhides the current name, and compiles its \textbf{cfa} in the proper spot\sepfootnote{08_14}.
 
 \begin{lstlisting}
     : USE( [COMPILE] ' CFA LITERAL ;
@@ -487,7 +487,7 @@ Step 5:
 
 The flow diagram of the algorithm now looks like Fig. 8-4 below:
 
-Fig. 8-4 \textit{Non—recursive adaptive quadrature}
+Fig. 8-4 \textit{Non-recursive adaptive quadrature}
 
 and the resulting FORTH program is\sepfootnote{08_15}:
 
@@ -651,1144 +651,395 @@ N      X            F          I             E
 0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
 1 1.5000E+00  1.2247E+00 6.5973E-01 5.0000E-04
 2 2.0000E+00  1.4142E+00 1.4983E-01 1.2500E-04
-old.I = 1.2071E+00    ﬁnal.I = 0.0000E+00
+old.I = 1.2071E+00  final.I = 0.0000E+00
 
 0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
 1 1.5000E+00  1.2247E+00 3.1845E-01 2.5000E-04
 2 1.7500E+00  1.3228E+00 3.4213E-01 2.5000E-04
 3 2.0000E+00  1.4142E+00 1.7396E-01 1.2500E-04
-old.I = 6.5973E-01  ﬁnal.I = 0.0000E+00
+old.I = 6.5973E-01  final.I = 0.0000E+00
 
 0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
 1 1.5000E+00  1.2247E+00 3.1845E-01 2.5000E-04
 2 1.7500E+00  1.3228E+00 1.6826E-01 1.2500E-04
 3 1.8750E+00  1.3693E+00 1.7396E-01 1.2500E-04
 4 2.0000E+00  1.4142E+00 0.0000E+00 0.0000E+04
-old.I = 3.4213E-01  ﬁnal.I = 0.0000E+00
+old.I = 3.4213E-01  final.I = 0.0000E+00
 
 0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
 1 1.5000E+00  1.2247E+00 1.5621E-01 1.2500E-04
 2 1.6250E+00  1.2747E+00 1.6235E-01 1.2500E-04
 3 1.7500E+00  1.3228E+00 1.7396E-01 1.2500E-04
-old.I = 3.1845E-01  ﬁnal.I = 3.4226E+00
+old.I = 3.1845E-01  final.I = 3.4226E+00
 
 N      X            F          I             E
 0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
 1 1.2500E+00  1.1180E+00 2.9284E-01 2.5000E-04
 2 1.5000E+00  1.2247E+00 1.6235E-01 1.2500E-04
-old.I = 5.5618E-01    ﬁnal.I = 6.6087E+00
+old.I = 5.5618E-01  final.I = 6.6087E+00
 
 0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
 1 1.2500E+00  1.1180E+00 1.4316E-01 1.2500E-04
 2 1.3750E+00  1.1726E+00 1.4983E-01 1.2500E-04
 3 1.5000E+00  1.2247E+00 1.7396E-01 1.2500E-04
-old.I = 2.9284E-01  ﬁnal.I = 6.6067E+00
+old.I = 2.9284E-01  final.I = 6.6067E+00
 
 0 1.0000E+00  1.0000E+00 1.2879E-01 1.2500E-04
 1 1.1250E+00  1.0606E+00 1.3616E-01 1.2500E-04
 2 1.2500E+00  1.1180E+00 1.4983E-01 1.2500E-04
-old.I = 2.6475E-01  ﬁnal.I = 9.5392E+00
+old.I = 2.6475E-01  final.I = 9.5392E+00
 1.2189E+00
 
 \begin{align}
 \int_{1}^{2}dx\sqrt{x} = \frac{2}{3} \left( 2^{3/2} - 1 \right)
 \end{align}
 
-Notice that, although $\sqrt{x}$ is perfectly finite at $x = 0$, its ﬁrst derivative is not. This is not a problem in the above case, because the lower limit is 1.0.
+Notice that, although $\sqrt{x}$ is perfectly finite at $x = 0$, its first derivative is not. This is not a problem in the above case, because the lower limit is 1.0.
 
 It is an instructive exercise to run the above example with the limits (0.0, 1.0). The adaptive routine spends many iterations: approaching $x = 0$ (25 in the range [0., 0.0625] \textit{vs.} 25 in the range: [0.0625, 1.0] ). This is a concrete example of how an adaptive routine will unerringly locate the (integrable) singularities of at function by spending lots of time near them. The best answer to this problem is to separate out the bad parts of a function by hand, if possible, and integrate them by some other algorithm that take the singularities into account. By the same token, one shoul always integrate \textit{up to}, but not \textit{through}, a discontinuity in $f(x)$.
 
 \subsection{Adaptive Integration in the Argand plane}
 \TallC{We} often want to evaluate the complex integral
 
-1 - +1 «21.1: (16)
+\begin{align}
+I = \oint_{\Gamma}f(z}dz
+\end{align}
 
-where I‘ is a contour (simple, closed, piecewise tinuous curve)
-in the complex z-plane, and 1(2) is an analytic1 function of z.
+where \Gamma is a \textbf{contour} (simple, closed, piecewise tinuous curve) in the complex $z$-plane, and $f(z)$ is an \textbf{analytic}\sepfootnote{08_17} function of $z$.
 
-The easiest way to evaluate 16 is to parameterize 2 as a function
-of a real variable t ; as 1 runs from A to B, z(t) traces out the
-contour. For example, the parameten'zation
+The easiest way to evaluate 16 is to parameterize $z$ as a function of a real variable $t$; as $t$ runs from A to B, $z(t) traces out the contour. For example, the parameterization
 
-z(t) = 20 + R cos(t) + iR sin(t) , 05152: (17)
+\begin{align}
+z(t) = z_0 + R cos(t) + iR sin(t) , 0 \leq t \leq 2\pi
+\end{align}
 
-traces out a (closed) circle of radius R centered at 2 =20
+traces out a (closed) circle of radius R centered at $z = z_0$.
 
-We assume that the derivative 2(t) E E can be deﬁned; then the
+We assume that the derivative $\dot{z}(t)\equiv \frac{dz}{dt} can be defined; then the integral 16 can be re-written as one over a real interval, with a complex integrand:
 
-dt
-integral 16 can be re-written as one over a real interval, with a
-complex integrand:
-I = Ii 2(1)f(z(1)) d: (18)
+\begin{align}
+I = int_{A}^{B} \dot{z}(t)f\left( z(t) \right) dt
+\end{align}
 
-Now our previously defined adaptive function )INTEGRAL can
-be applied directly, with Emma the name of a complex funcan
+Now our previously defined adaptive function \bc{)INTEGRAL} can be applied directly, with \bc{F.name} the name of a \textit{complex} funcan
 
-:0) = 2(t)f(z(r)). (19)
-of the real variable I.
+\begin{align}
+g(t) = \dot{z}(t)f\left( z(t) \right),
+\end{align}
 
-Here is an example of complex integration: we integrate the
+of the \textit{real} variable $t$.
 
-function ﬂz) = el/z around the unit circle in the counter-clock-
-wise (positive) direction.
-
- 
-
-7. “Analytic"meanstheordinaryderivativedf(z)/dzeidsts.Consultanygoodtenonthetheoryof
-Wdampkxvariable.
-
-OJUUIVNOUOIM-Almm.
-
-160
+Here is an example of complex integration: we integrate the function $f(z) = e^{1/z}$ around the unit circle in the counter-clock-wise (positive) direction.
 
 The calculus of residues (Cauchy's theorem) gives
 
-é 4n” = 2771'
-Iz|=1
+\begin{align}
+\oint_{\abs{z}=1}dz e^{1/z} = 2\pi i
+\end{align}
 
-We parameterize the unit circle as z(t)- — cos(27rt) + i sin(2.m
-hence z(t) = 27tiz(t), and we might as well evaluate
+We parameterize the unit circle as $z(t) = cos(2\pi t) + i sin(2\pi t)$, hence $\dot{z}(t) = 2\pi iz(t), and we might as well evaluate
 
-I; dtz(t) 21/2“) E 1.
+\begin{align}
+int_{0}^{1} dt z(t) e^{1/z(t)} \equiv 1.
+
 
 For reasons of space, we exhibit only the first and last few iterationst
 
-ChapterO-MoraProgrammIngEnmpIoa
-
-semmmeronn
-
-(20)
-
-(21)
-
- 
-
-I
-
-FIND FSINCOS O= ?( FLOAD TRIG) E.
-
-:20) F: PI
-
-Ft
-
-F2* FSINCOS; (07:1 - -4
-
-:)(EXP FSINCOS FROT FEXP X*F; g
-(87. xy--e "xcos[y] e "xsixn[y])
-:G(T) Z(T) XDUP 1/X XEXP ,
-
-USE( G(T) % 0 %1 % 1.52 COMPLEX )INTEGRAL X. '
-
-DEBUG- ON
-N x F 1 E
-0 0.0000 27102 0.0000 .50100 0.0000 0010900
-1 .50000 -.3s707 0.0000 .50700 0.0000 mm
-
-2 1.011113 2.7182 0.0000 .00000 .00000 .0000000
-old.l = 2.7162 0.0000 ﬁnaIJ = OIXID 0.0000
-
-N X F l E
-0 0.0000 2.7182 0.0000 .50700
-1 .SOGD -.$787 00000
-
-0.0000 0040900
-00190 .067537 .WW
-2 75¢!” .84147 -.54030 .44496 -.007537 0024099
-3 1.0000 2.7182 0.0m0 011100 .00000 .0000000
-oIdJ = 587% 0.0000 ﬁnaIJ = OIXXD 0.0000
-
-N X F I E
-
-0 0me 2.7182 0.0111) 567% 0.0000 0049000
-
-1 ﬁlm-.5767 0.0000 .(591U-IE7537 £1124“
-2 .7501) 34147-5403 .17“ -.oaasaz 0012400
-3 .873!) 20219-15662 29020 4100014 001249
-4 1.0000 2.7162 0.0000 .00000 000000 01110000
-oId.I = .444” -.N7537 1Inll.l - 0.0000 0.00:»
-
-N X F I E
-
-0 0.0000 2.7162 0.0000 .5673) 0.0111) mm
-
-1 SC!!!) 23787 0.0000 .W1U aWS'ST mean
-2 .7511!) 34147-5401) .17” -.043002 .0012“
-3 .875” 20210-15002 .1413) 413745 .00002400
-4 00750 2519-0253 Team-name .tmezm
-5 1mm 2.7162 0.01110 .ooamo .ootnoo .amm
-Didi - maze-omens MALI - 0.0000 0.01110
-
- 
-
-N X F I E
-
-0 0.0011) 2.7162 00000 56760 0.0000 noun
-
-1 .50000-36707000113 .W1Q 457537 .112“ >'
-2 .75000 54147-5461) .1790 mean .0312“
-
-3 .8751!) 2.0219-.15& .14190-m5745 .m
-4 33750 251$-.m .m1M-.m 00001240
-5 .3875 2.6% -.00:10577 .06414 -.000055 11113120
-6 MIX!) 27182 0.0000 .000000 .0000000 1111!!!!)
-oId.| = Aw-IXDTBMZ ﬁne“ = 0.0000 0.00m
-
-N X F I E
-
-0 0.01110 2.7162 0.0000 .5373) 0.0000 mama
-
-1 50000-30707 0.0000 .050190-007537 mama
-2 .75CKD .84147 -.s4m0 176$ -.oaaaa2 011249
-
-3 .8751!) 2.0219-.15W 14190-000745: .m
-4 .ﬂ750 asm-mszza £0102 -.(ID4467 #1312“
-5 .m 2.6% -.ooaasn 04197-101“ .IXXMW
-6 .W 27052 010020 .042371 -.ommaa .tm1sa‘z4
-7 1.0000 2.7162 0.0011) 0.0003 0.001!) 11mm
-
-old.| s .004137-mm52405 ﬁnil = noun 001m
-
-x F 1 E
-
-0.0000 27102 00000 .50700 0.01100 0010000
-.50000 -.30707 0.0000 000100 -.oe7rm mum
-75000 54147-54000 .1701: -.0m2 001249
-07000 2.0210-.15002 .14100 -.0m745 00002000 5
-4 00750 20100-02022 .010000-.000a:10.00015024
-
-0 30312 20000.011000041173-000112000010024
-
-0 00075 2005-.00000001571-0011110001010024
-0th - .001022-.000«007 mu - owns-mm
-
-N
-0
-1
-
-2
-3
-
-N X F I E
-
-0 cm 2.718 can: mm mm .0312.
-
-1 12m 2.0210 .1092 .1075! .0164" .m
-
-I .167” 1.41” m M711 01m ammo
-
-I 21675 1.1ﬂ4 .aaaan m .0157” ammo
-
-4 m .4147 54GB mm 0010070 0mm
-
-“I - m mum Hill - 51W—m
-
-N X F I E
-
-0 cm 2.71” 0.00:!) as: £1.13. .m12“
-1 .12” 2.0216 .15” mum 01101200
-I .1” 1.7232 ms .04“ m.m1240
-3 .10700 1.4M 3073 name 01578 01101240
-ddl - .1079 916479 W1 - .3374 4mm
-
-N X F l E
-
-0 0m 2.7162 om ﬁlm 00073421100de
-1 .0023!) 2.51” 0329.141” 1157453 0003200
-2 .12“ 2.0210 .1532 04011: 00300300001249
-ddl - 29m 0mm ﬁn.” - .ﬂ13-1X55266
-
-N X F l E
-
-0 0001:) 2.71& cm am mam
-1 mama 2.51“ mm 075m @133 00001240
-2 M749 mmntmsrmasm .m1249
-3 .125!) 2.0219 .15” moms 015/26 .m12ﬂ
-dﬂl - .141” ”7453 fnlll - $13 415528
-
-N X F l E
-
-0 0.0000 2.7182 00000 .1623 manuam
-
-1 10m 251” m manna: M1249
-2 mac 2.254 “75 134633.101“ .CXDIM
-3 .1” 2.1032 .11“ “11.121“ 00015024
-
-4 .1253 2.0219 .1902 m7m76 “1&4
-de - M457 .0113!» Mall I miss-.maaa
-
-52 Fltﬁng functions to data
-
- 
-
-N X F I E
-
-0 cm 2.71” cm .1“ .W.m
-1 M2510 .mm .mumm
-2 07.182419047044m .mmcmstm
-3 mommm.tm1m.mm
-de - 075m 011“? Md! - .m-mtam
-
-N X F l E
-
-0 cm 27102001» new .m ammo
-
-1 m1- 2.” W 1mm .M #1312“
-2 W251“ .mm .MYLGXMW
-ddl - .1” names: “I - ham-.m
-
-N X F I E
-
-0 00000 2.719 001m “4137 .m £11312“
-
-1 mtao zen W7 .041173 M1247 00310024
-2 0465752” .011“ mam.m.antasas
-3 138132.510. 1330002110 .M‘Iﬂﬁ
-
-oIdJ - 001022 .W “J - mas-00040523
-
-N X F I E
-
-0 00cm 2.7182 0.01113042371 m1 .CID1!£24
-
-1 015% 27W m2 .041” 0001200 an 5624
-
-2 .6313) 2.6” .W .osam m .m15ﬂ4
-oId.l - M4137 .m “J - 31$B<m6373
-.0001» 90000001 oIr
-
-\
-
- 
-
+\begin{lstlisting}
+    FIND FSINCOS 0= ?( FLOAD TRIG )
+    : Z(T) F=PI F* F2 FSINCOS ;
+    : XEXP FSINCOS FROT FEXP X*F ;
+        ( 87:x y--e^x cos[y] e^x sin[y] )
+    : G(T) Z(T) XDUP 1/X XEXP X* ;
+    DEBUG_ON
+    USE( G(T) \% 0 \% 1 \% 1.E-2 COMPLEX )INTEGRAL X.
+\end{lstlisting}
+
+N      X            F          I             E
+0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
+1 1.2500E+00  1.1180E+00 2.9284E-01 2.5000E-04
+2 1.5000E+00  1.2247E+00 1.6235E-01 1.2500E-04
+old.I = 5.5618E-01    final.I = 6.6087E+00
+
+box this in yo!
 Note:
-answer = 1
+    answer = 1
 
- 
-
- 
-
- 
-
-One of the, most important applications of numerical analysis is
-the representation of numerical data in functional form. This
-includes ﬁtting, smoothing, filtering, interpolating, etc.
+\section{Fitting functions to data}
+\TallC{One} of the, most important applications of numerical analysis is the representation of numerical data in functional form. This includes fitting, smoothing, filtering, interpolating, \etc
 
 A typical example is the problem of table lookup: a program re-
-quires values of some mathematical function —sin(x), say — for
-arbitrary values of x. The function is moderately or extremely
-time-consuming to compute directly. According to the Intel tim-
+quires values of some mathematical function --$sin(x)$, say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
 
-oJuthNobIolm—Mmmarvod.
+There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent $sin(x)$ by a simple polynomial\sepfootnote{08_18}
 
-162
+\begin{align}
+sin(x) \approx x \left( 0.994108 - 0.147207x\right),
+\end{align}
 
-CMptarB-MoreProgmmnIngExamdac ScbnllﬂcFOR
+accurate to better than 1\% over the range $-\frac{\pi}{2}\leq x \leq \frac{\pi}{2}$, that requires but 3 multiplications and an addition to evaluate. This would be twice as fast as calculating $sin(x)$ on the 80x87 chip\sepfootnote{08_19}.
 
- 
-   
-  
-   
+\TallC{To} achieve substantially greater speed requires table look-up. To locate data in an ordered table, we might employ binary search: that is, look at the $x$-value halfway down the table and see if the desired value is greater or less than that. On the average,$log_{2}(N)$ comparisons are required, where $N$ is the length of the table. For a table with 1\% precision, we might need 128 entries, \ie seven comparisons.
 
-ings for the 801187 chip, this operation should take about 8 tim
-longer than a floating point multiply. In some real-time app '
-tions this may be too slow.
-
-There are several ways to speed up the computation of a functit
-They are all based on compact representations of the fun '
--—either in tabular form or as coefﬁcients of functions that a
-faster to evaluate. For example, we might represent sin(x) by'
-simple polynomial1
-
-sin(x) ~x (0.994108 - 0.1472021) , (22) 1
-
-,_
-I
-accurate to better than 1% over the range -% S x 5 g , thg'
-
-requires but 3 multiplications and an addition to evaluate.
-would be twice as fast as calculating sin(x) on the 80x87 chip1 .2
-
-To achieve substantially greater speed requires table look-It]:
-
-To locate data in an ordered table, we might employ binar3
-search: that is, look at the x-value halfway down the table and se
-if the desired value is greater or less than that. On the averag.
-log2(N) comparisons are required, where N is the length of tla
-table. For a table with 1% precision, we might need 128 entriet
-i.e. seven comparisons.
-
- 
-
-Binary search is unacceptably slow — is there a faster methodl
-In fact, assuming an ordered table of equally-spaced abscissae tlu
-fastest way to locate the desired x-value is hashing, a method it!
-computing the address rather than ﬁnding it using comparisom
-Suppose, as before, we need 1% accuracy, i.e. a 128-point tablr’
-with x in the range [0,:1/2]. To look up a value, we multiply: in
-256/77 5 81.5, truncate to an integer and quadruple it to get 1
-(4-byte) ﬂoating point address. These operations —includi1§
-fetch to the 87stack— take about 1.5-2 fp multiply times, hencl
-the speedup is 4-fold.
-
-curl—MW!” 163
+Binary search is unacceptably slow --is there a faster method? In fact, assuming an ordered table of equally-spaced abscissae the fastest way to locate the desired $x$-value is \textbf{hashing}, a method for \textit{computing} the address rather than finding it using comparisons. Suppose, as before, we need 1\% accuracy, \ie a 128-point table with $x$ in the range $[0,\pi/2]. To look up a value, we multiply $x$ by $256/\pi \backcong 81.5$, truncate to an integer and quadruple it to get a (4-byte) floating point address. These operations --including fetch to the 87stack-- take about 1.5-2 fp multiply times, hence the speedup is 4-fold.
 
 The speedup factor does not seem like much, especially for a
-function such as sin(.r) that is built into the fast co-processor.
-However, if we were speaking of a function that is considerably
-slower to evaluate (for example one requiring evaluation of an
-integral or solution of a differential equation) bashed table
-lookup with interpolation can be several orders of magnitude
-faster than direct evaluation.
+function such as $sin(x)$ that is built into the fast co-processor. However, if we were speaking of a function that is considerably slower to evaluate (for example one requiring evaluation of an integral or solution of a differential equation) hashed table lookup with interpolation can be several orders of magnitude faster than direct evaluation.
 
-e now consider how to represent data by mathematical func-
-tions. This can be useful in several contexts:
+\Tall{We} now consider how to represent data by mathematical functions. This can be useful in several contexts:
 
-o The theoretical form of the function, but with unknown param-
-eters, may be known. One might like to determine the param-
-eters from the data. For example, one mi t have a lot of data
-on pendulums: their periods, masses, imensions, etc. The
-penod of a pendulum IS given, theoretically, by
+\begin{itemize}
+    \item The theoretical form of the function, but with unknown parameters, may be known. One might like to \textit{determine} the parameters from the data. For example, one mi t have a lot of data on pendulums: their periods, masses, imensions, \etc The period of a pendulum is given, theoretically, by
+    
+    \begin{align}
+    \tau = \frac{2\pi L}{g}^{1/2} f\left( \frac{L}{r},\frac{m_{bob}}{m_string},\mathellipsis}\right)
+    \end{align}
+    where L is the length of the string, g the acceleration of gravity, and $f$ is some function of ratios of typical lengths, masses, and other factors in the problem. In order to determine g accurately, one generally fits a function of all the measured factors, and tries to minirmze its deviation from the measured periods. That is, one might try
+    
+    \begin{align}
+    \tau_{n} = \left(frac{2\pi L_{n}}{g}^{1/2}\right) \left[ 1 + \alpha frac{r_{n}}{L_{n}} + \beta\left(\frac{m_{bob}}{m_string}\right)_{n} + \mathellipsis\right]
+    \end{lstlisting}
+    for the n'th set of observations, with g, $\alpha$, $\beta$, $\mathellipsis$ the unknown parameters to be determined.
+    
+    \item Sometimes one knows that a phenomenon is basically smoothly varying; so that the wiggles and deviations in observations are noise or otherwise umnteresting. How can we filter out the noise without losing the significant part of the data? Several methods have been developed for this purpose, based on the same principle: the data are represente as a sum of functions from a \textbf{complete} set of functions, with unknown coefficients. That is, if $\varphi_{m}(x)$ are the functions, we say ($y_n$ are the data)
 
-1/2
-- a L&
-r—(g) f(r’ ."") (23)
+    \begin{align}
+    y_n = \sum_{m=0}^{\inf}c_{m}\varphi_{m}(x_{n})
+    \end{align}
 
-where Lis the length of the string, g the acceleration of gravity,
-and f is some function of ratios of typical lengths, masses and
-other factors in the problem. In order to determine g accurate-
-ly, one generally ﬁts a function of all the measured factors, and
-tries to minirmze its deviation from the measured periods.
-That is, one might try
+    Such representations are theoretically possible under general conditions. Then to filter we keep on] a finite sum, retaining the first N (usually simplest and smoothest) functions from the set. An example of a complete set is \textbf{monomials}, $\varphi_{m}(x) = x^{m}$. Another is \textbf{sinusoidal (trigonometric) functions},
+        $\sin(2\pi mx), \cos(2\pi mx), 0 \leq x \leq 1$,
+    
+    used in Fourier-series representation. \textbf{Gram polynomials}, discussed below, comprise a third useful complete set.
+\end{itemize}
 
-1/2
-21 1'11 mbob
-7n: (Tl-1') 1+a—L‘+ﬂ( . ) +... (24)
+\TallC{The} representation in Eq. 25 is called \textbf{linear} because the unknown coefficients $c_{m}$ appear to their first power. Thus, if all the data were to double, we see immediately that the $c_{m}$'s would have to be multiplied by the same factor, 2. Sometimes, as in the example of the measurement of g above, the unknown parameters appear in more complicated fashion. The problem of fitting with these more general functional forms is called \textbf{nonlinear} for obvious reasons. The \textbf{simplex algorithm} of Ch. 8 \S\ 2.3 below is an example of a nonlinear fitting procedure.
 
-for the n'th set of observations, with g, (2, ﬂ, the unknown
-parameters to be determined.
+We are now going to write programs to fit both linear and non-linear functions to data. The first and conceptually simplest of these is the \textbf{Fourier transform}, namely representing a function as a sum of sines and cosines.
 
-0 Sometimes one knows that a phenomenon is basically smooth-
-ly varying; so that the wiggles and deviations in observations
-are noise or otherwise umnteresting. How can we ﬁlter out the
-noise without losing the signiﬁcant part of the data? Several
-methods have been developed for this gurpose, based on the
-same principle: the data are represente as a sum of functions
-from a complete set of functions, with unknown coefﬁcients.
-That is, if 90.,(x) are the functions, we say (y. are the data)
+\subsection{Fast Fourier transform}
+\TallC{What} is a Fourier transform? Suppose we have a function that is \textbf{periodic} on the interval $0 \leq x \leq 2\pi}:
 
-C
+\begin{align}
+f(x + 2\pi) = f(x) ;
+\end{align}
 
-Ya E 2 C. plan) (25)
+Then under fairly general conditions the function can be expressed in the form
 
-m-o
-
-OJLIHnVNobIatm—Alnoﬂaroaarvod.
-
-Chapters-MoreProgrammlng Examples Schnﬁnc FORT
-
-Such representations are theoretically possible under gene
-conditions. Then to ﬁlter we keep on] a ﬁnite sum, retainin
-the ﬁrst N (usually simplest and smoot est) functions from th
-set. An example of a complete set is monomials, ¢,(x) = x m
-Another is sinusoidal (trigonometric) functions,
-
-sin(2:rm.r), cos(27rmx), 0 s x s 1,
-
-used in Fourier-series representation. Gram polynomials, dis
-cussed below, comprise a third useful complete set.
-
-The representation in Eq. 25 is called linear because the urts
-
-known coefﬁcients cm appear to their ﬁrst power. Thus, if a”
-the data were to double, we see immediately that the cm's would
-have to be multiplied by the same factor, 2. Sometimes, as in the
-example of the measurement of g above, the unknown paratr~
-eters appear in more complicated fashion. The problem of ﬁtting
-with these more general functional forms is called nonlinear fon
-obvious reasons. The simplex algorithm of Ch. 8 §2.3 below is an
-example of a nonlinear ﬁtting procedure.
-
- 
-
-We are now going to write programs to ﬁt both linear and non—
-linear functions to data. The ﬁrst and conceptually simplest oﬂ
-these is the Fourier transform, namely representing a function as
-a sum of sines and cosines.
-
-§§1 Fast Fourier transform
-What is a Fourier transform? Suppose we have a function thati
-is periodic on the interval 0 s x 5 2m
-
-f(x + 2:) = to);
-
-Then under fairly general conditions the function can be ex~
-pressed in the form
-
-f(x) = a0 + E (a, cos(n.r) + b, 5111011)) (26)
-
-11-1
+\begin{align}
+f(x) = a_{0} + \sum_{n=1}^{\inf} (a_{n} \cos(nx) + b_{n} \sin(nx))
+\end{align}
 
 Another way to write Eq. 26 is
 
-f(x) -:§c.ew. (27)
+\begin{align}
+f(x) = \sum_{-\inf}^{+\inf} c_{n}e^{inx}.
+\end{align}
 
-In either way of writing, the c,, are called Fourier coefficients of
-the function f(x). booking, e.g., at Eq. 27, we see that the or-
-thogonality of the sinusoidal functions leads to the expression
+In either way of writing, the $c_{n}$ are called \textbf{Fourier coefficients} of the function $f(x)$. Looking, \eg at Eq. 27, we see that the \textbf{orthogonality} of the sinusoidal functions leads to the expression
 
-1 _ .
-c..=gf3'f(x)e "“411. (28)
-Evaluatin£ Eq. 28 numerically requires —for given n- at least
-2n pomts Naively, for each n = 0 to N-l we have to do a sum
-2N
+\begin{align}
+c_{n} = \frac{1}{2\pi}\int_{0}^{2\pi}f(x)e^{-inx}dx
+\end{align}
 
-~ 2 f1. e—mk/N
+Evaluating Eq. 28 numerically requires --for given n-- at least 2n pomts\sepfootnote{08_20} Naively, for each $n = 0$ to N-1 we have to do a sum
 
-k-l
+\begin{align}
+c_{n} \approx \sum_{k=1}^{2N}f_{k}e^{-2\pi inx}dx .
+\end{align}
 
-C11
+which means carrying out $2N^2$ complex multiplications.
 
-which means carrying out 2N2 complex multiplications.
+The \textbf{fast Fourier transform (FFT)} was discovered by Runge and K\"{o}nig, rediscovered by Danielzslon and Lanaos and \textbf{\underline{re}}-rediscovered by Cooley and Tukey\sepfootnote{08_21}. The FFT algorithm can be expressed as three steps:
 
-The fast Fourier transform (FFT) was discovered by Runge and
-Konig, rediscovered by Danielzslon and Lanaos and m—redis-
-covered by Cooley and Tukeyn. The FFI‘ algorithm can be
-expressed as three steps.
-
-0 Discretize the interval, Le. evaluate f(x) only for
-k
-27: N , 0 S x S N 1.
-Call f(x.,) = f.,.
-0 Express the Fourier coefﬁcients as
-N —1
-= 2 r. (2.....- ”". (29)
-11-0
-0 With w, = e"2"“"'/N , Eq. 29 is an N-l’st degree polynomial in
-w, . We evaluate the polynomial using a fast algorithm.
-
- 
-
-20. to prevent aliasing.
-21. See, e.g., DE. Knuth, Thain of Computerhogmnmting v. 2 (Addison-Wesley Publishing Co.,
-Reading, MA, 1981) p. 642.
-
-OJtlthNohlotm—Alrlgﬂamennd.
-
-Chapter 0 - More Programming Examples Scientific FORD-Ir
+\begin{itemize}
+    \item Discretize the interval, \ie evaluate $f(x)$ only for
+    \begin{align}
+        x_{k} = 2\pi \frac{k}{N} , 0 \leq x \leq N-1.
+    \end{align}
+    Call $f(x_k) \equiv f_k$.
+    \item   Express the Fourier coefficients as
+    \begin{align}
+        c_{n} \approx \sum_{k=0}^{N-1}f_{k}e^{-2\pi inx/N} .
+    \end{align}
+    \item With $w_{n} = e^{-2\pi inx/N}$, Eq. 29 is an $N-1$’st degree polynomial in $w_{n}$. We evaluate the polynomial using a fast algorithm.
+\end{itemize}
 
 To evaluate rapidly the polynomial
 
-N-l
-c. = P. (w.) a 2 1.011.)"
+\begin{align}
+    c_{n} = P_{n}(w_{n}) \equiv \sum_{k=0}^{N-1}f_{k}(w_{n})^k
+\end{align}
 
-k-O
-we divide it into two polynomials of order N/Z, dividing each of]
-those 1n two, etc. This procedure' IS efﬁcient only for N= 2 ,with,
-v an integer, so this IS the case we attack.
+we divide it into two polynomials of order N/Z, dividing each of those in two, \etc This procedure is efficient only for $N=2^v$, with $v$ an integer, so this is the case we attack.
 
-How does dividing a polynomial in two help us? If we segregate:
-the odd from the even powers, we have, symbolically,
+How does dividing a polynomial in two help us? If we segregate the odd from the even powers, we have, symbolically,
 
-Paw) = EN/2(W2) + w omw’) . (30)
+\begin{align}
+P_{N}(w) = E_{N/2}(w^{2}) + w O_{N/2}(w^2).
+\end{align}
 
- 
+Suppose the time to evaluate $P_N(w)$ is $T_{N}$. Then clearly,
 
-Suppose the time to evaluate PN(w) is TN. Then, clearly,
+where \lambda is the time to segregate the coefficients into odd and even, plus the time for 2 multiplications and a division. The solution of Eq. 31 is $\lambda(N-1)$. That is, it takes $O(N)$ time to evaluate a polynomial.
 
-..4._-..~.<-Aanv- .. ‘1
+However, the discreteness of the Fourier transform helps us here. The reason is this: to evaluate the transform, we have to evaluate $P_{N}(w_{n}) for $N$ values of $w_{n}$. But $w_{n}^{2}$ takes on only $N/2$ values as n takes on N values. Thus to evaluate the Fourier transform for all N values of n, we can evaluate the two polynomials of order $N/2$ for half as many points.
 
-TN = A '1' ”w; (31)
+Suppose we evaluated the polynomials the old-fashioned way: it would take $2(N/2)\equiv N$ multiplications to do both, but we need do this only $N/2$ times, and $N$ more (to combine them) so we have $N^{2}/2+N$ rather than $N^{2}$. We have gained a factor 2. Obviously it pays to repeat the procedure, dividing each of the sub-polynomials in two again, until only monomials are left.
 
-where .1 is the time to segregate the coefﬁcients into odd and even.
-plus the time for 2 multiplications and a division. The solution of’
-Eq. 31is 1(N-1). That is, it takes 0(N) time to evaluate a poly-
-nomial.
+Symbolically, the number of multiplications needed to evaluate, a polynomial for N (discrete) values of $w$ is
 
-However, the discreteness of the Fourier transform helps us here.
-The reason is this: to evaluate the transform, we have to evaluate
-
-PN (W) for N values of w, . But wﬁ takes on only N/Z values as 11
-takes on N values. Thus to evaluate the Fourier transform for all
-N values of n, we can evaluate the two polynomials of order NB
-for half as many points.
-
-Suppose we evaluated the polynomials the old-fashioned way: it
-would take 2(N/2)= -N multiplications to do both, but we need do
-this only N/Z times, and N more (to combine them) so we have
-N 2/2 + N rather than N2. We have gained a factor 2. Obviously 1t~‘
-pays to repeat the procedure, dividing each of the sub-polyno~
-mials in two again, until only monomials are left.
-
-Symbolically, the number of multiplications needed to evaluate,
-a polynomial for N (discrete) values of w is s
-
-1,. = N1 + 21",, (32) §
-
- 
-
-MO-MPWEW 107
+\begin{align}
+\tau_{N} = N\lambda + 2\tau_{N/2}
+\end{align}
 
 whose solution is
 
-1,, - AN 103,01) . (33)
+\begin{align}
+\tau_{N} = \lambda N \log_{2}(N) + 2\tau_{N/2}
+\end{align}
 
 Although the FFT algorithm can be programmed recursively, it
-almost never is. "lb see why, imagine how the coefﬁcients would
-be re-shufﬂed by Eq. 30: we work out the case for 16 coefﬁcients,
-exhibiting them in Table 8-1 below, writing only the indices:
+almost never is. To see why, imagine how the coefficients would be re-shufﬂed by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
 
-Table 8-1 Blt-reverad tor reordering discrete data
+Table 8-1 Bit-reversal for re-ordering discrete data
 
- 
+Start   Step 1  Step 2  Step 3    Bin_0 Bin_3
+0       0       0       0         0000  0000
+1       2       4       8         0001  1000
+2       4       8       4         0010  0100
+3       6       12      12        0011  1100
+4       8       2       2         0100  0010
+5       10      6       10        0101  1010
+6       12      10      6         0110  0110
+7       14      14      14        0111  1110
+0       1       1       1         1000  0001
+9       3       5       9         1001  1001
+10      5       9       5         1010  0101
+11      7       13      13        1011  1101
+12      9       3       3         1100  0011
+13      11      7       11        1101  1011
+14      13      11      7         1110  0111
+15      15      15      15        1111  1111
 
-Stan Stqﬁ Stop2 SW3 Bho Bhg
-0 0 0 0 (XXX) (XXX)
-1 2 4 6 (XXII “XX!
-2 4 6 4 N10 0100
-3 6 12 12 (D11 1100
-4 B 2 2 0100 NIO
-5 10 6 10 0101 1010
-6 12 10 6 0110 0110
-7 14 14 14 0111 1110
-0 1 1 1 1000 (”01
-9 3 5 9 1001 1001
-10 5 9 5 1010 0101
-11 7 13 13 1011 1101
-12 9 3 3 1100 (1)11
-13 11 7 11 1101 1011
-14 13 11 7 1110 0111
-15 15 15 15 1111 1111
+The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns Bin_0 and Bin_3, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
 
- 
+\TallC{A} standard FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
 
- 
+\TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program. Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overﬂow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
 
-The crucial columns are “Start” and “Step 3". Unfortunately, they
-are written in decimal notation, which conceals a fact that be-
-comes glaringly obvious in binary notation. So we re-write them
-in binary in the columns Bino and Bin, —and see that the ﬁnal
-order can be obtained from the initial order simply by reversing
-the order of the bits, from left to right!
-
-standard FORTRAN program for complex FFI‘ is shown below.
-e shall simply translate the FORTRAN into FORTH as ex-
-peditiously as possible, using some of FOR'IH's simpliﬁcations.
-
-ne such improvement is a word to reverse the bits in a given
-integer. Note how clumsily this was done in the FORTRAN
-
-OJtlthNoUotm-Aldﬂttamorwd.
-
-188
-
-sumounre Foum (DATA. NN. ISIGN)
-NunHueudunnnmdﬁl*nmbquau
-
-ISBN EETEFNI'ESWl-EH'EHTl-EFFT
-ISFWAHDORBAOKWAH)
-
-0000000
-
-DATA Is TT-E ((1)111le ARRAY GDISCRETE N’U‘I’
-CDMPLEX w, WP. TEMP, DATA(N)
-DEAL'B TFETA
-J =0
-00 11 |= 0,N-1
-IF (J.GT.I) THEN
-TEMP= DATA“)
-DATA(J) =DATA(I)
-DATAtI) =TEMP
-ENDIF
-M: NR
-1 IF ((M.GE1)AND.(J.GT.M)) THEN
-J=J—M
-M= W2
-60 T0 1
-ENDtF
-J = J + M
-11 CONTINUE
-
-\boainmmnu
-
-\endbitrwerul
-
-Chapter 3 - More Programming Examples
-
- 
-
-Scientiﬁc FORTH
-
-WAX-1 \mmm
-2 F(MGT.MIMT|-EN
-STE-m \Mumm
-
-THEM-ammmmm
-WP-CEXPO'HEI’A)
-w- Window)
-0013 M- 1.1mm
-no 121- M.N.ISTEP
-J=1+MMAX
-TEMP=DATA(J)'W
-mm» =DATA(l)-TEAP
-mm» = 0mm) new
-12 oomwue \end lnnerloop
-c
-
-\mbov
-\lmerloop
-\utII-Ntlrnu
-
-W=W‘WP \tng m
-
+\begin{verbatim}
+  SUBROUTINE FOUR1(DATA, NN, ISIGN)
 C
+C  from Press, et al., Numerical Recipes, ibid., p. 394
+C   
+C  ISIGN DETERMINES WHETHER THE FFT
+C  IS FORWARD OR BOCKWARD
+C
+C  DATA IS THE (COMPLEX) ARRAY OF DISCRETE INPUT 
+  COMPLEX W, WP, TEMP, DATA(N)
+  REAL*8 THETA
+  J=0
+  DO 11 I=0,N-1       \ begin bit.reversal
+    IF (J.GT.I) THEN
+      TEMP= DATA(J)
+      DATA(J)=DATA(I)
+      DATA(I)=TEMP
+    ENDIF
+    M=N/2
+1     IF ((M.GE.1).AND.(J.GT.M)) THEN
+      J=J-M
+      M=M/2
+      GO TO 1
+    ENDIF
+    J = J + M
+11  CONTINUE              \ end bit.reversal
+      
+      MMAX=1              \ begin Danielson-Lancszos section
+2     IF (N.GT.MMAX) THEN
+           ISTEP=2*MMAX   \ executed lg(N) times
+                          \ init trig recurrence
+    THETA=3.14159265358979D0/(ISING*MMAX)
+    W4=CEXP(THETA)
+    W =DCMPLX(1.D0,0.D0)
+    DO 13 M=1,MMAX,2      \ outer loop
+      DO 12 I = M,N,ISTEP \ inner loop
+        J = I+MMAX        \ total = N times
+        TEMP = DATA(J)*W
+        DATA(J) = DATA(I)-TEMP
+        DATA(I) = DATA(I)+TEMP
+12      CONTINUE              \ end inner loop
+C
+      W=W*WP                  \ trig recurrence
+C
+13  CONTINUE                  \ end outer loop
+    MMAX=ISTEP
+    GO TO 2
+  ENDIF
+  RETURN
+\end{verbatim}
+
+Fig. 8-5 \textit{Pictorial representation of bit-reversal}
+
+Bit-reversal can be accomplished in high-level FORTH \textit{via}
+
+\begin{lstlisting}
+    : B.R       ( n--n' )   \ reverse order of bits
+        0 SWAP  ( -- 0 n )  \ set up stack
+        N.BITS 0 DO
+            DUP 1 AND       \ pick out 1's bit
+            ROT 2* +        \ left-shift 1, add 1's bit
+            SWAP 2/         \ right-shift n
+        LOOP DROP ;
+\end{lstlisting}
+
+\leftbar[1\linewidth]
+Note: \bc{N.BITS} is a \bc{VAR}, previously set to $v = \log_{2}(N)$
+\endleftbar
+
+We will use \bc{B.R} to re-order the actual data array (even though this is slightly more time-consuming than setting up a list of scrambled pointers, leaving the data alone). We forego indirection for two reasons: first, we have to divide by N (N steps) when inverse-transforming, so we might as well combine this with bit-reversal; second, there are N steps in rearranging and dividing by N the input vector, whereas the FFT itself takes $N\log_{2}(N)$ steps, \ie the execution time for the preliminary N steps is unimportant.
+
+Now, how do we go about evaluating the sub-polynomials to get the answer? First, let us write the polynomials (for our case N = 16) corresponding to taking the (bit-reversed) addresses off the stack in succession, as in Fig. 8-6 below.
+
+Fig. 8-6 \textit{The order of evaluating a 16 pt. FFT}
+
+We see that $w_{n}^{8}$ (for N=16) has only two possible values, $\pm1$. Thus we must evaluate not $16\times8$ terms like $f_{i} + w^{8}f_{i+8}$, but only $16\times2$. Similarly, we do not need to evaluate $16\times4$ terms of form $f_{i} + w^{4}f_{i+4}$f, but only $4\times4$, since there are only 4 possible values of $w^{4}$. Thus the total number of multiplications is
+
+\begin{align*}
+    2\times8 + 4\times4 + 8\times2 + 16\times1 = 64 \equiv 16\log_{2}16,
+\end{align*}
+
+as advertised. This is far fewer than $16\times16=256$, and the ratio improves with N -- for example a 1024 point FFT is 100 times faster than a slow FT.
+
+We list the FFT program on page 191 below. Since \bc{\}FFT} transforms a one-dimensional array we retain the curly braces notation introduced in Ch. 5. We want to say something like
+
+\begin{lstlisting}
+    V{ n.pts FORWARD }FFT
+\end{lstlisting}
+
+where \bc{V\{} is the name of the (complex) array to be transformed, \bc{n.pts} (a power of 2) is the size of the array, and the ﬂag-setting words \bc{FORWARD} or \bc{INVERSE} determine whether we are taking a FFT or inverting one.
+
+\TallC{Now} we test the program. Table 8-2 on page 192 contains the weekly stock prices of IBM stock, for the year 1983 (the 52 values have been made complex numbers by adding $0i$, and the table padded out to 64 entries (the nearest power of 2) with complex zeros)\sepfootnote{08_22}. The first two entries (2,64) are the type and length of the file. (The file reads from left to right.)
+
+We FFl‘ Table 8- 2 using the phrase \bc{IBM{ 64 DIRECT }FFT}. The power spectrum of the resulting FFI‘ (Table 8-3) is shown in Fig. 8-7 on page 192 below.
+
+\begin{lstlisting}
+\ Complex Fast Fourier Transform
+
+\end{lstlisting}
+
+\TallC{How} do we know the FFT program actually worked? The simplest method is to inverse-transform the transform, and compare with the input file. The FFT and inverse FFT are given, respectively, in Tables 8-3 and 8-4 on page 193 below. Within roundoff error, Table 8-4 agrees with Table 8-2 on page 192.
+
+Table 8-2 \textit{Weekly IBM common stock prices, 1983}
+
+Fig. 8-7 \textit{Power spectrum of FFT of 1983 IBM prices (from Table 63)}
 
-13 CONTINUE
-MMAX=ISTEP
-GOT02
-BJDIF
+Table 8-3 \textit{FFT of IBM weekly stock prices, 1983}
 
-FETUFN
+Table 8-4 \textit{Reconstructed IBM prices (inverse FFT)
 
-\endoubrloop
-
-\endMeleon—Unazoeudon
-
-program. Since practically every microprocessor permits right-
-shifting a register one bit at a time and feeding the overﬂow into
-another register from the right, 3.11 can be programmed easily in
-machine code for speed. Our fast bit-reversal procedure 8.11 may
-be represented pictorially as in Fig. 8-5 below.
-
- 
-
-Initial number: Reg A
-:1001101110100011-1
-
-    
- 
-
- 
-
- 
-
-Stepv
-III a
-
- 
-
-Step 1
-
-Bit-reversed number: Reg 3
-
-1100010111011001
-
-Bit overﬂow
-
-”1W1“1“6°’ii1“6‘1o°66‘i ‘
-
-'#AWA“V’»Y~V¢WIMWW“‘<%MVWW ‘.
-
-Inltlel number: Reg B
-
- 
-
- 
-
- 
-
- 
-
- 
-
-Fig. 8—5 Pictorial representation of bitmrsel
-
-DWI—WWW 1”
-
-Bit-reversal can be accomplished in high-level FORTH via
-
-:B.R (n--n') \reverseorderoibits
-OSWAP (--On) \eetupstack
-N.BITSODO
-
-DUP1AND \pickout1'sbit
-
-ROT2'+ \leftshift1,edd1'sbit
-
-SWAP2/ \rightoshittn
-LOOPDROP;
-
-I Note: N.BITS is a VAR, previously set to v = log2(N)
-
-We will use 3.8 to re-order the actual data array (even though
-this is slightly more time-consuming than setting up a list of
-scrambled pointers. leaving the data alone). We forego indirec-
-tion for two reasons: ﬁrst, we have to divide by N (N steps) when
-inverse-transforming, so we might as well combine this with
-bit-reversal; second, there are N steps in rearranging and dividing
-by N the input vector, whereas the FFT itself takes Nlog2(N)
-steps, Le. the execution time for the preliminary N steps is unim-
-portant.
-
-Now, how do we go about evaluating the sub-polynomials to get
-the answer? First, let us write the polynomials (for our case
-N = 16) corresponding to taking the (bit-reversed) addresses off
-the stack in succession, as in Fig. 8-6 below.
-
- 
-
- 
-
-:12; i 5233* w... + ...
-w5(t,, + M 1,3)
-30‘ + 5f” : >co + we,
-fa + 114 4
-Min + M 1,0; ”2“” + w 8")
-w‘(r. + w’ in)
-M0,, + M r. )1
-
->w‘(b, + wing)
-w‘(a1 + w‘as)
-
-) w°(bo + w’bz)
-
-w°(a° + w‘a.)
-
- 
-
- 
-
- 
-
-J
-
- 
-
- 
-
-Flgjel’heorderolevalwtlnqe 16m. FFT
-
-cmvmrm-umm.
-
-190 mus—Mmrrogmmnmanm SclentIﬂcFORTr/s
-
- 
-  
-
-We see that w? (for N=16) has only two possible values, :1.
-
-Thus we must evaluate not 16 x 8 terms like 1’, + w8 fm , but only
-2X8. Similarly, we do not need to evaluate 16X4 terms of form
-f, + 1941',“ , but only 4X4, since there are only 4 possible values
-of w:. Thus the total number of multiplications is
-
-=5ﬁﬁeﬁﬁxwiﬁ
-
-2x8 + 4x4 + 8x2 + 16x1 = 64 a16logz16,
-
-is!
-
-as advertised. This is far fewer than 16X16 =256, and the ratio
-
-improves with N — for example a 1024 point FFT is 100 times
-faster than a slow FT.
-
-We list the FFI‘ program on page 191 below. Since }FFT trans '
-forms a one-dimensional array we retain the curly braces notation I
-introduced in Ch. 5. We want to say something like
-
-new.
-
-V{ n.pts FORWARD }FFT
-
-where V{ is the name of the (complex) array to be transformed,
-n.pts (a power of 2) is the size of the array, and the ﬂag-setting ; '
-words FORWARD or INVERSE determine whether we are
-taking a PET or inverting one.
-
-Now we test the program. Table 8—2 on page 192 contains the L"
-
-weekly stock prices of IBM stock, for the year 1983 (the 52
-values have been made complex numbers by adding 01', and the
-table padded out to 64 entries (the nearest power of 2) with
-complex zeros)22 .T'he ﬁrst two entries (2,64) are the type and
-length of the ﬁle. (The ﬁle reads from left to right.)
-
-We FFl‘ Table 8- 2 using the phrase IBM{ 64 DIRECT }FFT. The
-power spectrum of the resulting FFI‘ (Table 8-3) is shown in
-Fig. 8- 7 on page 192 below.
-
- 
-
-22. This example is taken from the article “FORTH and the Fast Fourier Transform" by Joe
-Barnhart, Dr. Dabb's Journal, September 1984, p. 34.
-
- 
-
-OJtllnnVNoble1m—Nldghuruorvod.
-
- 
-
-”FORTH
-
-\WMMW
-Kw:mmmmrmnm
-.rAaxm
-\mmmammww
-
-MCs o-rmmooowrsx)
-
-I'D THY O-‘HHDIDMATMHBFD
-Mom o-rinvonaorm)
-norm o-‘NFLOAD‘I'Ml
-
-\IMM
-
-m
-\‘I..---------.---...-...-I
-(mm
-
-: oooeeaememanoooe
-
-: moan-4.21111) oswAP (momma
-3am NC»
-was SH! MPH) 9V» REPEAT:
-
-:CIN N$>FCJF:
-
-15W 1150mm
-
-; F ONOSWAP UN CPSNAP TIEN:
-(era-mm
-
-\u-ncu-------------.--nun-u
-
-\byblmml
-
-PM!!!
-
-'2“ (mm) \memdbh
-- new» (-—0n) \ltipdnk
-
-1' NSTSOWMIADD \MMI'IUI
-
-mew \Mmlﬂmi‘eﬂ
-MP2] \ﬂ-m
-' mm;
-
-11521133501511:
-Mono 13.11 ISLR
-1 LRI<IOT (LR>-17)
-“unmanned WEE
-1(1A}o11.1(1}oitniat
-
-(“Wﬂm
-
-01.1.0-”me
-
- 
-
-191
-
-\-.--...--.--...-.--------.
-\mdnw
-01204 ”10.160113”.
-IFW.1W.3FLD,
-1WJMJFWJWW
-(Chop-H 1H2)
-
-:Tl-ETA F-HMSoFF/ m M;
-
-mmwwmmoaw
-:mmo mmseommocnc-i;
-
-:reww (arm-4')» 0170 c-;
-OVARISTEP
-
-zoomwov
-00 m1 + 19111
-cm 111111001- 0' 1(1) eat
-WHO-<1» 1(1)01L1(111}GIL
-1819 +L00";
-
-:}H-‘T (uknn) ISN ISM
-
-”SW
-
-NLGZISMBTS
-
-FNT
-
-BITRBIERSE
-
-BEGN
-NM >
-
-was
-NTJ'FIGMMAXTISISTEP
-W000
-
-NImDNELW WWW
-
-w
-ISTEPISMMAX
-
-RE’EATCPWP:
-
-:mnooormamcmscal. F. w;
-\mmdFF-‘T \mddmm
-\-I-I----.---.----3-----.I-
-\Inmeb
-
-“WWMMAYM
-:NTA Aﬂ'BMBfmFILCImE-IPUT:
-NI'TA
-MMWCI'WFT
-
-\dﬂd-nmeb
-
-\-.--m-u-u-n-u-n-u-n-u-u-u-
-
-ow do we know the FFI‘ program actually worked? The
-simplest method is to inverse-transform the transform, and
-
-compare with the input ﬁle. The FFI' and inverse FFT are given.
-
-respectively, in Tables 8-3 and 8-4 on page 193 below. Within
-roundoff error, Table 8-4 agrees with Table 8-2 on page 192.
-
-emvmuueea-Almw.
-
-Chapter 8 - More Programming Examples Scienﬁfic FORTH
-
-Table 6-2 Weekly IBM common stock prices, 1983
-
- 
-
-2 84
-
-5.63 0.0 9.13 0.0 91.- 0.0 07.5 0.0
-97.38 0.0 5.38 0.0 case 0.0 mm 0.0
-11125 0.0 1&75 0.0 ﬂ.ﬂ 0.0 1&13 0.0
-101$! 0.0 mas 0.0 110.13 0.0 117.5 0.0
-117.00 0.0 117.63 0.0 116.3 0.0 110.5 0.0
-113.11) 0.0 mm 0.0 114.5 0.0 121.13 0.0
-123m 0.0 121.“) 0.0 121.50 0.0 15.13 0.0
-124.38 0.0 15.38 0.0 119.75 0.0 118.50 0.0
-15.5) 0.0 117.83 0.0 119.75 0.0 12.5 0.0
-15.13 0.0 15.5 0.0 15.38 0.0 1325 0.0
-131.75 0.0 127.00 0.0 15.1.!) 0.0 1&5 0.0
-15.88 0.0 1235) 0.0 121.00 0.0 117.88 0.0
-12.25 0.0 120.88 0.0 15.5 0.0 122.00 0.0
-
-0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-
- 
-
- 
-
- 
-
- 
-
- 
-
-6000
-5400
-4800
-4200
-3600
-r 3000
-- 2400
-- 1800
-- 1200
-. 600
-
-L4._i
-
-AALALA
-
-       
-
- 
-
-     
-
-8 43,
-
-0.0 5.4 10.8 16.2 21.6 27.0 32.4 37. 2 48.6 54.0
-
- 
-
- 
-
-Fig. 8-7 Power spectrum of FFT of 1983 IBM prices (from Table 63)
-
-i
-
- 
-
- 
-
-MNFFTdiBMweekiyetockpricu, 100:1
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-0 man 0m 02 01.11.00.113!!!» 107.m.1s1m40 40 72mm 10.171040
-1.1.100- mm as amum 1727040402 01001004 40 nmmam
-207400417 m 34 unnunm 10.134201 117m 01 140.1040104107007
-0 011000114 54.40010 3 nmm 1011002031 71.4224u s1 ummmm
-4 02741342 17701110 a ammou 2007” 24.00.74 02 40.01m14740120
-3 12021042011301” 37 40102017314041442 21104070107340“ 0:1 40.470211042121100
-um 9001013 3 1010021an mum 02.311140 04 00270041331000
-700020402 name a swam 2044172011077001 00 10110401411900
-0 1924a 200.01” 40 10771701044100" 2410771731 34.411177 :0 11124342001000
-0 10110401 12015400 41 44.17me1107731 200073002 am 57 00.012040222027100
-10012700414111.3103 42 mama-0201:1040 20102011210211.2001 00 .170m000013
-1140.47sa1 0.4212000 4:1 10407913154041 27mm": 14.041442 00 13210120000304
-‘ 1240mm 147.4513 44 07.301104242501174 20:0.700000 00.411000 :1 02740042177011 10
-13045024001521202 40 11003017142402 2001700004 25.042037 01 30000314004010
-1414010401 04.107037 40 «imam-11700700 3000170007 02:14am a 41742041740110.0422
-mammam 47 47.114040201001004 31 13.411000744057210 0:1 Jason-0am
-Table 8-4 Reconstructed IBM prices (inverse FFT)
-o 000:!) 00000 :12 12250 0.11110 10117.00-000000000 40 1225 000000000
-1 00.120 000100705 30 11702-110000245 17 117.02-000000510 40 12007 0011100132
-2 04020 0000011023 31 110.75 000000140 10 11s.so-.000000110 so 12300000000002
-3 07070 1100000227 :15 12224000000070 10110.02000001375 51 1213-0000000“
-4 07000 0000000011 :10 1201000100005 20111000000010" :2 .000012004-mmo1070
-5 00.370411100011302 37 12002 0000007110 21 114.00 000000075 00 -.000001277-0000014:14
-e m m1a7 a 1203 001000051 22 1142; 000000070 54 -mcmzm-ma:o1224
-7 1003 000002150 :10 1325-000101001 23 121.12 000000017 55 -.00m05000-.000000015
-0 10254110000000 4o 131.70-000000000 24 1Z1000000001m 50 00000010120011an
-0 10070 000000700 41 12700-001000073 25 12100 0110001130 57 -.000002005-000001000
-10 0030 -.0m0m271 42 120.00 000000401 20 121.50-01mo1400 50 4100010040 100001300
-11 10212-01mmra 40 12224-000001011 27 120.12 003012022 so -.000m5020-m0001711
-12 10102 1110000010 44 1307 0000000111 20 124.37 .000000027 :1 -.m0000010-.mm00m7
-13 100 001000043 45 121.50 mm 20 120.30 000001201 01 -.0000_:1-000001500
-14 110.1:1-m1010 40 121.00 000001007 :10 110.75-001000010 02 -.000000121 000000200
-115 nus-0.0.7 47 11707 00001104 31 11040 000000573 03 -.0000m713 000010000
-
- 
-
- 
-
- 
-
-§§2 Gram polynomials
-Gram polynomials are useful in ﬁtting data by the linear least-
+\subsection{Gram polynomials}
+\TallC{Gram} polynomials are useful in fitting data by the linear least-
 squares method. The usual method is based on the following
 question: What is the “best" polynomial,
 
@@ -1799,7 +1050,7 @@ omvmunm-umm.
 
 Cl'teptere—MoreProgrammingExamplee Sclendiic FORTH ,
 
-(of order N) that I can use to ﬁt some set of M pairs of data points, 1
+(of order N) that I can use to fit some set of M pairs of data points, 1
 
 1
 
@@ -1810,8 +1061,8 @@ k
 independent variable x ?
 
 The usual answer, found by Gauss, is to minimize the squares of
-the deviations (at the points xk ) of the ﬁtting function PN (x) from
-the data — possibly weighted by the uncertainties of the data That
+the deviations (at the points xk ) of the fitting function PN (x) from
+the data -- possibly weighted by the uncertainties of the data That
 is, we want to minimize the statistic
 
 2 M—1 N
@@ -1822,7 +1073,7 @@ k=0
 “=0 ) 2 (35)
 
 with repect to the N + 1 parameters yl| .
-From the differential calculus we know that a function’g ﬁrst
+From the differential calculus we know that a function’g first
 derivative vanishes at a minimum, hence we differentiate x with
 
 respect to each yn independently, and set the results equal to
@@ -1830,14 +1081,14 @@ zero. This yields N + 1 linear equations in N + 1 unknowns:
 
 2 Anm 7m =ﬂn 1 "=011, , N (36)
 
-where (the symbol 9 means “is deﬁned by”)
+where (the symbol 9 means “is defined by”)
 
 A M_1 71+m 1
 Anm = 20 (x11 ; (37a)
 ' k
 and
 A ”'1 1
-ﬁn = ongfk— (37b)
+fin = ongfk— (37b)
 
 In Chapter 9 we develop methods for solving linear equations.
 Unfortunately, they cannot be applied to Eq. 36 for N 2 9 be-
@@ -1864,15 +1115,15 @@ The matrix then becomes
 =20 pn(xk)pm(xk)_ of (39a)
 and the inhomogeneous term is now
 M-1 1
-ﬁn = 2 17110:)ka (39b)
+fin = 2 17110:)ka (39b)
 k-o 1:
 
 5 there any choice of the polynomials p,,(x) that will eliminate
-roundoﬁ'? The best kinds of linear equations are those with
+roundofi'? The best kinds of linear equations are those with
 nearly diagonal matrices. We note the sum in Eq. 39a is nearly an
 integral, if M is large. If we choose the polynomials so they are
 orthogonal with respect to the weight function
-W(x) =ﬁ01x. - x) 0(x — ..-),
+W(x) =fi01x. - x) 0(x — ..-),
 k
 
 where
@@ -1884,7 +1135,7 @@ thenA“, will be nearly diagonal, and well-conditioned.
 
 196
 
-Chapter 3 - More Progmmmhg Examples Scientiﬁc FOR!
+Chapter 3 - More Progmmmhg Examples Scientific FOR!
 
 Orthogonal polynomials play an important role in numerical an:
 
@@ -1926,7 +1177,7 @@ bn and C n:
 
 23.
 
-Polynomials can be thought of as vectors in a space of inﬁnitely many dimensions (“Hilbert'
+Polynomials can be thought of as vectors in a space of infinitely many dimensions (“Hilbert'
 space). Certain polynomials are like the vectors that point in the (mutually orthogonal) direc.
 tions in ordinary 3-dlmensional space, and so are called «diagonal by analog.
 
@@ -1975,9 +1226,9 @@ pa” J- {pn-thn-Si }.
 
 OJUMVNohletm-Almm.
 
-Were-Moro Programming!“ Scientiﬁc FORTH
+Were-Moro Programming!“ Scientific FORTH
 
-Let us illustrate the process for Legendre polynomials, deﬁned
+Let us illustrate the process for Legendre polynomials, defined
 by weight w(x) = 1, interval {-1.1}:
 
 _ 1 1/2
@@ -1986,13 +1237,13 @@ PO" 2 I
 ..................................................................
 
 These are in fact the first three (normalized) Legendre polynom-
-ials, as any standard reference will conﬁrm.
+ials, as any standard reference will confirm.
 
 Now we can discuss Gram polynomials. While orthogonal poly-
 
-nomials are usually deﬁned with respect to an integral as in
-Eq. 40, we might also deﬁne orthogonality in terms of a sum, as
-in Eq. 39a. That is, suppose we deﬁne the polynomials such that.
+nomials are usually defined with respect to an integral as in
+Eq. 40, we might also define orthogonality in terms of a sum, as
+in Eq. 39a. That is, suppose we define the polynomials such that.
 
 ”—1 { 1, m=n
 
@@ -2001,7 +1252,7 @@ kgopn(xk)pm(xk);:; E dnm = 0, matn (45)
 Then we can construct the Gram polynomials, calculating the
 coefficients by the algebraic steps of the Gram-Schmidt process.
 except now we evaluate sums rather than integrals. Since p..(x)
-satisﬁes 45 by construction, the coefﬁcients y, in our ﬁtting
+satisfies 45 by construction, the coefficients y, in our fitting
 polynomial are simply
 
 M-l 1
@@ -2011,7 +1262,7 @@ they can be evaluated without solving any coupled linear equa
 tions, ill-conditioned or otherwise. Roundoff error thus becomes
 irrelevant.
 
-The algorithm for ﬁtting data with Gram polynomials may in
+The algorithm for fitting data with Gram polynomials may in
 expressed in ﬂow-diagram form:
 
 neodhpomt...x.¢mw. 1.1/0.3.
@@ -2041,18 +1292,18 @@ Fig. 8-5 Construction ofGram polynomials
 The required storage is 5 vectors of length M to hold xb p,(xk),
 
 p.,.1(.\:.,),f.l and Wu -:- 1/03 . We also need to store the coefficients
-an, c. and the normalizations b. —that is, 3 vectors of length
-N < <M— in case they should be needed to interpolate. The time
+an, c. and the normalizations b. --that is, 3 vectors of length
+N < <M-- in case they should be needed to interpolate. The time
 involved is approximately 7M multiplications and additions for
 each n, giving 7NM. Since N can be no greater than M-l (M data
 determine at most a polynomial of degree M-l), the maximum
 possible running time is 7M2, which is much less than the time to
 solve M linear equations.
 
-In practice, we would never wish to ﬁt a polynomial of order
+In practice, we would never wish to fit a polynomial of order
 
 comparable to the number of data, since this would include the
-noise as well as the signiﬁcant information
+noise as well as the significant information
 
 emvuouoim-me.
 
@@ -2060,7 +1311,7 @@ emvuouoim-me.
 
 We therefore calculate a statistic called zz/(degrce of freedom)“:
 With M data points and an N’th order polynomial, there are
-M-N-l degrees of freedom. That is, we evaluate Eq. 38 for ﬁxed
+M-N-l degrees of freedom. That is, we evaluate Eq. 38 for fixed
 N, and divide by M-N-l. We then increase N by l and do it again
 The value of N to stop at is the one where
 
@@ -2069,7 +1320,7 @@ The value of N to stop at is the one where
 ”'2“ M-N-l
 
 stops decreasing (with N) and begins to increase.
-The best thing about the xﬁN statistic is we can increase N without
+The best thing about the xfiN statistic is we can increase N without
 having to do any extra work:
 
 2 M-1
@@ -2083,16 +1334,16 @@ N
 a 2 «oz — 2 (7..)2
 k=0 n=0
 
-The ﬁrst term after E in Eq. 47 is independent of N, and the
+The first term after E in Eq. 47 is independent of N, and the
 second term is computed as we go. Thus we could turn the outel
 loop (over N) into a BEGIN WHILE REPEAT loop, in
 
 which N is incremented as long as of”; is larger than 02”“ .
-(Incidentally, Eq. 47 guarantees that as we increase N the ﬁtted
+(Incidentally, Eq. 47 guarantees that as we increase N the fitted
 curve deviates less and less, on the average, from the measured
 points. When N = M-l, in fact, the curve goes through the points
-But as explained above, this is a meaningless ﬁt, since all data
-contain measurement errors. A ﬁtted curve that passes closer
+But as explained above, this is a meaningless fit, since all data
+contain measurement errors. A fitted curve that passes closer
 than 0., to more than about 1/3 of the points is suspect.)
 
 The code for Gram polynomials is relatively easy to write using
@@ -2109,7 +1360,7 @@ DWI-MW!!!“ 201
 
 WWW
 
-ometimes we must ﬁt data by a function that depends on
+ometimes we must fit data by a function that depends on
 parameters in a nonlinear manner. An example is
 
 F
@@ -2118,7 +1369,7 @@ F
 Although the dependence on the parameter F is linear, that on
 the parameters a and X is decidedly nonlinear.
 
-One way to handle a problem like ﬁtting Eq. 48 might be to
+One way to handle a problem like fitting Eq. 48 might be to
 transform the data, to make the dependence on the parameters
 linear. In some cases this is possible, but in 48 no transformation
 will render linear the dependence on all three parameters at once.
@@ -2127,7 +1378,7 @@ Thus we are frequently confronted with having to minimize
 
 numerically a complicated function of several parameters. Let
 us denote these by 00, 01 , , BN4 , and denote their possible
-range of variation by R. Then we want to ﬁnd those values of
+range of variation by R. Then we want to find those values of
 { 0}C R that minimize a positive function:
 
 12 (so, ,UN_,) 101;?" 12(00,...9N-,) (49)
@@ -2143,32 +1394,26 @@ minimum is foun . Then a new gradient is computed, and a new
 minimum sought .
 
 Aside fromthe labor of computing -V12, steepest descents has
-two main drawbacks: ﬁrst, it only guarantees to ﬁnd a minimum,
-not necessarily (In minimum — if a function has several local
+two main drawbacks: first, it only guarantees to find a minimum,
+not necessarily (In minimum -- if a function has several local
 
  
 
-25. maubywmyuemuwmdiﬁadmmbetoundinhmad,mmnm,
-
-bid, p. 1113’.
-
-Chapters-MoreProgramnIngExamuoa SclentIﬂcFOR‘m
-
 I
 
 I
-rninima, steepest descents will not necessarily ﬁnd the smallest.
+rninima, steepest descents will not necessarily find the smallest.
 Worse, consider a function that has a minimum in the form of a
-steep-sided gulley that winds slowly downhill to a declivity —
+steep-sided gulley that winds slowly downhill to a declivity --
 somewhat like a meandering river's channel. Steepest descents
 will then spend all its time bouncing up and down the banks of
 the gulley, rather than proceeding along its bottom, since thel
 steepest gradient is always nearly perpendicular to the line of thei
 channel. 1‘
 Sometimes the function 12 is so complex that its gradient is tooI
-expensive to compute. Can we ﬁnd a minimum without evaluating}
+expensive to compute. Can we find a minimum without evaluating}
 partial derivatives? A standard way to do this is called the sins?
-plex method. The idea is to construct a simplex — a set of N +1
+plex method. The idea is to construct a simplex -- a set of N +1
 distinct and non-degenerate vertices in the N-dimensional 0-
 space (“non-degenerate" means the geometrical object, formed
 by connecting the N + 1 vertices with straight lines, ha non-zero
@@ -2210,7 +1455,7 @@ usedintheformat
 
 USE( tnarne 20 96 1.6-4 )MINIMIZE
 
-Fleshing out the details is a -by now— familiar process, so we
+Fleshing out the details is a -by now-- familiar process, so we
 leave the program perse to Appendix 85. We also include there
 a FORTRAN subroutine for the simplex algorithm, taken from
 
@@ -2256,7 +1501,7 @@ OJUthNohletm—Almraaervod.
 
 204
 
-Ghana 3 — More Programming Examples Scientiﬁc FORTH
+Ghana 3 — More Programming Examples Scientific FORTH
 
 Numerical Recipes 26, as an example of just how indecipherable
 traditional languages can be.
@@ -2276,8 +1521,8 @@ I = [A dx a(x)f(x) = E1 w,,f(§,,) ? (50)
 
 In Eq. 50 0(x) is a (known) positive function and f(x) is the
 function we want to integrate. This problem can actually be
-solved, and leads to tables of points 5,, and weight coefﬁcients
-w,, speciﬁc to a particular interval [A,B] and weight function a(x).
+solved, and leads to tables of points 5,, and weight coefficients
+w,, specific to a particular interval [A,B] and weight function a(x).
 Gauss-Legendre integration pertains to [-1,+1] and o(x)= 1.
 (Note any interval can be transformed into [-1, + 1].)
 
@@ -2290,9 +1535,9 @@ Gauss-Hermite formulae.
 Finally, we note that the more common integration formulae such
 as Simpson’s rule or the trapezoidal rule can be derived on the
 same basis as the Gauss methods, except that the points are spe-
-ciﬁed in advance to be equally spaced and to include the end-
+cified in advance to be equally spaced and to include the end-
 points of the interval. Only the weights w, can be determined as
-free ﬁtting parameters that give the best approximation to the”
+free fitting parameters that give the best approximation to the”
 integral.
 
 For given N Gaussian formulae can be more accurate than equally-
@@ -2335,19 +1580,15 @@ n-O
 (51)
 -ff 2drf(x)+é(¥) w3max lf”(x)|
 A<r<B
-Now the error is much smaller28 - of order w2 — so if we double
+Now the error is much smaller28 - of order w2 -- so if we double
 the number of points, we ecrease the error four-fold. Yet this
 so-called trapezoidal rule requires no more effort (in terms of
 the number of function evaluations) than the rectangle rule.
 27. See, eg, Abramowitz and Stegm, HMF, p.885.
-‘28. we) istheaecondderivative ofﬂx),l.e. the ﬁrst derivative are).
-29. Calledaobecausetheeuwejkﬁsapptoﬁmatedbystraight lineaepnentsbetweensuecessive
+‘28. we) istheaecondderivative ofﬂx),l.e. the first derivative are).
+29. Calledaobecausetheeuwejkfisapptofimatedbystraight lineaepnentsbetweensuecessive
 
 printer": +w.‘l‘husweevaluatetheareasoftrapemidsratherthanrectangles.
-
-OWVNohietm-Almmarved.
-
-Ctnpter 8 - More Programming Examples Sclentlllc FORTH
 
 “3 Richardson
 In the program )INTEGRAL in Ch.8 §1§§5.3 the word INTER.
@@ -2371,507 +1612,10 @@ equations (8.52a,b) ending with an expression for I...“ :
 
 Equation 53 is exactly what appears in INTERPOLATE.
 
-MMTN
-
-Owe-MW”
 
 us MW: Orampolynomtata
 : Here is a FORTH program for implementing the algorithm
 I derived in {2552 above.
 
-WON‘PI) ‘m. H348. 2RD. CM.
-
-2” 1m.
-
-DSDXKN.IXPOP. m
-l‘Duel-47:eawagln]o[n-t]--aahw|g[n]g[n+1])
-
-“zoos 804+!) 2FXO-I. 2941. an”.
-
-1W1 1M1. DXDSWV. NR)!
-
-1%: Demo m.m1[DK]FSTP.
-
-DSOXWIBXPOP. 30m
-Ind",
-I7:aawag(n]g[n+1]~-aabwg[n+1]wxg[n+t])
-in; mm) 1m oxosuov. OSPOP.
-1 transmutation.
-} MMFSTP. DSDXMOJ.BXPCP.W
-I”db-87:anharg[n+1]vno[n+1]--aabwg[n+1])
-I;DDEC(N+1)19012MJL'.2ML
-
-2901 Hill”.
-
-DXDSWV. DSFOP.
-
-FBIDSIDQFAOD. DSIDQFSTP.
-
-DSDXWV. BXPOP. SPAM. ENDOOII
-lapel--w:aabwg[n+1]l-- a-a+wp[n+1]"2 a h)
-
-I”:A{B(C(G((Mnax}Flf
-
-‘FIISTAB’I F-o a(0}6! F-0b(0}GI;
-NILE.“ (07:--g{{tl}}) F-o F-O
-M000w(l}wy{l}G@ P'z FOUERF'
-(Brea'uaa'waﬂ‘zt
-HOT F+ HIST F+ Fat/AP
-(87:--a-s+w a’-s‘+wt"2)
-m an G! ream t/F;
-
- 
-
-:mm'e (wrelttlilnall I'll)
-M000 r-o gunner PM slinnor LOOP;
-
-2mm (ﬂzgﬂllnuoﬂlin)
-F-0h110)01 mm
-F-o mono-(iomo-(onoor- n LOOP
-Pa(10)01;
-
-:msraseoovoce (arm 11”.-)
-F-Oe(00)0l F-o
-mono wuoioo memo F' n uOOP
-F'e(10)0l;
-
-:msz Pun ISNnax sou 13cm“ tau
-FRSTAB'. urnELrA mares seoowae.
-masecouoc- ;
-
-OVARN OVARN+1
-
-:hc.N N+1|1PBN 1+ SN-H;
-:m RWWGG R;
-:thFF lBYTESW-i:
-:ZERDL NF-OFBOIL;
-
-:STAHTJbILG
-
-(--[e{n+1)][a{n+1)][b(n+t}] 87:--a-0a{n} b{n})
-Flth F-o e{N+tO}W ZEFOL
-a{ NO} USPOSE mos? ZEDL
-M NO} DISPOSE hem ZEXDL ;
-
-:SEI’.FSTACK w{I‘0}G@x{l'0}G@ sIINfi‘rGG
-aiiNl-I'IIGO:
-
-:)@'l (linul'kx-q) HIP 0) usvose F‘Gl:
-
-:Nomuuzs (”nun")
-1/Fa(N+t)@'l F30"
-b{N+1}@'i c{N+1}@-1
-M000 FMQﬁNHli) DISPOSE F‘ GI LEDP
-m;
-mm G'T'OPCKOPUOPCK
-GPCKOPCKOPOK'W
-mmmmmm‘m
-
-Chapter 3 - More Programing Examples Sclerm‘llc FOR‘I
-
-\ GRAM “MIL LEAST-0.1m W0)
-
-Nmo smrmme
-Honour SETFSTACK
-“(NHIMDROP G(N+1) emu) A(N+t)
-Yi'olGG GIN“)
-LOOP COROP FDFOPFDFDP W;
-
-:M.WLTA (z: — oid.delu muslin)
-DELTAG@ FDJP e{N0)G@ F"2 F- F”
-MTAGI;
-
-:NOT.ENUF.G‘s? New.DELTA MN+1- S—F
-FDUP FatF-
-
-(CR .FS .' FEXTITERATDNT‘IYN Os FWTl-EM)
-(:z-dd'm-n—t urn-2)
-FFDT F\ F-RDT F/ (z: —d'l[m-n-2] d/[m-n-tl)
-FOVER FOIFFESEFNDPFDROPOTFEN:
-
-:}FIT (X{Y{S{ M‘naxM B{ C{G({ —)
-NITIALIZE 1|SN 2ISN+1
-BEGIN NOT .ENUF.G's’l NMnax AND
-WHILE NextG inc.N
-FEPEAT FINIT:
-\ ------------------------------------- endoioode
-
-:REOONSTRUCT MODOCRx{IO}G@F.y{I0}G@F.
-F=ON+11+100
-°{'°}G@GI{IJIIG@F‘F+
-LOOP F.
-
-LCXDPL
-
-§§5 Non-linear least squares: simplex method
-FORTRAN program for the simplex method is given belt
-on page 209. The FORTH version, as discussed in §2§§3
-given on pages 210 and 211.
-
-WM?”
-
-mm: mxmmmmmm
-mm m- mm - 1.0.
-: ma-oam-um-m
-um mmvm.m.m.m
-one - m H
-nan-o
-LO- 1
-mutorvmner
-"-1
-m-a
-as
-Iii-2
-N-I-t
-EMF
-no 1 1 I- LIFTS
-scrotum) m-I
-FlYmﬂtYII-QITI-Bl
-M -H
-"a!
-ESE F(Y@.GT.YM)THBI
-FGJEH "11-1
-M
-t W
-RIO!- - Z‘WMYII-OMABSWMI + ABSMI-OIII
-WLTFTGJETUFN
-
-mam FALSE 'MM Mum Iterations.‘
-
-Ila-ITS!“
-emu-1.10M
-Mil-0.
-I W
-Niel-1m
-FWD-Q1184
-no 13J- LION
-w-wwo,»
-m
-
-EMF
-.4 commas
-i emu-1.10.1
-Pam‘s-W
-m-(1.+uhw-Pm.nmm.n
-5 comes:
-Vila-mm
-mvmmea
-emu-1.1a:
-m-emmuromw
-e cornea:
-
-MI-MWW
-
- 
-
-run-mm
-rmuxmnar
-cows-um
-Plug-emu)
-
-17 W
-veg-m
-a!
-Dona-1m
-I’m-I'M
-
-1s courses
-vise-m
-Ems
-mrmoevmma
-rmuxnmeu
-cowl-1.1004
-I’m-PRU)
-
-10 course:
-YM-YPR
-error
-mam-rm
-Paar.» - BETA'Ptl-IJ) + (1 .Em-Pam.»
-
-21 comma
-YPm-FIMM
-rmu.vm)m
-00224-1.“
-PMJ-W
-
-22 OONTNUE
-van-m
-ELSE
-oozu-uns
-raNELotnar
-oozes-1mm
-W-WHJ+PILOJI
-Pris-PR1.»
-
-a courmE
-Ym-HNKIPR)
-error
-
-24 courses
-Blur
-
-ELSE
-ooasJ-mou
-I’m-PRU)
-
-25 comm:
-wee-rm
-
-ans
-
-eer01
-
-an
-
-210
-
-\WIIZATW BYTHESMPLEXIETHCD
-\mmmstw Alan/1991
-
-TASK MBA
-\ ----------------------- WM MAW
-VARABIE < F>
-:USE( [oowusl ' CFA <F> I;
-: F00 EXECUTE@ ;
-BEI-EAD' <F>
-\ -------------------- END FUNCTm NOTATm
-\ -------------------------- DATA WES
-3 VAR Him
-0 VAR N
-0 VAR N.mlx
-
-CREATESIMPLEX{{ Ndim 4 (bytes) ' Ndim1+ (#pclnta)
-'ALLOT
-
-GREATER Ndimt+ 4 (bytes) ' ALLOT \nelduale
-
-CREATEindex MimH- 2‘ ALLOT \arruyloraem'nbledlndleea
-
-:>index (1—1') Z‘index+ @;
-
-DVARIABLEW
-
-DVARIABLE Fhaidual'
-
-DVAFIABLEEpaIlon
-
-CREATEX{ Ndlm 4(bytee)‘ ALLor \trialpoint
-CREATEXH Ndim 4(bytea)‘ ALLOT \Z'Idlrialpolnt
-CREATEY{ Ndirn 4(bytea)‘ ALLOT \geocenter
-
-:} (adn—adr+4n) 4'4»; \partolarraynotation
-2}} (adrrnn—adr+[m'NJirn+n]'4) SWAP Mim' + };
-
-\ -------------------- ENDDArasrRucrunEs
-\ ---------------------------- ACTIONWORDS
-:FESIUJALS
-Ndirn1+ 0 DO SIMPLEX{(IO}} Foo F{I} R32I
-LCDP:
-
-:<indax> Mim1+ODOlindexlr+ leP: \ﬂlindax
-
-:GIER <indox>
-Ndm1+ooo F{I>1ndox}ma@
-l1+BEGNNdlm1+ OVER
-HERO/Bil >index}Fm@ FOVERFOVB! F>
-
-FFSWAP
-|>indettOVER >index
-haxl2'+l momenta-+1
-TI-ENFDFW 1+
-RHEAT WW
-LOO’;
-
-CENTE(—) FNTMmSF
-WOMF-O
-WODO
-
-(87:—Mm)
-\Ioepwereomponents
-\uraoeoverm
-
-mums-11.1)} mm H
-LOOP FOVERF/
-
-Chapter 3 - More Programming Examples
-
- 
-
-Scientiﬁc FORT!
-
-11mm
-
-LOOP Ponce;
-\m:mm1umumm4n
-\--enehsdedl
-
-\WII'I'Y
-
-:OGIEI CR .'We'rellniaed.' ;
-:TOOMANY CR .'Toomanyihratlona' :
-
-:V.MOVE (arcadr doatadr-) \rnovevemr
-NdimoDO OVER!) OVBIUZWIE
-LOOP DOFDP:
-:STORE (adriadr2--) O}
-SIMPLEX({ NdmlndexO}}V.MOVE
-F{Ndlrnlndex}2WVE;
-:SI'OREX Fhaldul X{ STORE;
-:STOREXP Reaidual'XH STOFE:
-
-:New.F x{ Foo Fbaidud F1321;
-:EXTRUDE (B7:aeale.laetor--)
-\exbndpaeudopod
-Murmo no DUP 1} new (87:-4.1x)
-Y{I} m FUNDEI F- (37:--e.fyxy)
-FROT FUNDER F“ (B72--yr~llx-yl‘l.o
-FFOT F+ (57:--s.ly+[x+/]fi.l)
-X{l} mar
-LOOP DFCP W MI;
-
-:F=1/2 F=1FNEGATEF=1FSCAI£FPLLCI(:
-:F=2 F=1FDUPFSCALEFPIJEK;
-
-\ ---------------------- DEBUGGNGCOE
-OVARDBG
-:DEBUG-ON-tlSDBG:
-:DEBUGOFFOISDBG:
-:.V SSPACES Ndimo DO DUPI} WP.
-LOOPDFOP;
-:.M (--)
-Ndimt+ODODBGCR
-IFI. ZSPACES THEN
-SMEXﬁIIndaxon .V
-036 IF F{Ilndex} WP. Ti-EN
-LOOCR
-DBGFOR X{.V WMFJ'HEN:
-
-:.F Mmt+ ODOCR F{lh&x) WP.
-LOOP:
-
-\ ------------------ “WOODS
-
-:FEFLECT CENTER
-F-t FPEGATE \nblaebr-d
-senatummon \mn
-Exrmoe \ealeulabeM
-DEEIFCRIFELECI’M'THENM:
-
-”Poem
-
-mount:
-
-an WW'IM
-\mm
-xue-(vuove \mpon
-MVP-8 mar: (71 nausea-4
-"summon \mn
-arm \muw
-
-”FOR'W “94 .M;
-
-“VE MF-IR \mw-os
-
-musicians-110)) \vmrnpt
-m \muot)
-MFCRfHALVMi'Tl-Bd M:
-
-II“ ”((0 Mada-10)) \balpt.
-Y( VJKNE \aaveit
-M1114» 100 \uywetnr
-mono \bywnponent
-
-was >m1notr
-mo vmm amass
-P-uzP- r+ R121
-LOOP
-LOOP assume ORDER
-Decree-eman- nan .M;
----------------------------- anacnonwoms
-
-“WWW
-HMAP >M}mF>W:
->-hau'l 0 M;
-
-and? Min MW:
->-wm1-m;
-
-um Hum-rimlmao
-
-no mwme
-
-POVERFOVE-I F-F2'
-
-F-l-DTF+ Fl FABS mm F>;
-.............................. aorEsrwoaos
-
- 
-
-MI-MWW 211
-
-:m (n.~--ﬂ:w~)
-Slur-a WM! OIN \ﬂﬂse
-\Ww
-\Inenau.m,m
-\ml-Ilnn
-
-'01 NM"- < All)
-
-igiig
-
-EFLEC‘TD-hm
-F r>-m
-F KWFS'YmTl-Gi
-HALVE Km
-Parmesan-arm
-ESE mm
-HEM
-r>-b‘7
-IFSTGEXPESESTGfXW
-THE
-N1+ISN omen
-FEAT core;
-
-\ ----------------------- mamas
-:P1 (ea—s7;P)oLpo}Ra.2@mP-2
-own ms": H'F+
-2) mar-'2 F2'F2'F+
-35-FF-F‘1F2/FSWAPOSFF‘F-;
-\t1=.5'(x'x+2'y'y+4'z'z-UI"2-0'1
-
-:F‘2 (u—nzrinouPo)
-mmUPP-zumm
-F2‘F+ SSFF-P’zFZIFSWAPsS-FF‘F-
-Mp,ow1}moo}me@P/Psrmrrroos
-
-\12 -[¢r"22'y"2-u)"2-051]'ooa¢'mnulx))‘ 2
-\Uuom USE(MYFLNC 101mm
-
-FLOATS
-
-5. swnExuoonm
-<1. mum pm
-1. smuoznm
-
-5. wmonmr
-3. mm mm:
--15$IPLEX{(12))R2!
-
-.1o.suPLE1q(2o}}m21
-1. smuzmm
-s smauzznm
-
-s. swusxuson m
-a. mum }} rear
-3. smausznm
-
-212 Ms-mwm WWI]
-
- 
-
-”Harm—“V .4.-.“ .
-
-emvuouum-Mmmemd.
-
-
+\subsubsection{Non-linear least squares: simplex method}
+\TallC{A} FORTRAN program for the simplex method is given belton page 209. The FORTH version, as discussed in \S\ 2 \S\ \S\ 3 given on pages 210 and 211.

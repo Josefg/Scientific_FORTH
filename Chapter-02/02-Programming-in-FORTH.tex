@@ -121,7 +121,7 @@ The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. U
 
 \begin{itemize}
     \item Creates a new dictionary entry, \bc{NEW-WORD}, and switches from \textbf{interpret}- to \textbf{compile} mode.
-    \item In compile mode, the interpreter looks up words and — rather than executin them — installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
+    \item In compile mode, the interpreter looks up words and -- rather than executin them -- installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
     \item The action of \bc{NEW-WORD} will be to \bc{EXECUTE} sequentially the previously-defined words \bc{WORD1}, \bc{WORD2}, ...\bc{WORDn}, placing any built-in numbers on the stack as they occur.
     \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\sepfootnote{02_07}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
@@ -213,7 +213,7 @@ leaves the stack in the successive states shown in Table 2-1 below
 
 Table 2-1 \textit{Picture of the stack during operations}
 
-We usually employ zero-based relative numbering in FORTH data structures —stacks, arrays, tables, \etc so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \etc
+We usually employ zero-based relative numbering in FORTH data structures --stacks, arrays, tables, \etc so TOS ("top of stack") is given relative \#0, NOS ("next on stack") \#1, \etc
 
 The operation "\bc{.}" ("emit") displays -104 to the screen, leaving the stack empty. That is, \bc{yyy} above is \bc{-104}.
 
@@ -249,7 +249,7 @@ Tb exchange the top 2 numbers we have .
 
 Table 2-2 \textit{Stack manipulation operators}
 
-These actions are shown on page 19 above in Table 2—2 (we show what each word does to the initial stack).
+These actions are shown on page 19 above in Table 2-2 (we show what each word does to the initial stack).
 
 In addition the words \bc{OVER}, \bc{UNDER}, \bc{PICK} and \bc{ROLL} act as shown in Table 2-3 below (note \bc{PICK} and \bc{ROLL} must be preceded by an integer that says where on the stack an element gets  \bc{PICK}ed or \bc{ROLL}ed).
 
@@ -274,7 +274,7 @@ Clearly, \bc{1 PICK} is the same as \bc{DUP}, \bc{2 PICK} is a synonym for \bc{O
 As Brodie has noted (\TF), it is rarely advisable to have aword use a stack so deep that \bc{PICK} or \bc{ROLL} is needed. It is generally better to keep word definitions short, using only a small number of arguments on the stack and consuming them to the extent possible. On the other hand, \bc{ROT} and its opposite, \bc{-ROT}\sepfootnote{02_08}, are often useful.
 
 \subsection{The return stack and Its uses}
-\TallC{We} have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism ——during actual execution- is the \textbf{return stack} (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the \textbf{next} address, it is actually called the \textbf{return} address for historical reasons.
+\TallC{We} have remarked above in §2§§2 that compilation establishes links from the calling word to the previously- defined word being invoked. Part of the linkage mechanism --during actual execution-- is the \textbf{return stack} (rstack): the address of the next word to be invoked after the currently executing word is placed on the rstack, so that when the current word is done, the system jumps to the next word. Although it might seem logical to call the address on the rstack the \textbf{next} address, it is actually called the \textbf{return} address for historical reasons.
 
 In addition to serving as a reservoir of return addresses (since words can be nested, the return addresses need a stack to be put on) the rstack is where the limits of a \bc{DO ... LOOP} construct are placed\footnote{We discuss looping in 2.7 below.}
 
@@ -286,7 +286,7 @@ The user can also store/retrieve to/from the rstack This is an example of using 
 
 Why would we want to use the rstack for storage when we have a perfectly good parameter stack to play with? Sometimes it becomes simply impossible to read code that performs complex gymnastics on the parameter stack, even though FORTH permits such gymnastics.
 
-Consider a problem — say, drawing a line on a bit- mapped graphics output device from (x,y) to (x',y')— that requires 4 arguments. We have to turn on the appropriate pixels in the memory area representing the display, in the ranges from the origin to the end coordinates of the line. Suppose we want to work with x and y first, but they are 3rd and 4th on the stack. So we have to \bc{ROLL} or \bc{PICK} to get them to TOS where they can be worked with conveniently. We probably need them again, so we use
+Consider a problem --say, drawing a line on a bit- mapped graphics output device from (x,y) to (x',y')-- that requires 4 arguments. We have to turn on the appropriate pixels in the memory area representing the display, in the ranges from the origin to the end coordinates of the line. Suppose we want to work with x and y first, but they are 3rd and 4th on the stack. So we have to \bc{ROLL} or \bc{PICK} to get them to TOS where they can be worked with conveniently. We probably need them again, so we use
 
 \begin{lstlisting}
 4PICK 4PICK ( -- x y x' y' x y)
@@ -294,7 +294,7 @@ Consider a problem — say, drawing a line on a bit- mapped graphics output devi
 
 Now 6 arguments are on the stack! See what I mean? A better way stores temporarily the arguments x’ and y', leaving only 2 on the stack. If we need to duplicate them, we can do it with an already existing word, \bc{DDUP}.
 
-Complex stack manipulations can be avoided by defining \bc{VARIABLE}s —named locations— to store numbers. Since FORTH, variables are typically \textit{global} —any word can access them — their use can lead to unfortunate and unexpected interactions among parts of a large program. Variables should be used sparingly.
+Complex stack manipulations can be avoided by defining \bc{VARIABLE}s --named locations-- to store numbers. Since FORTH, variables are typically \textit{global} --any word can access them-- their use can lead to unfortunate and unexpected interactions among parts of a large program. Variables should be used sparingly.
 
 While FORTH permits us to make variables local to the sub- if routines that use them\footnote{See \FTR, p. 3253 for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2§8§§3-2, 3§5§§2, 5§1§§2 and 11§2 offer examples.}, for many purposes the rstack can advantageously replace local variables:
 
@@ -312,7 +312,7 @@ Suppose, in the previous example, we had put x’ and y’ on the rstack via the
 Then we could duplicate and access x and y with no trouble.
 
 \leftbar[1\linewidth]
-\underline{\textbf{A note of caution}}: since the rstack is a critical component of the execution mechanism, we mess with it at our peril. If we want to use it, we must clean up when we are done, so it is in the same state as when we found it. A word that places a number on the rstack must get it off again — using \bc{R>} or \bc{RDROP} — before exiting that word\footnote{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \TF.}. Similarly, since no LOOP uses the rstack also, for each >R in such a loop (after DO) there must be a corresponding R > or RDROP (before LOOP is reached). Otherwise the results will be unpredictable and probably will crash the system.
+\underline{\textbf{A note of caution}}: since the rstack is a critical component of the execution mechanism, we mess with it at our peril. If we want to use it, we must clean up when we are done, so it is in the same state as when we found it. A word that places a number on the rstack must get it off again --using \bc{R>} or \bc{RDROP}-- before exiting that word\footnote{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \TF.}. Similarly, since no LOOP uses the rstack also, for each >R in such a loop (after DO) there must be a corresponding R > or RDROP (before LOOP is reached). Otherwise the results will be unpredictable and probably will crash the system.
 \endleftbar
 
 \section{Fetching and storing}
@@ -327,7 +327,7 @@ In Chapters 3, 4, S and 7 we shall extend the lexicon of \regc{@} and \regc{!} w
 
 \section{Arlthmetlc operations}
 
-\TallC{The} 1979 or 1983 standards, not to mention the forthcoming ANSII standard, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ — * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
+\TallC{The} 1979 or 1983 standards, not to mention the forthcoming ANSII standard, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ - * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
 
 \section{Comparing and testlng}
 
@@ -469,7 +469,7 @@ Here is how we use it:
 
 The inner workings of VARIABLE are these:
 \begin{itemize}
-    \item \bc{CREATE} makes a dictionary entry with the next name in the input stream — in this case, \bc{X}.
+    \item \bc{CREATE} makes a dictionary entry with the next name in the input stream - in this case, \bc{X}.
     \item Then the number 2 is placed on the stack, and the word \bc{ALLOT} increments the pointer that represents the current location in the dictionary by 2 bytes.
     \item This leaves a 2-byte vacancy to store the value of the variable (that is, the next dictionary header begins 2 bytes above the end of the one just defined).
 \end{itemize}
@@ -508,7 +508,7 @@ A word \bc{C}, ("see-comma") puts a byte-value into the next byte of the diction
 
 \TallC{In} the preceding example, we were able to initialize the variable \bc{SEVENTEEN} to 17 when we \bc{CREATE}d it, but we still have to fetch it to the stack \textit{via} \bc{SEVENTEEN @} whenever we want it. This is not quite what we had in mind: we would like to find 17 in T0S when we say \bc{SEVENTEEN}. The word \bc{DOES>} gives us precisely the tool to do this.
 
-As noted above, the function of \bc{DOES>} is to specify a run-time action for the "child" words of a defining word. Consider the defining word \bc{CONSTANT}, defined in high-level\footnote{Of course \bc{CONSTANT} is usually a machine—code primitive, for speed.} FORTH by
+As noted above, the function of \bc{DOES>} is to specify a run-time action for the "child" words of a defining word. Consider the defining word \bc{CONSTANT}, defined in high-level\footnote{Of course \bc{CONSTANT} is usually a machine-code primitive, for speed.} FORTH by
 
 \begin{lstlisting}
     : CONSTANT CREATE , DOES> @ ;
@@ -589,7 +589,7 @@ The usage would be
 These are more definitions than necessary, of course, and the technique generates unnecessary code. A more compact approach uses a \textit{defining word}, \bc{UNITS}:
 
 \begin{lstlisting}
-    : D, SWAP , , ; \ I double—length # in next cells
+    : D, SWAP , , ; \ I double-length # in next cells
     : UNITS CREATE D, DOES> D@ */ ;
 \end{lstlisting}
 
@@ -659,7 +659,7 @@ How does this work?
     \item \bc{]} turns on the compiler: the previously-defined word-names \bc{RING-BELL}, \textit{etc.} are looked up in the dictionary and compiled into the table (as though we had begun with :), rather than being executed.
     \item \bc{[} returns to interactive mode (as if it were ;), so that the next colon definition (\bc{BUTTON}) can be processed.
     \item The table \bc{BUTTONS} now contains the code-field addresses (CFA’s) of the desired actions of \bc{BUTTON}.
-    \item \bc{BUTTON} first uses 1- to subtract 1 from the button number left on the stack by \bc{WHAT} (so we can use 0—based numbering into the table -- if the first button were \# 0, this would be unneeded).
+    \item \bc{BUTTON} first uses 1- to subtract 1 from the button number left on the stack by \bc{WHAT} (so we can use 0-based numbering into the table -- if the first button were \# 0, this would be unneeded).
     \item \bc{2*} then multiplies by 2 to get the offset (from the beginning of \bc{BUTTONS}) of the CFA representing the desired action.
     \item \bc{BUTTONS +} then adds the base address of \bc{BUTTONS} to get the absolute address where the desired CPA is stored.
     \item \bc{@} fetches the CFA for \bc{EXECUTE} to execute.

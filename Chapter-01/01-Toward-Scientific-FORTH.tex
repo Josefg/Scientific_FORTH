@@ -10,7 +10,7 @@ Because FORTH is a \textbf{threaded, interpretive} language\sepfootnote{01_01} i
 
 Compilation produces executable programs that run fast, without the tedium of writing them directly in machine code (or \textbf{assembly language}). The source code will run virtually the same on any machine for which a compiler exists. That is, the source code is \textbf{portable}. Among other things, portability makes possible the development of standard libraries of reusable code for performing standard tasks like solving linear equations or computing Bessel functions.
 
-The chief disadvantage of compilation is its tedium. Testing small portions of a program in isolation is virtually impossible — either an "exercise" program must be written and compiled with the module being tested, or else the entire program must be compiled as a unit. This process is so time-consuming it discourages fine-grained decomposition of programs into small, comprehensible components.
+The chief disadvantage of compilation is its tedium. Testing small portions of a program in isolation is virtually impossible -- either an "exercise" program must be written and compiled with the module being tested, or else the entire program must be compiled as a unit. This process is so time-consuming it discourages fine-grained decomposition of programs into small, comprehensible components.
  
 \subsection{Programs and sub-programs} 
 \TallC{A} FORTRAN program consists of a master, or \textbf{main} program that either stands alone or can \textbf{call} (transfer control to) sub-programs. Sub-programs fall into two classes: \textbf{subroutines} and \textbf{functions}. Both receive \textbf{arguments} (input) from the calling program; they differ in how \textbf{results} (output) are returned to the calling program. Subroutines are called by the phrase
@@ -27,7 +27,7 @@ OPSIDE = HYPOT*SIN(3.14159*ANGLE/180.).
 
 Here the argument of \verb|SIN| is also an expression which must be evaluated before being passed to the \verb|SIN| subroutine. When \verb|SIN| is evaluated, its value is returned, multiplied by \verb|HYPOT| and the product stored in the area labelled \verb|OPSIDE|.
 
-There is no specific calling hierarchy in FORTRAN — a function an call a subroutine or \textit{vice-versa} and the called sub-program can all still further sub-programs.
+There is no specific calling hierarchy in FORTRAN -- a function an call a subroutine or \textit{vice-versa} and the called sub-program can all still further sub-programs.
 
 \subsection{Arithmetic statements}
 \TallC{FORTRAN} arithmetic is performed by "smart" operators acting on \textbf{typed variables} and \textbf{literals}. A variable is simply a name that refers to a specific location in memory. The \textbf{type} declaration is a way to let the compiler know how much memory to allot for that variable. A literal is an explicit number that appears in the program, such as the values \verb|3.14159| and \verb|180|. in the preceding example.

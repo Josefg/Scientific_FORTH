@@ -35,7 +35,7 @@ a_0x^0 + a_1x^1 + a_2x^2 + ... + a_nx^n
 
 z = x 1 + y i
 
-where i is —by definition— a “number" whose square is —1; 1 a “number” whose square is +1, and x and y are ordinary numbers. Conventionally, x is called the real part of z, and y the imaginary part:
+where i is --by definition-- a “number" whose square is -1; 1 a “number” whose square is +1, and x and y are ordinary numbers. Conventionally, x is called the real part of z, and y the imaginary part:
 
 x = Re(z) , y = Im(z).
 
@@ -52,7 +52,7 @@ To reassure readers who find uncomfortable the notion of a “number” i = \sqr
 
 1 = ( 1 0 0 1 ) , i = ( 0 1 -1 0)
 
-It is easy to verify that —in the sense of matrix multiplication—
+It is easy to verify that --in the sense of matrix multiplication--
 
 i x i = -1, 1 x i = i x 1, and 1 x 1 = 1.
 
@@ -60,7 +60,7 @@ These are just the usual multiplication rules for complex numbers. Note that x l
 
 x 1 \triple= ( x 0 0 x ) , y i \triple= ( 0 y -y 0 )
 
-\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic — commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
+\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic -- commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
 
 (a + ib)(x + iy) = (ax - by) + i(ay + bx)
 
@@ -113,7 +113,7 @@ and5
 
 5. See Ch. 3.4.1 for definitions of the inverse trigonometric functions.
 
-Note that $\theta$, sometimes called Arg(z), is defined only up to multiples of $2\pi$ — that is, adding $2\pi$ to an angle changes neither sine nor cosine because of their periodicity. The relations between $(x,y)$ and $(r,\theta) are illustrated in Fig. 7-1 above:
+Note that $\theta$, sometimes called Arg(z), is defined only up to multiples of $2\pi$ -- that is, adding $2\pi$ to an angle changes neither sine nor cosine because of their periodicity. The relations between $(x,y)$ and $(r,\theta) are illustrated in Fig. 7-1 above:
 
 \section{Load, store, manipulate fstack}
 \TallC{We} now define FORTH words to perform complex arithmetc. All complex operations will be prefixed by the letter X6. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
@@ -135,7 +135,7 @@ CODE    8+ BX 08 IW ADD. END-CODE
 \end{listing}
  
 
-The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing byte ("character") operations — as in C@, C!, etc. The complex extension supplied with HS/FORTH uses the prefix C when it is unambiguous (as in C+, C-, C*, C/, etc.),and CP when C alone won't do, as in CP@, etc.
+The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing byte ("character") operations -- as in C@, C!, etc. The complex extension supplied with HS/FORTH uses the prefix C when it is unambiguous (as in C+, C-, C*, C/, etc.),and CP when C alone won't do, as in CP@, etc.
 
 \ fstack manipulation
 :REAL   FDROP ;      ( 87:z--x )
@@ -230,7 +230,7 @@ e^{i\theta/n} \equiv \cos\frac{\theta}{n} + i \sin\frac{\theta}{n}
 
 However, we can also think of the n'th root as a solution of the polynomial equation in the variable $w$
 
-w^n — z = 0.
+w^n - z = 0.
 
 The fundamental theorem of algebra proves that a polynomial of n'th degree has exactly n roots; this implies there are n distinct values of $w$ that satisfy Eq. 22; i.e., there are n distinct roots of $z$. How can we generate them? Let us call the root shown above (in Eq- 20)
 

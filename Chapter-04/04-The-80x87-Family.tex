@@ -12,7 +12,7 @@ We shall see in Ch. 4 §1.1 how to use the FORTH assembler, and in Ch. 4 §1.2 h
 
 The 80x87 machine code instruction set includes instructions for moving numbers to the registers from memory and vice-versa, as well as from one 80x87 register to another. The internal moves are of course much faster than those to or from external memory.
 
-Advanced programming methods — such a recursive algorithms — require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\footnote{see \textbf{8087P}, p. 93ff.} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 §7.
+Advanced programming methods -- such a recursive algorithms -- require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\footnote{see \textbf{8087P}, p. 93ff.} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 §7.
 
 \section{Internal 80x87 and manipulation}
 
@@ -110,7 +110,7 @@ whose assembler definitions are:
     CODE    FDUP      FWAIT. 0  FLD.  END-CODE
     CODE    FSWAP     FWAIT. 1 FXCH.  END-CODE
     CODE    FDROP     FWAIT. 0 FSTP.  END-CODE
-    CODE    F—ROT   FWAIT. 2 FXCH.
+    CODE    F-ROT     FWAIT. 2 FXCH.
             FWAIT.  1 FXCH.           END-CODE
 \end{lstlisting}
 
@@ -137,7 +137,7 @@ For the moment we need words to retrieve and store 16-bit integers, short reals 
     END-CODE
 \end{lstlisting}
 
-Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} -assuming these are needed— replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64-, and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64@}, \bc{R80@}, and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\footnote{"Ten-byte pointer". Note HS/FORTH appends a period "." to most Intel mnemonics.} as appropriate.
+Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} --assuming these are needed-- replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64-, and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64@}, \bc{R80@}, and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\footnote{"Ten-byte pointer". Note HS/FORTH appends a period "." to most Intel mnemonics.} as appropriate.
 
 \TallC{We} also need words to load the 87stack from the stack and textit{vice versa}. In HS/FORTH, the top of the parameter stack is actually the BX register on the CPU. There is no machine instruction for loading the 87stack directly from a CPU register. Thus, we must first transfer the contents of BX to memory and thence to the 87stack. The inverse operation also must proceed through a memory location. The data-transfer words are named in an obvious way \bc{S->F} and \bc{F->S}. HS/FORTH defines them directly in machine code, manipulating the CPU register BP that points to the top of the CPU stack. That is, HS/FORTH uses two bytes immediately below NOS as the intermediate memory cell.
 
@@ -145,22 +145,22 @@ Here we define \bc{S->F} and \bc{F->S} directly in high-level FORTH by wasting a
 
 \begin{lstlisting}
     VARIABLE TEMP
-    : S—>F (n-- ::--float[n])
-        TEMP !          \TOS —> TEMP
+    : S->F ( n-- ::--float[n] )
+        TEMP !          \TOS -> TEMP
         TEMP I16@ ;     \TEMP-> ST(O)
-    : F—>S (::x — --int[x])
+    : F->S ( ::x--int[x] )
         TEMP I16!       \ST(O) -> TEMP
-        TEMP @ ;        \TEMP—> TOS
+        TEMP @ ;        \TEMP-> TOS
     BEHEAD' TEMP        \ hide address of TEMP
 \end{lstlisting}
 
 Faster machine code versions of \bc{S->F} and \bc{F->S} are\footnote{\bc{TEMP + []} is HS/FORTH's phrase to assemble a named memory address.}
 
 \begin{lstlisting}
-    CODE S—>F TEMP +[] BX MOV. BX POP.
+    CODE S->F TEMP +[] BX MOV. BX POP.
         FWAIT. TEMP +[] I16 fiLD. END-CODE
 
-    CODE F—>S BX PUSH. TEMP +[] FISTP.
+    CODE F->S BX PUSH. TEMP +[] FISTP.
         BX TEMP +[] MOV. END-CODE
 \end{lstlisting}
 
@@ -187,7 +187,7 @@ to prevent roundoff errors.
 
 The FORTH arithmetic words we shall need are
 \begin{lstlisting}
-    F+ F- FR— F* F/ FR/ FNEGATE FABS FSGN
+    F+ F- FR- F* F/ FR/ FNEGATE FABS FSGN
 \end{lstlisting}
 whose definitions are (CODE and END-CODE are assumed)
 
@@ -313,7 +313,7 @@ the sequence (we assume $x$ is already on the 87stack)
     : F=2 F=1 FDUP FSCALE FPLUCK ; (87:--2)
 
     : LOG.TST FDUP F0> NOT
-       ABORT" Can't take log(—|x|) 11" ;
+       ABORT" Can't take log(-|x|) 11" ;
 
     : FLG (87: y x -- y*lg[x])
         LOG.TST  FDUP F=2 F<
@@ -415,7 +415,7 @@ Here is how we code the tangent in high-level FORTH:
         F=PI FNORM              \ 0 < x < (*@$\pi$@*)
         F=PI F2/     REDUCE     ( -- fsgn f1q )
         F=PI F2/ F2/ REDUCE     ( -- fsgn f1q f1o )
-        FPTAN fl (87: |x|— -tan[x])
+        FPTAN fl (87:|x|--tan[x] )
         IF F=1 XDUP F+ F-ROT F- F/ THEN
                         \ adjust for octant
         IF 1/F FNEGATE THEN     \ adjust for quadrant
@@ -552,14 +552,14 @@ CODE 10-      <% 83 eb 0A %>    END-CODE
        ( fast way to add or subtract 10 )
 FSINIT
 
-: WRAP ( fsp -- fsp mod flgth )    \ make fstack circular
+: WRAP ( fsp--fsp mod flgth )    \ make fstack circular
        [FLGTH @ ] LITERAL UNDER + SWAP MOD ;
 
-: AWAY! DUP ROT ! ; ( adr n -— n )\ useful factored word
-: INC-FSP ( -- fsp') FSP DUP@ 10+ WRAP AWAY!  ;
-: DEC-FSP ( -- fsp') FSP DUP@ 10- WRAP SWAP ! ;
+: AWAY! DUP ROT ! ; ( adr n--n )\ useful factored word
+: INC-FSP ( -- fsp' ) FSP DUP@ 10+ WRAP AWAY!  ;
+: DEC-FSP ( -- fsp' ) FSP DUP@ 10- WRAP SWAP ! ;
 
-: INC-FDEPTH                    ( -- fdepth'   )
+: INC-FDEPTH                    ( --fdepth'   )
       FDEPTH DUP@ 1+ FS-LEGTH @ MIN
       AWAY! ;
 
@@ -586,7 +586,7 @@ are interesting:
 \begin{itemize}
     \item the optimizer does nearly as well as hand-tuned machine code.
     \item An \regc{FPUSH} or an \regc{FPOP} takes about 50 ysec on the average, when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
-    \item The irreducible minimum on an 8086/80286 -since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded— cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\footnote{Somewhat less, $\approx$ 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
+    \item The irreducible minimum on an 8086/80286 --since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded-- cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\footnote{Somewhat less, $\approx$ 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
     \item Substantially greater efficiency (at best another 1.5x improvement over the code version discussed above) would require a different algorithm -based, perhaps, on the 87stack overflow or underflow interrupt. But because other error conditions can initiate this interrupt, the testing and decision-making needed to use this method seemed to me likely to produce equivalent overhead to the method employed here.
 \end{itemize}
 \section{Clone wars}
@@ -672,7 +672,7 @@ Table 4-6 \textit{Timings for 4x4 matrix - vector}
 
 as for \textit{bmatrix vector}. If one must load the 4x4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
 
-The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\footnote{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time—consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
+The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\footnote{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time-consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
 
 \begin{align}
     \begin{bmatrix}A\end{bmatrix}
