@@ -1,0 +1,34 @@
+\documentclass[12pt,oneside,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+%\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{shapes,arrows}
+
+\begin{document}
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{block} = [rectangle, draw, above right, align=center]
+
+\begin{tikzpicture}[scale=1]
+\draw [black] (.4, .3) rectangle (10.04, 6.42);
+
+%\draw  (2.24, 4.50) rectangle (4.69, 5.54);
+\node [block] at (2.24, 4.50) (data) {DATA \\ STORE};
+%\draw  (5.34, 4.78) rectangle (6.64, 5.32);
+\node [block] at (5.30, 4.74)  (fpu) {FPU};
+%\draw  (7.72, 4.50) rectangle (9.64, 5.54);
+\node [block] at (7.72, 4.50) (res) {RESULT \\ STORE};
+%\draw  (2.77, .99) rectangle (4.28, 2.08);
+	\node [block] at (1.77, .99) (pgm) {PROGRAM \\ STORE};
+%\draw  (5.20, 1.15) rectangle (6.38, 1.87);
+	\node [block] at (5.30, 1.25) (cpu) {CPU};
+%\draw  (4.50, 2.66) rectangle (7.50, 3.95);
+	\node [block] at (4.50, 2.50)  (op) {OPRATIONS\\ \& \\ ADDRESSES};
+	\path [line]  (fpu) -- (res) ;
+	\path [line]  (data) -- (fpu) ;
+	\path [line]  (op) -- (fpu) ;
+	\path [line]  (cpu) -- (op) ;
+	\path [line]  (pgm) -- (cpu) ;
+
+\end{tikzpicture}
+
+\end{document}
