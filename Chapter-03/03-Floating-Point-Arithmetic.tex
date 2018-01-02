@@ -1,31 +1,7 @@
-macaw ma—mmpmm 45
 
-Floating Point Arithmetic
+\chapter{Floating Point Arithmetic}
 
-Contents
-
-51 Organization of floating point arithmetic
-§§1 Fstaok manipulation
-§§2 Special constants
-§§3 Arithmetic operators
-554 Example: evaluating a polynomial
-§§5 Optimizing: FORTH vs. FORTRAN
-
-52 Testing floating point numbers
-
-53 Mathematical functions — the essential function library
-
-54 Ubrary extensions
-551 The FSGN function
-
-§§2 Cosh. Sinh and their inverses
-
-§5 Pseudo-random number generators (PRNG's)
-§§1 Testing random number generators
-§§2 Random data structures
-\iffalse
-9$$Eﬂiﬂ88388$3$$
-\fi
+\tableofcontents
 
 \TallC{This} chapter discusses various aspects of floating point arithmetic in
 FORTH. Our approach assumes the central processor (CPU) has a dedicated floating
@@ -42,100 +18,33 @@ taken in commercial software written in FORTH, such as the
 (unfortunately now-deceased) VP-Planner spreadsheet. Since
 this text is not a \textit{vade mecum} for writing commercial software, but
 rather a handbook for using FORTH to solve computational
-
-thnVNobleIwz-Almm.
-
-Chapter 3 - Healing Point Arithmetic Sclonffﬂc FORTH
-
 problems in science and engineering, we consider a co-processor
 essential.
 
-51 Organization of floating point arithmetic
+\section{Organization of floating point arithmetic}
 
-FORTH was originally invented as a language for controlling
-
+\TallC{FORTH} was originally invented as a language for controlling 
 machinery. It is still used extensively for this purpose, with the
 machines in question being as varied as industrial robots,
 laboratory instruments, the Hubble Space Telescope, special
-effects motion picture cameras, and other computers. The ﬂoat-
-ing point co-processor in a typical computer is a machine, and any
+effects motion picture cameras, and other computers. The floating point
+co-processor in a typical computer is a machine, and any
 numerical calculation with floating point or complex numbers,
 e.g. can be organized in terms of loading operands into the
 coprocessor, and transferring results from it to memory. That is,
-FORTH can control the FPU through the calculation, as indi-
-cated in Fig. 3-1 below:
+FORTH can control the FPU through the calculation, as indicated in Fig. 3-1
+below:
 
  
 
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-DATA FPU RESULT
-STORE —r —- STORE
-OPERATIONS
-~ &
-ADDRESSES
-
- 
-
- 
-
- 
-
- 
-
-PROGRAM
-srone —i
-
- 
-
- 
-
- 
-
- 
-
- 
-
-Flg. 3—1 Dela flow diagram of a CPU controlling an FPU through a
+Fig. 3—1 Data flow diagram of a CPU controlling an FPU through a
 calculation.
 
-We assume a stack for floating point numbers separate from thr
-
+We assume a stack for floating point numbers separate from the 
 parameter or return stacks. We call this the fstack, and assume i
 has arbitrary depth. (We denote it by :: in stack comments.)
 
-OJUIanVNoble 1992—Allrlghtareserved.
-
-MM”!
-
- 
-
-Ms-nmpmm 47
-
+\leftbar[1\linewidth] 
 Whether the fstack should be distinct from the parameter stack
 is currently a subject of lively debate within the FORTH com-
 munity. One faction wishes to combine the two. The other
@@ -145,56 +54,52 @@ calculation as data ﬂow through a dedicated coprocessor, the
 parameter stack must be reserved for addresses, loop indices and
 ﬂags. The data fed to the coprocessor therefore has to stay
 elsewhere, i.e. in the data store and the fstack.
+\endleftbar
 
-The words we shall need fall into the categories of fstack
-
-manipulation, special constants, arithmetic, tests and mathe-
-
-matical functions. Their names are nearly standard‘l.
-
-m melt manipulation
-
-The fstack words are2
-F@ (addr--::—-x)
-Fl (addr--::x--)
-FDUP (::x--xx)
-FSWAP (::yx--xy)
-FDROP (::x--)
-FROT (::zyx--yxz)
-FOVER (:: yx--yxy)
-S->F (n--"--n)
-D->F (d-- --d)
-F->S (::x-- --int[x])
-
- 
-
-1. That is, the names in WS FORTH, PIS/FORTH, UniFORTH and PCFORTH are nearly the
+The words we shall need fall into the categories of fstack 
+manipulation, special constants, arithmetic, tests and mathematical functions.
+Their names are nearly standard\footnote{That is, the names in WS FORTH, PIS/FORTH, UniFORTH and PCFORTH are nearly the
 same and close to the proposed FORTH Vendors' Group (WG) standard — see, e.g., Ray
 Duncan's and Martin Tracy's article in Dr. Dobb's Journal, September 1984, p. 110. The new
 ANSI] standard does not address floating point, hence it is likely the PVC standard will become
-pre-eminent by default.
+pre-eminent by default.}.
 
-2. F@ and F! stand for a suite of words for fetching and storing 16-, 32-, 64—, and 80-bit numbers
-from/to the fstack. ln HS/FORTH they have names like [16@ I“! I32@ DZ! IBZ@B2!
-m I“! m RN)! and equivalents with sufﬁces E or L, that transfer data from segments
-other than the data segment.
-
-48 Chapter 3 — Floatlng Point Arithmetic Scientiﬁc FORTH
-
+\subsection{Fstack manipulation}
+\TallC{The} fstack words are\footnote{F@ and F! stand for a suite of words for fetching and storing 16-, 32-, 64—, and 80-bit numbers
+from/to the fstack. ln HS/FORTH they have names like [16@ I"! I32@ DZ! IBZ@B2!
+m I"! m RN)! and equivalents with suffices E or L, that transfer data from segments
+other than the data segment.}
+\begin{verbatim}
+F@     ( addr -- :: -- x )
+Fl     ( addr -- :: x -- )
+FDUP   ( :: x -- xx )
+FSWAP  ( :: yx -- xy )
+FDROP  ( :: x -- )
+FROT   ( :: zyx -- yxz )
+FOVER  ( :: yx -- yxy )
+S->F   ( n-- :: --n)
+D->F   ( d-- :: -- d )
+F->S   ( :: x-- : -- int[x] )
 F->D (::x--:--dint[x])
 % (place a FP# from input stream on fstack)
+\end{verbatim}
+ 
+To these we sometimes add\footnote{FnX (exchange ST(n) and ST(0) on fstack) and FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH’s floating point lexicon.}
 
-Tb these we sometimes add3
-
+\begin{verbatim}
 : FUNDER FSWAP FOVER ;
 : FPLUCK FSWAP FDROP ;
-an (n 2 - 6 deﬁned in code for speed)
-FnR (n 3 - 7 deﬁned in code for speed)
+Fnx (n = 2 - 6 | defined in code for speed)
+FnR (n = 3 - 7 | defined in code for speed)
+\end{verbatim}
 
 The Intel mathematics co-processors 80x87 (8087/80287/80387)
 and their clones incorporate a stack of limited depth (in fact 8
 deep), the 87stack It is far faster to get a number from the 875tack
-than from memory. Thus, as Palmer and Morse emphasize,
+than from memory. Thus, as Palmer and Morse\footnote{J.F. Palmer and S.P. Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
+Hereinafter called 8087P. Basically the same principle holds for other coprocessors such as
+the Weitek 1167 or Transputer 800 that incorporate intrinsic fstacks. The Motorola 68881/2 have
+registers, hence we must synthesize an fstack in software for these chips.} emphasize,
 optimizing for speed demands maximum use of the 87fstack to
 store intermediate results, frequently used constants, etc.
 
@@ -202,11 +107,12 @@ In Ch. 4 §7 we show how to extend the 87fstack into memory. The
 cost of unlimited fstack-depth is reduced speed when the 87stack
 spills over to memory.
 
-§§2 Special constants
-In deﬁning various floating point operations it is convenient to be
+\subsection{Special constants}
+\TallC{In}
+defining various floating point operations it is convenient to be
 able to place certain constants on the fstack directly, by invoicing
 their names. Here are some words that have proven useful:
-
+\begin{verbatim}
 F=0 (::--O)
 
 F=1 (::--1)
@@ -217,83 +123,76 @@ F=L2(E) (:2 "log, a)
 
 F= L10(2) (z: - - Iog,°2)
 F=LN(2) (ii-409.2)
-
+\end{verbatim}
  
-
-3. FnX (exchange ST(n) and ST(0) on fstack) and FnR (roll ST(n) to ST(0) on fstack) are part of
-HS/FORTH’s floating point lexicon.
-
-4. LP. Palmer and S.P. Morse, The 8087M (John Wiley and Sons, Inc., New York. 1984).
-Hereinafter called 0087?. Basically the same principle holds for other coprocessors such as
-the Weitek 1167 or Transputer am that incorporate intrinsic fstacks. The Motorola 68881/2 have
-registers, hence we must synthesize an fstack in software for these chips.
-
-ScIeMcFOM'M ma-nmrmm 40
-
-“3 NM m
-a noted in Chapters 1 and 2, FORTH arithmetic operators are
-rds —dumb words. FORTH uses a distinct set of operators
-for each kind (16-bit integer, 32-bit integer, REAL, COMPlliX)
+\subsection{Arithmetic operations}
+\TallC{As}
+noted in Chapters 1 and 2, FORTH arithmetic operators are
+rds \textit{- dumb} words. FORTH uses a distinct set of operators
+for each kind (16-bit integer, 32-bit integer, REAL, COMPLEX)
 of arithmetic. so the compiler has nothing to decide.
 
-Languages like FORTRAN, BASIC and AFL overload arith-
-metic operators—their meanings are context-dependent. This
+Languages like FORTRAN, BASIC and APL overload arithmetic operators - their
+meanings are context-dependent. This
 makes it possible to write -say- a FORTRAN expression using
 REAL‘4, REAL‘B, COMPLEX‘S or COMFLEX’16 literals
 and variables without worrying about how to fetch. store or
 convert them. Operator overloading increases the complexity of
-compilers and limits the speed and efﬁciency of compilation.
+compilers and limits the speed and efficiency of compilation.
 
 As we shall see in Chapter 5§1, FORTH enables an alternative
-solution in which “smart” data “know" their own types and
-“smart" operators “know” what kinds of data are being combined.
+solution in which "smart" data "know" their own types and
+"smart" operators "know" what kinds of data are being combined.
 The slightly reduced execution speed is offset by improved
 ﬂexibility: one canned routine can work with all data types. Even
-better, adding this kind of “intelligence” makes no extra demands
+better, adding this kind of "intelligence" makes no extra demands
 on the FORTH compiler.
 
 The standard, dumb FORTH floating-point arithmetic opera-
 tions and their actions are
 
-F+ (::yx--y+x)
-F— (::yx--y—x)
-FR— (::yx--x—y)
-F* (::yx--y*x)
-F/ (::yx--y/x)
-FRI (::yx--x/y)
-FNEGATE (::x-- -x)
-FABS (::x-- |x|)
-1/F (::x--1/X)
+\begin{verbatim}
+F+       ( :: yx -- y+x)
+F—       ( :: yx -- y—x)
+FR—      ( :: yx -- x—y)
+F*       ( :: yx -- y*x)
+F/       ( :: yx -- y/x)
+FRI      ( :: yx -- x/y)
+FNEGATE  ( :: x -- -x)
+FABS     ( :: x -- |x|)
+1/F      ( :: x -- 1/X)
+\end{verbatim}
 
-Tb these it is sometimes useful to add words that do not consume
-all their arguments, such as F‘NP (floating multiply, no pop)
+To these it is sometimes useful to add words that do not consume
+all their arguments, such as F*NP (floating multiply, no pop)
+
+\begin{verbatim}
 
 F'NP (::xy--xy‘x).
+
+\end{verbatim}
+
 that are faster, more convenient. and less demanding of the
+87stack than the phrase FOVER F*.
 
-875tack than the phrase FOVER F‘.
-
-emvmru—nmw.
-
-Chapters—FloatlngPolntNlthmatle SclentlﬂcFORTH
-
-“4 Example: evaluating a polynomlal
-Let us now write a little program to calculate something using
+\subsection{Example: evaluating a polynomial}
+\TallC{Let} us now write a little program to calculate something using
 the floating point lexicon, say a program to evaluate a general
-polynomial PN (x). The formula to evaluate is
+polynomial $P_N (x)$. The formula to evaluate is
+\begin{equation}
+P_N(x)=a_0x^0+a_1x^1+...+a_Nx^N
+\\
+=a_0+x(a_1+x(... +xa_N))
+\end{equation}
 
-PN(x)=aox0+a1x1+...+aNxN
 
-=ao+x(a1+x(... +xaN))
+\definecolor{gray}{gray}{0.8}
 
-   
-
-The algorithm c
-
-represented by the (pseudo) FORTH ﬂow
-diagrams, where
-
-indicates the end of the program.
+The algorithm can be represented by the (pseudo) FORTH ﬂow
+diagrams\footnote{See, e.g., SF. Lines trace program flow; a branch indicates a
+decision; at a loop \otimes marks the beginning and \bullet  the branch back to
+the beginning, as in BEGIN...REPEAT or DO...LOOP.}, where
+{\colorbox{gray}{\color{gray}XXX}} indicates the end of the program.
 
  
 
@@ -315,134 +214,118 @@ EXIT
 
  
 
-Flg. 3-2 Pseudo FOR TH ﬂow diagram of polynomial evaluation
+Fig. 3-2 Pseudo FOR TH flow diagram of polynomial evaluation
 
-Now we translate Fig. 3-2 above into FORI'I-I6'7 :
+Now we translate Fig. 3-2 above into FORTH \footnote{We assume arrays have been defied using the intrinsically typed data structures and generic operators of Ch. 5.}\footnote{The notation [x] means "the address of x".} :
 
- 
+\begin{verbatim}
 
-See, e.g., SF. Lines trace program flow; a branch indicates a decision; at a loop 0 marks the
-beginning and ' the branch back to the beginning, as in BEGIN...REPEAT or DO...LOOP.
-We assume arrays have been deﬁned using the intrinsically typed data structures and generic
-operators of Ch. 5.
+: }POLY ( [a{] [x] -- ) \ evaluate p(x,N)
+    FINIT G@            \ x on fstack
+    DUP type@ G=O       (z: -- x sum=0)
+    LEN@                ( -- [a{] N )
+    SWAP DO             \ begin loop
+    DUP I } G@          ( :: -- x sum a[i] )
+    G+ GOVER G*         ( :: -- x sum' )
+    -1 +LOOP            \ end loop
+    GPLUCK              ( :: -- sum )
+    0 } G@ G+ ;         ( :: -- p[x,n] )
 
-The notation [x] means “the address of x".
+\ Say: A{ X }POLY
 
-:}POLY (m [x]--) \evaluatep(x,N)
+\end{verbatim}
 
-FINIT G \xonl‘staclt
-DUP type@ G=O (z: -- x sum=0)
-#598» Do {that
-In
-
-DUP I} G@ (::--x sum a[i])
-
-G+ GOVER G' (::--xsum')
--1 +LOOP \endloop
-GPLUCK (:: --sum)
-0} G@ G+ ; (::--p[x,n])
-
-\ Say: A{ x }POLY
-
-Note that the function }POLY expects the addresses of its argu-
-ments on the stack, consumes them and leaves its result on the
-fstack. User-deﬁned FORTH functions will in general have an
+Note that the function \}POLY expects the addresses of its arguments on the
+stack, consumes them and leaves its result on the
+fstack. User-defined FORTH functions will in general have an
 interface of this sort. This will be especially true of the functions
 built into numerical co-processors.
 
 Actually, such behavior is typical of subroutine linkage in most high
-level languages, as anyone knows who has written assembler sub-
-routines that mn be linked to compiled FORTRAN, C or BASIC.
-So FORTH really isn’t different, only more explicit and efﬁcient.
+level languages, as anyone knows who has written assembler subroutines that can
+be linked to compiled FORTRAN, C or BASIC.
+So FORTH really isn't different, only more explicit and efficient.
 
-“5 Optimizing: FORTH vs. FORTRAN
-A sirnple-rninded compiler will translate an expression such as
-. 2
-, = (mm)
+\subsection{Optimizing: FORTH vs. FORTRAN}
+\TallC{A}
+ simple-minded compiler will translate an expression such as
+\begin{equation}
+     \Big( sin(x) \Big)^2
+\end{equation}
+
 into a form requiring two function calls:
-Y = SIN(X)*SIN(X) .
 
-Obviously this is silly. One of the claims often made for “optimiz-
-ing" FORTRAN or C compilers is the ability to recognize an
+\begin{verbatim}
+Y = SIN(X)*SIN(X) .
+\end{verbatim}
+
+Obviously this is silly. One of the claims often made for "optimizing" FORTRAN
+or C compilers is the ability to recognize an
 expression requiring unnecessary function calls, and to re-express
 it as. say,
-
-TEMP = 5mm
-v = TEMP . TEMP.
-
-OJuthNobletm-Alrlghtsmuvad.
-
-Chapter 3 - Floating Point Arithmetic Scientiﬁc Foam
-
- 
-    
-   
   
-  
- 
+\begin{verbatim}
+TEMP = SIN(X)
+v = TEMP * TEMP .
+\end{verbatim}
 
 A globally optimizing compiler has a more extensive repertoire
-usually it can recognize static expressions (“invariant code
-within a loop and move them outside; and it can find and e '
-inate code that is never evaluated (“dead" code).
+usually it can recognize static expressions ("invariant code")
+within a loop and move them outside; and it can find and eliminate code that is
+never evaluated ("dead" code).
 
-FORTH assumes a good programmer never overlooks trivia
-optimizations like this. Thus nothing in the FORTH incrementa
-compiler or optimizer is inherently capable of recognizing s' .
+FORTH assumes a good programmer \textit{never} overlooks trivia
+optimizations like this. Thus nothing in the FORTH incremental
+compiler or optimizer is inherently capable of recognizing silly
 code and eliminating it.
 
-Optimization in FORTH takes one of several forms, that can bt
+Optimization in FORTH takes one of several forms, that can be
 combined for best results. The simplest is the use of stacks
-registers to avoid extra memory shufﬂing. Referring to t
-preceding bad example, we note that a simple floating-pom
-function f(x) ﬁnds its argumentx on the top of the fstack, consume
-it, and leaves the result in its place. A simple F**2, deﬁned as
+registers to avoid extra memory shuffling. Referring to the
+preceding bad example, we note that a simple floating-point
+function f(x) finds its argumentx on the top of the fstack, consume
+it, and leaves the result in its place. A simple F**2, defined as
 
-:F**2 FDUP F* ;
+\begin{verbatim}
+: F**2 FDUP F* ;
+\end{verbatim}
 
-will then evaluate [f(x)]2, with no fetch/store penalty from clean-,-
-ing a temporary variable.
+will then evaluate $[f(x)]^2$, with no fetch/store penalty from defining
+a temporary variable.
 
-Some FORI'I-Is can optimize by substituting inline code for jumps.
-and returns to subroutines. In other words, by making the corn-
-piled code longer, some advantage in speed can be gained.
-HS/FORTH offers a recursive-descent optimizer of just this sort]
-that -within its limitations- can optimize as well as good C on
-FORTRAN compilers. An optimizer-irnproved word consists of
-all the code bodies of the words in its definition, jammed end it!
+Some FORTHs can optimize by substituting inline code for jumps
+and returns to subroutines. In other words, by making the compiled code longer,
+some advantage in speed can be gained.
+HS/FORTH offers a recursive-descent optimizer of just this sort
+that -within its limitations- can optimize as well as good C or
+FORTRAN compilers. An optimizer-improved word consists of
+all the code bodies of the words in its definition, jammed end to
 end and with redundant pushes and pops deleted.
 
-Virtually all FORTH implementations have a built-in assemblct
+Virtually all FORTH implementations have a built-in assembler
 
-that permits deﬁning a word in machine language. Judiciousl}
-machine-coding selected words can dramatically reduce execu—
-tion time, since careful hand coding offers the ultimate perfon.
-mance the machine is capable of. Some versions of Pascal and (1
-also have this ability; and of course most compiled and linlwt"
-languages can link to functions and subroutines deﬁned in
+that permits defining a word in machine language. Judiciously
+machine-coding selected words can dramatically reduce execution time, since
+careful hand coding offers the ultimate performance the machine is capable of.
+Some versions of Pascal and C
+also have this ability; and of course most compiled and linked
+languages can link to functions and subroutines defined in
 machine code.
 
- 
-
-MM"!
-
-ms-Mrmm 53
-
-FORTH’s advantage over other languages lies in making the
-
+FORTH’s advantage over other languages lies in making the 
 process of designing, testing and linking hand- coded components
 nearly painless.
 
 Another advantage of FORTH over other compiled languages is
 that one can specify which parts to optimize and which to leave
-as high-level deﬁnitions. This is both faster to compile and much
+as high-level definitions. This is both faster to compile and much
 more compact, than optimizing all of the program uniformly. The
-rationale of partial (sometimes called “peephole”) optimization
-is that most programs spend 90% of their execution time in 10%
-of the code. This 10% is the only part of the program worth
+rationale of partial (sometimes called "peephole") optimization
+is that most programs spend 90\% of their execution time in 10\%
+of the code. This 10\% is the only part of the program worth
 optimizing .
 
-§2 Tewng floatlng polnt numbers
+\section{Testing floating point numbers}
 
 A nalogous to the test words for integer arithmetic, we require
 ewords FO> F0: F0< F> F= F<.
@@ -450,7 +333,7 @@ ewords FO> F0: F0< F> F= F<.
 Test words leave a ﬂag on the parameter stack depending on the
 relationship they discover. Moreover, these words consume one
 or two arguments on the fstack, following the standard FORTH
-practice. As a simple ﬁrst example of test words, let us deﬁne
+practice. As a simple first example of test words, let us define
 max and FMIN analogous to MAX and MIN :9
 
 I XDUP FOVER FOVER ;
@@ -467,8 +350,8 @@ minimal function library is
 
  
 
-i. Anenmple'udiawaaedindlapterﬁwheretheinnermostloopofiinestedloopsisoptimiud
-(mkndcoded).andkkwen&omtheﬁmingsmumﬂeistobegamedbyopdmiﬁngthe
+i. Anenmple'udiawaaedindlapterfiwheretheinnermostloopofiinestedloopsisoptimiud
+(mkndcoded).andkkwen&omthefimingsmumﬂeistobegamedbyopdmifingthe
 
 aarotaerloop.
 
@@ -483,8 +366,8 @@ l
 FSORT (2: x - - l/x)
 FLgG (:: x - - ln[x]) l
 FL ii X ' ' I 10 X I
-F2“ inxng‘g [D i
-F“ (:2 x y - - ) l
+F2" inxng‘g [D i
+F" (:2 x y - - ) l
 FEXP (:: x - - e ) :
 FSIN (2: x - - sin[x]) i
 FCOS (22x - - cos[x]) i
@@ -495,7 +378,7 @@ FATAN ( :: x - - atan[x]) i
 FASIN ( 2: x - - asin[x]) i‘
 FACOS ( :2 x - - acos[x]) »
 
-Machine code deﬁnitions of the above functions for the 80x87 l
+Machine code definitions of the above functions for the 80x87 l
 chip will be given in Chapter 4.
 
 §4 Ubrary extensions
@@ -507,9 +390,9 @@ verse hyperbolic functions. Complex extensions of the function
 library is deferred to Chapter 6.
 
 §§1 The FSGN function
-The most useful form of FSGN ﬁnds one argument it (from which.
+The most useful form of FSGN finds one argument it (from which.
 to take an algebraic sign) on the parameter stack, and the floating,
-point argumentx on the fstack. We may deﬁne it using logic, as
+point argumentx on the fstack. We may define it using logic, as
 
 FSGN (n - - :2 x - - sgn[n]*abs[x])
 FABS O< IF FNEGATE THEN;
@@ -523,12 +406,12 @@ cosh(x) = %(e" + e ")
 
 macaw ma—mrmm 55
 
-and their deﬁnitions are
+and their definitions are
 
 :F2/ F-i (::x--x/2
 
 FNEGATE FSWAP F ALE FPLUCK ;
-: HYPER FEXP FDUP VP 2 (::--o“x e“-x)
+: HYPER FEXP FDUP VP 2 (::--o"x e"-x)
 :SINH HYPER F- F2/;
 
 : COSH HYPER F+ F2] ;
@@ -539,21 +422,21 @@ FIND XDUP O= ?( : XDUP FOVER FOVER ; )
 \ conditionally compile XDUP
 :TANH HYPER (:2 --ex e-x)
 XDUP F- F-ROT F + F/ ;
-Finally, the inverse hyperbolic sine and cosine can be deﬁned in
+Finally, the inverse hyperbolic sine and cosine can be defined in
 terms of logarithms:
 
-arcsinh(x) = ln(x+ (x2 + 1)”) , —ea <x < en
+arcsinh(x) = ln(x+ (x2 + 1)") , —ea <x < en
 
-arccosh(x)=ln(x+(x2-1)”) ,—eo <x< no
+arccosh(x)=ln(x+(x2-1)") ,—eo <x< no
 
-The corresponding deﬁnitions are10
+The corresponding definitions are10
 
-FIND F'*2 o= ?(: F“2 FDUP F* ; )
+FIND F'*2 o= ?(: F"2 FDUP F* ; )
 :ARCSINH FDUP F**2 F=1 F+
 FSORT F+ FLN;
-:ARCCOSH FDUP F“2 F=1 F-
+:ARCCOSH FDUP F"2 F=1 F-
 FDUP FO<
-ABORT“ x <1 in ARCCOSH'
+ABORT" x <1 in ARCCOSH'
 FSQRT F+ FLN ;
 
  
@@ -564,19 +447,19 @@ OJtlianltNobietm-Alrlohtsreaawed.
 
 56
 
-Chapter 3 — Floating Point Arithmetic Sclenﬁﬂc FORTH
+Chapter 3 — Floating Point Arithmetic Sclenfiﬂc FORTH
 
 §5 Pseudo-random number generators (PRNG's)
 The subject of computer-generated (pseudo) random numbers
-hﬁlbeen discussed extensively in the literature of computa-
-tion ' . We shall conﬁne ourselves here to translating two useful
+hfilbeen discussed extensively in the literature of computa-
+tion ' . We shall confine ourselves here to translating two useful
 algorithms into FORTH, and discussing tests for pseudo-random
 number generators (PRNG’s).
 
-The ﬁrst is a method called GGUBS13 based on the recursion
+The first is a method called GGUBS13 based on the recursion
 r,., = 16807 x r, MOD (231 — 1) .
 
-Since 32-bit modulo arithmetic is inefﬁcient on a 16-bit proces-
+Since 32-bit modulo arithmetic is inefficient on a 16-bit proces-
 sor, the program uses the 80x87 chip, and uses synthetic division .
 
 to get N MOD (231 - 1). Aversion that uses the 32-bit registers
@@ -584,7 +467,7 @@ of the 80386/80486 would not be hard to program. 5
 
  
 
-Two specialized words are needed“, that fetch/store 32-bit in-
+Two specialized words are needed", that fetch/store 32-bit in-
 
 tegers to/from the fstack from/to memory:
 
@@ -621,14 +504,14 @@ R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).
 P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).
 We anticipate using the FORTH assembler — see Ch. 4 §l§§1.l.
 
-Of course. it would have been feasible to deﬁne, via CREATE DOES >, data types that place .
+Of course. it would have been feasible to define, via CREATE DOES >, data types that place .
 the data on the 8’7stack, e.g. : FICONSTANT CREATE . DOES> I10® ; But such
 words can’t be optimized; to optimize time-critical word(s) in assembler requires VARIABLEs.
 
 ‘i'
 0.5. Knuth, The Art of Computer Progumnu'ng v. 2: Seminumerical Algorithnu, 2nd ed. }
 
-'nle high-level FORTH program itself ism”
+'nle high-level FORTH program itself ism"
 
 : RAND ( ;; . . good)
 FINIT SEED DUP 132@
@@ -641,7 +524,7 @@ M1 |16@ F'
 FSWAP M2 I16@
 I" F— FDUP I32! ;
 :RANDOM (::--random#)
-RAND BIGDIV l32@ (::--seed2“31-1)
+RAND BIGDIV l32@ (::--seed2"31-1)
 FSWAP FDUP F0< (--t ::--2"'31-1 seed)
 IF FOVER F+ THEN FR/
 BEHEAD" BIGDIV RAND
@@ -660,7 +543,7 @@ GGUBS.TST 522329230 0k
 
 16. The new words are FINIT (initialize 8M7 chip). FTRUNC (set roundoff mode to truncate ﬂoat-
 ing point numbers toward zero): and FRNDINT (round ﬂotaing point number to integer). The
-midiosynaaﬁcally possessesseveral roundoﬂpolicies Apolicyisseleetedbysettingbits 10
+midiosynaafically possessesseveral roundoﬂpolicies Apolicyisseleetedbysettingbits 10
 andll(numbering&om0)ofthe 16-bit controlwordusingHEX ocoo OR.Seer’for
 details.
 
@@ -671,10 +554,10 @@ case. BIGDIV, DIVIS. SEED, I1, HaandRAND.
 
 cmvmrm-umw.
 
-58 Chapter 3 — Floating Point Arlthmetlc Scientiﬁc FORTH
+58 Chapter 3 — Floating Point Arlthmetlc Scientific FORTH
 
 §§l M00 I'll‘ldOfl'l number generators
-When deﬁning PRNGs it is always important to include a test
+When defining PRNGs it is always important to include a test
 for randomness. The simplest is called the 12 test: use the
 PRNG to generate N integers18 in the range [0,n-1] and record
 the number of occurrences, f,, of each integers = 0, 1, . . .n-l. If
@@ -699,7 +582,7 @@ FREQS 200 0 FILL ;
 
 : GET-FREQS \make frequency table
 1000 0 DO IRAND 2*
-DUP 199 >ABORT“IRANDTOO LARGE“
+DUP 199 >ABORT"IRANDTOO LARGE"
 FREQS + 1+!
 LOOP ;
 : STARTCHISQ INIT-FREQS GET—FREQS ;
@@ -716,7 +599,7 @@ LOOP ;
 
 18. Nis assumed > >n
 
-19. For those interested in details, the probability a PRNG will produce the integer “s” 1' times is
+19. For those interested in details, the probability a PRNG will produce the integer "s" 1' times is
 p, =1,- "/(n). Thus the e ed value of (t-1)2/A h 1, and therefore the expected value or 12
 is n. The variance in the 1 statistic should then be n(2 +1"! ).
 
@@ -756,7 +639,7 @@ tained correlations not revealed by the above tests. This led me
 to seek another PRNG with —perhaps— better properties, a
 longer cycle, etc. I offer it as an alternative, since —at the very
 least — it will enable the reader to test his applications with more
-than one PRNG”. Here is the second PRNG:
+than one PRNG". Here is the second PRNG:
 
 Chapter 3 - Hosting Point Arithmetic
 
@@ -852,7 +735,7 @@ macaw ma-mpmm 81
 
 and taliipg the discrete Fourier transform (DFT) of the se-
 quence . Any serial correlations will show up as periodicities,
-with periods smaller than N, in the DH“ of x, .
+with periods smaller than N, in the DH" of x, .
 
 552 Random data structures
 The prng’s we have discussed so far produce pm’s uniformly dis-
@@ -884,7 +767,7 @@ which, using standard manipulations, we can evaluate as
  
 
 Un'ng, cg, theFast Fourier Transform program from Chapter ssz
-ManumbusuﬂamlydimibmuﬁMOtol.
+ManumbusuﬂamlydimibmufiMOtol.
 Emeptineaseolcomputationmfcourse.
 llaed‘r)isthew—caﬂedDuae6-funaim.8eeanystandardtenondistnbutions
 
@@ -894,17 +777,17 @@ cmvuauotm-me.
 
 Chapter 3 — Hosting Point Arithmetic Sclendﬂc FORTH
 
-ﬂx)= I‘deo[(e—t(x))%] = “if (5)
+ﬂx)= I‘deo[(e—t(x))%] = "if (5)
 The ordinary differential equation 5 has the formal solution
 £=r,’f§,§’dxltx) <6) I
 I
 
-that deﬁnes the new pm's distributed according to f(x)dr, if E is a
+that defines the new pm's distributed according to f(x)dr, if E is a
 pm uniformly distributed on [0,1]. In other words, we have to
 solve a (usually) transcendental equation to calculate X(E).
 
 Since most simulation problems demand a lot of pm’ 5, it is no use
-solving Eq. 6 in real time. The better solution is to deﬁne a large
+solving Eq. 6 in real time. The better solution is to define a large
 enough table of the X’s, and look them up according to E. In this I
 case we actually want an integer PRNG uniformly distributed on
 [0,N-1], where the table has N entries.
@@ -945,10 +828,10 @@ h
 Fig. 34! PRNG supplied with HS/FORTH
 
 In Fig. 3-3 above we exhibit a PRNG that produces 16-bit intege .
-uniformly distributed on [0, 2”— l] . l h ve no idea of its
+uniformly distributed on [0, 2"— l] . l h ve no idea of its
 operandi or its origin, but it passes the 1 tests described above.
 
-We also need a way to invoke user-deﬁned functions: the meth
+We also need a way to invoke user-defined functions: the meth
 we have found is shown in Fig. 34 below. I
 
 ma-MPOHW 83
@@ -969,16 +852,16 @@ BEI'EAD' <F> \rrllto<F>iocl
 
 Fig. 34Prorocol for function usage in FORTH
 
-We also require a word analogous to , (“comma") that stores
-32-bit floating point numbers in the parameter ﬁeld of a word:
+We also require a word analogous to , ("comma") that stores
+32-bit floating point numbers in the parameter field of a word:
 
 \begin{verbatim}
 : F32, HERE-L 4 ALLOT R32! ;
-\ store a 32-bit # from the fstack in the ﬁrst
+\ store a 32-bit # from the fstack in the first
 \ available place in the dictionary
 \end{verbatim}
 
-With these auxiliary deﬁnitions we are in a position to deﬁne a
+With these auxiliary definitions we are in a position to define a
 word that creates tables of random variates and traverses them in a random order:
 
 \begin{verbatim}
@@ -1042,7 +925,7 @@ tables. Because the resulting data structure is nearly an "object",
 it is worthwhile to see how this may be done.
 
 To make the prng unique, all that is necessary is to make the seed
-VARs unique to a table, and to redeﬁne RANDOMIZE and,
+VARs unique to a table, and to redefine RANDOMIZE and,
 RANDOM to know how to get a given table’s seeds. We see that
 RANDOM is invoked only in the runtime code for the structure.
 This means it has access to the base address, hence the VARs
