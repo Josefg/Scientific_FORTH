@@ -4,14 +4,14 @@ Floating Point Arithmetic
 
 Contents
 
-51 Organization of ﬂoating point arithmetic
+51 Organization of floating point arithmetic
 §§1 Fstaok manipulation
 §§2 Special constants
 §§3 Arithmetic operators
 554 Example: evaluating a polynomial
 §§5 Optimizing: FORTH vs. FORTRAN
 
-52 Testing ﬂoating point numbers
+52 Testing floating point numbers
 
 53 Mathematical functions — the essential function library
 
@@ -23,24 +23,24 @@ Contents
 §5 Pseudo-random number generators (PRNG's)
 §§1 Testing random number generators
 §§2 Random data structures
+\iffalse
+9$$Eﬂiﬂ88388$3$$
+\fi
 
-9$$Eﬂiﬂ88388$3$
-
-This chapter discusses various aspects of ﬂoating point arith-
-
-metic in FORTH. Our approach assumes the central proces-
-sor (CPU) has a dedicated ﬂoating point co-processor (FPU)
-available to it, such as the 80x87 for the Intel 80186 family; the
+\TallC{This} chapter discusses various aspects of floating point arithmetic in
+FORTH. Our approach assumes the central processor (CPU) has a dedicated floating
+point co-processor (FPU)
+available to it, such as the 80x87 for the Intel 80x86 family; the
 built-in FPU on the 80486; the 68881/2 for Motorola 680x0
 machines; various add-ins and clones like the Weitek, Cyrix, IIT
 and AMD chips; or digital signal processing and array-processing
 co-processor boards.
 
-If no ﬂoating point co-processor were available, one could
-employ eo-processor emulation routines. This is the approach
-taken in commercial software written in FORI'l-l. such as the
+If no floating point co-processor were available, one could
+employ co-processor emulation routines. This is the approach
+taken in commercial software written in FORTH, such as the
 (unfortunately now-deceased) VP-Planner spreadsheet. Since
-this text is not a vade meant for writing commercial software, but
+this text is not a \textit{vade mecum} for writing commercial software, but
 rather a handbook for using FORTH to solve computational
 
 thnVNobleIwz-Almm.
@@ -59,7 +59,7 @@ machines in question being as varied as industrial robots,
 laboratory instruments, the Hubble Space Telescope, special
 effects motion picture cameras, and other computers. The ﬂoat-
 ing point co-processor in a typical computer is a machine, and any
-numerical calculation with ﬂoating point or complex numbers,
+numerical calculation with floating point or complex numbers,
 e.g. can be organized in terms of loading operands into the
 coprocessor, and transferring results from it to memory. That is,
 FORTH can control the FPU through the calculation, as indi-
@@ -123,7 +123,7 @@ srone —i
 Flg. 3—1 Dela flow diagram of a CPU controlling an FPU through a
 calculation.
 
-We assume a stack for ﬂoating point numbers separate from thr
+We assume a stack for floating point numbers separate from thr
 
 parameter or return stacks. We call this the fstack, and assume i
 has arbitrary depth. (We denote it by :: in stack comments.)
@@ -140,7 +140,7 @@ Whether the fstack should be distinct from the parameter stack
 is currently a subject of lively debate within the FORTH com-
 munity. One faction wishes to combine the two. The other
 faction, including the author and most other FORl'l-l number-
-cmnchers, believes that to organize a ﬂoating point- intensive
+cmnchers, believes that to organize a floating point- intensive
 calculation as data ﬂow through a dedicated coprocessor, the
 parameter stack must be reserved for addresses, loop indices and
 ﬂags. The data fed to the coprocessor therefore has to stay
@@ -171,7 +171,7 @@ F->S (::x-- --int[x])
 1. That is, the names in WS FORTH, PIS/FORTH, UniFORTH and PCFORTH are nearly the
 same and close to the proposed FORTH Vendors' Group (WG) standard — see, e.g., Ray
 Duncan's and Martin Tracy's article in Dr. Dobb's Journal, September 1984, p. 110. The new
-ANSI] standard does not address ﬂoating point, hence it is likely the PVC standard will become
+ANSI] standard does not address floating point, hence it is likely the PVC standard will become
 pre-eminent by default.
 
 2. F@ and F! stand for a suite of words for fetching and storing 16-, 32-, 64—, and 80-bit numbers
@@ -203,7 +203,7 @@ cost of unlimited fstack-depth is reduced speed when the 87stack
 spills over to memory.
 
 §§2 Special constants
-In deﬁning various ﬂoating point operations it is convenient to be
+In deﬁning various floating point operations it is convenient to be
 able to place certain constants on the fstack directly, by invoicing
 their names. Here are some words that have proven useful:
 
@@ -221,7 +221,7 @@ F=LN(2) (ii-409.2)
  
 
 3. FnX (exchange ST(n) and ST(0) on fstack) and FnR (roll ST(n) to ST(0) on fstack) are part of
-HS/FORTH’s ﬂoating point lexicon.
+HS/FORTH’s floating point lexicon.
 
 4. LP. Palmer and S.P. Morse, The 8087M (John Wiley and Sons, Inc., New York. 1984).
 Hereinafter called 0087?. Basically the same principle holds for other coprocessors such as
@@ -252,7 +252,7 @@ The slightly reduced execution speed is offset by improved
 better, adding this kind of “intelligence” makes no extra demands
 on the FORTH compiler.
 
-The standard, dumb FORTH ﬂoating-point arithmetic opera-
+The standard, dumb FORTH floating-point arithmetic opera-
 tions and their actions are
 
 F+ (::yx--y+x)
@@ -266,7 +266,7 @@ FABS (::x-- |x|)
 1/F (::x--1/X)
 
 Tb these it is sometimes useful to add words that do not consume
-all their arguments, such as F‘NP (ﬂoating multiply, no pop)
+all their arguments, such as F‘NP (floating multiply, no pop)
 
 F'NP (::xy--xy‘x).
 that are faster, more convenient. and less demanding of the
@@ -279,7 +279,7 @@ Chapters—FloatlngPolntNlthmatle SclentlﬂcFORTH
 
 “4 Example: evaluating a polynomlal
 Let us now write a little program to calculate something using
-the ﬂoating point lexicon, say a program to evaluate a general
+the floating point lexicon, say a program to evaluate a general
 polynomial PN (x). The formula to evaluate is
 
 PN(x)=aox0+a1x1+...+aNxN
@@ -394,7 +394,7 @@ code and eliminating it.
 Optimization in FORTH takes one of several forms, that can bt
 combined for best results. The simplest is the use of stacks
 registers to avoid extra memory shufﬂing. Referring to t
-preceding bad example, we note that a simple ﬂoating-pom
+preceding bad example, we note that a simple floating-pom
 function f(x) ﬁnds its argumentx on the top of the fstack, consume
 it, and leaves the result in its place. A simple F**2, deﬁned as
 
@@ -508,7 +508,7 @@ library is deferred to Chapter 6.
 
 §§1 The FSGN function
 The most useful form of FSGN ﬁnds one argument it (from which.
-to take an algebraic sign) on the parameter stack, and the ﬂoating,
+to take an algebraic sign) on the parameter stack, and the floating,
 point argumentx on the fstack. We may deﬁne it using logic, as
 
 FSGN (n - - :2 x - - sgn[n]*abs[x])
@@ -972,48 +972,43 @@ Fig. 34Prorocol for function usage in FORTH
 We also require a word analogous to , (“comma") that stores
 32-bit floating point numbers in the parameter ﬁeld of a word:
 
+\begin{verbatim}
 : F32, HERE-L 4 ALLOT R32! ;
 \ store a 32-bit # from the fstack in the ﬁrst
 \ available place in the dictionary
+\end{verbatim}
 
 With these auxiliary deﬁnitions we are in a position to deﬁne a
-word that creates tables of random variates and traverses them in
-a random order:
+word that creates tables of random variates and traverses them in a random order:
 
-\Ddinlng word for tables of pm's distributed according to a given distribution:
-\P(x<X(xI)) = id defhes X(xl).
+\begin{verbatim}
+	\ Defining word for tables of pm's distributed according to a given distribution:
+	\ P(x<X(xi)) = id defhes X(xi).
+	\ Note: the first entry is autormticaliy 0.  
+	\ fn.name oonvetts xi to X(xi) 
+	\ dist.name is the name of the random N-long table created by )DISTRIBUIION
 
-\ Note: the first entry is autormticaliy 0.
+	:SHAKE.UP ( #bls -- ) TIME@ XOR -ROT XOR ROT RANDOMIZE ;
 
-\ ln.name oonvetts xi to X(xi)
+							 \ randomize seeds
+	: )DISTRIBUTION: DUP LG2 ( --N #bits=ln[N])
+	SHAKE.UP                 \ Inlhllzepmg
+	CREATE F=O F32, \rmkefirstemy
+	(N--) 1 DO \Nentrytabie
+	IS->F I' S->F F/ \ltiontstack
+	F00 F32. \evalmteXOtiiand!
+	LOOP
+	DOES> RANDOM 4' + R32@ ;
+	BEI-EAD" A RANDOM \makethesewordslocd
 
-\distname is the name of the random NvIong table created by )DISTRIBUIION
-
-:SHAKE.UP (#bls --) TIME@ XOR -ROT XOR ROT RANDOMIZE:
-
-\randomlzeseeds
-:)DISTRIBUTION: DUP L62 (--N #bits=ig[N])
-SHAKEUP \Inlhllzepmg
-CREATE F=O F32, \rmkefirstemy
-(N--) 1 DO \Nentrytabie
-IS->F I' S->F F/ \ltiontstack
-F00 F32. \evalmteXOtiiand!
-LOOP
-DOES> RANDOM 4' + R32@ ;
-BEI-EAD" A RANDOM \makethesewordslocd
-
-\Usage: USE( Inname N )DISTRIBUTION: dbtname
-
+	\Usage: USE( Inname N )DISTRIBUTION: dbtname
+\end{verbatim}
 In Fig. 3-5 below we exhibit a frequency plot of 10,000 random
-variates drawn from a (rather coarse) table of 64 entries, accord-
-
-ing to the distribution p(x)d.r = xe” dr , together with p(x).
-
- 
-
-p(x) =xe"‘
+variates drawn from a (rather coarse) table of 64 entries, according to the
+distribution $p(x)dx=xe^{-x}dx$, together with $p(x)$.
 
  
+
 
  
 
@@ -1037,19 +1032,19 @@ p(x) =xe"‘
 
  
 
-Fig. 3-5 Random var/ates from table of 64 from distribution p(x) = ire"l
+ 
 
-Wth slightly more elaboration we can arrange for each table to-
+Fig. 3-5 Random variates from table of 64 from distribution $p(x)=xe^{-x}$
 
-have a unique pmg, thus minimizing correlations between
-tables. Because the resulting data structure is nearly an “object",
+With slightly more elaboration we can arrange for each table to 
+have a unique prng, thus minimizing correlations between
+tables. Because the resulting data structure is nearly an "object",
 it is worthwhile to see how this may be done.
 
 To make the prng unique, all that is necessary is to make the seed
-VARs unique to a table, and to redeﬁne RANDOMIZE anti,
+VARs unique to a table, and to redeﬁne RANDOMIZE and,
 RANDOM to know how to get a given table’s seeds. We see that
-RANDOM is invoked only in the runtirne code for the structure;
+RANDOM is invoked only in the runtime code for the structure.
 This means it has access to the base address, hence the VARs
-
-be replaced with cells in the table, and the seeds planted there.
+can be replaced with cells in the table, and the seeds planted there.
 
