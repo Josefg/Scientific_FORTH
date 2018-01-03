@@ -85,7 +85,9 @@ F->D (::x--:--dint[x])
 % (place a FP# from input stream on fstack)
 \end{verbatim}
  
-To these we sometimes add\footnote{FnX (exchange ST(n) and ST(0) on fstack) and FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH’s floating point lexicon.}
+To these we sometimes add\footnote{FnX (exchange ST(n) and ST(0) on fstack) and
+FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH’s floating point
+lexicon.}
 
 \begin{verbatim}
 : FUNDER FSWAP FOVER ;
@@ -97,12 +99,14 @@ FnR (n = 3 - 7 | defined in code for speed)
 The Intel mathematics co-processors 80x87 (8087/80287/80387)
 and their clones incorporate a stack of limited depth (in fact 8
 deep), the 87stack It is far faster to get a number from the 875tack
-than from memory. Thus, as Palmer and Morse\footnote{J.F. Palmer and S.P. Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
-Hereinafter called 8087P. Basically the same principle holds for other coprocessors such as
-the Weitek 1167 or Transputer 800 that incorporate intrinsic fstacks. The Motorola 68881/2 have
-registers, hence we must synthesize an fstack in software for these chips.} emphasize,
-optimizing for speed demands maximum use of the 87fstack to
-store intermediate results, frequently used constants, etc.
+than from memory. Thus, as Palmer and Morse\footnote{J.F. Palmer and S.P.
+Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
+Hereinafter called 8087P. Basically the same principle holds for other
+coprocessors such as the Weitek 1167 or Transputer 800 that incorporate
+intrinsic fstacks. The Motorola 68881/2 have registers, hence we must
+synthesize an fstack in software for these chips.} emphasize, optimizing for
+speed demands maximum use of the 87fstack to store intermediate results,
+frequently used constants, etc.
 
 In Ch. 4 §7 we show how to extend the 87fstack into memory. The
 cost of unlimited fstack-depth is reduced speed when the 87stack
@@ -197,27 +201,13 @@ the beginning, as in BEGIN...REPEAT or DO...LOOP.}, where
 
  
 
-®0N1-DO\froml=N-1too .
-sum=sumax+a[l]
-. -1 +LOOP
-
-sum = a[N]
-
- 
-
-EXIT
-
- 
-
- 
-
- 
-
  
 
 Fig. 3-2 Pseudo FOR TH flow diagram of polynomial evaluation
 
-Now we translate Fig. 3-2 above into FORTH \footnote{We assume arrays have been defied using the intrinsically typed data structures and generic operators of Ch. 5.}\footnote{The notation [x] means "the address of x".} :
+Now we translate Fig. 3-2 above into FORTH \footnote{We assume arrays have been
+defied using the intrinsically typed data structures and generic operators of
+Ch. 5.}\footnote{The notation [x] means "the address of x".} :
 
 \begin{verbatim}
 
@@ -237,10 +227,9 @@ Now we translate Fig. 3-2 above into FORTH \footnote{We assume arrays have been 
 \end{verbatim}
 
 Note that the function \}POLY expects the addresses of its arguments on the
-stack, consumes them and leaves its result on the
-fstack. User-defined FORTH functions will in general have an
-interface of this sort. This will be especially true of the functions
-built into numerical co-processors.
+stack, consumes them and leaves its result on the fstack. User-defined FORTH
+functions will in general have an interface of this sort. This will be
+especially true of the functions built into numerical co-processors.
 
 Actually, such behavior is typical of subroutine linkage in most high
 level languages, as anyone knows who has written assembler subroutines that can
@@ -303,7 +292,7 @@ FORTRAN compilers. An optimizer-improved word consists of
 all the code bodies of the words in its definition, jammed end to
 end and with redundant pushes and pops deleted.
 
-Virtually all FORTH implementations have a built-in assembler
+\TallC{Virtually} all FORTH implementations have a built-in assembler
 
 that permits defining a word in machine language. Judiciously
 machine-coding selected words can dramatically reduce execution time, since
@@ -328,7 +317,7 @@ optimizing .
 
 \section{Testing floating point numbers}
 
-A nalogous to the test words for integer arithmetic, we require
+\TallC{A} nalogous to the test words for integer arithmetic, we require
 ewords FO> F0: F0< F> F= F<.
 
 Test words leave a ﬂag on the parameter stack depending on the
@@ -336,76 +325,67 @@ relationship they discover. Moreover, these words consume one
 or two arguments on the fstack, following the standard FORTH
 practice. As a simple first example of test words, let us define
 max and FMIN analogous to MAX and MIN :9
-
-I XDUP FOVER FOVER ;
+\begin{verbatim}
+: XDUP FOVER FOVER ;
 : FMAX XDUP F< IF FSWAP THEN FDROP ;
-: FMIN XDUP F> IF FSWAP THEN FDROP;
+: FMIN XDUP F> IF FSWAP THEN FDROP ;
+\end{verbatim}
 
-§3 Mathematical tunetlons — the essential tunetlon llbrary
+\section{Mathematical functions - the essential function library}
 
-cientific programming in FORTH requires a suite of exponen-
-
-tial, logarithmic and trigonometric functions (included with all
-FORTRAN systems, most BASICS, C’s, APL LISP, etc.) The
+\TallC{Scientific} programming in FORTH requires a suite of exponential,
+logarithmic and trigonometric functions (included with all
+FORTRAN systems, most BASICs, C’s, APL LISP, etc.) The
 minimal function library is
 
- 
+\begin{verbatim}
 
-i. Anenmple'udiawaaedindlapterfiwheretheinnermostloopofiinestedloopsisoptimiud
-(mkndcoded).andkkwen&omthefimingsmumﬂeistobegamedbyopdmifingthe
+FSQRT     ( :: x -- $\sqrt x $ )
+FLN       ( :: x -- $\ln[x]$ )
+FLOG      ( :: x -- $log_{10}[x]$ )
+F2**      ( :: x -- $2^x$ )
+F**       ( :: x y -- $y^x$ )
+FEXP      ( :: x -- $e^x$ )
+FSIN      ( :: x -- sin[x] )
+FCOS      ( :: x -- cos[x] )
+FTAN      ( :: x -- tan[x] )
+DEG->RAD  ( :: x -- x*pi/180 )
+RAD->DEG  ( :: x -- x*180/pi )
+FATAN     ( :: x -- atan[x] )
+FASIN     ( :: x -- asin[x] )
+FACOS     ( :: x -- acos[x] )
 
-aarotaerloop.
+\end{verbatim}
 
-i. WhalledCPDWial-ISIFORTH'scomplexarithmeticlexicon.
-
-ththNohlatm—Alrlmtareaarved.
-
- 
-
-Chapters - Floating Point Arithmetic Scientific FORTH
-l
-FSORT (2: x - - l/x)
-FLgG (:: x - - ln[x]) l
-FL ii X ' ' I 10 X I
-F2" inxng‘g [D i
-F" (:2 x y - - ) l
-FEXP (:: x - - e ) :
-FSIN (2: x - - sin[x]) i
-FCOS (22x - - cos[x]) i
-Fl'AN (:2 x - - tan[x]) l
-DEG->RAD (:: x - - x’pi/180) I
-RAD-> DEG (2: x - - x'180/pi) .
-FATAN ( :: x - - atan[x]) i
-FASIN ( 2: x - - asin[x]) i‘
-FACOS ( :2 x - - acos[x]) »
-
-Machine code definitions of the above functions for the 80x87 l
+Machine code definitions of the above functions for the 80x87
 chip will be given in Chapter 4.
 
-§4 Ubrary extensions
+\section{Ubrary extensions}
 
-The minimal function library is easily extended. We illustrate-
-
-below with the FSGN function and with hyperbolic and in-
-verse hyperbolic functions. Complex extensions of the function
+\TallC{The} minimal function library is easily extended. We illustrate
+below with the \textbf{FSGN} function and with hyperbolic and inverse hyperbolic
+functions. Complex extensions of the function
 library is deferred to Chapter 6.
 
-§§1 The FSGN function
-The most useful form of FSGN finds one argument it (from which.
+\subsection{The FSGN function}
+The most useful form of FSGN finds one argument it (from which
 to take an algebraic sign) on the parameter stack, and the floating,
-point argumentx on the fstack. We may define it using logic, as
+point argument $x$ on the fstack. We may define it using logic, as
+\begin{verbatim}
 
-FSGN (n - - :2 x - - sgn[n]*abs[x])
-FABS O< IF FNEGATE THEN;
+: FSGN ( n -- :: x -- sgn[n]*abs[x])
+	FABS O< IF FNEGATE THEN;
+\end{verbatim}
 
-§§2 Cosh, Slnh and their inverses
+\subsection{Cosh, Sinh and their inverses}
 We now code the hyperbolic sine and cosine. The formulae are
+\begin{equation}
 
 sinh(x) = %(e" - e 'x)
 
 cosh(x) = %(e" + e ")
+\end{equation}
 
-macaw ma—mrmm 55
 
 and their definitions are
 
