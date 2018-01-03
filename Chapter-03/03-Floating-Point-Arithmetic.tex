@@ -65,9 +65,10 @@ ANSI] standard does not address floating point, hence it is likely the PVC stand
 pre-eminent by default.}.
 
 \subsection{Fstack manipulation}
-\TallC{The} fstack words are\footnote{F@ and F! stand for a suite of words for fetching and storing 16-, 32-, 64—, and 80-bit numbers
-from/to the fstack. ln HS/FORTH they have names like [16@ I"! I32@ DZ! IBZ@B2!
-m I"! m RN)! and equivalents with suffices E or L, that transfer data from segments
+\TallC{The} fstack words are\footnote{F@ and F! stand for a suite of words for
+fetching and storing 16-, 32-, 64-, and 80-bit numbers
+from/to the fstack. In HS/FORTH they have names like I16@ I16! I32@ I32! R32@ R32!`
+R64@ R64! R80@ R80! and equivalents with suffices E or L, that transfer data from segments
 other than the data segment.}
 \begin{verbatim}
 F@     ( addr -- :: -- x )
