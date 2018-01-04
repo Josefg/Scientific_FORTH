@@ -111,7 +111,7 @@ than from memory. Thus, as Palmer and Morse\sepfootnote{03_04} emphasize,
 optimizing for speed demands maximum use of the 87fstack to store intermediate
 results, frequently used constants, etc.
 
-In Ch. 4 §7 we show how to extend the 87fstack into memory. The
+In Ch. 4 @7 we show how to extend the 87fstack into memory. The
 cost of unlimited fstack-depth is reduced speed when the 87stack
 spills over to memory.
 
@@ -143,12 +143,12 @@ of arithmetic. so the compiler has nothing to decide.
 Languages like FORTRAN, BASIC and APL overload arithmetic operators - their
 meanings are context-dependent. This
 makes it possible to write -say- a FORTRAN expression using
-REAL‘4, REAL‘B, COMPLEX‘S or COMFLEX’16 literals
+REAL@4, REAL@B, COMPLEX@S or COMFLEX’16 literals
 and variables without worrying about how to fetch. store or
 convert them. Operator overloading increases the complexity of
 compilers and limits the speed and efficiency of compilation.
 
-As we shall see in Chapter 5§1, FORTH enables an alternative
+As we shall see in Chapter 5@1, FORTH enables an alternative
 solution in which "smart" data "know" their own types and
 "smart" operators "know" what kinds of data are being combined.
 The slightly reduced execution speed is offset by improved
@@ -176,7 +176,7 @@ all their arguments, such as F*NP (floating multiply, no pop)
 
 \begin{verbatim}
 
-F'NP (::xy--xy‘x).
+F'NP (::xy--xy@x).
 
 \end{verbatim}
 
@@ -413,12 +413,17 @@ point argument $x$ on the fstack. We may define it using logic, as
 
 \subsection{Cosh, Sinh and their inverses}
 We now code the hyperbolic sine and cosine. The formulae are
-\begin{equation}
 
-sinh(x) = %(e" - e 'x)
+% \begin{equation}
 
-cosh(x) = %(e" + e ")
-\end{equation}
+sinh(x) = 
+
+
+cosh(x) = 
+
+
+
+% \end{equation}
 
 
 and their definitions are
@@ -464,7 +469,7 @@ OJtlianltNobietm-Alrlohtsreaawed.
 
 Chapter 3 — Floating Point Arithmetic Sclenfiﬂc FORTH
 
-§5 Pseudo-random number generators (PRNG's)
+@5 Pseudo-random number generators (PRNG's)
 The subject of computer-generated (pseudo) random numbers
 hfilbeen discussed extensively in the literature of computa-
 tion ' . We shall confine ourselves here to translating two useful
@@ -492,6 +497,7 @@ CODE I32! < % QB DB 1F SB SB 96 > END-CODE
 The program data are stored in variables rather than registers so
 they can be moved directly to the co-processor .
 
+\begin{verbatim}
 DVARIABLE BIGDIV
 
 21474.83647 BIGDIV D! \2**31-1
@@ -511,19 +517,20 @@ VARIABLE M2 2836 M2 I
 13.
 14.
 15.
+\end{verbatim}
 
 (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.
 
 R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).
 
 P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).
-We anticipate using the FORTH assembler — see Ch. 4 §l§§1.l.
+We anticipate using the FORTH assembler — see Ch. 4 @l@@1.l.
 
 Of course. it would have been feasible to define, via CREATE DOES >, data types that place .
 the data on the 8’7stack, e.g. : FICONSTANT CREATE . DOES> I10® ; But such
 words can’t be optimized; to optimize time-critical word(s) in assembler requires VARIABLEs.
-
-‘i'
+\begin{verbatim}
+@i'
 0.5. Knuth, The Art of Computer Progumnu'ng v. 2: Seminumerical Algorithnu, 2nd ed. }
 
 'nle high-level FORTH program itself ism"
@@ -555,6 +562,7 @@ SEED D@ D. ;
 GGUBS.TST 522329230 0k
 
  
+\end{verbatim}
 
 16. The new words are FINIT (initialize 8M7 chip). FTRUNC (set roundoff mode to truncate ﬂoat-
 ing point numbers toward zero): and FRNDINT (round ﬂotaing point number to integer). The
@@ -571,7 +579,7 @@ cmvmrm-umw.
 
 58 Chapter 3 — Floating Point Arlthmetlc Scientific FORTH
 
-§§l M00 I'll‘ldOfl'l number generators
+@@l M00 I'll@ldOfl'l number generators
 When defining PRNGs it is always important to include a test
 for randomness. The simplest is called the 12 test: use the
 PRNG to generate N integers18 in the range [0,n-1] and record
@@ -582,13 +590,14 @@ should have any of the n values is 1/n, hence the expected fre-
 quencies are <f,> E A = %.The 12 statistic forf. is defined to
 be
 
-xz=§ ﬂit-1V Mb? (2)
+% xz=@ ﬂit-1V Mb? (2)
 
 O
 
 xz should have a value roughly n19. GGUBS passes the 12 test: A
 program to calculate this statistic (with N = 1000 and n = 100) is
 
+\begin{verbatim}
 CREATE FREQS 200 ALLOT OKLW
 : IRAND RANDOM 100 S->F
 F* FROUND- F->S ;
@@ -610,6 +619,7 @@ LOOP ;
 2000DO I FREQS + @ ICE
 2 +LOOP ;
 
+\end{verbatim}
  
 
 18. Nis assumed > >n
@@ -631,7 +641,7 @@ Table 3-1 Values of 1' for causes
 
  
 
-STAR‘IZG'llSO M80. 1114 olr STARIO-lISO CHSO. 1130 olt
+STAR@IZG'llSO M80. 1114 olr STARIO-lISO CHSO. 1130 olt
 STARICHISO GllSO. 540 olt STARIO'IISO CHSO. 1W olt
 STARICHISQ CHlSO. 1294 olt STARICHISO CHISO . % 0k
 STARIG'lISO CHISQ . 650 OR STARTGslISO M80. 1052 olt
@@ -640,7 +650,7 @@ STARTCCHISO CHISO . 94 0k STARICHISO CHISO . B42 olt
 STARIG'IISQ CHlSO. 1072 0k S'TARIG'IISO CHISO . 976 OR
 STARICHISO CHISQ. 1110 olt STARICHISO CHISO. 1W olt
 STARIG-IISQ CHISQ. 1183 0k STARICHISO CHISO . $0$ 0k
-STARICHISO CHISQ. 360 OR STAR‘ECHISO CHISO . 956 OR
+STARICHISO CHISQ. 360 OR STAR@ECHISO CHISO . 956 OR
 STABICHISQ CHISQ. 10m 0k STARIOHISO CHISO . me ok
 
  
@@ -668,7 +678,7 @@ DUP>R @ MT DUP>R
 
 (--nab:R:--[n]b)
 
-‘IMOD DROP DUP O<
+@IMOD DROP DUP O<
 
 IF R> + ELSE FIDFDP THEN
 
@@ -699,16 +709,9 @@ The corresponding 12 results are given below in Table 3-2.
 
 Table 3-2 x2 for Wichman-Hill PRNG
 
-\fbox{ \begin{minipage}{15em}
+\fbox{ \begin{minipage}{.92\linewidth}
 	\begin{multicols}{2}
-			Hello, here is some text without a meaning.  This text should show what 
-			a printed text will look like at this place.
-			If you read this text, you will get no information.  Really?  Is there 
-			no information?  Is there...
-	\end{multicols}
-\end{minipage}
-} 
-
+\begin{verbatim}
 START.CHISQ CHISQ 846
 STARTCHISQCHISQ
 1172
@@ -727,8 +730,9 @@ STARTCHISQ CHISQ 1112
 STARTCHISQ CHISQ 952
 STARTCHISQ CHISQ 1016
 STARTCHISQ CHISQ 778
- 
-
+\end{verbatim}
+		\columnbreak
+\begin{verbatim}
 STARICHISQ CHISQ . 846
 STARICHISO CHISQ . 1036
 STARICHISQ CHISQ . 852
@@ -741,8 +745,6 @@ START-CHISQ CHISQ . 1202
 START-CHISQ CHISQ . 1112
 START—CHISQ CHISQ . 778
 
- 
-
 START-CHISQ CHISQ. 1172
 START-CHISQ CHISQ .
 START-CHISQ CHISQ .
@@ -753,10 +755,12 @@ START-CHISQ CHISQ .
 START-CHISQ CHISQ .
 START-CHISQ CHISQ .
 START—CHISQ CHISQ . 1016
-
+\end{verbatim} 
  
+	\end{multicols}
+\end{minipage}
+} 
 
- 
 
 Interestingly, the mean of the 12 statistic for 21 tests is 93.5,
 perhaps a bit low, but not outrageously so; however, the variance
@@ -767,15 +771,16 @@ One very useful test for randomness involves constructing a
 random walk — that is, a sequence of integers generated by the
 
 rule (rn is the n'th PRN)
-
+\begin{verbatim}
 _ 1mm > 0.5
-‘W 'x' +I—1itr,., s 0.5
+@W 'x' +I—1itr,., s 0.5
 
 (3)
 
  
 
 macaw ma-mpmm 81
+\end{verbatim}
 
 and taliipg the discrete Fourier transform (DFT) of the se-
 quence . Any serial correlations will show up as periodicities,
@@ -792,19 +797,21 @@ There are algorithms for generating pm’s whose distribution
 function is one of a few standard ones; however, in general one
 must resort to brute force. We now engage in a brief mathemati
 digression, before showing how pm’s with distribution function
-dp(§) = 0(1 — E)d§ can be converted to prn’s with an arbitrary
+dp(@) = 0(1 — E)d@ can be converted to prn’s with an arbitrary
 distribution function dp(x) =f(x)dr.
 
 We suppose there is a function X(E) that converts uniform pm's
 to pm’s distributed according to f(x). But if any of this is to make
-sense, the inverse function §(x) must also exist, since there is
-nothing special about one distribution relative to another‘s. The
+sense, the inverse function @(x) must also exist, since there is
+nothing special about one distribution relative to another@s. The
 
 condition that both functions exist is dig at 0.
+
+\begin{verbatim}
 'I'henz’4
 th) = 1:45 a (x — no)
 (4)
-=13dto(x-x(5(x) +5 —£(x)))
+=13dto(x-x(5(x) +5 —@(x)))
 
 which, using standard manipulations, we can evaluate as
 
@@ -813,18 +820,13 @@ which, using standard manipulations, we can evaluate as
 Un'ng, cg, theFast Fourier Transform program from Chapter ssz
 ManumbusuﬂamlydimibmufiMOtol.
 Emeptineaseolcomputationmfcourse.
-llaed‘r)isthew—caﬂedDuae6-funaim.8eeanystandardtenondistnbutions
+llaed@r)isthew—caﬂedDuae6-funaim.8eeanystandardtenondistnbutions
 
-$953033
-
-cmvuauotm-me.
-
-Chapter 3 — Hosting Point Arithmetic Sclendﬂc FORTH
-
-ﬂx)= I‘deo[(e—t(x))%] = "if (5)
+ﬂx)= I@deo[(e—t(x))%] = "if (5)
 The ordinary differential equation 5 has the formal solution
-£=r,’f§,§’dxltx) <6) I
+@=r,’f@,@’dxltx) <6) I
 I
+\end{verbatim}
 
 that defines the new pm's distributed according to f(x)dr, if E is a
 pm uniformly distributed on [0,1]. In other words, we have to
@@ -837,6 +839,7 @@ case we actually want an integer PRNG uniformly distributed on
 [0,N-1], where the table has N entries.
 
  
+\begin{verbatim}
 
  
 
@@ -868,6 +871,8 @@ MX MOD IS B
  
 
 h
+\end{verbatim}
+
 
 Fig. 34! PRNG supplied with HS/FORTH
 
@@ -878,6 +883,7 @@ operandi or its origin, but it passes the 1 tests described above.
 We also need a way to invoke user-defined functions: the meth
 we have found is shown in Fig. 34 below. I
 
+\begin{verbatim}
 ma-MPOHW 83
 
  
@@ -893,6 +899,7 @@ BEI'EAD' <F> \rrllto<F>iocl
  
 
  
+\end{verbatim}
 
 Fig. 34Prorocol for function usage in FORTH
 
