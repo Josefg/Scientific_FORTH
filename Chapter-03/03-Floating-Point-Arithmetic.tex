@@ -58,18 +58,10 @@ elsewhere, i.e. in the data store and the fstack.
 
 The words we shall need fall into the categories of fstack 
 manipulation, special constants, arithmetic, tests and mathematical functions.
-Their names are nearly standard\footnote{That is, the names in WS FORTH, PIS/FORTH, UniFORTH and PCFORTH are nearly the
-same and close to the proposed FORTH Vendors' Group (WG) standard — see, e.g., Ray
-Duncan's and Martin Tracy's article in Dr. Dobb's Journal, September 1984, p. 110. The new
-ANSI] standard does not address floating point, hence it is likely the PVC standard will become
-pre-eminent by default.}.
+Their names are nearly standard\sepfootnote{03_01}.
 
 \subsection{Fstack manipulation}
-\TallC{The} fstack words are\footnote{F@ and F! stand for a suite of words for
-fetching and storing 16-, 32-, 64-, and 80-bit numbers
-from/to the fstack. In HS/FORTH they have names like I16@ I16! I32@ I32! R32@ R32!`
-R64@ R64! R80@ R80! and equivalents with suffices E or L, that transfer data from segments
-other than the data segment.}
+\TallC{The} fstack words are\sepfootnote{03_02}
 \begin{verbatim}
 F@     ( addr -- :: -- x )
 Fl     ( addr -- :: x -- )
@@ -85,9 +77,7 @@ F->D (::x--:--dint[x])
 % (place a FP# from input stream on fstack)
 \end{verbatim}
  
-To these we sometimes add\footnote{FnX (exchange ST(n) and ST(0) on fstack) and
-FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH’s floating point
-lexicon.}
+To these we sometimes add\sepfootnote{03_03}
 
 \begin{verbatim}
 : FUNDER FSWAP FOVER ;
@@ -99,14 +89,9 @@ FnR (n = 3 - 7 | defined in code for speed)
 The Intel mathematics co-processors 80x87 (8087/80287/80387)
 and their clones incorporate a stack of limited depth (in fact 8
 deep), the 87stack It is far faster to get a number from the 875tack
-than from memory. Thus, as Palmer and Morse\footnote{J.F. Palmer and S.P.
-Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
-Hereinafter called 8087P. Basically the same principle holds for other
-coprocessors such as the Weitek 1167 or Transputer 800 that incorporate
-intrinsic fstacks. The Motorola 68881/2 have registers, hence we must
-synthesize an fstack in software for these chips.} emphasize, optimizing for
-speed demands maximum use of the 87fstack to store intermediate results,
-frequently used constants, etc.
+than from memory. Thus, as Palmer and Morse\sepfootnote{03_04} emphasize,
+optimizing for speed demands maximum use of the 87fstack to store intermediate
+results, frequently used constants, etc.
 
 In Ch. 4 §7 we show how to extend the 87fstack into memory. The
 cost of unlimited fstack-depth is reduced speed when the 87stack
@@ -194,9 +179,7 @@ P_N(x)=a_0x^0+a_1x^1+...+a_Nx^N
 \definecolor{gray}{gray}{0.8}
 
 The algorithm can be represented by the (pseudo) FORTH ﬂow
-diagrams\footnote{See, e.g., SF. Lines trace program flow; a branch indicates a
-decision; at a loop \otimes marks the beginning and \bullet  the branch back to
-the beginning, as in BEGIN...REPEAT or DO...LOOP.}, where
+diagrams\sepfootnote{03_05}, where
 {\colorbox{gray}{\color{gray}XXX}} indicates the end of the program.
 
  
@@ -205,9 +188,7 @@ the beginning, as in BEGIN...REPEAT or DO...LOOP.}, where
 
 Fig. 3-2 Pseudo FOR TH flow diagram of polynomial evaluation
 
-Now we translate Fig. 3-2 above into FORTH \footnote{We assume arrays have been
-defied using the intrinsically typed data structures and generic operators of
-Ch. 5.}\footnote{The notation [x] means "the address of x".} :
+Now we translate Fig. 3-2 above into FORTH \sepfootnote{03_06}\sepfootnote{03_07} :
 
 \begin{verbatim}
 
