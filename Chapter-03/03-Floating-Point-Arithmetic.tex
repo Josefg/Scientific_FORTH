@@ -347,7 +347,7 @@ more compact, than optimizing all of the program uniformly. The
 rationale of partial (sometimes called "peephole") optimization
 is that most programs spend 90\% of their execution time in 10\%
 of the code. This 10\% is the only part of the program worth
-optimizing .
+optimizing  \sepfootnote{03_08}.
 
 \section{Testing floating point numbers}
 
@@ -358,7 +358,7 @@ Test words leave a ﬂag on the parameter stack depending on the
 relationship they discover. Moreover, these words consume one
 or two arguments on the fstack, following the standard FORTH
 practice. As a simple first example of test words, let us define
-max and FMIN analogous to MAX and MIN :9
+max and FMIN analogous to MAX and MIN: \sepfootnote{03_09}
 \begin{verbatim}
 : XDUP FOVER FOVER ;
 : FMAX XDUP F< IF FSWAP THEN FDROP ;
@@ -421,7 +421,6 @@ We now code the hyperbolic sine and cosine. The formulae are
 
 
 and their definitions are
-
 \begin{verbatim}
 : F2/ F=1   ( :: x -- x/2 ) 
     FNEGATE FSWAP FSCALE FPLUCK ;
@@ -447,7 +446,8 @@ terms of logarithms:
     arccosh(x) & = & \ln{(x + (x^2 - 1)^{^1/_2})} , -\infty < x < \infty
 \end{eqnarray*}
 
-The corresponding definitions are10
+The corresponding definitions are \sepfootnote{03_10}
+
 
 \begin{verbatim}
 FIND F**2 0= ?(: F**2 FDUP F* ; )
@@ -467,12 +467,13 @@ FIND F**2 0= ?(: F**2 FDUP F* ; )
 
 \section{Pseudo-random number generators (PRNG's)}
 \TallC{The} subject of computer-generated (pseudo) random numbers
-hfilbeen discussed extensively in the literature of computation. We shall
+hfilbeen discussed extensively in the literature of computation \sepfootnote{03_11}
+ \sepfootnote{03_12} . We shall
 confine ourselves here to translating two useful
 algorithms into FORTH, and discussing tests for pseudo-random
 number generators (PRNG’s).
 
-The first is a method called GGUBS13 based on the recursion
+The first is a method called GGUBS \sepfootnote{03_13} based on the recursion
 
 \begin{equation}
     r_{n+1} = 16807 \times{} r_n \, MOD (2^{31} - 1) .\nonumber
@@ -483,7 +484,8 @@ program uses the 80x87 chip, and uses synthetic division
 to get N MOD ($2^{31}$ - 1). A version that uses the 32-bit registers
 of the 80386/80486 would not be hard to program.
 
-Two specialized words are needed", that fetch/store 32-bit integers to/from the fstack from/to memory:
+Two specialized words are needed \sepfootnote{03_14}
+, that fetch/store 32-bit integers to/from the fstack from/to memory:
 
 \begin{verbatim}
 CODE I32@ <% 9B DB 07 5B 9B %> END-CODE
@@ -491,7 +493,7 @@ CODE I32! <% 9B DB 1F 5B 9B %> END-CODE
 \end{verbatim}
 
 The program data are stored in variables rather than registers so
-they can be moved directly to the co-processor .
+they can be moved directly to the co-processor \sepfootnote{03_15} .
 
 \begin{verbatim}
 DVARIABLE       BIGDIV
@@ -502,10 +504,6 @@ DVARIABLE       SEED
 VARIABLE        M1 16807 M1 !
 VARIABLE        M2 2836  M2 !
 \end{verbatim}
-
-
-
-
 
 The high-level FORTH program itself is
 
