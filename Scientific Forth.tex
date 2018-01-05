@@ -1,13 +1,14 @@
 \documentclass{book}
 % math formatting
 \usepackage{amssymb, amsmath}
-
+\usepackage{multicol}
 % Code formatting
 \usepackage{helvet}     % Julian called out Helvetica font for code
 \usepackage{pxfonts}    % Bold inline code
 \usepackage{listings}
     \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
-            basicstyle=\ttfamily }
+            basicstyle=\ttfamily %, mathescape
+			}
 \newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
 \newcommand{\regc}[1]{\lstinline{#1}}
 % For code in paragraphs use \lstinline$word$
@@ -73,7 +74,8 @@
 
 % Create charts with tikz
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{shapes,arrows}
+%\usetikzlibrary{shapes.geometric, arrows}
     \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
     \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
     \tikzstyle{arrow}   = [thick,->,>=stealth]
@@ -113,11 +115,10 @@
 
 %References
 \usepackage{hyperref}
-
-\usepackage{tikz}
-\usetikzlibrary{shapes,arrows}
+\usepackage{fancyvrb}
 
 \begin{document}
+\VerbatimFootnotes
 \tableofcontents
     % must include footnotes for all Chapters
     \input{footnotes}

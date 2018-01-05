@@ -44,7 +44,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{03_01}{That is, the names in WS FORTH, PIS/FORTH, UniFORTH
 and PCFORTH are nearly the same and close to the proposed FORTH Vendors' Group
-(WG) standard — see, e.g., Ray Duncan's and Martin Tracy's article in Dr.
+(WG) standard - see, e.g., Ray Duncan's and Martin Tracy's article in Dr.
 Dobb's Journal, September 1984, p. 110. The new ANSII standard does not address
 floating point, hence it is likely the PVC standard will become pre-eminent by
 default.}
@@ -54,7 +54,7 @@ they have names like I16@ I16! I32@ I32! R32@ R32!` R64@ R64! R80@ R80! and
 equivalents with suffices E or L, that transfer data from segments other than
 the data segment.}
 \sepfootnotecontent{03_03}{FnX (exchange ST(n) and ST(0) on fstack) and
-FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH’s floating point
+FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH's floating point
 lexicon.}
 \sepfootnotecontent{03_04}{J.F. Palmer and S.P.
 Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
@@ -73,35 +73,26 @@ Ch. 5.}
 innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen
 from the timings that little is to be gained by optimizing the next outer
 loop.}
-\sepfootnotecontent{03_09} {\textbf{XDUP} is called \textbf{CPDUP} in
+\sepfootnotecontent{03_09} {\texttt{XDUP} is called \texttt{CPDUP} in
 HS/FORTH's complex arithmetic lexicon.}
 \sepfootnotecontent{03_10}{0. Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.}
 \sepfootnotecontent{03_11}{D.E. Knuth, The Art of Computer Programming v.2: Seminumerical Algorithnu, 2nd ed.  (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.}
-\sepfootnotecontent{03_12} { R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
-\sepfootnotecontent{03_13}
-{
-P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).
-}
-\sepfootnotecontent{03_14}
-{
-We anticipate using the FORTH assembler — see Ch. 4 1.11
-}
-\sepfootnotecontent{03_15}
-{ Of course. it would have been feasible to define, via \verb|  CREATE |
-$\dots$ \verb|  DOES >|, data types that place the data on the 87stack, e.g.
-\verb| : FICONSTANT CREATE , DOES> I16@ ; | But such words can’t be optimized;
-to optimize time-critical word(s) in assembler requires VARIABLEs.  }
-\sepfootnotecontent{03_16}{
-    The new words are \textbf{FINIT} (initialize 80x87 chip). \textbf{FTRUNC} (set
-roundoff mode to truncate ﬂoating point numbers toward zero): and \textbf{FRNDINT}
+\sepfootnotecontent{03_12}{ R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
+\sepfootnotecontent{03_13}{P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).  }
+\sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 1.11 }
+\sepfootnotecontent{03_15}{Of course, it would have been feasible to define, via \texttt{ CREATE }
+$\dots$ \texttt{ DOES > } , data types that place the data on the 87stack, e.g.
+\texttt{: FICONSTANT CREATE , DOES> I16@ ;} but such words can't be optimized;
+to optimize time-critical word(s) in assembler requires VARIABLEs.}
+\sepfootnotecontent{03_16}{The new words are \texttt{FINIT} (initialize 80x87 chip). \texttt{FTRUNC} (set
+roundoff mode to truncate ﬂoating point numbers toward zero): and \texttt{FRNDINT}
 (round flotaing point number to integer). The
 80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10
-and 11 (numbering from 0) of the 16-bit control word using \textbf{HEX 0C00 OR}. See \textbf{8087P} for
+and 11 (numbering from 0) of the 16-bit control word using \texttt{HEX 0C00 OR}. See \texttt{8087P} for
 details.}
-\sepfootnotecontent{03_17}{
-    \textbf{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
-space. \textbf{BEHEAD'} beheads one word, \textbf{BEHEAD"} behads all words, inclusive, in a range: in this
-case, \textbf{BIGDIV, DIVIS. SEED, M1, M2} and \textbf{RAND}.}
+\sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
+space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this
+case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
 % \sepfootnotecontent{03_18}
 % \sepfootnotecontent{03_19}
 % \sepfootnotecontent{03_20}

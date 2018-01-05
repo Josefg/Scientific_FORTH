@@ -1,11 +1,42 @@
-\contentsline {chapter}{\numberline {1}Strings and I/O in FORTH}{2}{chapter.1}
+\contentsline {chapter}{\numberline {1}Programming in FORTH}{4}{chapter.1}
 \ttl@starttoc {chapters@1}
-\contentsline {section}{\numberline {1.1}Standard I/O In FORTH}{2}{section.1.1}
-\contentsline {section}{\numberline {1.2}Standard I/O in Scientific FORTH}{3}{section.1.2}
-\contentsline {subsection}{\numberline {1.2.1}Disk file input}{4}{subsection.1.2.1}
-\contentsline {subsection}{\numberline {1.2.2}Disk file output}{5}{subsection.1.2.2}
-\contentsline {section}{\numberline {1.3}Logging screen activity}{6}{section.1.3}
-\contentsline {subsection}{\numberline {1.3.1}Redirection by re-vectoring}{6}{subsection.1.3.1}
-\contentsline {subsection}{\numberline {1.3.2}Redirection using MS-DOS resources}{7}{subsection.1.3.2}
-\contentsline {subsection}{\numberline {1.3.3}Redirection while DEBUGging}{9}{subsection.1.3.3}
+\contentsline {section}{\numberline {1}The structure of FORTH}{6}{section.1.1}
+\contentsline {section}{\numberline {2}Extending the dictionary}{7}{section.1.2}
+\contentsline {section}{\numberline {3}Stacks and reverse Polish notation (RPN)}{9}{section.1.3}
+\contentsline {subsection}{\numberline {1}Manipulating the parameter stack}{10}{subsection.1.3.1}
+\contentsline {subsection}{\numberline {2}The return stack and Its uses}{11}{subsection.1.3.2}
+\contentsline {section}{\numberline {4}Fetching and storing}{13}{section.1.4}
+\contentsline {section}{\numberline {5}Arlthmetlc operations}{13}{section.1.5}
+\contentsline {section}{\numberline {6}Comparing and testlng}{13}{section.1.6}
+\contentsline {section}{\numberline {7}Looping and structured programming}{14}{section.1.7}
+\contentsline {section}{\numberline {8}The pearl of FORTH}{15}{section.1.8}
+\contentsline {subsection}{\numberline {1}Dummy words}{15}{subsection.1.8.1}
+\contentsline {subsection}{\numberline {2}Defining "defining" words}{16}{subsection.1.8.2}
+\contentsline {subsection}{\numberline {3}Run-time vs. compile-time actions}{18}{subsection.1.8.3}
+\contentsline {subsubsection}{Klingons}{18}{subsubsection*.2}
+\contentsline {subsubsection}{Dimensioned data (with Intrinsic unlts)}{19}{subsubsection*.3}
+\contentsline {subsection}{\numberline {4}Advanced methods of controlllng the compiler}{21}{subsection.1.8.4}
+\contentsline {section}{\numberline {9}Strings}{22}{section.1.9}
+\contentsline {section}{\numberline {10}FORTH programming style}{23}{section.1.10}
+\contentsline {subsection}{\numberline {1}Structure}{24}{subsection.1.10.1}
+\contentsline {subsection}{\numberline {2}Information hiding}{25}{subsection.1.10.2}
+\contentsline {subsection}{\numberline {3}Documenting and commenting FORTH code}{27}{subsection.1.10.3}
+\contentsline {subsubsection}{Parenthesized remarks}{27}{subsubsection*.4}
+\contentsline {subsubsection}{Stack comments}{27}{subsubsection*.5}
+\contentsline {subsubsection}{Drop line (\textbackslash )}{28}{subsubsection*.6}
+\contentsline {subsubsection}{Self-documenting code}{28}{subsubsection*.7}
+\contentsline {subsubsection}{Safety}{28}{subsubsection*.8}
+\contentsline {chapter}{\numberline {2}Floating Point Arithmetic}{29}{chapter.2}
+\contentsline {section}{\numberline {1}Organization of floating point arithmetic}{30}{section.2.1}
+\contentsline {subsection}{\numberline {1}Fstack manipulation}{31}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2}Special constants}{32}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {3}Arithmetic operations}{33}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {4}Example: evaluating a polynomial}{33}{subsection.2.1.4}
+\contentsline {subsection}{\numberline {5}Optimizing: FORTH vs. FORTRAN}{35}{subsection.2.1.5}
+\contentsline {section}{\numberline {2}Testing floating point numbers}{36}{section.2.2}
+\contentsline {section}{\numberline {3}Mathematical functions - the essential function library}{37}{section.2.3}
+\contentsline {section}{\numberline {4}Library extensions}{37}{section.2.4}
+\contentsline {subsection}{\numberline {1}The FSGN function}{37}{subsection.2.4.1}
+\contentsline {subsection}{\numberline {2}Cosh, Sinh and their inverses}{37}{subsection.2.4.2}
+\contentsline {section}{\numberline {5}Pseudo-random number generators (PRNG's)}{39}{section.2.5}
 \contentsfinish 
