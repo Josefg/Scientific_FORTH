@@ -505,7 +505,7 @@ VARIABLE        M1 16807 M1 !
 VARIABLE        M2 2836  M2 !
 \end{verbatim}
 
-The high-level FORTH program itself is
+The high-level FORTH program itself is\sepfootnote{03_16}\sepfootnote{03_17}
 
 \begin{verbatim}
 : RAND ( ;; . . good)
@@ -537,16 +537,6 @@ GGUBS.TST 522329230 0k
  
 \end{verbatim}
 
-16. The new words are FINIT (initialize 80x87 chip). \textbf{FTRUNC} (set
-roundoff mode to truncate ﬂoating point numbers toward zero): and FRNDINT
-(round flotaing point number to integer). The
-80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10
-and 11 (numbering from 0) of the 16-bit control word using HEX 0C00 OR. See 8087P for
-details.
-
-17. BEHEAD" is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
-space. BEHEAD' beheads one word, BEHEAD" behads all words, inclusive, in a range: in this
-case. BIGDIV, DIVIS. SEED, M1, M2 and RAND.
 
 
 % PAGE 58 Chapter 3 — Floating Point Arlthmetlc Scientific FORTH

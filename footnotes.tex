@@ -91,8 +91,17 @@ We anticipate using the FORTH assembler — see Ch. 4 1.11
 $\dots$ \verb|  DOES >|, data types that place the data on the 87stack, e.g.
 \verb| : FICONSTANT CREATE , DOES> I16@ ; | But such words can’t be optimized;
 to optimize time-critical word(s) in assembler requires VARIABLEs.  }
-% \sepfootnotecontent{03_16}
-% \sepfootnotecontent{03_17}
+\sepfootnotecontent{03_16}{
+    The new words are \textbf{FINIT} (initialize 80x87 chip). \textbf{FTRUNC} (set
+roundoff mode to truncate ﬂoating point numbers toward zero): and \textbf{FRNDINT}
+(round flotaing point number to integer). The
+80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10
+and 11 (numbering from 0) of the 16-bit control word using \textbf{HEX 0C00 OR}. See \textbf{8087P} for
+details.}
+\sepfootnotecontent{03_17}{
+    \textbf{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
+space. \textbf{BEHEAD'} beheads one word, \textbf{BEHEAD"} behads all words, inclusive, in a range: in this
+case, \textbf{BIGDIV, DIVIS. SEED, M1, M2} and \textbf{RAND}.}
 % \sepfootnotecontent{03_18}
 % \sepfootnotecontent{03_19}
 % \sepfootnotecontent{03_20}
