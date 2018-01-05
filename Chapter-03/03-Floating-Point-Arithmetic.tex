@@ -612,14 +612,14 @@ STABICHISQ CHISQ. 10m 0k STARIOHISO CHISO . me ok
 
  
 
-In one application GGUBS was unsatisfactory because it con-
-tained correlations not revealed by the above tests. This led me
-to seek another PRNG with —perhaps— better properties, a
-longer cycle, etc. I offer it as an alternative, since —at the very
-least — it will enable the reader to test his applications with more
-than one PRNG". Here is the second PRNG:
+In one application GGUBS was unsatisfactory because it contained correlations
+not revealed by the above tests. This led me
+to seek another PRNG with --perhaps-- better properties, a
+longer cycle, etc. I offer it as an alternative, since --at the very
+least-- it will enable the reader to test his applications with more
+than one PRNG\sepfootnote{03_20}. Here is the second PRNG:
 
-Chapter 3 - Hosting Point Arithmetic
+% Chapter 3 - Hosting Point Arithmetic
 \begin{verbatim}
 
 \PFNGHBAWICWANSLDJLLBYFEW
@@ -713,42 +713,45 @@ on the interval [0,1]. What if we want prn's that are
 distributed according to the normal distribution on $(-\infty,\infty)$, or
 according to some other standard distribution function of mathematical statistics?
 
-There are algorithms for generating pm's whose distribution
+There are algorithms for generating prn's whose distribution
 function is one of a few standard ones; however, in general one
-must resort to brute force. We now engage in a brief mathemati
-digression, before showing how pm's with distribution function
-dp(@) = 0(1 — E)d@ can be converted to prn's with an arbitrary
-distribution function dp(x) =f(x)dr.
+must resort to brute force. We now engage in a brief mathematical
+digression, before showing how prn's with distribution function\sepfootnote{03_22}
+$dp(\xi) = \theta(1 - \xi)d\xi$ can be converted to prn's with an arbitrary
+distribution function $dp(x) =f(x)dr$.
 
-We suppose there is a function X(E) that converts uniform pm's
-to pm's distributed according to f(x). But if any of this is to make
-sense, the inverse function @(x) must also exist, since there is
-nothing special about one distribution relative to another@s. The
+We suppose there is a function $X(\xi)$ that converts uniform prn's
+to prn's distributed according to $f(x)$. But if any of this is to make
+sense, the \textbf{inverse function} $\xi(x)$ must also exist, since there is
+nothing special about one distribution relative to another\sepfootnote{03_23}. The
+condition that both functions exist is $\frac{d\xi}{dx}\neq 0$.
 
-condition that both functions exist is dig at 0.
+Then\sepfootnote{03_24}
 
+\begin{align}
+    f(x) &= \int_{0}^{1}d\xi\delta \Big(x-X(\xi)\Big)\nonumber \\
+    &= \int_{0}^{1}d\xi\delta \Big(x-X\Big(\xi(x)+\xi-\xi(x)\Big)\Big)
+\end{align}
+
+which, using standard manipulations, we can evaluate as
+
+ 
+
+The ordinary differential equation 5 has the formal solution
 \begin{verbatim}
 'I'henz'4
 th) = 1:45 a (x — no)
 (4)
 =13dto(x-x(5(x) +5 —@(x)))
 
-which, using standard manipulations, we can evaluate as
-
- 
-
-Un'ng, cg, theFast Fourier Transform program from Chapter ssz
-ManumbusuﬂamlydimibmufiMOtol.
-Emeptineaseolcomputationmfcourse.
 llaed@r)isthew—caﬂedDuae6-funaim.8eeanystandardtenondistnbutions
 
 ﬂx)= I@deo[(e—t(x))%] = "if (5)
-The ordinary differential equation 5 has the formal solution
 @=r,'f@,@'dxltx) <6) I
 I
 \end{verbatim}
 
-that defines the new pm's distributed according to f(x)dr, if E is a
+that defines the new prn's distributed according to f(x)dr, if E is a
 pm uniformly distributed on [0,1]. In other words, we have to
 solve a (usually) transcendental equation to calculate X(E).
 
@@ -836,7 +839,7 @@ With these auxiliary definitions we are in a position to define a
 word that creates tables of random variates and traverses them in a random order:
 
 \begin{verbatim}
-    \ Defining word for tables of pm's distributed according to a given distribution:
+    \ Defining word for tables of prn's distributed according to a given distribution:
     \ P(x<X(xi)) = id defhes X(xi).
     \ Note: the first entry is autormticaliy 0.  
     \ fn.name oonvetts xi to X(xi) 
