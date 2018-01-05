@@ -461,7 +461,6 @@ FIND F**2 0= ?(: F**2 FDUP F* ; )
  
 \end{verbatim}
 
-0. Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.
 
 % PAGE 56 Chapter 3 — Floating Point Arithmetic Sclenfiﬂc FORTH
 
@@ -495,39 +494,18 @@ The program data are stored in variables rather than registers so
 they can be moved directly to the co-processor .
 
 \begin{verbatim}
-DVARIABLE BIGDIV
-
-21474.83647 BIGDIV D! \2**31-1
-DVARIABLE DIVIS
-
-1277.73 DIVIS DI
-DVARIABLE SEED
-
-VARIABLE M1 16807 M1 I
-VARIABLE M2 2836 M2 I
-
- 
-
-11.
-
-12.
-13.
-14.
-15.
+DVARIABLE       BIGDIV
+21474.83647     BIGDIV D! \2**31-1
+DVARIABLE       DIVIS
+1277.73         DIVIS D!
+DVARIABLE       SEED
+VARIABLE        M1 16807 M1 !
+VARIABLE        M2 2836  M2 !
 \end{verbatim}
 
-(Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.
 
-R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).
 
-P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).
-We anticipate using the FORTH assembler — see Ch. 4 @l@@1.l.
 
-Of course. it would have been feasible to define, via CREATE DOES >, data types that place .
-the data on the 8’7stack, e.g. : FICONSTANT CREATE . DOES> I10® ; But such
-words can’t be optimized; to optimize time-critical word(s) in assembler requires VARIABLEs.
-@i'
-0.5. Knuth, The Art of Computer Progumnu'ng v. 2: Seminumerical Algorithnu, 2nd ed. }
 
 The high-level FORTH program itself is
 

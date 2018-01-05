@@ -69,14 +69,28 @@ branch back to the beginning, as in BEGIN...REPEAT or DO...LOOP.}
 defied using the intrinsically typed data structures and generic operators of
 Ch. 5.}
 \sepfootnotecontent{03_07}{The notation [x] means "the address of x".}
-% \sepfootnotecontent{03_08}
-% \sepfootnotecontent{03_09}
-% \sepfootnotecontent{03_10}
-% \sepfootnotecontent{03_11}
-% \sepfootnotecontent{03_12}
-% \sepfootnotecontent{03_13}
-% \sepfootnotecontent{03_14}
-% \sepfootnotecontent{03_15}
+\sepfootnotecontent{03_08} { An rompk is discussed in Chapter 9, where the
+innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen
+from the timings that little is to be gained by optimizing the next outer
+loop.}
+\sepfootnotecontent{03_09} {\textbf{XDUP} is called \textbf{CPDUP} in
+HS/FORTH's complex arithmetic lexicon.}
+\sepfootnotecontent{03_10}{0. Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.}
+\sepfootnotecontent{03_11}{D.E. Knuth, The Art of Computer Programming v.2: Seminumerical Algorithnu, 2nd ed.  (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.}
+\sepfootnotecontent{03_12} { R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
+\sepfootnotecontent{03_13}
+{
+P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).
+}
+\sepfootnotecontent{03_14}
+{
+We anticipate using the FORTH assembler — see Ch. 4 1.11
+}
+\sepfootnotecontent{03_15}
+{ Of course. it would have been feasible to define, via \verb|  CREATE |
+$\dots$ \verb|  DOES >|, data types that place the data on the 87stack, e.g.
+\verb| : FICONSTANT CREATE , DOES> I16@ ; | But such words can’t be optimized;
+to optimize time-critical word(s) in assembler requires VARIABLEs.  }
 % \sepfootnotecontent{03_16}
 % \sepfootnotecontent{03_17}
 % \sepfootnotecontent{03_18}
