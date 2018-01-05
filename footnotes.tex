@@ -93,8 +93,11 @@ details.}
 \sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
 space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this
 case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
-% \sepfootnotecontent{03_18}
-% \sepfootnotecontent{03_19}
+\sepfootnotecontent{03_18} { $N$ is assumed $>> n$ }
+\sepfootnotecontent{03_19}{ 
+For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is
+$p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$
+is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
 % \sepfootnotecontent{03_20}
 % \sepfootnotecontent{03_21}
 % \sepfootnotecontent{03_22}

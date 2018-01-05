@@ -508,55 +508,52 @@ VARIABLE        M2 2836  M2 !
 The high-level FORTH program itself is\sepfootnote{03_16}\sepfootnote{03_17}
 
 \begin{verbatim}
-: RAND ( ;; . . good)
-FINIT SEED DUP 132@
-DIVIS I32@
-XDUP F/
-
-FTFIUNC FRNDINT
-FUNDER F' FROT FR-
-M1 |16@ F'
-FSWAP M2 I16@
-I" F— FDUP I32! ;
-:RANDOM (::--random#)
-RAND BIGDIV l32@ (::--seed2"31-1)
-FSWAP FDUP F0< (--t ::--2"'31-1 seed)
-IF FOVER F+ THEN FR/
+: RAND                ( :: -- seed)
+    FINIT SEED DUP 132@
+    DIVIS I32@
+    XDUP F/
+    FTFIUNC FRNDINT
+    FUNDER F* FROT FR-
+    M1 |16@ F*
+    FSWAP M2 I16@
+    F* F- FDUP I32! ;
+:RANDOM               ( :: -- random#)
+    RAND BIGDIV I32@  ( ::--seed2**31-1)
+    FSWAP FDUP F0<    ( -- f :: -- 2**31-1 seed)
+    IF FOVER F+ THEN FR/
 BEHEAD" BIGDIV RAND
 \ make BIGDIV, RAND local
 
+\end{verbatim}
 To test the algorithm start with the seed 1, and generate 1000
-pm’s. The result should then be 522329230.
+prn's. The result should then be 522329230.
 
-2 GGUBS.TST 0.1 SEED DI
-1000 0 DO RANDOM LOOP
-SEED D@ D. ;
+\begin{verbatim}
+: GGUBS.TST 0.1 SEED D!
+    1000 0 DO RANDOM LOOP
+    SEED D@ D. ;
 
 GGUBS.TST 522329230 0k
-
- 
 \end{verbatim}
-
-
 
 % PAGE 58 Chapter 3 — Floating Point Arlthmetlc Scientific FORTH
 
-% @@l M00 I'll@ldOfl'l number generators
-When defining PRNGs it is always important to include a test
-for randomness. The simplest is called the 12 test: use the
-PRNG to generate N integers18 in the range [0,n-1] and record
-the number of occurrences, f,, of each integers = 0, 1, . . .n-l. If
+\subsection{Testing random number generators}
+\TallC{When} defining PRNGs it is always important to include a test
+for randomness. The simplest is called the $\chi^2$ test: use the
+PRNG to generate $N$ integers\sepfootnote{03_18} in the range [0,n-1] and record
+the number of occurrences, $f_s$ of each integer $s = 0, 1, \dots n-1$. If
 the PRNG is really random, then the probability that an integer
-should have any of the n values is 1/n, hence the expected fre-
-
-quencies are <f,> E A = %.The 12 statistic forf. is defined to
+should have any of the $n$ values is $1/n$, hence the expected 
+frequencies are <$f_g$> $\equiv \lambda = \frac{N}{n}$ .The $\chi^2$ statistic for $f_s$ is defined to
 be
 
-% xz=@ ﬂit-1V Mb? (2)
+\begin{equation}
+\chi^2=\sum_{s=0}^{\infty}\frac{1}{\lambda}\Big(f_s-\lambda\Big)^2, \lambda=\frac{N}{n} %    \nonumber 
+\end{equation}
 
-O
 
-xz should have a value roughly n19. GGUBS passes the 12 test: A
+xz should have a value roughly n\sepfootnote{03_19}. GGUBS passes the 12 test: A
 program to calculate this statistic (with N = 1000 and n = 100) is
 
 \begin{verbatim}
@@ -584,13 +581,7 @@ LOOP ;
 \end{verbatim}
  
 
-18. Nis assumed > >n
-
-19. For those interested in details, the probability a PRNG will produce the integer "s" 1' times is
-p, =1,- "/(n). Thus the e ed value of (t-1)2/A h 1, and therefore the expected value or 12
-is n. The variance in the 1 statistic should then be n(2 +1"! ).
-
-crusts-Migranmm 59
+% crusts-Migranmm 59
 
 The resul are displayed below in Thble 3-1 0 age 59. The mean
 of these values is 99.1, and their variance is 210. This agrees
