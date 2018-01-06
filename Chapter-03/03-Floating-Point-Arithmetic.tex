@@ -562,58 +562,61 @@ program to calculate this statistic (with N = 1000 and n = 100) is
 \begin{verbatim}
 CREATE FREQS 200 ALLOT OKLW
 : IRAND RANDOM 100 S->F
-F* FROUND- F->S ;
-: INlT-FREOS \initialize freqs array
-FREQS 200 0 FILL ;
+    F* FROUND- F->S ;
+: INIT-FREQS \ initialize freqs array
+    FREQS 200 0 FILL ;
 
-: GET-FREQS \make frequency table
-1000 0 DO IRAND 2*
-DUP 199 >ABORT"IRANDTOO LARGE"
-FREQS + 1+!
-LOOP ;
-: STARTCHISQ INIT-FREQS GET—FREQS ;
-: CHISO 0 \sum on stack
-200 0 DO | FREQS + @
-10- DUP * +
-2 +LOOP ;
+: GET-FREQS \ make frequency table
+    1000 0 DO IRAND 2*
+        DUP 199 > ABORT" IRAND TOO LARGE"
+        FREQS + 1 + !
+    LOOP ;
+: START.CHISQ INIT-FREQS GET—FREQS ;
+: CHISQ 0 \ sum on stack
+    200 0 DO I FREQS + @
+            10- DUP * +
+    2 +LOOP ;
 
-: .FREQS \display distribution
-2000DO I FREQS + @ ICE
-2 +LOOP ;
-
+: .FREQS \ display distribution
+    200 0 DO I FREQS + @ I CR . . 
+    2 +LOOP ;
 \end{verbatim}
  
 
-% crusts-Migranmm 59
+% page 59
 
-The resul are displayed below in Thble 3-1 0 age 59. The mean
-of these values is 99.1, and their variance is 210. This agrees
+The results are displayed below in Table \ref{tbl:03_01} on page \pageref{tbl:03_01}. The mean
+of these $\chi^2$ values is 99.1, and their variance is 210. This agrees
 remarkably well with the theoretical formula
 
-02=n(2+%),
-whenn = 100 and l = 10.
+\begin{equation*}
+    \sigma^2=n \, \Big(2+\frac{1}{\lambda}\Big),
+\end{equation*}
+when $n = 100$ and $\lambda = 10$.
 
-Table 3-1 Values of 1' for causes
-
+% Table 3-1 Values of ...  
  
-
-STAR@IZG'llSO M80. 1114 olr STARIO-lISO CHSO. 1130 olt
-STARICHISO GllSO. 540 olt STARIO'IISO CHSO. 1W olt
-STARICHISQ CHlSO. 1294 olt STARICHISO CHISO . % 0k
-STARIG'lISO CHISQ . 650 OR STARTGslISO M80. 1052 olt
-STABICHISO G-llSO . g) 0k STARICHISO CHISO . 7m olt
-STARTCCHISO CHISO . 94 0k STARICHISO CHISO . B42 olt
-STARIG'IISQ CHlSO. 1072 0k S'TARIG'IISO CHISO . 976 OR
-STARICHISO CHISQ. 1110 olt STARICHISO CHISO. 1W olt
-STARIG-IISQ CHISQ. 1183 0k STARICHISO CHISO . $0$ 0k
-STARICHISO CHISQ. 360 OR STAR@ECHISO CHISO . 956 OR
-STABICHISQ CHISQ. 10m 0k STARIOHISO CHISO . me ok
-
- 
-
- 
-
- 
+\begin{table}
+    \caption{Values of $\chi^2$ for GGUBS}
+    \label{tbl:03_01}
+        \setlength{\tabcolsep}{20pt}
+        \begin{tabular}{|ll|}
+            \hline & \\
+            START.CHISQ CHISQ . 1114 ok &  START.CHISQ CHISQ . 1130 ok \\ 
+            START.CHISQ CHISQ . 840 ok  &  START.CHISQ CHISQ . 1064 ok \\
+            START.CHISQ CHISQ . 1294 ok &  START.CHISQ CHISQ . 966 ok  \\
+            START.CHISQ CHISQ . 650 ok  &  START.CHISQ CHISQ . 1052 ok \\
+            START.CHISQ CHISQ . 990 ok  &  START.CHISQ CHISQ . 760 ok  \\
+            START.CHISQ CHISQ . 994 ok  &  START.CHISQ CHISQ . 842 ok  \\
+            START.CHISQ CHISQ . 1072 ok &  START.CHISQ CHISQ . 976 ok  \\
+            START.CHISQ CHISQ . 1110 ok &  START.CHISQ CHISQ . 1064 ok \\
+            START.CHISQ CHISQ . 1180 ok &  START.CHISQ CHISQ . 950 ok  \\
+            START.CHISQ CHISQ . 860 ok  &  START.CHISQ CHISQ . 956 ok  \\
+            START.CHISQ CHISQ . 1080 ok &  START.CHISQ CHISQ . 892 ok  \\
+            & \\
+            \hline
+        \end{tabular} 
+\end{table}
 
 In one application GGUBS was unsatisfactory because it contained correlations
 not revealed by the above tests. This led me
@@ -622,51 +625,44 @@ longer cycle, etc. I offer it as an alternative, since --at the very
 least-- it will enable the reader to test his applications with more
 than one PRNG\sepfootnote{03_20}. Here is the second PRNG:
 
-% Chapter 3 - Hosting Point Arithmetic
-\begin{verbatim}
-
-\PFNGHBAWICWANSLDJLLBYFEW
-VARIABLEX VARABLEY VARIABLEZ
-:RAND-INrI' 1X|1GIDYI le;
-:GEN (ab[n]--n'arnodb) \hl-Ievolvoralon
-
-DUP>R @ MT DUP>R
-
-(--nab:R:--[n]b)
-
-@IMOD DROP DUP O<
-
-IF R> + ELSE FIDFDP THEN
-
-DUP R>I ;
-\CODE GEN CXPOP. AXPOP.
-\ [BX]WORDP'TR lMUL
-\CXIDN.DXOIW 0MP.
-\ DX CX ADD.
-\ >>>POSITIVE [BX] DX MOV. END-CODE
-(Ext; 171 33259 X GEN )
-
-JGEPOSITIVE.
-
- 
-
-Sclendﬂc FORTH
-
-:RAMOM FNT FTRLM
-171 ms 011' S->F X GEN I160 FR]
-172 30311 UL? S->F Y GEN |18@ PW
-F+
-170mDIPSr>F ZGEN 116@ FFV
-F+FRAC:
-% \mmmwmwdaw
-% \FTRUNCqsecIf-sromdlngbwado
-\end{verbatim}
-The corresponding 12 results are given below in Table 3-2.
+\begin{multicols}{2}
+\setlength{\columnsep}{1.5cm}
+\setlength{\columnseprule}{0.2pt}
+\tiny
+\begin{lstlisting}
+\ PRNG -- B.A. WICHMAN & I.D. HILL, BYTE 3/87
+VARIABLE X VARABLE Y VARIABLE Z
+: RAND-INIT 1 X ! 10000 Y ! 3000 Z ! ;
+: GEN ( a b [n] -- n*a mod b) \ high-level version
+    DUP>R @ ROT DUP>R
+        ( -- n a b :R:--[n]b)
+    */MOD DROP DUP 0<
+    IF R> + ELSE RDROP THEN
+    DUP R> ! ;
+\ CODE GEN CX POP. AX POP.
+\   [BX] WORD-PTR IMUL
+\   CX IDIV. DX 0 IW CMP. JGE. POSITIVE.
+\   DX CX ADD.
+\   > > > POSITIVE. [BX] DX MOV. END-CODE
+( Ex.: 171 30269 X GEN )
+(*@\columnbreak@*)
+: RANDOM FINIT FTRUNC
+    171 30269 DUP S->F X GEN I16@ FR/
+    172 30307 DUP S->F Y GEN I16@ FR/
+    F+
+    170 30323 DUP s->F Z GEN I16@ FR/
+    F+ FRAC ;
+\ FRAC takes the fractional part of a number 
+\ FTRUNC specifies rounding towar 0
+\end{lstlisting}
+\end{multicols}
+The corresponding $\chi^2$ results are given below in Table \ref{tbl:03_02}. % 3-2.
 
 %Table 3-2 x2 for Wichman-Hill PRNG
 
 \begin{table}
     \caption{$\chi^2$ for Wichman-Hill PRNG}
+    \label{tbl:03_02}
         \setlength{\tabcolsep}{20pt}
         \begin{tabular}{|ll|}
             \hline & \\
@@ -691,7 +687,7 @@ The corresponding 12 results are given below in Table 3-2.
  
 Interestingly, the mean of the 12 statistic for 21 tests is 93.5,
 perhaps a bit low, but not outrageously so; however, the variance
-in x is suspiciously small — only 135 vs. the expected 210. This
+in x is suspiciously small — only 135 \textit{vs.} the expected 210. This
 may mean the distribution is excessively even!
 
 One very useful test for randomness involves constructing a
