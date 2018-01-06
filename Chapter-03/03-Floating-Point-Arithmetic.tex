@@ -548,7 +548,7 @@ PRNG to generate $N$ integers\sepfootnote{03_18} in the range [0,n-1] and record
 the number of occurrences, $f_s$ of each integer $s = 0, 1, \dots n-1$. If
 the PRNG is really random, then the probability that an integer
 should have any of the $n$ values is $1/n$, hence the expected 
-frequencies are <$f_g$> $\equiv \lambda = \frac{N}{n}$ .The $\chi^2$ statistic for $f_s$ is defined to
+frequencies are $<f_g> \equiv \lambda = \frac{N}{n}$ .The $\chi^2$ statistic for $f_s$ is defined to
 be
 
 \begin{equation}
@@ -556,7 +556,7 @@ be
 \end{equation}
 
 
-xz should have a value roughly n\sepfootnote{03_19}. GGUBS passes the 12 test: A
+$\chi^2$ should have a value roughly n\sepfootnote{03_19}. GGUBS passes the $\chi^2$ test: A
 program to calculate this statistic (with N = 1000 and n = 100) is
 
 \begin{verbatim}
