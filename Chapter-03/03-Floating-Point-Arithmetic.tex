@@ -1,6 +1,8 @@
 
 \chapter{Floating Point Arithmetic}
 
+\addtocounter{equation}{1} % the 1st equation reference is missing, so we have to increase the counter
+
 \tableofcontents
 
 \TallC{This} chapter discusses various aspects of floating point arithmetic in
@@ -32,30 +34,32 @@ co-processor in a typical computer is a machine, and any
 numerical calculation with floating point or complex numbers,
 e.g. can be organized in terms of loading operands into the
 coprocessor, and transferring results from it to memory. That is,
-FORTH can control the FPU through the calculation, as indicated in Fig. 3-1
-below:
+FORTH can control the FPU through the calculation, as indicated in Fig.
+\ref{fig:03_01} below:
 
 \tikzstyle{line} = [draw, -latex']
 \tikzstyle{block} = [rectangle, draw, above right, align=center]
 
 \begin{figure}
-\begin{tikzpicture}[scale=1]
-\draw [black] (.4, .3) rectangle (10.04, 6.42);
+    % Fig. 3—1 
+    \begin{tikzpicture}[scale=1]
+        \draw [black] (.4, .3) rectangle (10.04, 6.42);
 
-\node [block] at (2.24, 4.50) (data) {DATA \\ STORE};
-\node [block] at (5.28, 4.70)  (fpu) {FPU};
-\node [block] at (7.72, 4.50) (res) {RESULT \\ STORE};
-\node [block] at (1.75, 1.10) (pgm) {PROGRAM \\ STORE};
-\node [block] at (5.30, 1.30) (cpu) {CPU};
-\node [block] at (4.60, 2.55)  (op) {OPRATIONS\\ \& \\ ADDRESSES};
-\path [line]  (fpu) -- (res) ;
-\path [line]  (data) -- (fpu) ;
-\path [line]  (op) -- (fpu) ;
-\path [line]  (cpu) -- (op) ;
-\path [line]  (pgm) -- (cpu) ;
+        \node [block] at (2.24, 4.50) (data) {DATA \\ STORE};
+        \node [block] at (5.28, 4.70)  (fpu) {FPU};
+        \node [block] at (7.72, 4.50) (res) {RESULT \\ STORE};
+        \node [block] at (1.75, 1.10) (pgm) {PROGRAM \\ STORE};
+        \node [block] at (5.30, 1.30) (cpu) {CPU};
+        \node [block] at (4.60, 2.55)  (op) {OPRATIONS\\ \& \\ ADDRESSES};
+        \path [line]  (fpu) -- (res) ;
+        \path [line]  (data) -- (fpu) ;
+        \path [line]  (op) -- (fpu) ;
+        \path [line]  (cpu) -- (op) ;
+        \path [line]  (pgm) -- (cpu) ;
 
-\end{tikzpicture}
-\caption{Fig. 3—1 Data flow diagram of a CPU controlling an FPU through a calculation.}
+    \end{tikzpicture}
+    \caption{Data flow diagram of a CPU controlling an FPU through a calculation.}
+    \label{fig:03_01}
 \end{figure}
 
 We assume a stack for floating point numbers separate from the 
@@ -220,28 +224,27 @@ diagrams\sepfootnote{03_05}, where
   }}
 }
 \begin{figure}
-\begin{tikzpicture}[minimum size=0.75cm]
-    \node at (1,7) (start) {\,};
-    \node [circle, draw, cross]    at (1, 5) (cross) {};
-    \node [right, align=left] at (2,5) {0 N 1- DO \textbackslash  \, from I = N-1 to 0} ;
-    \node [right, align=left] at (2,4) {sum = sum $*$ x + a[I]} ;
-    \node [circle, draw, dot]      at (1, 3) (dot)  {};
-    \node [right, align=left] at (2,3) {-1 +LOOP} ;
-    \node [right, align=left] at (2,2) {sum = a[N]} ;
-    \draw [fill, opacity=0.2] (.5,1.25) rectangle (1.5,.75) {};
-    \node at (1,0.90) (ext) {};
-    \node [right, align=left] at (2,1) {EXIT} ;
-    \path [line]  (cross) -- (dot);
-    \path [line]  (dot) -- (ext);
-    \path [line]  (start) -- (cross);
-\end{tikzpicture}
-\caption{ Fig. 3-2 Pseudo FOR TH flow diagram of polynomial evaluation }
+    %  Fig. 3-2 
+    \begin{tikzpicture}[minimum size=0.75cm]
+        \node at (1,7) (start) {\,};
+        \node [circle, draw, cross]    at (1, 5) (cross) {};
+        \node [right, align=left] at (2,5) {0 N 1- DO \textbackslash  \, from I = N-1 to 0} ;
+        \node [right, align=left] at (2,4) {sum = sum $*$ x + a[I]} ;
+        \node [circle, draw, dot]      at (1, 3) (dot)  {};
+        \node [right, align=left] at (2,3) {-1 +LOOP} ;
+        \node [right, align=left] at (2,2) {sum = a[N]} ;
+        \draw [fill, opacity=0.2] (.5,1.25) rectangle (1.5,.75) {};
+        \node at (1,0.90) (ext) {};
+        \node [right, align=left] at (2,1) {EXIT} ;
+        \path [line]  (cross) -- (dot);
+        \path [line]  (dot) -- (ext);
+        \path [line]  (start) -- (cross);
+    \end{tikzpicture}
+    \caption{Pseudo FORTH flow diagram of polynomial evaluation }
+    \label{fig:03_02}
 \end{figure}
 
- 
-
-
-Now we translate Fig. 3-2 above into FORTH \sepfootnote{03_06}\sepfootnote{03_07} :
+Now we translate Fig. \ref{fig:03_02} above into FORTH \sepfootnote{03_06}\sepfootnote{03_07} :
 
 \begin{verbatim}
 
@@ -735,96 +738,72 @@ Then\sepfootnote{03_24}
 
 which, using standard manipulations, we can evaluate as
 
- 
+\begin{eqnarray} 
+    f(x)=\int_{0}^{1}d\xi\delta \Big[\Big(\xi-\xi(x)\Big)\frac{dX}{d\xi}\Big]=\frac{d\xi}{dx} \label{03_05}
+\end{eqnarray} 
+The ordinary differential equation \ref{03_05} has the formal solution
+\begin{eqnarray} 
+    \xi=\int_{X(0)}^{X(\xi)}dx f(x) \label{03_06} &&
+\end{eqnarray} 
 
-The ordinary differential equation 5 has the formal solution
-\begin{verbatim}
-'I'henz'4
-th) = 1:45 a (x — no)
-(4)
-=13dto(x-x(5(x) +5 —@(x)))
+that defines the new prn's distributed according to $f(x)dx$, if $\xi$ is a
+prn uniformly distributed on [0,1]. In other words, we have to
+solve a (usually) transcendental equation to calculate $X(\xi)$.
 
-llaed@r)isthew—caﬂedDuae6-funaim.8eeanystandardtenondistnbutions
-
-ﬂx)= I@deo[(e—t(x))%] = "if (5)
-@=r,'f@,@'dxltx) <6) I
-I
-\end{verbatim}
-
-that defines the new prn's distributed according to f(x)dr, if E is a
-pm uniformly distributed on [0,1]. In other words, we have to
-solve a (usually) transcendental equation to calculate X(E).
-
-Since most simulation problems demand a lot of pm' 5, it is no use
-solving Eq. 6 in real time. The better solution is to define a large
-enough table of the X's, and look them up according to E. In this I
+Since most simulation problems demand a \textit{lot} of prn's, it is no use
+solving Eq. \ref{03_06} in real time. The better solution is to define a large
+enough table of the X's, and look them up according to $\xi$. In this
 case we actually want an integer PRNG uniformly distributed on
 [0,N-1], where the table has N entries.
 
- 
-\begin{verbatim}
-
- 
-
-\ O HARVARD SOFTWORKS 19%, ALL RIGHTS RESERVED.
+\begin{figure}
+    \label{fig:03_03}
+    \begin{mdframed}
+        % Fig. 33!  
+        \begin{lstlisting}
+\ (*@\copyright@*) HARVARD SOFTWORKS 1986, ALL RIGHTS RESERVED.
 HEX
-IVARA 2VARB OSFFVARMX
+1 VAR A 2 VAR B 03FF VAR MX
 
-:RANDOM AB+ MX OVER U<
+:RANDOM A B + MX OVER U<
+IF MX 1+ -  THEN
+2* MX OVER U<
+IF MX -     THEN
+B IS A DUP IS B ;
 
-IF MX 1+ - THEN
-
-2' MX OVER U<
-
-IF MX - THEN
-
-BIS A DUP IS 8 ;
-:RANDOMIZE (seed1seed2#bits—-)
-
-2 MAX 0F MIN \#bitstruncatedtorange2—16
-
+: RANDOMIZE (seed1 seed2 #bits --)
+2 MAX 0F MIN \ #bits truncated to range 2-16
 1 SWAP SAL 1- IS MX
-
 MX MOD IS A
-
 MX MOD IS B
+5 0 DO RANDOM DROP LOOP ;
+        \end{lstlisting}
+    \end{mdframed}
+    \caption{PRNG supplied with HS/FORTH}
+\end{figure}
 
-50 DO RANDOM DROP LOOP:
+In Fig. \ref{fig:03_03}  above we exhibit a PRNG that produces 16-bit integers
+uniformly distributed on $[0, 2^N-1]$ . I have no idea of its \textit{modus
+operandi} or its origin, but it passes the $\chi^2$ tests described above.
 
- 
+We also need a way to invoke user-defined functions: the method
+we have found is shown in Fig. \ref{fig:03_04} below. I
 
-h
-\end{verbatim}
+\begin{figure}
+    % Fig. 34
+    \label{fig:03_04}
+    \begin{mdframed}
+        \begin{lstlisting}
+VARIABLE <F>
 
-
-Fig. 34! PRNG supplied with HS/FORTH
-
-In Fig. 3-3 above we exhibit a PRNG that produces 16-bit intege .
-uniformly distributed on [0, 2"— l] . l h ve no idea of its
-operandi or its origin, but it passes the 1 tests described above.
-
-We also need a way to invoke user-defined functions: the meth
-we have found is shown in Fig. 34 below. I
-
-\begin{verbatim}
-ma-MPOHW 83
-
- 
-
-VARIAHE <F>
-
-:USE( [COMPILE] ' (FA <F> i
-:F(X) <F> BtECUTE® ;
-BEI'EAD' <F> \rrllto<F>iocl
-
- 
-
- 
-
- 
-\end{verbatim}
-
-Fig. 34Prorocol for function usage in FORTH
+: USE( [COMPILE] ' CFA <F> ! ;
+: F(X) <F> EXECUTE@ ;
+BEHEAD' <F> \ make <F>local
+        \end{lstlisting}
+    \end{mdframed}
+    \caption{Protocol for function usage in FORTH
+}
+\end{figure}
 
 We also require a word analogous to , ("comma") that stores
 32-bit floating point numbers in the parameter field of a word:
@@ -839,59 +818,35 @@ With these auxiliary definitions we are in a position to define a
 word that creates tables of random variates and traverses them in a random order:
 
 \begin{verbatim}
-    \ Defining word for tables of prn's distributed according to a given distribution:
-    \ P(x<X(xi)) = id defhes X(xi).
-    \ Note: the first entry is autormticaliy 0.  
-    \ fn.name oonvetts xi to X(xi) 
-    \ dist.name is the name of the random N-long table created by )DISTRIBUIION
+\ Defining word for tables of prn's distributed according to a given distribution:
+\ P(x<X(xi)) = xi defines X(xi).
+\ Note: the first entry is autormticaliy 0.  
+\ fn.name oonvetts xi to X(xi) 
+\ dist.name is the name of the random N-long table created by )DISTRIBUIION
 
-    :SHAKE.UP ( #bls -- ) TIME@ XOR -ROT XOR ROT RANDOMIZE ;
+:SHAKE.UP ( #bits -- ) TIME@ XOR -ROT XOR ROT RANDOMIZE ;
 
-                             \ randomize seeds
-    : )DISTRIBUTION: DUP LG2 ( --N #bits=ln[N])
-    SHAKE.UP                 \ Inlhllzepmg
-    CREATE F=O F32, \rmkefirstemy
-    (N--) 1 DO \Nentrytabie
-    IS->F I' S->F F/ \ltiontstack
-    F00 F32. \evalmteXOtiiand!
-    LOOP
-    DOES> RANDOM 4' + R32@ ;
-    BEI-EAD" A RANDOM \makethesewordslocd
+                         \ randomize seeds
+: )DISTRIBUTION: DUP LG2 ( --N #bits=ln[N])
+SHAKE.UP                 \ Initialize prng
+CREATE F=0 F32,          \ make first entry
+( N--) 1 DO              \ N entry table
+    I S->F I' S->F F/    \ xi on fstack
+    F(X) F32,            \ evaluate X(xi) and !
+LOOP
+DOES> RANDOM 4* + R32@ ;
+BEHEAD" A RANDOM         \ make these words local
 
-    \Usage: USE( Inname N )DISTRIBUTION: dbtname
+\Usage: USE( fn.name N )DISTRIBUTION: dist.name
 \end{verbatim}
-In Fig. 3-5 below we exhibit a frequency plot of 10,000 random
+In Fig. \ref{fig:03_05} below we exhibit a frequency plot of 10,000 random
 variates drawn from a (rather coarse) table of 64 entries, according to the
 distribution $p(x)dx=xe^{-x}dx$, together with $p(x)$.
-
- 
-
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-Fig. 3-5 Random variates from table of 64 from distribution $p(x)=xe^{-x}$
+\begin{figure}
+% Fig. 3-5 
+    \caption{Random variates from table of 64 from distribution $p(x)=xe^{-x}$}
+    \label{fig:03_05}
+\end{figure}
 
 With slightly more elaboration we can arrange for each table to 
 have a unique prng, thus minimizing correlations between
