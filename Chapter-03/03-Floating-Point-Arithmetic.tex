@@ -811,7 +811,6 @@ word that creates tables of random variates and traverses them in a random order
 \ dist.name is the name of the random N-long table created by )DISTRIBUIION
 
 :SHAKE.UP ( #bits -- ) TIME@ XOR -ROT XOR ROT RANDOMIZE ;
-
                          \ randomize seeds
 : )DISTRIBUTION: DUP LG2 ( --N #bits=ln[N])
 SHAKE.UP                 \ Initialize prng
