@@ -63,19 +63,19 @@ FORTH can control the FPU through the calculation, as indicated in Fig.
 \end{figure}
 
 We assume a stack for floating point numbers separate from the 
-parameter or return stacks. We call this the fstack, and assume i
+parameter or return stacks. We call this the fstack, and assume it
 has arbitrary depth. (We denote it by :: in stack comments.)
 
-\leftbar[1\linewidth] 
+\leftbar[1\linewidth] \noindent
 Whether the fstack should be distinct from the parameter stack
-is currently a subject of lively debate within the FORTH com-
-munity. One faction wishes to combine the two. The other
-faction, including the author and most other FORl'l-l number-
-cmnchers, believes that to organize a floating point- intensive
-calculation as data ﬂow through a dedicated coprocessor, the
+is currently a subject of lively debate within the FORTH community. 
+One faction wishes to combine the two. The other
+faction, including the author and most other FORTH number-
+crunchers, believes that to organize a floating point- intensive
+calculation as data flow through a dedicated coprocessor, the
 parameter stack must be reserved for addresses, loop indices and
-ﬂags. The data fed to the coprocessor therefore has to stay
-elsewhere, i.e. in the data store and the fstack.
+flags. The data fed to the coprocessor therefore has to stay
+elsewhere, \textit{i.e.} in the data store and the fstack.
 \endleftbar
 
 The words we shall need fall into the categories of fstack 
@@ -86,7 +86,7 @@ Their names are nearly standard\sepfootnote{03_01}.
 \TallC{The} fstack words are\sepfootnote{03_02}
 \begin{verbatim}
 F@     ( addr -- :: -- x )
-Fl     ( addr -- :: x -- )
+F!     ( addr -- :: x -- )
 FDUP   ( :: x -- xx )
 FSWAP  ( :: yx -- xy )
 FDROP  ( :: x -- )
@@ -95,8 +95,8 @@ FOVER  ( :: yx -- yxy )
 S->F   ( n-- :: --n)
 D->F   ( d-- :: -- d )
 F->S   ( :: x-- : -- int[x] )
-F->D (::x--:--dint[x])
-% (place a FP# from input stream on fstack)
+F->D   ( :: x--:--dint[x])
+%    ( place a FP# from input stream on fstack)
 \end{verbatim}
  
 To these we sometimes add\sepfootnote{03_03}
@@ -104,18 +104,18 @@ To these we sometimes add\sepfootnote{03_03}
 \begin{verbatim}
 : FUNDER FSWAP FOVER ;
 : FPLUCK FSWAP FDROP ;
-Fnx (n = 2 - 6 | defined in code for speed)
-FnR (n = 3 - 7 | defined in code for speed)
+Fnx     (n = 2 - 6 | defined in code for speed)
+FnR     (n = 3 - 7 | defined in code for speed)
 \end{verbatim}
 
 The Intel mathematics co-processors 80x87 (8087/80287/80387)
 and their clones incorporate a stack of limited depth (in fact 8
-deep), the 87stack It is far faster to get a number from the 875tack
+deep), the 87stack It is far faster to get a number from the 87stack
 than from memory. Thus, as Palmer and Morse\sepfootnote{03_04} emphasize,
 optimizing for speed demands maximum use of the 87fstack to store intermediate
-results, frequently used constants, etc.
+results, frequently used constants, \textit{etc}.
 
-In Ch. 4 @7 we show how to extend the 87fstack into memory. The
+In Ch. 4~\S7 we show how to extend the 87fstack into memory. The
 cost of unlimited fstack-depth is reduced speed when the 87stack
 spills over to memory.
 
@@ -124,83 +124,78 @@ spills over to memory.
 defining various floating point operations it is convenient to be
 able to place certain constants on the fstack directly, by invoicing
 their names. Here are some words that have proven useful:
-\begin{verbatim}
-F=0 (::--O)
-
-F=1 (::--1)
-
-F=Pl (2: --pi = 3.14159...)
-F=L2(10) (2: - -Iogz10)
-F=L2(E) (:2 "log, a)
-
-F= L10(2) (z: - - Iog,°2)
-F=LN(2) (ii-409.2)
-\end{verbatim}
+\begin{lstlisting}
+    F=0              ( :: -- O)
+    F=1              ( :: -- 1)
+    F=PI             ( :: -- pi = 3.14159(*@$\dots$@*))
+    F=L2(10)         ( :: -- (*@$\log_2 10$@*))
+    F=L2(E)          ( :: -- (*@$\log_2 e$@*))
+    F=L10(2)         ( :: -- (*@$\log_10 2$@*))
+    F=LN(2)          ( :: -- (*@$\log_e 2$@*))
+\end{lstlisting}
  
-\subsection{Arithmetic operations}
+\subsection{Arithmetic perations}
 \TallC{As}
 noted in Chapters 1 and 2, FORTH arithmetic operators are
-rds \textit{- dumb} words. FORTH uses a distinct set of operators
+words \textit{- dumb} words. FORTH uses a distinct set of operators
 for each kind (16-bit integer, 32-bit integer, REAL, COMPLEX)
-of arithmetic. so the compiler has nothing to decide.
+of arithmetic, so the compiler has nothing to decide.
 
-Languages like FORTRAN, BASIC and APL overload arithmetic operators - their
+Languages like FORTRAN, BASIC and APL \textbf{overload} arithmetic operators -- their
 meanings are context-dependent. This
 makes it possible to write -say- a FORTRAN expression using
-REAL@4, REAL@B, COMPLEX@S or COMFLEX'16 literals
-and variables without worrying about how to fetch. store or
+REAL*4, REAL*8, COMPLEX*8 or COMPLEX*16 literals
+and variables without worrying about how to fetch, store or
 convert them. Operator overloading increases the complexity of
 compilers and limits the speed and efficiency of compilation.
 
-As we shall see in Chapter 5@1, FORTH enables an alternative
+As we shall see in Chapter 5~\S1, FORTH enables an alternative
 solution in which "smart" data "know" their own types and
 "smart" operators "know" what kinds of data are being combined.
 The slightly reduced execution speed is offset by improved
-ﬂexibility: one canned routine can work with all data types. Even
+flexibility: one canned routine can work with all data types. Even
 better, adding this kind of "intelligence" makes no extra demands
 on the FORTH compiler.
 
-The standard, dumb FORTH floating-point arithmetic opera-
-tions and their actions are
+The standard, dumb FORTH floating-point arithmetic operations and their actions are
 
 \begin{verbatim}
-F+       ( :: yx -- y+x)
-F—       ( :: yx -- y—x)
-FR—      ( :: yx -- x—y)
-F*       ( :: yx -- y*x)
-F/       ( :: yx -- y/x)
-FRI      ( :: yx -- x/y)
-FNEGATE  ( :: x -- -x)
-FABS     ( :: x -- |x|)
-1/F      ( :: x -- 1/X)
+    F+       ( :: yx -- y+x)
+    F—       ( :: yx -- y—x)
+    FR—      ( :: yx -- x—y)
+    F*       ( :: yx -- y*x)
+    F/       ( :: yx -- y/x)
+    FRI      ( :: yx -- x/y)
+    FNEGATE  ( :: x -- -x)
+    FABS     ( :: x -- |x|)
+    1/F      ( :: x -- 1/X)
 \end{verbatim}
 
 To these it is sometimes useful to add words that do not consume
-all their arguments, such as F*NP (floating multiply, no pop)
+all their arguments, such as \verb|F*NP| (floating multiply, no pop)
 
 \begin{verbatim}
 
-F'NP (::xy--xy@x).
+    F*NP ( :: x y--x y*x).
 
 \end{verbatim}
 
-that are faster, more convenient. and less demanding of the
-87stack than the phrase FOVER F*.
+that are faster, more convenient, and less demanding of the
+87stack than the phrase \regc{FOVER F*}.
 
 \subsection{Example: evaluating a polynomial}
 \TallC{Let} us now write a little program to calculate something using
 the floating point lexicon, say a program to evaluate a general
 polynomial $P_N (x)$. The formula to evaluate is
-\begin{equation}
-P_N(x)=a_0x^0+a_1x^1+...+a_Nx^N
-\\
-=a_0+x(a_1+x(... +xa_N))\nonumber
-\end{equation}
+\begin{align}
+    P_N(x)&=a_0x^0+a_1x^1+...+a_Nx^N \nonumber \\
+    &=a_0+x\big(a_1+x(... +xa_N)\big)\nonumber
+\end{align}
 
 
 \definecolor{gray}{gray}{0.8}
 
-The algorithm can be represented by the (pseudo) FORTH ﬂow
+The algorithm can be represented by the (pseudo) FORTH flow
 diagrams\sepfootnote{03_05}, where
 {\colorbox{gray}{\color{gray}XXX}} indicates the end of the program.
 
@@ -250,7 +245,7 @@ Now we translate Fig. \ref{fig:03_02} above into FORTH \sepfootnote{03_06}\sepfo
 
 : }POLY ( [a{] [x] -- ) \ evaluate p(x,N)
     FINIT G@            \ x on fstack
-    DUP type@ G=O       (z: -- x sum=0)
+    DUP type@ G=0       (z: -- x sum=0)
     LEN@                ( -- [a{] N )
     SWAP DO             \ begin loop
     DUP I } G@          ( :: -- x sum a[i] )
@@ -263,7 +258,7 @@ Now we translate Fig. \ref{fig:03_02} above into FORTH \sepfootnote{03_06}\sepfo
 
 \end{verbatim}
 
-Note that the function \}POLY expects the addresses of its arguments on the
+Note that the function \regc{\}POLY} expects the addresses of its arguments on the
 stack, consumes them and leaves its result on the fstack. User-defined FORTH
 functions will in general have an interface of this sort. This will be
 especially true of the functions built into numerical co-processors.
@@ -357,7 +352,7 @@ optimizing  \sepfootnote{03_08}.
 \TallC{A} nalogous to the test words for integer arithmetic, we require
 the words \verb|F0> F0= F0< F> F= F<|.
 
-Test words leave a ﬂag on the parameter stack depending on the
+Test words leave a flag on the parameter stack depending on the
 relationship they discover. Moreover, these words consume one
 or two arguments on the fstack, following the standard FORTH
 practice. As a simple first example of test words, let us define
@@ -372,7 +367,7 @@ max and FMIN analogous to MAX and MIN: \sepfootnote{03_09}
 
 \TallC{Scientific} programming in FORTH requires a suite of exponential,
 logarithmic and trigonometric functions (included with all
-FORTRAN systems, most BASICs, C's, APL LISP, etc.) The
+FORTRAN systems, most BASICs, C's, APL LISP, \textit{etc}.) The
 minimal function library is
 
 \begin{lstlisting}
@@ -465,7 +460,7 @@ FIND F**2 0= ?(: F**2 FDUP F* ; )
 \end{verbatim}
 
 
-% PAGE 56 Chapter 3 — Floating Point Arithmetic Sclenfiﬂc FORTH
+% PAGE 56 Chapter 3 — Floating Point Arithmetic Sclenfiflc FORTH
 
 
 \section{Pseudo-random number generators (PRNG's)}
@@ -621,7 +616,7 @@ when $n = 100$ and $\lambda = 10$.
 In one application GGUBS was unsatisfactory because it contained correlations
 not revealed by the above tests. This led me
 to seek another PRNG with --perhaps-- better properties, a
-longer cycle, etc. I offer it as an alternative, since --at the very
+longer cycle, \textit{etc}. I offer it as an alternative, since --at the very
 least-- it will enable the reader to test his applications with more
 than one PRNG\sepfootnote{03_20}. Here is the second PRNG:
 
