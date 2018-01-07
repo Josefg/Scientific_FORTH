@@ -272,7 +272,7 @@ So FORTH really isn't different, only more explicit and efficient.
 \TallC{A}
  simple-minded compiler will translate an expression such as
 \begin{equation}
-     \Big( sin(x) \Big)^2\nonumber
+     y=\Big( sin(x) \Big)^2\nonumber
 \end{equation}
 
 into a form requiring two function calls:
@@ -284,11 +284,11 @@ Y = SIN(X)*SIN(X) .
 Obviously this is silly. One of the claims often made for "optimizing" FORTRAN
 or C compilers is the ability to recognize an
 expression requiring unnecessary function calls, and to re-express
-it as. say,
+it as, say,
   
 \begin{verbatim}
-TEMP = SIN(X)
-v = TEMP * TEMP .
+    TEMP = SIN(X)
+    v = TEMP * TEMP.
 \end{verbatim}
 
 A globally optimizing compiler has a more extensive repertoire
@@ -305,11 +305,11 @@ Optimization in FORTH takes one of several forms, that can be
 combined for best results. The simplest is the use of stacks
 registers to avoid extra memory shuffling. Referring to the
 preceding bad example, we note that a simple floating-point
-function f(x) finds its argumentx on the top of the fstack, consume
-it, and leaves the result in its place. A simple F**2, defined as
+function $f(x)$ finds its argument $x$ on the top of the fstack, consume
+it, and leaves the result in its place. A simple \regc{F**2}, defined as
 
 \begin{verbatim}
-: F**2 FDUP F* ;
+    : F**2 FDUP F* ;
 \end{verbatim}
 
 will then evaluate $[f(x)]^2$, with no fetch/store penalty from defining
@@ -319,13 +319,12 @@ Some FORTHs can optimize by substituting inline code for jumps
 and returns to subroutines. In other words, by making the compiled code longer,
 some advantage in speed can be gained.
 HS/FORTH offers a recursive-descent optimizer of just this sort
-that -within its limitations- can optimize as well as good C or
+that --within its limitations-- can optimize as well as good C or
 FORTRAN compilers. An optimizer-improved word consists of
 all the code bodies of the words in its definition, jammed end to
 end and with redundant pushes and pops deleted.
 
 \TallC{Virtually} all FORTH implementations have a built-in assembler
-
 that permits defining a word in machine language. Judiciously
 machine-coding selected words can dramatically reduce execution time, since
 careful hand coding offers the ultimate performance the machine is capable of.
@@ -349,8 +348,8 @@ optimizing  \sepfootnote{03_08}.
 
 \section{Testing floating point numbers}
 
-\TallC{A} nalogous to the test words for integer arithmetic, we require
-the words \verb|F0> F0= F0< F> F= F<|.
+\TallC{Analogous} to the test words for integer arithmetic, we require
+the words \regc{F0> F0= F0< F> F= F<}.
 
 Test words leave a flag on the parameter stack depending on the
 relationship they discover. Moreover, these words consume one
@@ -358,9 +357,9 @@ or two arguments on the fstack, following the standard FORTH
 practice. As a simple first example of test words, let us define
 max and FMIN analogous to MAX and MIN: \sepfootnote{03_09}
 \begin{verbatim}
-: XDUP FOVER FOVER ;
-: FMAX XDUP F< IF FSWAP THEN FDROP ;
-: FMIN XDUP F> IF FSWAP THEN FDROP ;
+    : XDUP FOVER FOVER ;
+    : FMAX XDUP F< IF FSWAP THEN FDROP ;
+    : FMIN XDUP F> IF FSWAP THEN FDROP ;
 \end{verbatim}
 
 \section{Mathematical functions - the essential function library}
@@ -372,20 +371,20 @@ minimal function library is
 
 \begin{lstlisting}
 
-FSQRT     ( :: x -- (*@$\sqrt x $@*) )
-FLN       ( :: x -- (*@$\ln[x]$@*) )
-FLOG      ( :: x -- (*@$log_{10}[x]$@*) )
-F2**      ( :: x -- (*@$2^x$@*) )
-F**       ( :: x y -- (*@$y^x$@*) )
-FEXP      ( :: x -- (*@$e^x$@*) )
-FSIN      ( :: x -- sin[x] )
-FCOS      ( :: x -- cos[x] )
-FTAN      ( :: x -- tan[x] )
-DEG->RAD  ( :: x -- x(*@$*$@*)pi/180 )
-RAD->DEG  ( :: x -- x(*@$*$@*)180/pi )
-FATAN     ( :: x -- atan[x] )
-FASIN     ( :: x -- asin[x] )
-FACOS     ( :: x -- acos[x] )
+    FSQRT     ( :: x -- (*@$\sqrt x $@*) )
+    FLN       ( :: x -- (*@$\ln[x]$@*) )
+    FLOG      ( :: x -- (*@$log_{10}[x]$@*) )
+    F2**      ( :: x -- (*@$2^x$@*) )
+    F**       ( :: x y -- (*@$y^x$@*) )
+    FEXP      ( :: x -- (*@$e^x$@*) )
+    FSIN      ( :: x -- sin[x] )
+    FCOS      ( :: x -- cos[x] )
+    FTAN      ( :: x -- tan[x] )
+    DEG->RAD  ( :: x -- x(*@$*$@*)pi/180 )
+    RAD->DEG  ( :: x -- x(*@$*$@*)180/pi )
+    FATAN     ( :: x -- atan[x] )
+    FASIN     ( :: x -- asin[x] )
+    FACOS     ( :: x -- acos[x] )
 
 \end{lstlisting}
 
@@ -405,8 +404,8 @@ to take an algebraic sign) on the parameter stack, and the floating,
 point argument $x$ on the fstack. We may define it using logic, as
 \begin{verbatim}
 
-: FSGN ( n -- :: x -- sgn[n]*abs[x])
-    FABS O< IF FNEGATE THEN;
+    : FSGN ( n -- :: x -- sgn[n]*abs[x])
+        FABS 0< IF FNEGATE THEN ;
 \end{verbatim}
 
 \subsection{Cosh, Sinh and their inverses}
@@ -417,46 +416,43 @@ We now code the hyperbolic sine and cosine. The formulae are
     cosh(x) & = & \frac{1}{2}\Big(e^x+e^{-x}\Big) 
 \end{eqnarray*}
 
-
 and their definitions are
 \begin{verbatim}
-: F2/ F=1   ( :: x -- x/2 ) 
-    FNEGATE FSWAP FSCALE FPLUCK ;
-: HYPER FEXP FDUP 1/F ; ( ::--e**x e**-x)
-:SINH HYPER F- F2/ ;
-: COSH HYPER F+ F2/ ;
+    : F2/ F=1   ( :: x -- x/2 ) 
+        FNEGATE FSWAP FSCALE FPLUCK ;
+    : HYPER FEXP FDUP 1/F ; ( ::--e**x e**-x)
+    : SINH HYPER F- F2/ ;
+    : COSH HYPER F+ F2/ ;
 \end{verbatim}
 
 The hyperbolic tangent is then
 
 \begin{verbatim}
-FIND XDUP O= ?(: XDUP FOVER FOVER ;)
-             \ conditionally compile XDUP
-: TANH HYPER ( :: -- ex e-x)
-    XDUP F- F-ROT F+ F/ ;
+    FIND XDUP O= ?(: XDUP FOVER FOVER ;)
+                 \ conditionally compile XDUP
+    : TANH HYPER ( :: -- ex e-x)
+        XDUP F- F-ROT F+ F/ ;
 \end{verbatim}
 
 Finally, the inverse hyperbolic sine and cosine can be defined in
 terms of logarithms:
 
 \begin{eqnarray*}
-    arcsinh(x) & = & \ln{(x + (x^2 + 1)^{^1/_2})} , -\infty < x < \infty \\
-    arccosh(x) & = & \ln{(x + (x^2 - 1)^{^1/_2})} , -\infty < x < \infty
+    arcsinh(x) = \ln{\big(x + (x^2 + 1)^{^1/_2}\big)}  &, -\infty < x < \infty \\
+    arccosh(x) = \ln{\big(x + (x^2 - 1)^{^1/_2}\big)}  &, -\infty < x < \infty 
 \end{eqnarray*}
 
 The corresponding definitions are \sepfootnote{03_10}
 
 
 \begin{verbatim}
-FIND F**2 0= ?(: F**2 FDUP F* ; )
-:ARCSINH FDUP F**2 F=1 F+
-    FSQRT F+ FLN ;
-:ARCCOSH FDUP F**2 F=1 F-
-    FDUP F0<
-    ABORT" x <1 in ARCCOSH"
-    FSQRT F+ FLN ;
-
- 
+    FIND F**2 0= ?(: F**2 FDUP F* ; )
+    :ARCSINH FDUP F**2 F=1 F+
+        FSQRT F+ FLN ;
+    :ARCCOSH FDUP F**2 F=1 F-
+        FDUP F0<
+        ABORT" x <1 in ARCCOSH"
+        FSQRT F+ FLN ;
 \end{verbatim}
 
 
@@ -465,7 +461,7 @@ FIND F**2 0= ?(: F**2 FDUP F* ; )
 
 \section{Pseudo-random number generators (PRNG's)}
 \TallC{The} subject of computer-generated (pseudo) random numbers
-hfilbeen discussed extensively in the literature of computation \sepfootnote{03_11}
+has been discussed extensively in the literature of computation \sepfootnote{03_11}
  \sepfootnote{03_12} . We shall
 confine ourselves here to translating two useful
 algorithms into FORTH, and discussing tests for pseudo-random
@@ -486,52 +482,51 @@ Two specialized words are needed \sepfootnote{03_14}
 , that fetch/store 32-bit integers to/from the fstack from/to memory:
 
 \begin{verbatim}
-CODE I32@ <% 9B DB 07 5B 9B %> END-CODE
-CODE I32! <% 9B DB 1F 5B 9B %> END-CODE
+    CODE I32@ <% 9B DB 07 5B 9B %> END-CODE
+    CODE I32! <% 9B DB 1F 5B 9B %> END-CODE
 \end{verbatim}
 
 The program data are stored in variables rather than registers so
 they can be moved directly to the co-processor \sepfootnote{03_15} .
 
 \begin{verbatim}
-DVARIABLE       BIGDIV
-21474.83647     BIGDIV D! \2**31-1
-DVARIABLE       DIVIS
-1277.73         DIVIS D!
-DVARIABLE       SEED
-VARIABLE        M1 16807 M1 !
-VARIABLE        M2 2836  M2 !
+    DVARIABLE       BIGDIV
+    21474.83647     BIGDIV D! \2**31-1
+    DVARIABLE       DIVIS
+    1277.73         DIVIS D!
+    DVARIABLE       SEED
+    VARIABLE        M1 16807 M1 !
+    VARIABLE        M2 2836  M2 !
 \end{verbatim}
 
 The high-level FORTH program itself is\sepfootnote{03_16}\sepfootnote{03_17}
 
 \begin{verbatim}
-: RAND                ( :: -- seed)
-    FINIT SEED DUP 132@
-    DIVIS I32@
-    XDUP F/
-    FTFIUNC FRNDINT
-    FUNDER F* FROT FR-
-    M1 |16@ F*
-    FSWAP M2 I16@
-    F* F- FDUP I32! ;
-:RANDOM               ( :: -- random#)
-    RAND BIGDIV I32@  ( ::--seed2**31-1)
-    FSWAP FDUP F0<    ( -- f :: -- 2**31-1 seed)
-    IF FOVER F+ THEN FR/
-BEHEAD" BIGDIV RAND
-\ make BIGDIV, RAND local
-
+    : RAND                ( :: -- seed)
+        FINIT SEED DUP 132@
+        DIVIS I32@
+        XDUP F/
+        FTFIUNC FRNDINT
+        FUNDER F* FROT FR-
+        M1 |16@ F*
+        FSWAP M2 I16@
+        F* F- FDUP I32! ;
+    :RANDOM               ( :: -- random#)
+        RAND BIGDIV I32@  ( ::--seed2**31-1)
+        FSWAP FDUP F0<    ( -- f :: -- 2**31-1 seed)
+        IF FOVER F+ THEN FR/
+    BEHEAD" BIGDIV RAND
+    \ make BIGDIV, RAND local
 \end{verbatim}
 To test the algorithm start with the seed 1, and generate 1000
 prn's. The result should then be 522329230.
 
 \begin{verbatim}
-: GGUBS.TST 0.1 SEED D!
-    1000 0 DO RANDOM LOOP
-    SEED D@ D. ;
+    : GGUBS.TST 0.1 SEED D!
+        1000 0 DO RANDOM LOOP
+        SEED D@ D. ;
 
-GGUBS.TST 522329230 0k
+    GGUBS.TST 522329230 0k
 \end{verbatim}
 
 % PAGE 58 Chapter 3 — Floating Point Arlthmetlc Scientific FORTH
@@ -555,26 +550,26 @@ $\chi^2$ should have a value roughly n\sepfootnote{03_19}. GGUBS passes the $\ch
 program to calculate this statistic (with N = 1000 and n = 100) is
 
 \begin{verbatim}
-CREATE FREQS 200 ALLOT OKLW
-: IRAND RANDOM 100 S->F
-    F* FROUND- F->S ;
-: INIT-FREQS \ initialize freqs array
-    FREQS 200 0 FILL ;
+    CREATE FREQS 200 ALLOT OKLW
+    : IRAND RANDOM 100 S->F
+        F* FROUND- F->S ;
+    : INIT-FREQS \ initialize freqs array
+        FREQS 200 0 FILL ;
 
-: GET-FREQS \ make frequency table
-    1000 0 DO IRAND 2*
-        DUP 199 > ABORT" IRAND TOO LARGE"
-        FREQS + 1 + !
-    LOOP ;
-: START.CHISQ INIT-FREQS GET—FREQS ;
-: CHISQ 0 \ sum on stack
-    200 0 DO I FREQS + @
-            10- DUP * +
-    2 +LOOP ;
+    : GET-FREQS \ make frequency table
+        1000 0 DO IRAND 2*
+            DUP 199 > ABORT" IRAND TOO LARGE"
+            FREQS + 1 + !
+        LOOP ;
+    : START.CHISQ INIT-FREQS GET—FREQS ;
+    : CHISQ 0 \ sum on stack
+        200 0 DO I FREQS + @
+                10- DUP * +
+        2 +LOOP ;
 
-: .FREQS \ display distribution
-    200 0 DO I FREQS + @ I CR . . 
-    2 +LOOP ;
+    : .FREQS \ display distribution
+        200 0 DO I FREQS + @ I CR . . 
+        2 +LOOP ;
 \end{verbatim}
  
 
@@ -687,7 +682,7 @@ may mean the distribution is excessively even!
 
 One very useful test for randomness involves constructing a
 random walk — that is, a sequence of integers generated by the
-rule ($r_n$ is the n'th PRN)
+rule ($r_n$ is the n'th \textbf{PRN})
 
 \begin{equation}
 x_{n+1}=x_n+
@@ -800,9 +795,9 @@ We also require a word analogous to , ("comma") that stores
 32-bit floating point numbers in the parameter field of a word:
 
 \begin{verbatim}
-: F32, HERE-L 4 ALLOT R32! ;
-\ store a 32-bit # from the fstack in the first
-\ available place in the dictionary
+    : F32, HERE-L 4 ALLOT R32! ;
+    \ store a 32-bit # from the fstack in the first
+    \ available place in the dictionary
 \end{verbatim}
 
 With these auxiliary definitions we are in a position to define a
@@ -845,9 +840,9 @@ tables. Because the resulting data structure is nearly an "object",
 it is worthwhile to see how this may be done.
 
 To make the prng unique, all that is necessary is to make the seed
-VARs unique to a table, and to redefine RANDOMIZE and,
-RANDOM to know how to get a given table's seeds. We see that
-RANDOM is invoked only in the runtime code for the structure.
-This means it has access to the base address, hence the VARs
+\textbf{VAR}s unique to a table, and to redefine \textbf{RANDOMIZE} and,
+\textbf{RANDOM} to know how to get a given table's seeds. We see that
+\textbf{RANDOM} is invoked only in the runtime code for the structure.
+This means it has access to the base address, hence the \textbf{VAR}s
 can be replaced with cells in the table, and the seeds planted there.
 

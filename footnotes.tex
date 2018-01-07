@@ -75,17 +75,17 @@ from the timings that little is to be gained by optimizing the next outer
 loop.}
 \sepfootnotecontent{03_09} {\texttt{XDUP} is called \texttt{CPDUP} in
 HS/FORTH's complex arithmetic lexicon.}
-\sepfootnotecontent{03_10}{0. Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.}
+\sepfootnotecontent{03_10}{Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.}
 \sepfootnotecontent{03_11}{D.E. Knuth, The Art of Computer Programming v.2: Seminumerical Algorithnu, 2nd ed.  (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.}
-\sepfootnotecontent{03_12}{ R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
+\sepfootnotecontent{03_12}{R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
 \sepfootnotecontent{03_13}{P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).  }
-\sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 1.11 }
+\sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 ~\S1~\S~\S11 }
 \sepfootnotecontent{03_15}{Of course, it would have been feasible to define, via \texttt{ CREATE }
 $\dots$ \texttt{ DOES > } , data types that place the data on the 87stack, e.g.
 \texttt{: FICONSTANT CREATE , DOES> I16@ ;} but such words can't be optimized;
 to optimize time-critical word(s) in assembler requires VARIABLEs.}
 \sepfootnotecontent{03_16}{The new words are \texttt{FINIT} (initialize 80x87 chip). \texttt{FTRUNC} (set
-roundoff mode to truncate ﬂoating point numbers toward zero): and \texttt{FRNDINT}
+roundoff mode to truncate floating point numbers toward zero): and \texttt{FRNDINT}
 (round flotaing point number to integer). The
 80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10
 and 11 (numbering from 0) of the 16-bit control word using \texttt{HEX 0C00 OR}. See \texttt{8087P} for
@@ -93,9 +93,8 @@ details.}
 \sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
 space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this
 case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
-\sepfootnotecontent{03_18} { $N$ is assumed $>> n$ }
-\sepfootnotecontent{03_19}{ 
-For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is
+\sepfootnotecontent{03_18} { $N$ is assumed $\gg n$ }
+\sepfootnotecontent{03_19}{For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is
 $p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$
 is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
 \sepfootnotecontent{03_20}{MISSING FOOTNOTE}
