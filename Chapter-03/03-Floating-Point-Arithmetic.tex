@@ -40,7 +40,7 @@ FORTH can control the FPU through the calculation, as indicated in Fig.
 \tikzstyle{line} = [draw, -latex']
 \tikzstyle{block} = [rectangle, draw, above right, align=center]
 
-\begin{figure}
+\begin{figure}[H]
     % Fig. 3—1 
     \begin{tikzpicture}[scale=1]
         \draw [black] (.4, .3) rectangle (10.04, 6.42);
@@ -218,7 +218,7 @@ diagrams\sepfootnote{03_05}, where
     \draw [fill]  circle [radius=1]; 
   }}
 }
-\begin{figure}
+\begin{figure}[H]
     %  Fig. 3-2 
     \begin{tikzpicture}[minimum size=0.75cm]
         \node at (1,7) (start) {\,};
@@ -742,7 +742,7 @@ enough table of the X's, and look them up according to $\xi$. In this
 case we actually want an integer PRNG uniformly distributed on
 [0,N-1], where the table has N entries.
 
-\begin{figure}
+\begin{figure}[H]
     \label{fig:03_03}
     \begin{mdframed}
         % Fig. 33!  
@@ -775,7 +775,7 @@ operandi} or its origin, but it passes the $\chi^2$ tests described above.
 We also need a way to invoke user-defined functions: the method
 we have found is shown in Fig. \ref{fig:03_04} below. I
 
-\begin{figure}
+\begin{figure}[H]
     % Fig. 34
     \label{fig:03_04}
     \begin{mdframed}
@@ -827,10 +827,33 @@ BEHEAD" A RANDOM         \ make these words local
 In Fig. \ref{fig:03_05} below we exhibit a frequency plot of 10,000 random
 variates drawn from a (rather coarse) table of 64 entries, according to the
 distribution $p(x)dx=xe^{-x}dx$, together with $p(x)$.
-\begin{figure}
-% Fig. 3-5 
-    \caption{Random variates from table of 64 from distribution $p(x)=xe^{-x}$}
-    \label{fig:03_05}
+\begin{figure}[H]
+	% Fig. 3-5 
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[ % title='Fig. 3-5',
+			major y tick style = transparent,
+			bar width=0.2mm,
+			line width=1pt,
+			hide y axis,  
+			axis x line*=bottom,
+			xmin=-1.1, xmax=1e1,% range for the x axis
+			xtick={-1, 0, ..., 10},
+			ymin=0
+			]
+			\addplot[ybar, style={green,fill=green,mark=none}]
+			coordinates {(0.01, 161 ) (0.16, 167 ) (0.32, 303 ) (0.48, 433 ) (0.63, 648 ) (0.79, 382 ) (0.94, 607 ) (1.10, 473 ) (1.26, 587 ) (1.41, 438 ) (1.57, 539 ) (1.73, 432 ) (1.88, 431 ) (2.04, 308 ) (2.19, 431 ) (2.35, 306 ) (2.51, 304 ) (2.66, 307 ) (2.82, 290 ) (2.97, 150 ) (3.12, 322 ) (3.28, 159 ) (3.44, 136 ) (3.59, 148 ) (3.75, 138 ) (3.91, 134 ) (4.07, 0   ) (4.22, 124 ) (4.38, 0   ) (4.53, 137 ) (4.69, 0   ) (4.84, 137 ) (5.00, 0   ) (5.15, 0   ) (5.30, 144 ) (5.46, 0   ) (5.62, 0   ) (5.78, 0   ) (5.93, 0   ) (6.08, 142 ) (6.24, 0   ) (6.40, 0   ) (6.56, 0   ) (6.72, 0   ) (6.88, 0   ) (7.04, 0   ) (7.20, 0   ) (7.36, 0   ) (7.52, 0   ) (7.68, 0   ) (7.84, 0   ) (8.00, 0   ) (8.16, 0   ) (8.32, 0   ) (8.48, 0   ) (8.64, 0   ) (8.80, 0   ) (8.96, 0   ) (9.12, 0   ) (9.28, 0   ) (9.44, 0   ) (9.60, 0   ) (9.76, 0   ) (9.92, 0   )};
+			\addplot[draw=blue,ultra thick,smooth] 
+			coordinates {(0.01, 0.00000) (0.16, 195.12194) (0.32, 333.79328) (0.48, 428.26278) (0.63, 488.41676) (0.79, 522.20624) (0.94, 536.00000) (1.10, 534.87594) (1.26, 522.86130) (1.41, 503.13034) (1.57, 478.16688) (1.73, 449.89758) (1.88, 419.80123) (2.04, 388.99794) (2.19, 358.32200) (2.35, 328.38112) (2.51, 299.60454) (2.66, 272.28193) (2.82, 246.59479) (2.97, 222.64168) (3.12, 200.45844) (3.28, 180.03425) (3.44, 161.32438) (3.59, 144.26024) (3.75, 128.75721) (3.91, 114.72070) (4.07, 102.05085) (4.22, 90.64598) (4.38, 80.40523) (4.53, 71.23046) (4.69, 63.02756) (4.84, 55.70734) (5.00, 49.18608) (5.15, 43.38580) (5.30, 38.23438) (5.46, 33.66547) (5.62, 29.61834) (5.78, 26.03762) (5.93, 22.87308) (6.08, 20.07924) (6.24, 17.61506) (6.40, 15.44363) (6.56, 13.53182) (6.72, 11.84996) (6.88, 10.37153) (7.04, 9.07286) (7.20, 7.93288) (7.36, 6.93286) (7.52, 6.05616) (7.68, 5.28803) (7.84, 4.61540) (8.00, 4.02671) (8.16, 3.51176) (8.32, 3.06154) (8.48, 2.66808) (8.64, 2.32439) (8.80, 2.02430) (8.96, 1.76240) (9.12, 1.53391) (9.28, 1.33464) (9.44, 1.16093) (9.60, 1.00954) (9.76, 0.87766) (9.92, 0.76281)};
+			\coordinate (a) at (36,330);
+			%\coordinate (b) at (90,600);
+																																																							\node[rectangle, draw] (b) at (90,600) {$p(x)=xe^{-x}$};
+																																																							\draw[->,black] (b) -- (a);
+																																																							% \draw[->,blue] (b) -- (a) node [above] {p(x)=xe-x};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Random variates from table of 64 from distribution $p(x)=xe^{-x}$}
+	\label{fig:03_05}
 \end{figure}
 
 With slightly more elaboration we can arrange for each table to 
