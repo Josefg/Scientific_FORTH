@@ -515,7 +515,7 @@ The high-level FORTH program itself is\sepfootnote{03_16}\sepfootnote{03_17}
         RAND BIGDIV I32@  ( ::--seed2**31-1)
         FSWAP FDUP F0<    ( -- f :: -- 2**31-1 seed)
         IF FOVER F+ THEN FR/
-    BEHEAD" BIGDIV RAND
+    BEHEAD'' BIGDIV RAND
     \ make BIGDIV, RAND local
 \end{verbatim}
 To test the algorithm start with the seed 1, and generate 1000
@@ -820,7 +820,7 @@ CREATE F=0 F32,          \ make first entry
     F(X) F32,            \ evaluate X(xi) and !
 LOOP
 DOES> RANDOM 4* + R32@ ;
-BEHEAD" A RANDOM         \ make these words local
+BEHEAD'' A RANDOM         \ make these words local
 
 \Usage: USE( fn.name N )DISTRIBUTION: dist.name
 \end{verbatim}
