@@ -19,32 +19,7 @@ Linear Algebra
 \S\S4 Why invert matrices, anyway?
 \S\S5 An example
 
-54 LU decomposition
-
-214
-214
-
-215
-218
-218
-221
-225
-227
-227
-
-242
-242
-
-243
-244
-245
-245
-
-246
-
-213
-
-214
+54 LU decomposition 214 214 215 218 218 221 225 227 227 242 242 243 244 245 245 246 213 214
 
 51 Simultaneous linear equations
 
@@ -57,34 +32,29 @@ ChapterB-LhearNgebra Sewncronr'
    
  
 
-0 common problems in scientiﬁc programming are
+Two common problems in scientific programming are the
 numerical solution of simultaneous linear algebraic equation
 and computing the inverse of a given square matrix. This is sue".
-an important subject As an exercise in FORTH progr
-development we shall now write programs to solve linear equa
-tions and invert matrices.
+an important subject As an exercise in FORTH program
+development we shall now write programs to solve linear equations and invert matrices.
 
-We begin with a dose of mathematics (linear algebra),
-
+\section{Simultaneous linear equations}
+\TallC{ We } begin with a dose of mathematics (linear algebra), and 
 then develop programs. Several actual programming session
-are reproduced in toto —mistakes and all- to give the flavor 0
+are reproduced \textit{in toto} --mistakes and all-- to give the flavor of
 program development and debugging 1n FORTH.
-
-We begin by stating the problem. Given the equations
-
-N-1
-
-2 Amrixn= m- (1)
-
-n=0
-
-—more compactly written K - i.= 5'- with known coemcielt
-matrix A"... and known inhomogeneous term bm: under what
-conditions can we ﬁnd unique values of x... that simultaneoust
+\subsection{Theory oi linear algebraic equations}
+\TallC{ We } begin by stating the problem. Given the equations
+\begin{equation}
+\sum_{n=0}^{N-1}A_{mn}x_n=b_m \;.
+\end{equation}
+--more compactly written $\vec{A} \cdot \vec{x} = \vec{b}$-- with known coemcielt
+matrix $A_{mn}$ and known inhomogeneous term $b_m$: under what
+conditions can we find unique values of x... that simultaneoust
 satisfy the N equations 1?
 
 The theory of simultaneous linear equations tells us that if not all.
-the bm' s are 0, the necessary and sufﬁcient condition for so]-
+the bm' s are 0, the necessary and sufficient condition for so]-
 
 vability is that the determinant of the matrix A. should not be 0.
 Contrariwise, if det(' )= 0, a solution with x at 0 can be found
@@ -95,8 +65,8 @@ when 5= 0.
  
 
 l. fliedeterminant ol'anN'th-order square matixA - denotedbydct(A)or HAII - iaanumba
-wmpmedfromtheekmewhbyapplyingnflulamflhrﬁomﬁuualgebramm
-deﬁne "All recursivelyintemsofdeterminanuolmurioesolsquaresubmauicuokaee
+wmpmedfromtheekmewhbyapplyingnflulamflhrfiomfiuualgebramm
+define "All recursivelyintemsofdeterminanuolmurioesolsquaresubmauicuokaee
 
 "$52.1.$
 
@@ -127,13 +97,13 @@ of the form
 K-i'= Air-if (2)
 
 have solutions? Here A is generally a complex number, mllcd the
-eigenvalue (or characteristic value) of Eq. 2, and ﬁ'is often called
+eigenvalue (or characteristic value) of Eq. 2, and fi'is often called
 the mass matrix. Frequently K is the unit matrix I,
 
 1, m=n
 I"'"-{0,m=tn, (3)
 
-but in any case, I must be positive-deﬁnite (we deﬁne this
+but in any case, I must be positive-definite (we define this
 below). A non-trivial solution, x is 0, of the equation
 
 K-ii'=o (4)
@@ -182,7 +152,7 @@ this gives
 
 0= (if—i) 2 x;p.,,x,. (7)
 
-However, as noted above, p is positive-deﬁnite, Le.
+However, as noted above, p is positive-definite, Le.
 
  
 
@@ -212,7 +182,7 @@ sin(l' (0!) = isinh(wr)
 
 0050' air) = cosh(alt)
 
-There are many techniques for ﬁnding eigenvalues of matrices.
+There are many techniques for finding eigenvalues of matrices.
 If only the largest few are needed, the simplest method is itera-
 
 tion: make an initial guess x (0) and let
@@ -238,7 +208,7 @@ program that subsequently can be tuned for speed, again much
 
  
 
-4. Fordaritywenowonitthevcaor"-°'anddyad"0'symbdsﬁ'omvectorsandmauiwe
+4. Fordaritywenowonitthevcaor"-°'anddyad"0'symbdsfi'omvectorsandmauiwe
 
 emvuouoim-me.
 
@@ -247,7 +217,7 @@ emvuouoim-me.
 ChapterQ-LlnaarNgebra SclentlflcFORmi
 
 more rapidly than with other languages. For me this is the chief 1
-beneﬁt of the language.
+benefit of the language.
 
 "I Cramer's rule
 
@@ -262,7 +232,7 @@ form solution.
 
 Consider a square NXN matrix A Pretend for the moment we'
 know how to compute the determinant of an (N-1)x(N-1)'
-matrix. The determinant of A is deﬁned to be
+matrix. The determinant of A is defined to be
 
 N—l
 det(A) = 2 A...,,a,,,,
@@ -331,17 +301,17 @@ Theonlynumberequaltoitsnegatiwiso.
 
 OJulanVNobletflz-Alrldusmarvcd.
 
-Chapter 9 — Linear Algebra Scientiﬁc FORTH
+Chapter 9 — Linear Algebra Scientific FORTH
 
 N-l
-"or E 2 ﬁns amt;
+"or E 2 fins amt;
 
 m=i
 
 that is, the O'th equation can be derived from the other N-l
 equations, hence it contains no new information. We do not really
 have N equations for N unknowns, but at most N-1 equations. The
-N unknowns therefore cannot be completely speciﬁed, and the
+N unknowns therefore cannot be completely specified, and the
 determinant tells us this by vanishing.
 
 As an example, we now use Cramer's rule to evaluate the deter-
@@ -416,15 +386,15 @@ Company, Reading. MA 1983).
 5"3.'I
 
 N! means Nx(N-1)x(N-2)x... x2x1. The base ofthe "natural" logarithmsis e =Z7182318...
-Acomputerstoresanumberwithﬁnite precision — say6-7decimalplaceswith32-bit floating-
+Acomputerstoresanumberwithfinite precision — say6-7decimalplaceswith32-bit floating-
 
 pointnumbers.'l'hisisenoughformanypurposes,upcdaflyinscienceandengineedngwhere
 thedataare rarely measured to betterthan 1% relative precision Suppose, however, thattwo
 numbers, about lO'zinmagnitude, are multiplied. Their productisoforder lO'and'sknownto
-aixsigniﬁcantﬁgures.Nowaddittoathirdnumberoforderunity.'l'heresultwillbethatthird
+aixsignificantfigures.Nowaddittoathirdnumberoforderunity.'l'heresultwillbethatthird
 number:10".l..ater,afourthnumber — alsooforderunity— issubtractedfromth'nsum'lhe
-resultwillbeanumberoforderlo'mutnowknownonlytot'esigniﬁcantﬁgunMatrixarith—
-meticisfullofmultiplicationsandadditiouaThelessonisdear— tominimizetheﬁnevitable)
+resultwillbeanumberoforderlo'mutnowknownonlytot'esignificantfigunMatrixarith—
+meticisfullofmultiplicationsandadditiouaThelessonisdear— tominimizethefinevitable)
 kndwedshmassodatedwihmundvomwmwwmkcepthemayfludesdprodwsand
 sumsasekiseupossible.
 
@@ -439,9 +409,9 @@ than further description: Consider the 3 X3 system of equations:
 324 1:1 =4 (15)
 116 x2 2
 
-We check that the determinant is \#0; in fact det(A) = 13. The ﬁrst
+We check that the determinant is \#0; in fact det(A) = 13. The first
 step in solving these equations is to transpose rows in A and in b
-to bring the largest element in the ﬁrst column to the/loo position.
+to bring the largest element in the first column to the/loo position.
 
 Natl-a;
 
@@ -509,7 +479,7 @@ then solve for x, to get
 
 x, = 2 — (—11/2)-(0) = 2
 
-and similarly, from 21.0 we ﬁnd
+and similarly, from 21.0 we find
 xo=V3—2/3(2)+V3(0)=O.
 We test to, see whether this is the correct solution by direct trial:
 1-O+0-2+5-O=0
@@ -522,7 +492,7 @@ cmvlioueieaa-Alrlgium.
 
 224
 
-Chapter 9 - Unear Algebra Scientiﬁc FORTH
+Chapter 9 - Unear Algebra Scientific FORTH
 
 How much time is needed to perform pivotal elimination? We
 concentrate on the terms that dominate as N - on.
@@ -597,7 +567,7 @@ cleans—mm 225
 
 Mia
 
-Since we have worked out a speciﬁc 3 x 3 set of linear equations,
+Since we have worked out a specific 3 x 3 set of linear equations,
 we might as well use it for testing and debugging. Begin with
 some test words that do the following jobs:
 
@@ -620,7 +590,7 @@ LOOP DROP ;
 :.v (V{-~) DUP D.LEN
 0 DO on DUP l}{0} G@ G. LOOPDROP:
 
-We deﬁne a word to put ASCII numbers into matrices:
+We define a word to put ASCII numbers into matrices:
 :GEFF# BL TEXT PAD S->F;
 \end{verbatim}
 
@@ -632,7 +602,7 @@ convert the string to floating point format and put it on the
  
 
 10. 'l'heword'lEX'l'inputsacountedstringusingtheFORTH-DstandardwordWOIlD,aad
-placesit"PADJ'hisiswhyPADappeaninthedeﬁniﬁonofGfl-FlAdeﬁnkionofEXT
+placesit"PADJ'hisiswhyPADappeaninthedefinifionofGfl-FlAdefinkionofEXT
 miditbe :'IEX'l'(delirniter--)WORDDUPC@1+ unswxrcuovs; Notethatall
 words prefacedwithC arebyteoperatioasbyPORTH convention.
 
@@ -651,7 +621,7 @@ LOOP DROP;
 :TAB->MAT DUP D.LEN DUP * <DO-VEC> ;
 \end{verbatim}
 
-The ﬁle EX.3 will be found in the accompanying program disk-
+The file EX.3 will be found in the accompanying program disk-
 ette. The explanatory notes below refer to EX.3.
 
 Notes:
@@ -659,12 +629,12 @@ Notes:
 e The word .( emits everything up to a terminating) .
 
 e HS/FORT'I-I, because of its segmented dictionary, uses a word
-TASK to deﬁne a task-name, and FORGET-TASK to FORGET
+TASK to define a task-name, and FORGET-TASK to FORGET
 eve hing following the task-name. The FORTH word FOR-
 GE fails in HS/FORTH when it has to reach too deeply into
 the dictionary.
 
-e Ex.3 uses the word \}row\{ deﬁned below.
+e Ex.3 uses the word \}row\{ defined below.
 
 This is what it looks like when we load EX.3:
 
@@ -688,7 +658,7 @@ Mil-Wm 227
 
 "4 WWW
 
-Now we have to deﬁne the FORTH words that will implement
+Now we have to define the FORTH words that will implement
 this algorithm. In pseudooode, we can express pivotal elimina-
 tion as shown in Fig. 9-1 below.
 
@@ -707,7 +677,7 @@ BEGIN
 
 setn=0
 
-ﬁndpivot(rowm > n)
+findpivot(rowm > n)
 
 swaprowsman
 
@@ -735,7 +705,7 @@ Whenever we write a complex program we are faced with the
 problem "Where do we begin?" FORTH emphasizes the con-
 
 struction of components. and generally cares little which component
-we deﬁne ﬁrst.
+we define first.
 
 For example. we must swap two rows of a matrix. The most
 obvious way moves data:
@@ -754,7 +724,7 @@ OWVNobletm—Almm.
 
 228
 
-Chapter 9 - Llnear Algebra Scientiﬁc FOR'n-l
+Chapter 9 - Llnear Algebra Scientific FOR'n-l
 
 We anticipate computing the address of an element of A{{ in a ,
 DO loop via the phrase i
@@ -771,7 +741,7 @@ To implement this syntax we define11
 :swapper (n - -) l
 CREATE 0 DO I , LOOP
 DOES> OVER + + @ ;
-\ this is a deﬁning word
+\ this is a defining word
 
  
 
@@ -782,18 +752,18 @@ We would define the array of row indices via
 A{{ D.LEN swapper }row{ \ create array }row{
 
 We have initilized the vector }row{ by filling it with integers
-from 0 to N-l while deﬁning it.
+from 0 to N-l while defining it.
 
 Suppose we wanted to re-initialize the currently vectored row- 5
 index array: this is accomplished via
 
-A{{ D.LEN '}row{ reﬁll .i
+A{{ D.LEN '}row{ refill .i
 
 where
 
 ram—m. ,. . .m'. .
 
-: reﬁll (n adr - -)
+: refill (n adr - -)
 SWAP 0 DO I 2* DDUP + !
 2 +LOOP DROP;
 
@@ -801,9 +771,9 @@ SWAP 0 DO I 2* DDUP + !
 
 11.
 
-mm"... 'mn—Lk,ﬁ-u\_ .. aims . Vannr
+mm"... 'mn—Lk,fi-u\_ .. aims . Vannr
 
-The HS/FORTH words VAR and IS deﬁne a data structure that can be changed, like a FORTH
+The HS/FORTH words VAR and IS define a data structure that can be changed, like a FORTH
 VARIABLE: 0 VAR X 3 IS X but has the run-time behavior of a CONSTANT: X . 3 olt.
 
 % awe-mm 22.
@@ -855,11 +825,11 @@ and back again:
 20k
 
 \end{verbatim} 
-Next, we need a word to ﬁnd the pivot element in a given
+Next, we need a word to find the pivot element in a given
 column, searching from a given n. The steps in this procedure
 are shown in Fig. 9-2 on page 230 below.
 
-We anticipate using generic operations Git deﬁned in Chapter 5
+We anticipate using generic operations Git defined in Chapter 5
 
 to perform fetch, store and other useful manipulations on the
 matrix elements, without specifying their type until mn-time. lt
@@ -909,7 +879,7 @@ second cell of the array data structure). We arrange this via
 
 OVART
 
-The rest of the deﬁnition is rendered self-explanatory by the
+The rest of the definition is rendered self-explanatory by the
 
 vertical commenting style (a must for long12 words):
 \begin{verbatim}
@@ -931,7 +901,7 @@ a LEN@ IS Length ;
 
 \end{verbatim} 
 
-12. While Brodie (11", p.180) quotes Charles Moore. FORTH's inventor, as offering l-line deﬁni-
+12. While Brodie (11", p.180) quotes Charles Moore. FORTH's inventor, as offering l-line defini-
 tions as the goal in FORTH programming, sometimes this is just not possible.
 
 i
@@ -974,9 +944,9 @@ FDROP ; \deanupfstack
 
 Mates:
 
-0 We avoid ﬁlling us: the parameter stack with addresses that
+0 We avoid filling us: the parameter stack with addresses that
 have to be Eagle , by putting arguments in named storage
-locations (J ). We anticiﬁate setting all the parameters in
+locations (J ). We anticifiate setting all the parameters in
 the beginning using IN! 21". which can be extended later
 if necessary.
 
@@ -993,7 +963,7 @@ o timizer) because only}? /2 time is used, ne ligible (for large
 
 compared with the [3 in the innermost oop.
 
-The Gx operations are found in the ﬁle GLIBJ-TH.
+The Gx operations are found in the file GLIBJ-TH.
 
 To test the word "PIVOT we can add some lines to the test file:
 
@@ -1008,7 +978,7 @@ on .(A{{2})PIVOT IPN .) BL am A({2}}PNOT new.
 \end{verbatim}
 one:
 
-% Chapter 9 - Unear Algebra Scientiﬁc FORTH
+% Chapter 9 - Unear Algebra Scientific FORTH
 
 The result is the additional screen output
 
@@ -1021,7 +991,7 @@ OR
 
 From our pseudocode expression (see Fig. 9-1, p. 227) of the
 pivotal elimination algorithm we see that the next operation is to
-multiply a row by a constant. To do this we deﬁne
+multiply a row by a constant. To do this we define
 
 \begin{verbatim}
 OVAR ISTEP
@@ -1030,7 +1000,7 @@ OVAR ISTEP
 T #BYTES DROP IS ISTEP
 \ in INITIALIZE
 
-: DO(ROW*X)LOOP (seg off Lﬁn I.beg - - :: x - - x)
+: DO(ROW*X)LOOP (seg off Lfin I.beg - - :: x - - x)
 DO DDUP I + DDUP T >FS G'NP TFS>
 ISTEP /LOOP DDROP ;
 
@@ -1087,7 +1057,7 @@ LOOP
 
 Fig. "Steps In nm-rwx
 
-A ﬁrst attempt might look as follows:
+A first attempt might look as follows:
 
 \begin{verbatim}
 \auxiliarywords
@@ -1136,12 +1106,12 @@ calculating addresses within the loop by not using the phrase
 However, we are doing a lot of unnecessary work inside the loop
 by making 5 choices based on datatype. There are also a lot ,
 unnecessary moves to/from the ifstack. This is an example where
-speed has been sacriﬁced to compactness of code: one program
-solves equations of any ("scientiﬁc") data format — REAL'4,
+speed has been sacrificed to compactness of code: one program
+solves equations of any ("scientific") data format — REAL'4,
 REAL-8, COMPLEX'8 and COMPIJEX' 16. i
 
 Conversely, we can both eliminate the extra work and accelerate?
-execution simply by deﬁning a separate inner loop for each data;
+execution simply by defining a separate inner loop for each data;
 type, letting the choice take place once, outside the inner loopX
 This multiplies the needed code fourfold (or more-fold, if we?
 optimize).
@@ -1177,17 +1147,17 @@ DDUP DCP@L CPR- DCPIL
 \end{verbatim} 
 
 Not surprisingly, the loops contain some duplicate code. but this- '
-is a small price to pay for the speed increase. A signiﬁcant furthe r3
+is a small price to pay for the speed increase. A significant furthe r3
 
  
 
 % thlIanVNobIatm—Alrlditsraaarvad.
 
 increase can be obtained easily. using the HS/FOR'I'H recursive-
-descent optimizer to deﬁne these inner loops, or by redeﬁning
+descent optimizer to define these inner loops, or by redefining
 the loops in assembler (for ultimate speed).
 
-Now we can redeﬁne \verb|}}Rl-RZ'X| using vectored execution, via
+Now we can redefine \verb|}}Rl-RZ'X| using vectored execution, via
 HS/FORI'H's CASE: . .. :CASE construct, or the equivalent high-
 level version given here:
 
@@ -1234,7 +1204,7 @@ tion of pivotal elimination.
 
 % 236
 
-% Chapter 9 — Linear Algebra Scientiﬁc FORTH
+% Chapter 9 — Linear Algebra Scientific FORTH
 
 Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
@@ -1255,7 +1225,7 @@ can be found as we proceed, by computing the determinant.
 
 Here is a simple recipe for computing the determinant, with
 checking to be sure it does not vanish identically. We use the
-intelligent fstack (ifstack) deﬁned in Ch. 7.
+intelligent fstack (ifstack) defined in Ch. 7.
 
 \begin{verbatim}
 DCOMPLEX SCALAR DET \ room for any type
@@ -1287,7 +1257,7 @@ New York, 1965).
 
 % Ware—Wm 237
 
-Now we deﬁne the word that triangularizes the matrix:
+Now we define the word that triangularizes the matrix:
 \begin{verbatim}
 0VARb( \tokeepthesteokehort
 : INITIAUZE (M{(V{o- ::--)
@@ -1311,7 +1281,7 @@ iN .DET ; \setdet=1
 
 INITIAUZE
 Length 0 DO \ loop 1 -— by rows
-a{{l} PIVOT \ﬁndpivotincoil
+a{{l} PIVOT \findpivotincoil
 ' )row I l.PlV }SWAP \ exchange rows
 a{{ I }row{ I }} >FS \pivot->iistack
 DETERMINANT \ mic det
@@ -1329,14 +1299,14 @@ LOOP ; \end loop 1
 \Usege: A{{ B{ TRIANGULARIZE
 \end{verbatim}
 
-Now at last we can back-solve the triangularized equations to ﬁnd
+Now at last we can back-solve the triangularized equations to find
 
-the unknown x 's. The word for this is }BACK-SOLVE, deﬁned
+the unknown x 's. The word for this is }BACK-SOLVE, defined
 as follows:
 
 % 238
 
-% Chapter 9 - Linear Algebra Scientiﬁc FORTH
+% Chapter 9 - Linear Algebra Scientific FORTH
 \begin{verbatim}
 : }BACK-SOLVE (- - )
 0 LENGTH 2- DO \ outer loop
@@ -1351,7 +1321,7 @@ GR- T FS > \
 \end{verbatim} 
 
 Putting the entire program together we have the linear equation
-solver given in the ﬁle SOLVEl. Examples of solving dense 3x3
+solver given in the file SOLVEl. Examples of solving dense 3x3
 and 4 X4 systems are included for testing purposes.
 
 \S\S6 Timing
@@ -1361,7 +1331,7 @@ e should like to know how much time it will take to solve a
 given system. (Of course it is also useful to know whether the
 solution is correct!) We time the solution of 4' sets of N equations,
 with 4 different values of N. The running time can be expressed
-as a cubic polynomial in N with undetermined coefﬁcients:
+as a cubic polynomial in N with undetermined coefficients:
 
 TN=ao+a1N1+azN2+agN3 (19)
 
@@ -1371,7 +1341,7 @@ times TNi , we produce 4 inhomogeneous linear equations in 4
 unknowns: a, , i = 0, 1, 2, 3 . As luck would have it, we just hap-
 
 pen to have on hand a linear equation solver, and are thus in a
-position to determine these coefﬁcients numerically.
+position to determine these coefficients numerically.
 
 For this timing and testing chore we need an exactly soluble dense
 system of linear equations, of arbitrary order. The simplest siqch
@@ -1401,7 +1371,7 @@ vi-x a (v, x) = 2 v. 'x. (21)
 we have
 X. = D: 'i' (V, X) U. (22)
 
-The coefﬁcient (v, x) is just a (generally complex) number; we
+The coefficient (v, x) is just a (generally complex) number; we
 compute it from 22 via
 
 (V. X) = (V. Ii) + (V. u) (V. X) (23)
@@ -1414,10 +1384,10 @@ x, = o, + %u (25)
 Everythingin 25 is determined, hence the solution is known in
 closed form.
 
-An example that embodies the above idea is given in the ﬁle
+An example that embodies the above idea is given in the file
 EX.20, where we make the special choices
 
-Chapter 9 — Unear Algebra Scientiﬁc FORTH
+Chapter 9 — Unear Algebra Scientific FORTH
 
 N even
 
@@ -1446,7 +1416,7 @@ N Time
 
  
 
-The coefﬁcients of the cubic polynomial extracted from the above
+The coefficients of the cubic polynomial extracted from the above
 are (in seconds, 9.54 MHz 8086 machine, machine-coded inner
 
 loop)
@@ -1459,13 +1429,13 @@ a. = -0.01084850
 from them we can extrapolate the time to solve a 350x350 real
 system to be about 16 minutes. On a 25 MHz 80386/8038'7 ma-
 chine with 32-bit addrgsing implemented, the time should
-decrease ﬁve- to tenfold .
+decrease five- to tenfold .
 
 It is interesting to explore a bit further the extracted value of a3,
 
 . . 1
 which is 3-
-ﬁned above as Re.LP and hand-coded in assembler for ultimate
+fined above as Re.LP and hand-coded in assembler for ultimate
 speed). Converting to clock cycles on an IBM-PC compatible
 (running at 9.54 MHz) we have an average of 440 clock cycles per
 traversal (of this loop). Recall the operations that are needed: a
@@ -1523,14 +1493,14 @@ putofanhornonanlnumnheseresuhsseeminaedible.
 ChapterO-LlnaarAlgebra SciandflcFOfl
 
 We see from Table 9-2 above that the time computed from t
-cpu and coprocessor speciﬁcations (422 clocks) is close to
+cpu and coprocessor specifications (422 clocks) is close to
 measured time (440 clocks). The slight difference doub
 comes both from measurement error and from the fact th
 timing of CISC chips is not an exact art (for example, there a
 periodic interruptions for dynamic memory refreshment and f
 the system clock).
 
-Finally, we conﬁrm that little is to be gained by optimizing out
+Finally, we confirm that little is to be gained by optimizing out
 loops. Suppose, «5.3., we could halve a; by clever programmin
 then we should cut the N =350 time from 16 to 13 minutes,
 the time for N = 1000 by some 20 minutes in 5 hours, or 6%.
@@ -1561,12 +1531,12 @@ it = x") + is), (23) \_
 
 l
 
-we can calculate A 1 either by ﬁrst adding the two vectors ant:
+we can calculate A 1 either by first adding the two vectors ant:
 then transforming, written
 
 A-x-A-(am+am) (29)
 
-or we could transform ﬁrst and then add the transformed vectors.
+or we could transform first and then add the transformed vectors.
 The identity of the results is called the distribatlvs law
 
 A-x-A-(xm+a(2)) "amuse (30)
@@ -1613,7 +1583,7 @@ c- (a -A) -=- (c .n) -A (35)
 
 Equation 35 is known as the associative law of matrix multipli
 tion. Finally, we note that —as hinted above— the left-to-ri
-order of factors in matrix multiplication is signiﬁcant. That is, i
+order of factors in matrix multiplication is significant. That is, i
 general,
 
 A-B¢B-A (36) 1
@@ -1632,7 +1602,7 @@ ty that
 
 A"-AaA-A"=I (37)
 
-where I is the unit matrix deﬁned in the beginning of this chapte r
+where I is the unit matrix defined in the beginning of this chapte r
 (Eq. 4 — 1's on the main diagonal, 0's everywhere else). We have:
 implied in Eq. 37 that a matrix that is an inverse with respect to
 left-multiplication is also an inverse with respect to right-multi-
@@ -1660,7 +1630,7 @@ about 143/111): number needed to invert the matrix is about N3,
 roughly 3X as many, meaning roughly 3x as long to invert as to
 solve, if the matrix is large. Clearly there is no advantage to
 inverting unless we want to solve a number of equations with the
-same coefﬁcient matrix but with different inhomogeneous terms.
+same coefficient matrix but with different inhomogeneous terms.
 In this case, we can write
 
 x=A'Lb a"
@@ -1759,7 +1729,7 @@ I'M-2 N-2 XN-z + I'M—2 N-1 xN—i = YN—z (47)
 etc.
 
 The n'th term of Eq. 46 requires n multiplications and n additions.
-Since we must sum n from 0 to N-l, we ﬁnd N(N—1)/2 =4 Nz/Z
+Since we must sum n from 0 to N-l, we find N(N—1)/2 =4 Nz/Z
 multiplications and additions to solve all of 46. Similarly, solving
 
 47 requires about N2/2 additions and multiplications. Thus, the
@@ -1782,7 +1752,7 @@ eJuunMNobmm-nmm.
 
 Chapters—UnearNgobra ScbndflcFORTM
 
-The equations 48 are easy to solve if we do so in a sensible ordeﬁ
+The equations 48 are easy to solve if we do so in a sensible ordefi
 Clearly,
 
 1mk50,m>k il
@@ -1816,5 +1786,5 @@ since A", = 1 is known).
 To limit roundoff error we again pivot, which amounts to permutl
 ing so the row with the largest diagonal element is the currenf
 one. Much of the code developed for the Gauss eliminatios
-method is applicable, as the ﬁle LU.FI'H shows.
+method is applicable, as the file LU.FI'H shows.
 
