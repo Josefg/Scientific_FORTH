@@ -170,82 +170,63 @@ $\pm i \omega$ and hence to a solution that grows exponentially in time, as
 \\
 \cos(i\, \omega t) = i \cosh(\omega t)\nonumber
 \end{align}
-0050' air) = cosh(alt)
-
 There are many techniques for finding eigenvalues of matrices.
-If only the largest few are needed, the simplest method is itera-
+If only the largest few are needed, the simplest method is iteration: make an
+initial guess $x^{(0)}$ and let
+\begin{equation}
+    x^{(n)}=\frac{A x^{(n-1)}}{\Big(x^{(n-1)}, \rho x^{(n-1)}\Big)^{^1/_2}}\nonumber
+\end{equation}
+Assuming the largest eigenvalue is unique,the sequence of vectors $x^{(n)} , n = 1, 2,\dotsc$, is guaranteed to converge to the vector
+corresponding to that eigenvalue, usually after just a few iteralions.
 
-tion: make an initial guess x (0) and let
+If \textit{all} the eigenvalues are wanted, then the only choice is to solve
+the secular equation \ref{eq:09_05} for all N roots.
 
-Axol-l)
-
-,(n) =
-
-Assuming the largest eigenvalue is unique,the sequence of vec-
-
-tors xm , n = 1, 2,..., is guaranteed to converge to the vector
-corresponding to that eigenvalue, usually after just a few itera-
-lions.
-
-Ifall the eigenvalues are wanted, then the only choice is to solve
-the secular equation 5 for all N roots.
-
-52 Solving linear equations
-
-The test-and-development cycle in FORTH is short compared
+\section{ Solving linear equations}
+\TallC{ The } test-and-development cycle in FORTH is short compared
 with most languages. It is usually easy to create a working
 program that subsequently can be tuned for speed, again much
-
- 
-
-4. Fordaritywenowonitthevcaor"-°'anddyad"0'symbdsfi'omvectorsandmauiwe
-
-emvuouoim-me.
-
-218
-
-ChapterQ-LlnaarNgebra SclentlflcFORmi
-
-more rapidly than with other languages. For me this is the chief 1
+% 218
+more rapidly than with other languages. For me this is the chief
 benefit of the language.
 
-"I Cramer's rule
+\subsection{Cramer's rule}
 
-Cramer's rule is a constructive method for solving linear equa
-
-tions by computing determinants. It is completely impractical
-as a computer algorithm because it requires 0(N!) steps to solve
+\TallC{ Cramer's } rule is a constructive method for solving linear equations
+by computing determinants. It is completely impractical
+as a computer algorithm because it requires $O(N!)$ steps to solve
 N linear equations, whereas pivotal elimination (that we look at
-below) requires 0(N3) steps, a much smaller number. Neverthe—
-less Cramer's rule is of theoretical interest because it is a closed—
-form solution.
+below) requires $O(N^3)$ steps, a much smaller number. Nevertheless Cramer's
+rule is of theoretical interest because it is a closed form solution.
 
-Consider a square NXN matrix A Pretend for the moment we'
-know how to compute the determinant of an (N-1)x(N-1)'
+Consider a square $N\times N$ matrix A Pretend for the moment we
+know how to compute the determinant of an $(N-1)\times(N-1)$
 matrix. The determinant of A is defined to be
 
-N—l
-det(A) = 2 A...,,a,,,,
+\begin{equation}
+    \det(A) = \sum_{n=0}^{N-1}A_{mn} a_{nm}    \nonumber
+\end{equation}
+where the $a_{mn}$'s are called \textbf{co-factors} of the matrix elements $A_{mn}$
+and are in fact determinants of specially selected $(N-1)\times(N-1)$
+sub-matrices of A.
 
-n-O
+The sub-matrices are chosen by striking out of $A$ the n'th column
+and m'th row (leaving an $(N-1)\times(N-1)$ matrix). To illustrate,
+consider the $3 \times 3$ matrix
+\addtocounter{equation}{1} 
+% (11)
+\begin{equation}
+    \label{eq:09_11}
+    A = 
+    \begin{pmatrix}
+        1 & 0 & 5\\ 
+        3 & 2 & 4\\ 
+        1 & 1 & 6
+    \end{pmatrix}
+\end{equation}
+and produce the co-factor of $A_{12}$:
 
-where the amn's are called co-factors of the matrix elementsA...
-and are in fact determinants of specially selected (N-1)x(N-1)
-sub-matrices of A. '
-
-The sub-matrices are chosen by striking out of A the n'th column
-and m'th row (leaving an (N-1)X(N-1) matrix). To illustrate,
-consider the 3 X3 matrix
-
-1
-A = a (11)
-1
-
-4M0
-% (7)-#01
-
-and produce the co-factor of A 12:
-
+\begin{verbatim}
  
 
 .21-(-1)2+'
@@ -253,19 +234,17 @@ and produce the co-factor of A 12:
 1 \S 5 (12)
 1 6
 
-We also attach the factor (-l)"'+" to the determinant of the
-submatn'x when we compute a". .
+\end{verbatim}
+We also attach the factor $(-1)^{m+n}$ to the determinant of the
+submatrix when we compute $a_{nm}$.
 
-K's-DO
-
-A determinant changes sign when any two rows or any two
-
-columns are interchanged. Thus, a determinant with two iden-
-tical rows or columns is exactly zeros. What would happen to
-Eq. 11 if instead of putting A," in the sum we put A" where
-krtm? By inspection we realize that this is the same as evaluating
+\TallC{ A } determinant changes sign when any two rows or any two 
+columns are interchanged. Thus, a determinant with two identical rows or
+columns is exactly zeros\sepfootnote{09_05}. What would happen to
+Eq. \ref{eq:09_11} if instead of putting $A_{mn}$ in the sum we put $A_{kn}$ where
+$k\neq m$? By inspection we realize that this is the same as evaluating
 a determinant in which two rows are the same, hence we get zero.
-Thus Eq. 11 can be rewritten more generally
+Thus Eq. \ref{eq:09_11} can be rewritten more generally
 
 N—l
 20AM anrn = llA ll 6km - (13)
