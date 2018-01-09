@@ -1,40 +1,40 @@
-mm FORTH M 9 — Linear Algebra
-Linear Algebra
-:ontonts
+% 9 — Linear Algebra
+% :ontonts
 
-\S1 Simultaneous linear equations
-551 Theory of linear algebraic equations
-\S\S2 Eigenvalue problems
-52 Solving linear equations
-\S\S1 Cramer's rule
-\S\S2 Pivotal Elimination
-553 Testing
-\S\S4 Implementing pivotal elimination
-\S\S5 The program
-556 Timing
-53 Matrix inversion
-\S\S1 Linear transformations
-5552 Matrix multiplication
-\S\S3 Matrix inversion
-\S\S4 Why invert matrices, anyway?
-\S\S5 An example
-
-54 LU decomposition 214 214 215 218 218 221 225 227 227 242 242 243 244 245 245 246 213 214
-
-51 Simultaneous linear equations
-
-\S\S1 Theory oi linear algebraic equations
-
-ChapterB-LhearNgebra Sewncronr'
+% \S1 Simultaneous linear equations
+% 551 Theory of linear algebraic equations
+% \S\S2 Eigenvalue problems
+% 52 Solving linear equations
+% \S\S1 Cramer's rule
+% \S\S2 Pivotal Elimination
+% 553 Testing
+% \S\S4 Implementing pivotal elimination
+% \S\S5 The program
+% 556 Timing
+% 53 Matrix inversion
+% \S\S1 Linear transformations
+% 5552 Matrix multiplication
+% \S\S3 Matrix inversion
+% \S\S4 Why invert matrices, anyway?
+% \S\S5 An example
+% 
+% 54 LU decomposition 214 214 215 218 218 221 225 227 227 242 242 243 244 245 245 246 213 214
+% 
+% 51 Simultaneous linear equations
+% 
+% \S\S1 Theory oi linear algebraic equations
+% 
+% ChapterB-LhearNgebra Sewncronr'
 
       
  
    
  
+\chapter{Linear Algebra}
 
 Two common problems in scientific programming are the
-numerical solution of simultaneous linear algebraic equation
-and computing the inverse of a given square matrix. This is sue".
+numerical solution of simultaneous linear algebraic equations
+and computing the inverse of a given square matrix. This is such
 an important subject As an exercise in FORTH program
 development we shall now write programs to solve linear equations and invert matrices.
 
@@ -48,26 +48,27 @@ program development and debugging 1n FORTH.
 \begin{equation}
 \sum_{n=0}^{N-1}A_{mn}x_n=b_m \;.
 \end{equation}
---\,more compactly written $\vec{A} \cdot \vec{x} = \vec{b}$\,-- with known coefficient
-matrix $A_{mn}$ and known inhomogeneous term $b_m$: under what
-conditions can we find unique values of $x_n$ that simultaneoust
+--\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,-- with known \textbf{coefficient
+matrix} $A_{mn}$ and known \textbf{inhomogeneous term} $b_m$: under what
+conditions can we find unique values of $x_n$ that simultaneously
 satisfy the N equations 1?
 
 The theory of simultaneous linear equations tells us that if not all
-the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the determinant of the matrix $\vec{A}$ should not be 0.
-Contrariwise, if $det(\vec{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
+the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{
+    determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
+Contrariwise, if $det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
 when $\vec{b}= 0$.
 
 \subsection{Eigenvalue problems} 
 \TallC{ Many } physical systems can be represented by systems of linear 
-equat'ons. Masses on springs, pendula, electrical circuits,
+equations. Masses on springs, pendula, electrical circuits,
 structures , and molecules are examples. Such systems often can
 oscillate sinusoidally. If the amplitude of oscillation remains
 bounded, such motions are called stable. Conversely, sometimes
-the motions of physical systems are unbounded —the amplitude
+the motions of physical systems are unbounded -- the amplitude
 of any small disturbance will increase exponentially with time. An
 example is a pencil balanced on its point. Exponentially growing
-motions are called -for obvious reasons - unstable.
+motions are called -- for obvious reasons -- \textbf{unstable}.
 
 Clearly it can be vital to know whether a system is stable or
 unstable. If stable, we want to know its possible frequencies of
@@ -75,20 +76,28 @@ free oscillation; whereas for unstable systems we want to know
 how rapidly disturbances increase in magnitude. Both these
 problems can be expressed as the question: do linear equations
 of the form
+% (2)
+\begin{equation}
+    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{b} \label{09_02}
+\end{equation}
+have solutions? Here $\lambda$ is generally a complex number, called the
+\textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{09_02}, and $\overleftrightarrow{\rho}$ is often called
+the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
+% (3)
+\begin{equation}
+I_{mn}=
+\begin{cases}
+     1, & m = n\\
+     0, & m \neq n,
+    \end{cases}
+\end{equation}
+but in any case, $\overleftrightarrow{\rho}$ must be \textbf{positive-definite} (we define this
+below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 
-K-i'= Air-if (2)
-
-have solutions? Here A is generally a complex number, mllcd the
-eigenvalue (or characteristic value) of Eq. 2, and fi'is often called
-the mass matrix. Frequently K is the unit matrix I,
-
-1, m=n
-I"'"-{0,m=tn, (3)
-
-but in any case, I must be positive-definite (we define this
-below). A non-trivial solution, x is 0, of the equation
-
-K-ii'=o (4)
+% (4)
+\begin{equation}
+    \overleftrightarrow{A} \cdot \vec{x} = 0
+\end{equation}
 
 exists if and only if "I" = o . This fact is useful in solving eigen-
 value problems such as Eq. 2 above.
