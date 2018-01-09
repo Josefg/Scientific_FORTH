@@ -46,7 +46,7 @@ program development and debugging 1n FORTH.
 \subsection{Theory oi linear algebraic equations}
 \TallC{ We } begin by stating the problem. Given the equations
 \begin{equation}
-\sum_{n=0}^{N-1}A_{mn}x_n=b_m \;.
+    \sum_{n=0}^{N-1}A_{mn}x_n=b_m \;. \label{eq:09_01}
 \end{equation}
 --\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,-- with known \textbf{coefficient
 matrix} $A_{mn}$ and known \textbf{inhomogeneous term} $b_m$: under what
@@ -78,10 +78,10 @@ problems can be expressed as the question: do linear equations
 of the form
 % (2)
 \begin{equation}
-    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{b} \label{09_02}
+    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{b} \label{eq:09_02}
 \end{equation}
 have solutions? Here $\lambda$ is generally a complex number, called the
-\textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{09_02}, and $\overleftrightarrow{\rho}$ is often called
+\textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
 the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
 % (3)
 \begin{equation}
@@ -90,6 +90,7 @@ I_{mn}=
      1, & m = n\\
      0, & m \neq n,
     \end{cases}
+    \label{eq:09_03}
 \end{equation}
 but in any case, $\overleftrightarrow{\rho}$ must be \textbf{positive-definite} (we define this
 below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
@@ -98,53 +99,58 @@ below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 \begin{equation}
     \overleftrightarrow{A} \cdot \vec{x} = 0
 \end{equation}
-exists if and only if $||\overleftrightarrow{A}||=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{09_02} above.
+exists if and only if $||\overleftrightarrow{A}||=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
 
 % 216 
 
-The secular equation (or determinantal equation)
+The \textbf{secular equation} (or determinantal equation)
 
-III—m=o (5)
-
-is a polynomial of degree N inl, hence has N roots (either real ori
-co.mplex) When p'= T, these roots are called the eigenvalues
-(or' 'characteristic values") of the matrix K
+% (5)
+\begin{equation}
+    || \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} || = 0
+\end{equation}
+is a polynomial of degree N in $\lambda$, hence has N roots (either real or
+complex)\sepfootnote{09_03}. When $\overleftrightarrow{\rho}=\overleftrightarrow{I}$, these roots are called the \textbf{eigenvalues}
+(or "characteristic values") of the matrix $\overleftrightarrow{A}$.
 
 Eigenvalue problems arising in physical contexts usually involve
-a restricted class of matrices, called real-symmetric or Hermitiant
-
-(after the French mathematician Hermite) matrices, for which.
-
-A;,, =Am . (The superscript . denotes complex conjugation $-\_:$
-
-see Ch. 7.) All the eigenvalues of Hermitian matrices are and:
-numbers. How do we know? We simply consider Eq. 3 and its
-complex conjugate:
-
+a restricted class of matrices, called \textbf{real-symmetric} or Hermitian
+(after the French mathematician Hermite) matrices, for which
+$A_{mn}^{*}=A_{nm}$ . (The superscript * denotes complex conjugation -- 
+see Ch. 7.) All the eigenvalues of Hermitian matrices are \textit{real}
+numbers. How do we know? We simply consider Eq. \ref{eq:09_03} and its
+\textbf{complex conjugate}:
+% (6a)
+\begin{subequations}
+    \begin{align}
+        \label{eq:09_06a}
+        \sum_{n} A_{mn} x_n &= \lambda \sum_{n} \rho_{mn} x_n ;\\
+        \label{eq:09_06b}
+        \sum_{n} x_n^* A_{nm}^* &= \lambda^* \sum_{n} x_n^* \rho_{nm}^* ;
+    \end{align}
+% (6b')
+Equation ~\ref{eq:09_06b} can be rewritten (using the fact that $\overleftrightarrow{A}$ and $\overleftrightarrow{\rho}$are Hermitian)
+    \begin{equation}
+        \label{eq:09_06c}
+        \sum_{m} x_m^{*} A_{mn} = \lambda ^{*} \sum_{n} x_m^{*} \rho_{mn}^{*} 
+    \end{equation}
+\end{subequations}
  
 
-2AM x,| = 112 pm xn ; (6a)
 
-2 x:A:'m = 1' 2 x: pi. ; (6b)
-Equation 6b can be rewritten (using the fact that K and flare.
-Hermitian)
-
-2 MIA"... = 1' 2 x; Pm (6b')
-Multiply 6b' by xm and 63 by x; , sum both over at and subtract:
+Multiply \ref{eq:09_06c} by $x_m$ and \ref{eq:09_06a} by $x_m^*$, sum both over at and subtract
 this gives
 
-0= (if—i) 2 x;p.,,x,. (7)
+% (7)
+\begin{equation}
+    \label{eq:09_07}
+    0 = \Big(\lambda^*-\lambda \Big) \sum_{n,m} x_m^{*} \rho_{mn} x_n\;. 
+\end{equation}
 
-However, as noted above, p is positive-definite, Le.
+However, as noted above, $\rho$ is \textbf{positive-definite}, i.e.
 
  
 
-3. This follows from the fundamental theorem of algebra: a polynomial equation, I
-p(z): a0 + all + azzz +.. .+ anz" =0, of degree n (in a complex variable 2) has exactly a solutions ,
-
-WM"!
-
-Quail—WM 217
 
 lt-p-XIZ x,',,p,,..x,,>0 (8)
 
@@ -509,13 +515,6 @@ repeated for k= 0 to N-2, giving approximately N3/3 multiplica-
 
  
 
-l
-l
-l
-i
-i}
-;
-i
 
  
 
