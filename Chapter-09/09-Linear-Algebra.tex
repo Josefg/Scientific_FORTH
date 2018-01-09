@@ -148,27 +148,28 @@ this gives
 \end{equation}
 
 However, as noted above, $\rho$ is \textbf{positive-definite}, i.e.
+% (8) 
+\begin{equation}
+    \label{eq:09_08}
+    x^\dagger \cdot \rho \cdot x \equiv
+    \sum_{n,m} x_m^{*} \rho_{mn} x_n > 0
+\end{equation}
+for any non-zero vector\sepfootnote{09_04} $x$. Thus, Eq. \ref{eq:09_07} $\lambda^*\equiv\lambda$, that is, $\lambda$ is real.
 
- 
+In vibration problems, the eigenvalue $\lambda$ usually stands for the
+square of the (angular) vibration frequency: $\lambda=\omega^2$. Thus, a positive eigenvalue $\lambda$ corresponds to a (double) real value, $\pm\omega$, of the
+angular frequency. Real frequencies correspond to sinusoidal
+vibration with time-dependence $\sin(\omega t)$ or $\cos(\omega t)$.
 
+Conversely, a negative $\lambda$ corresponds to an imaginary frequency,
+$\pm i \omega$ and hence to a solution that grows exponentially in time, as
 
-lt-p-XIZ x,',,p,,..x,,>0 (8)
-
-I."
-for any non-zero vector4 x .Thus, Eq. 7 o A. E A, that is, l is real.
-
-ln vibration problems, the eigenvalue A usually stands for the
-square of the (angular) vibration frequency: )1 2 (oz. Thus, a posi-
-tive eigenvalue). corresponds to a (double) real value, 1w, of the
-angular frequenq. Real frequencies correspond to sinusoidal
-vibration with time-dependence sin(alr) or cos(wi).
-
-Conversely, a negative). corresponds to an imaginary frequency,
-ti al and hence to a solution that grows exponentially in time, as
-
-sin(l' (0!) = isinh(wr)
-(9)
-
+% (9)
+\begin{align}
+\sin(i\, \omega t) = i \sinh(\omega t)\nonumber \\
+\\
+\cos(i\, \omega t) = i \cosh(\omega t)\nonumber
+\end{align}
 0050' air) = cosh(alt)
 
 There are many techniques for finding eigenvalues of matrices.
