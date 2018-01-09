@@ -1,13 +1,14 @@
 \documentclass{book}
 % math formatting
 \usepackage{amssymb, amsmath}
-
+\usepackage{multicol}
 % Code formatting
 \usepackage{helvet}     % Julian called out Helvetica font for code
 \usepackage{pxfonts}    % Bold inline code
 \usepackage{listings}
     \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
-            basicstyle=\ttfamily }
+            basicstyle=\ttfamily %, mathescape
+			}
 \newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
 \newcommand{\regc}[1]{\lstinline{#1}}
 % For code in paragraphs use \lstinline$word$
@@ -70,13 +71,20 @@
     \newcommand{\dgray }{\cellcolor[HTML]{A9A9A9}}
     \newcommand{\digray}{\cellcolor[HTML]{696969}}
 % use \cellcolor[HTML]{AA0044} in the prefered cell
+\usepackage[framemethod=tikz]{mdframed}
+
 
 % Create charts with tikz
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{shapes,calc,arrows}
     \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
     \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
     \tikzstyle{arrow}   = [thick,->,>=stealth]
+\usepackage{pgfplots}
+\usepackage{float}
+% table cap at top
+% \usepackage{floatrow}
+% \floatsetup[table]{capposition=top}
 
 % Prefixing chapter/section numbers with 
 %\usepackage{cleveref}
@@ -113,15 +121,17 @@
 
 %References
 \usepackage{hyperref}
+\usepackage{fancyvrb}
 
 \begin{document}
+\VerbatimFootnotes
 \tableofcontents
     % must include footnotes for all Chapters
     \input{footnotes}
     % include{chapter on which you are working}
     % \include{Chapter-01/01-Toward-Scientific-FORTH}
-    \include{Chapter-02/02-Programming-in-FORTH}
-    %\include{Chapter-03/03-Floating-Point-Arithmetic}
+    % \include{Chapter-02/02-Programming-in-FORTH}
+    \include{Chapter-03/03-Floating-Point-Arithmetic}
     %\include{Chapter-04/04-The-80x87-Family}
     %\include{Chapter-10/10-Strings-and-IO-in-FORTH}
 \end{document}
