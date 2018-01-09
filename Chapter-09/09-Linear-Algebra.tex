@@ -2,22 +2,22 @@ mm FORTH M 9 — Linear Algebra
 Linear Algebra
 :ontonts
 
-§1 Simultaneous linear equations
+\S1 Simultaneous linear equations
 551 Theory of linear algebraic equations
-§§2 Eigenvalue problems
+\S\S2 Eigenvalue problems
 52 Solving linear equations
-§§1 Cramer's rule
-§§2 Pivotal Elimination
+\S\S1 Cramer's rule
+\S\S2 Pivotal Elimination
 553 Testing
-§§4 Implementing pivotal elimination
-§§5 The program
+\S\S4 Implementing pivotal elimination
+\S\S5 The program
 556 Timing
 53 Matrix inversion
-§§1 Linear transformations
+\S\S1 Linear transformations
 5552 Matrix multiplication
-§§3 Matrix inversion
-§§4 Why invert matrices, anyway?
-§§5 An example
+\S\S3 Matrix inversion
+\S\S4 Why invert matrices, anyway?
+\S\S5 An example
 
 54 LU decomposition
 
@@ -48,7 +48,7 @@ Linear Algebra
 
 51 Simultaneous linear equations
 
-§§1 Theory oi linear algebraic equations
+\S\S1 Theory oi linear algebraic equations
 
 ChapterB-LhearNgebra Sewncronr‘
 
@@ -290,7 +290,7 @@ and produce the co-factor of A 12:
 
 .21-(-1)2+'
 
-1 § 5 (12)
+1 \S 5 (12)
 1 6
 
 We also attach the factor (-l)"'+" to the determinant of the
@@ -396,7 +396,7 @@ In other words, the time required to solve N linear equations by
 Cramer’s rule increases so rapidly with N as to render the method
 thoroughly impractical.
 
-§§2 PlvotalEllmlnatlon
+\S\S2 PlvotalEllmlnatlon
 
 The algorithm we shall use for solving linear equations is elimina-
 tion, just as we were taught in high school algebra. However we
@@ -949,7 +949,7 @@ INITIAU
 
 > 8 SF >F (87:--|1st.olt)
 
-R> COL1+ §loop|in£gLCOL+1
+R> COL1+ \Sloop|in£gLCOL+1
 
 DO I .
 a{{ I }row{ COL }} (- - seg.oﬂ[M{ﬂI,col}}] t)
@@ -1327,7 +1327,7 @@ Putting the entire program together we have the linear equation
 solver given in the ﬁle SOLVEl. Examples of solving dense 3x3
 and 4 X4 systems are included for testing purposes.
 
-§§6 Timing
+\S\S6 Timing
 
 e should like to know how much time it will take to solve a
 
@@ -1482,9 +1482,9 @@ emvmrm—umw.
 
 242
 
-§3 Matrix Inversion
+\S3 Matrix Inversion
 
-§§1 Unear transformations
+\S\S1 Unear transformations
 
   
  
@@ -1595,7 +1595,7 @@ We say that, unlike with ordinary or even complex arithme '
 matrix multiplication —even of s uare matrices— does not i
 general obey the commutative law .
 
-§§3 Matrix Inversion
+\S\S3 Matrix Inversion
 With this introduction, what does it mean to invert a matrix? First
 of all, the concept can apply only to a square matrix. Given an
 NXN matrix A, we seek another N XN matrix A with theproper-
@@ -1693,7 +1693,7 @@ sion.
 
  
 
-§4 LU decomposition
+\S4 LU decomposition
 
 We now investigate the LU decomposition algorithm”. Sup-
 pose a given matrix A could be rewritten
