@@ -67,7 +67,7 @@ tions and invert matrices.
 We begin with a dose of mathematics (linear algebra),
 
 then develop programs. Several actual programming session
-are reproduced in toto —mistakes and all- to give the ﬂavor 0
+are reproduced in toto —mistakes and all- to give the flavor 0
 program development and debugging 1n FORTH.
 
 We begin by stating the problem. Given the equations
@@ -94,8 +94,8 @@ when 5= 0.
 
  
 
-l. ﬂiedeterminant ol'anN'th-order square matixA - denotedbydct(A)or HAII - iaanumba
-wmpmedfromtheekmewhbyapplyingnﬂulamﬂhrﬁomﬁuualgebramm
+l. fliedeterminant ol'anN'th-order square matixA - denotedbydct(A)or HAII - iaanumba
+wmpmedfromtheekmewhbyapplyingnflulamflhrﬁomﬁuualgebramm
 deﬁne ”All recursivelyintemsofdeterminanuolmurioesolsquaresubmauicuokaee
 
 ”$52.1.
@@ -173,7 +173,7 @@ complex conjugate:
 2AM x,| = 112 pm xn ; (6a)
 
 2 x:A:‘m = 1‘ 2 x: pi. ; (6b)
-Equation 6b can be rewritten (using the fact that K and ﬂare.
+Equation 6b can be rewritten (using the fact that K and flare.
 Hermitian)
 
 2 MIA"... = 1' 2 x; Pm (6b')
@@ -244,7 +244,7 @@ emvuouoim-me.
 
 218
 
-ChapterQ-LlnaarNgebra SclentlﬂcFORmi
+ChapterQ-LlnaarNgebra SclentlflcFORmi
 
 more rapidly than with other languages. For me this is the chief 1
 beneﬁt of the language.
@@ -329,7 +329,7 @@ of any of the other rows. Suppose row 0 can be written
 
 Theonlynumberequaltoitsnegatiwiso.
 
-OJulanVNobletﬂz-Alrldusmarvcd.
+OJulanVNobletflz-Alrldusmarvcd.
 
 Chapter 9 — Linear Algebra Scientiﬁc FORTH
 
@@ -416,21 +416,21 @@ Company, Reading. MA 1983).
 5"3.‘I
 
 N! means Nx(N-1)x(N-2)x... x2x1. The base ofthe “natural" logarithmsis e =Z7182318...
-Acomputerstoresanumberwithﬁnite precision — say6-7decimalplaceswith32-bit ﬂoating-
+Acomputerstoresanumberwithﬁnite precision — say6-7decimalplaceswith32-bit floating-
 
-pointnumbers.'l'hisisenoughformanypurposes,upcdaﬂyinscienceandengineedngwhere
+pointnumbers.'l'hisisenoughformanypurposes,upcdaflyinscienceandengineedngwhere
 thedataare rarely measured to betterthan 1% relative precision Suppose, however, thattwo
 numbers, about lO'zinmagnitude, are multiplied. Their productisoforder lO‘and'sknownto
 aixsigniﬁcantﬁgures.Nowaddittoathirdnumberoforderunity.’l‘heresultwillbethatthird
 number:10".l..ater,afourthnumber — alsooforderunity— issubtractedfromth'nsum'lhe
 resultwillbeanumberoforderlo‘mutnowknownonlytot'esigniﬁcantﬁgunMatrixarith—
 meticisfullofmultiplicationsandadditiouaThelessonisdear— tominimizetheﬁnevitable)
-kndwedshmassodatedwihmundvomwmwwmkcepthemayﬂudesdprodwsand
+kndwedshmassodatedwihmundvomwmwwmkcepthemayfludesdprodwsand
 sumsasekiseupossible.
 
 222
 
-Chapter 9 - Linear Algebra Sclermﬂc FORTH
+Chapter 9 - Linear Algebra Sclermflc FORTH
 
 elements. This will be clearer with a concrete illustration rather
 than further description: Consider the 3 X3 system of equations:
@@ -450,7 +450,7 @@ e The x’s are not relabeled by this transposition. ,
 e We choose the row (n=1 ——second row) with the largest (in
 absolute value) element Ano because we are eventually going
 to divide by it, and want to minimize the accumulation of
-roundoff error in the ﬂoating point arithmetic.
+roundoff error in the floating point arithmetic.
 
 Transposition gives
 3 2 4 xo 4
@@ -575,7 +575,7 @@ Whenweog timize for speed, only the innermost loop —re uir-
 
 mg O (N13 /3) operations needs careful tuning; the O (N [2) 3
 
-operations — comparing ﬂoating point numbers, dividing by the .i
+operations — comparing floating point numbers, dividing by the .i
 
 pivot, and back-substituting — need not be optimized bgecause for
 large N they are overshadowed by the innermost loop .
@@ -625,19 +625,19 @@ We deﬁne a word to put ASCII numbers into matrices:
 
 This word takes the next string10 from the input stream (set off
 by ASCII blank, BL) and uses the PIS/FORTH word $~> F to
-convert the string to ﬂoating point format and put it on the
+convert the string to floating point format and put it on the
 87stack.
 
  
 
 10. ‘l'heword'lEX'l‘inputsacountedstringusingtheFORTH-DstandardwordWOIlD,aad
-placesit“PADJ'hisiswhyPADappeaninthedeﬁniﬁonofGﬂ-FlAdeﬁnkionofEXT
+placesit“PADJ'hisiswhyPADappeaninthedeﬁniﬁonofGfl-FlAdeﬁnkionofEXT
 miditbe :‘IEX'l‘(delirniter--)WORDDUPC@1+ unswxrcuovs; Notethatall
 words prefacedwithC arebyteoperatioasbyPORTH convention.
 
 OJilthNoUetm-Mlldusleseived.
 
-Chapter 9 - Unear Algebra Sclentlﬂc FORTH
+Chapter 9 - Unear Algebra Sclentlflc FORTH
 
 GET-F# is used in the following:
 
@@ -677,7 +677,7 @@ A{{ .M CR
 1.0000000 0.000(1)“) SIXJOOCDO
 3.0000000 2.0000000 4.0000000
 1.0000000 1.0000000 6.0000000
-say Exa FORGET-TASKto graceitﬂy FORGET these words olt
+say Exa FORGET-TASKto graceitfly FORGET these words olt
 
 WM”!
 
@@ -945,14 +945,14 @@ IS COL ZECOL IS LPN
 
 INITIAU
 
-ﬂ: COL row COL}} (--aog.oﬂ[M{$oot,ool}}]t)
+fl: COL row COL}} (--aog.ofl[M{$oot,ool}}]t)
 
 > 8 SF >F (87:--|1st.olt)
 
 R> COL1+ \Sloop|in£gLCOL+1
 
 DO I .
-a{{ I }row{ COL }} (- - seg.oﬂ[M{ﬂI,col}}] t)
+a{{ I }row{ COL }} (- - seg.ofl[M{flI,col}}] t)
 >FS GABS FS>F(87: — |old.olt Ineweltl)
 xoup F< \test' newett > olden
 IF FSWAP IISI.PIV THEN FDROP
@@ -975,7 +975,7 @@ if necessary.
 namely XDUP( FOVER FOVER) to double-copy the contents
 
 of the fstack, since the test F< drops both arguments and
-leaves a ﬂag.
+leaves a flag.
 
 0 There is little to be gained by optimizing (and if we did we
 should have had to avoid the generic Gx words because they
@@ -1442,8 +1442,8 @@ which is 3-
 speed). Converting to clock cycles on an IBM-PC compatible
 (running at 9.54 MHz) we have an average of 440 clock cycles per
 traversal (of this loop). Recall the operations that are needed: a
-32-bit memory fetch, a ﬂoating-point multiply, another 32-bit
-memory fetch, a ﬂoating-point subtraction, and a 32-bit store.
+32-bit memory fetch, a floating-point multiply, another 32-bit
+memory fetch, a floating-point subtraction, and a 32-bit store.
 The initial fetch-and-multiply can be be compressed into a single
 co-processor operation, as can the fetch-and-subtract. The times
 in cycles for these basic operations are
@@ -1473,7 +1473,7 @@ Total 422
 
  
 
-15. thnlthinkthatsolvinglmxlﬂhystems —keytomyPh.D.researchin1966— tookthebetter
+15. thnlthinkthatsolvinglmxlflhystems —keytomyPh.D.researchin1966— tookthebetter
 putofanhornonanlnumnheseresuhsseeminaedible.
 
 16. See WP.
@@ -1493,7 +1493,7 @@ emvmrm—umw.
    
   
 
-ChapterO-LlnaarAlgebra SciandﬂcFOﬂ
+ChapterO-LlnaarAlgebra SciandflcFOfl
 
 We see from Table 9-2 above that the time computed from t
 cpu and coprocessor speciﬁcations (422 clocks) is close to
@@ -1627,7 +1627,7 @@ We have developed a linear equation solver program already
 
 Here is why: The time needed to solve a single system (that is,
 with a given inhomogeneous term) of linear equations is condi-
-tioned by the number of ﬂoating-point multiplications required:
+tioned by the number of floating-point multiplications required:
 
 about 143/111): number needed to invert the matrix is about N3,
 roughly 3X as many, meaning roughly 3x as long to invert as to
@@ -1659,7 +1659,7 @@ OJUIUIVNanim-Alrldasraaarvad.
 
 246
 
-CMptarO-Urngebra SclentlﬂcFORT
+CMptarO-Urngebra SclentlflcFORT
 
 It is easy to see that Eq. 40 is like 3 linear equations, the unkn
 being each column of the matrix C. The brute-force method I
@@ -1698,7 +1698,7 @@ sion.
 We now investigate the LU decomposition algorithm”. Sup-
 pose a given matrix A could be rewritten
 
-awam 1m 0 0 }lmﬂm
+awam 1m 0 0 }lmflm
 A: 310311 = L'U = 1401110 0 #11 (42)
 .................. 0 0
 
@@ -1753,7 +1753,7 @@ arbitrarily choose I... = 1.
 
 eJuunMNobmm-nmm.
 
-Chapters—UnearNgobra ScbndﬂcFORTM
+Chapters—UnearNgobra ScbndflcFORTM
 
 The equations 48 are easy to solve if we do so in a sensible ordeﬁ
 Clearly,
@@ -1769,7 +1769,7 @@ so we can divide up the work as follows: for each 11, write
  
 
 m—l
-.umn =Amn — kzo Amkﬂkn ’ m = 0,1,...,’l
+.umn =Amn — kzo Amkflkn ’ m = 0,1,...,’l
 
 (50)
 
