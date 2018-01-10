@@ -459,37 +459,35 @@ The resulting transformed system of equations now has 0's to the
 left and below the principal diagonal, and 1's along the diagonal.
 Its solution is almost trivial, as can be seen by actually writing out
 the equations:
+% (21)
 \begin{subequations}
     \begin{align}
          \label{eq:09_21_0}
-        1 x_0 + ^2/_3 x_1 + ^4/_3 x_2 &= ^4/_3\\
+        1 x_0 + 2/3 x_1 + 4/3 x_2 &= 4/3\\
          \label{eq:09_21_1}
-        0 x_0 + 1 x_1 + (^{-11}/_2) x_2 &= 2 \\
+        0 x_0 + 1 x_1 + (-11/2) x_2 &= 2 \\
         0 x_0 + 0 x_1 + 1 x_2 &= 0 \label{eq:09_21_2}
     \end{align} 
 \end{subequations}
 That is, from Eq. \ref{eq:09_21_2}, x; = 0. We can back-substitute this in  \ref{eq:09_21_1},
 then solve for x, to get
-
-$\oldfrac{1}{2}$
-
-
-x, = 2 - (-11/2)-(0) = 2
-
-and similarly, from 21.0 we find
-xo=V3-2/3(2)+V3(0)=O.
+\begin{equation*}
+    x_1 = 2 - (-11/2)\cdot(0) = 2
+\end{equation*} 
+and similarly, from \ref{eq:09_21_0} we find
+\begin{equation*}
+x_0 = 4/3 - 2/3\,(2)+4/3\,(0) = 0 \quad .
+\end{equation*} 
 We test to, see whether this is the correct solution by direct trial:
-1-O+0-2+5-O=0
-3-0+2-2 +4-0=4
-1-O+2-2+6-O=2
+\begin{eqnarray*} 
+1 \cdot 0+0 \cdot 2+5 \cdot 0=0\\
+3 \cdot 0+2 \cdot 2+4 \cdot 0=4\\
+1 \cdot 0+2 \cdot 2+6 \cdot 0=2
+\end{eqnarray*} 
 
-his works -we have indeed found the solution.
+his works -- we have indeed found the solution.
+% 224
 
-cmvlioueieaa-Alrlgium.
-
-224
-
-Chapter 9 - Unear Algebra Scientific FORTH
 
 How much time is needed to perform pivotal elimination? We
 concentrate on the terms that dominate as N - on.
