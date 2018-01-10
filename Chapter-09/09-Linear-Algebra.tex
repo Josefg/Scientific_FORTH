@@ -493,77 +493,49 @@ How much time is needed to perform pivotal elimination? We
 concentrate on the terms that dominate as $N\to\infty$.
 
 The pivot has to be found once for each row; this takes N-k
-comparisons for the k'th row. Thus we make ~N l2 comparisons
+comparisons for the k'th row. Thus we make $\approx$ N /2 comparisons
 of 2 real numbers. (For complex matrices we compare the
 squared moduli of 2 complex numbers, requiring two multiplica-
 tions and an addition for each modulus.)
 
-We have to divide the k'th (pivot) row by the pivot, at a point in I
-the calculation when the row contains N-k elements that have not \_
-been reduced to 0. We have to do this for k = 0, 1, ..., N-l, '
+We have to divide the k'th (pivot) row by the pivot, at a point in
+the calculation when the row contains N-k elements that have not
+been reduced to 0. We have to do this for k = 0, 1, ..., N-1, 
+requiring $\approx N^2/2$ divisions.
 
-requiring =N /2 divisions.
+The back-substitution requires 0 steps for $x_{N-1}$, 1 multiplication
+and 1 addition for $x_{N-2}$, 2 each for $x_{N-3}$, \textit{etc.} That is, it requires
 
-The back-substitution requires 0 steps for rm, 1 multiplication
-and 1 addition for x", 2 each for it)", etc. That is, it requires
-
-k=0
-2 (N-l-k) =N2/2
-k=N-1
-
+and similarly, from \ref{eq:09_21_0} we find
+\begin{equation*}
+    \sum_{k=N-1}^{k=0}(N-1-k) \approx N^2/2
+\end{equation*} 
 multiplications and additions.
 
 The really time-consuming step is multiplying the k'th row by
-A", , j > k, and subtracting it from row j. Each such step requires
-N-k multiplications and subtractions, for j=k+1 to N-l, or
-(N -k) - (N -k- 1) multiplications and subtractions. This has to be
-repeated for k= 0 to N-2, giving approximately N3/3 multiplica-
+$A_{jk}, j > k$, and subtracting it from row $j$. Each such step requires
+N-k multiplications and subtractions, for j=k+1 to N-1, or
+$(N -k) \cdot (N -k- 1)$ multiplications and subtractions. This has to be
+repeated for k = 0 to N-2, giving approximately $N^3/3$ multiplications and subtractions. In other words, the leading contribution to the time is $\tau N^3/3$, which is a lot better than $\tau e N!$ as with
+Cramer's rule.
 
- 
+\TallC{When} we optimize for speed, only the innermost loop -- requiring $O (N^3 /3)$ operations needs careful tuning; the $O (N^2/2)$ 
+operations -- comparing floating point numbers, dividing by the pivot, and
+back-substituting -- need not be optimized bgecause for
+large N they are overshadowed by the innermost loop\sepfootnote{09_09}.
 
-
- 
-
-tions and subtracti30ns. In other words, the leading contribution l
-
-to the time is rN 3/3, which is a lot better than reN! as with
-Cramer' 5 rule.
-
-Whenweog timize for speed, only the innermost loop -re uir-
-
-mg O (N13 /3) operations needs careful tuning; the O (N [2) 3
-
-operations - comparing floating point numbers, dividing by the .i
-
-pivot, and back-substituting - need not be optimized bgecause for
-large N they are overshadowed by the innermost loop .
-
- 
-
-9.
-
-The exception to this general rule, where more complete optimization would pay, would be an
-application that requires solving many sets of equations of relatively small order.
-
- 
-
-MM"!
-
-"3
-
-cleans-mm 225
-
-Mia
-
-Since we have worked out a specific 3 x 3 set of linear equations,
+% 225 
+\subsection{Testing}
+\TallC{Since} we have worked out a specific $3 \times 3$ set of linear equations,
 we might as well use it for testing and debugging. Begin with
 some test words that do the following jobs:
 
-e Create matrix and vector (inhomogeneous term)
-e Initialize them to the values in the example
-
-e Display the matrix at any stage of the calculation
-e Display inhomogeneous term at any stage
+\begin{itemize}
+  \item Create matrix and vector (inhomogeneous term)
+  \item Initialize them to the values in the example
+  \item Display the matrix at any stage of the calculation
+  \item Display inhomogeneous term at any stage
+\end{itemize}
 \begin{verbatim}
 \ Display words
 V{ or M{{ stands torwhatanarrayputsonstack
@@ -578,28 +550,19 @@ LOOP DROP ;
 :.v (V{-~) DUP D.LEN
 0 DO on DUP l}{0} G@ G. LOOPDROP:
 
+\end{verbatim}
 We define a word to put ASCII numbers into matrices:
+\begin{verbatim}
 :GEFF# BL TEXT PAD S->F;
 \end{verbatim}
 
-This word takes the next string10 from the input stream (set off
-by ASCII blank, BL) and uses the PIS/FORTH word S~> F to
+This word takes the next string\sepfootnote{09_10} from the input stream (set off
+by ASCII blank, \textbf{BL}) and uses the HS/FORTH word \$ $\to F$ to
 convert the string to floating point format and put it on the
 87stack.
 
- 
-
-10. 'l'heword'lEX'l'inputsacountedstringusingtheFORTH-DstandardwordWOIlD,aad
-placesit"PADJ'hisiswhyPADappeaninthedefinifionofGfl-FlAdefinkionofEXT
-miditbe :'IEX'l'(delirniter--)WORDDUPC@1+ unswxrcuovs; Notethatall
-words prefacedwithC arebyteoperatioasbyPORTH convention.
-
-OJilthNoUetm-Mlldusleseived.
-
-Chapter 9 - Unear Algebra Sclentlflc FORTH
-
+\textbf{GET-F\#} is used in the following:
 \begin{verbatim}
-GET-F# is used in the following:
 
 : <DO-VEC> ODO GET-F# DUP I0} G!
 LOOP DROP;
@@ -612,20 +575,17 @@ LOOP DROP;
 The file EX.3 will be found in the accompanying program disk-
 ette. The explanatory notes below refer to EX.3.
 
-Notes:
+\underline{Notes:}
 
-e The word .( emits everything up to a terminating) .
-
-e HS/FORT'I-I, because of its segmented dictionary, uses a word
-TASK to define a task-name, and FORGET-TASK to FORGET
-eve hing following the task-name. The FORTH word FOR-
-GE fails in HS/FORTH when it has to reach too deeply into
-the dictionary.
-
-e Ex.3 uses the word \}row\{ defined below.
+\begin{itemize}
+  \item The word .( emits everything up to a terminating) .
+  \item HS/FORTH, because of its segmented dictionary, uses a word TASK to define a task-name, and FORGET-TASK to FORGET everything following the task-name. The FORTH word FORGET fails in HS/FORTH when it has to reach too deeply into the dictionary.
+  \item Ex.3 uses the word \}row\{ defined below.
+\end{itemize}
 
 This is what it looks like when we load EX.3:
 
+\begin{verbatim}
 FLOAD EX.3 Loading EX.3
 ReadadimenslonSvectorand 3113 matrbtlrornatablethendispiaythem
 Now displaying vector.
@@ -639,105 +599,66 @@ A{{ .M CR
 3.0000000 2.0000000 4.0000000
 1.0000000 1.0000000 6.0000000
 say Exa FORGET-TASKto graceitfly FORGET these words olt
+\end{verbatim}
 
-WM"!
-
-Mil-Wm 227
-
-"4 WWW
-
-Now we have to define the FORTH words that will implement
-this algorithm. In pseudooode, we can express pivotal elimina-
-tion as shown in Fig. 9-1 below.
-
- 
-
-ch
-
- 
-
- 
-
- 
-
-A{{ B{ }}SOLVE (solutiontoAxsaleltinB)
-BEGIN
-
-setn=0
-
-findpivot(rowm > n)
-
-swaprowsman
-
-divide row n by pivot: A'M. =AMJAM
-
-subtract: A'... =A..-A..,.A',..
-increment n
-n N =
-UNTIL
-Back-substitute: x" = b'n - 2 Am... xm(12)
-
-m>n
-
-DONE
-
- 
+\subsection{Implementing pivotal elemination}
+\TallC{Now} we have to define the FORTH words that will implement
+this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. 9-1 below.
 
  
 
 Fig. 9-1 Pseudocode for pivotal ellmlnaa'on
 
-"5 The program
-
-Whenever we write a complex program we are faced with the
-problem "Where do we begin?" FORTH emphasizes the con-
-
-struction of components. and generally cares little which component
+\subsection{The program}
+\TallC{Whenever} we write a complex program we are faced with the
+problem "Where do we begin?" FORTH emphasizes the construction of components,
+and generally cares little which component
 we define first.
 
-For example. we must swap two rows of a matrix. The most
+For example, we must swap two rows of a matrix. The most
 obvious way moves data:
 
-row1 - > temp
-row2 - > row1
-
+\begin{verbatim}
+row1 -> temp
+row2 -> row1
 temp -> row2
+\end{verbatim}
 
-Although data moves are relatively fast, up to N2/2 swaps may be
-needed, each row containing N data; row-swapping is an O (N 3)
-operation which must be avoided. lndirectio setting up a list of
-row pointers and exchanging those. uses 0 (N ) time.
+Although data moves are relatively fast, up to $N^2/2$ swaps may be
+needed, each row containing N data; row-swapping is an $O(N^3)$
+operation which must be avoided. Indirection, setting up a list of
+row pointers and exchanging those, uses $O(N^2)$ time.
 
-OWVNobletm-Almm.
+% 228
 
-228
+We anticipate computing the address of an element of \textbf{A\{\{} in a
+\textbf{DO} loop via the phrase 
 
-Chapter 9 - Llnear Algebra Scientific FOR'n-l
-
-We anticipate computing the address of an element of A{{ in a ,
-DO loop via the phrase i
-
+\begin{verbatim}
 A{{JI}} ( Jis row,lis col)
+\end{verbatim}
 
-Suppose we have an array of row pointers and a word }row{ that
+Suppose we have an array of row pointers and a word \verb|}row{| that
 looks them up. Then the (swapped) element would be
 
+\begin{verbatim}
 A{{ J }row{ I }}.
+\end{verbatim}
 
 To implement this syntax we define11
 
+\begin{verbatim}
 :swapper (n - -) l
 CREATE 0 DO I , LOOP
 DOES> OVER + + @ ;
 \ this is a defining word
-
+\end{verbatim}
  
-
- 
-
 We would define the array of row indices via
 
+\begin{verbatim}
 A{{ D.LEN swapper }row{ \ create array }row{
+\end{verbatim}
 
 We have initilized the vector }row{ by filling it with integers
 from 0 to N-l while defining it.
@@ -1707,14 +1628,14 @@ via
 looYo = bo
 MOYO'l'ltIYI =01 (46)
 130\% + 421Y1+ la)': = D:
-etc.
+\textit{etc.}
 
 which can be solved successively by forward substtution. Next
 solve 45 successively (by back-substitution) for x:
 
 l'N-tN-t XN-1 = YN-t
 I'M-2 N-2 XN-z + I'M-2 N-1 xN-i = YN-z (47)
-etc.
+\textit{etc.}
 
 The n'th term of Eq. 46 requires n multiplications and n additions.
 Since we must sum n from 0 to N-l, we find N(N-1)/2 =4 Nz/Z
