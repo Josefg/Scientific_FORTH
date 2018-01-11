@@ -213,7 +213,18 @@ VAR X 3 IS X} but has the run-time behavior of a \textbf{CONSTANT: X . 3 ok}.}
 \sepfootnotecontent{09_12}{While Brodie (\textit{TF}, p.180) quotes Charles
 Moore. FORTH's inventor, as offering 1-line definitions as the goal in FORTH
 programming, sometimes this is just not possible.}
-\sepfootnotecontent{09_13}{}
+\sepfootnotecontent{09_13}{The \textbf{condition} of a system of linear
+equations refers to how accurately they can be solved. Equations can be hard to
+solve precisely if the inverse matrix $A^{-1}$ has some large elements. Thus,
+the error vector for a calculated solution, $\delta=b-A \cdot X_{Calc}$ can be
+small, but the difference between the exact solution and the calculated
+solution can be large, since (see \S9\S3 below)
+\begin{equation*}
+	X_{Exact}-X_{Calc}=A^{-1}\cdot\delta\,.
+\end{equation*}
+A test for ill-condition is whether the determinant gets small compared with the precision of the
+arithmetic. See, \textit{e.g.}, A. Ralston,\textit{A First Course in Numerical Analysis} (McGraw-Hill Book Co.,
+New York, 1965).}
 \sepfootnotecontent{09_14}{}
 \sepfootnotecontent{09_15}{}
 \sepfootnotecontent{09_16}{}

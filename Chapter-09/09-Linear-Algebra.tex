@@ -1044,19 +1044,18 @@ tion of pivotal elimination.
 % 236
 Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
-do so, especially as it is only an 0(N) process. By evaluating the
+do so, especially as it is only an O(N) process. By evaluating the
 detemiinants of simple cases, we realize the determinant is simp-
 ly the product of all the pivot elements, multiplied by
-
-(\_1) swaps. Hence we need to keep track of swaps, as well as to
+$(-1)^{\#swaps}$. Hence we need to keep track of swaps, as well as to
 multiply the determinant (at a given stage) by the next pivot
 element. The need to do these things has been anticipated in
-defining \}SWAP above.
+defining \regc{\}SWAP} above.
 
 Computing the determinant also lets us test as we go, that the
 equations can be solved: if at any stage the determinant is zero,
 (at least) two of the equations must have been equivalent. Should
-it be necessary to test the condition of the equations, this too
+it be necessary to test the condition\sepfootnote{09_13} of the equations, this too
 can be found as we proceed, by computing the determinant.
 
 Here is a simple recipe for computing the determinant, with
@@ -1076,20 +1075,8 @@ DET >FS G*NP
 FS.DUP GABS FS>F CONDITION F<
 ABOR'l" determinant too small!' DET FS> ;
 
- 
-
-13.
 \end{verbatim} 
 
-The condition of a system of linear equations refers to how accurately they can be solved. Equa-
-tions can be hard to solve precisely if the inverse matrix A" has some large elements. Thus, the
-error vector for a calculated solution, d= --b-A szlc can be small, but the difference between the
-exact solution and the calculated solution can be large, since (see \S9\S3 below)
-
-xBar-ct 'cnc =A W6
-A test for ill-condition is whether the determinant gets small compared with the precision of the
-arithmetic. See, 43.3., A. Ralston,A First Course in Numerical Analysis (McGraw-Hill Book Co.,
-New York, 1965).
 
 % Ware-Wm 237
 
