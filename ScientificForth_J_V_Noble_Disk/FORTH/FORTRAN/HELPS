@@ -1,0 +1,158 @@
+\ on-line HELP for FORTRAN.FTH, etc.
+\ Copyright 1989, Julian V. Noble, All rights reserved.
+CR CR .( say HELP ? for a glossary, then HELP word.name for help )
+WARNING 0!
+VOCABULARY HELPS    HELPS DEFINITIONS
+
+CREATE F"$  2 C, ASCII F C,  ASCII " C,  OKLW
+CREATE F."$  3 C, ASCII F C,  ASCII . C,  ASCII " C,  OKLW
+CREATE "$  1 C, ASCII " C,  OKLW
+: TYPES   CR  CR ." ALLOWED DATA TYPES: "  CR
+          CR  20 SPACES   ." REAL*4    -- 4  bytes " CR
+          CR  20 SPACES   ." REAL*8    -- 8  bytes " CR
+          CR  20 SPACES   ." COMPLEX   -- 8  bytes " CR
+          CR  20 SPACES   ." DCOMPLEX  -- 16 bytes " CR  ;
+
+: SCALAR  PAGE
+    ." A SCALAR is a typed data structure that places its address and type"
+    CR ." on the parameter stack. " CR
+    CR ." The usage is, e.g."  CR CR
+    11 SPACES  ." REAL*4 SCALAR A"
+    11 SPACES  ." REAL*8 SCALAR DA"
+    11 SPACES  ." COMPLEX SCALAR W"
+    11 SPACES  ." DCOMPLEX SCALAR DW"  CR CR
+    ." The word SCALARS lets you define a list of scalars, as in "  CR CR
+    11 SPACES  ." 3 DCOMPLEX SCALARs  DW DX DZ"  CR CR
+    ." NOTE: You must specify how many scalars are in the list. " CR ;
+
+SYNONYM SCALARS  SCALAR
+: >FS  PAGE ." INTELLIGENT FLOATING STACK (IFSTACK)" CR CR
+    ." Using the ifstack and generic operators (defined in GLIB) one" CR
+    ." can perform mixed-mode arithmetic with FORTH doing the bookkeeping."
+    CR ." The stack notation is :: = ifstack, 87: = 80x87 stack."
+    CR CR 11 SPACES ." 3 REAL*4 SCALARS A B C" CR
+    11 SPACES ." 3 REAL*8 SCALARS DA DB DC" CR
+    11 SPACES ." 2 COMPLEX SCALARS W U Z "  CR CR
+    11 SPACES ." A >FS Z >FS GR^   ( :: -- A**Z) " CR CR
+    11 SPACES ." DB >FS  G+  W FS> ( :: -- ) " CR CR
+    ." etc. etc."  CR CR
+    ." The operators F>FS and FS>F move data from 80x87 to ifstack " CR
+    ." and vice-versa as in: "  CR CR
+    11 SPACES ." A >FS  ( :: -- A)    FS>F ( -- t | :: A -- | 87: -- A) "
+    CR CR 11 SPACES  ." F>FS   ( t -- | 87: A -- | :: -- A) " ;
+
+SYNONYM FS> >FS
+SYNONYM F>FS >FS
+SYNONYM FS>F >FS
+
+: 1ARRAY   PAGE
+    ." This is a new, more readable array notation that works like this:"
+    CR CR 11 SPACES ." 50 LONG REAL*4 1ARRAY X{ " CR CR
+    11 SPACES ." X{ n }  ( -- seg.off type) " CR CR
+    ." The operator } expects an address ( X{ ) and an index ( n ) " CR
+    ." and uses this information to compute the address and type of the"
+    CR ." n'th element of X{." CR CR
+    ." NOTE: the open brace { in the name X{ is a stylistic convention for"
+    CR ."       readability, and is not required, except as noted under the"
+    CR ."       HELP heading ARRAY" CR CR
+    ." 2-dimensional arrays are defined via:" CR CR
+    11 SPACES ." 50 LONG BY 50 WIDE COMPLEX 2ARRAY Z{{ " CR CR
+    11 SPACES ." Z{{ m n }}  ( -- seg.off type) " CR CR
+    ." The previous remarks re: } and { extend to }} and {{. " CR CR
+    ." These data structures are defined in the file MATRIX.HSF" CR ;
+
+SYNONYM 2ARRAY 1ARRAY
+SYNONYM } 1ARRAY
+SYNONYM }} 1ARRAY
+
+: F."   PAGE  ." see also HELP " F"$ $.  CR CR
+    F."$ $.  ."  is used by itself to test formulae."  CR CR
+    ." Example:  say  " F."$ $. ."  and enter formula"  CR
+    F."$ $. ."  U=V*EXP(A)/C^B-(A^U)/U^A" "$ $.  ."  <cr>"  CR
+    ." Result:" CR
+    ." A >FS" CR
+    ." U >FS  GR^" CR
+    ." U >FS" CR
+    ." A >FS  GR^    GNEGATE    G\" CR
+    ." B >FS" CR
+    ." C >FS  GR^" CR
+    ." A >FS      GEXP    G\" CR
+    ." V >FS  G*    G+" CR
+    ." U FS>    ok" CR CR  ;
+
+: F"  PAGE  ." see also HELP " F."$ $.  CR CR
+    F"$ $.  ."  can be used to evaluate a formula or to compile it."  CR CR
+    ." To evaluate a formula, load XFLIB.FTH, IFSTACK.FTH, and GLIB.FTH " CR
+    ." All variables in formulas must be defined and initialized." CR
+    ." Formulas can also contain single or double precision literals." CR CR
+    ." Say" CR CR
+    F"$ $. ."  U=V*EXP(A)/C^B-(A^U)/U^A" "$ $.  ."  <cr>"  CR CR
+    ." Result will be stored to U.   To display, say:  U >FS  G. " CR CR
+    ." More HELP (y/n)?"   ?YN
+    IF  PAGE CR
+    ." Compiling formulas into FORTH words:"  CR CR
+    ." Load XFLIB.FTH, IFSTACK.FTH, and GLIB.FTH. " CR
+    ." Define variables appearing in formula(s)."  CR CR
+    ." 3 REAL SCALARS A B C"  CR
+    ." 2 COMPLEX SCALARS U V" CR  CR
+    ." : TEST   " F"$ $.  ."   A = B ^ C"  "$ $.  CR
+    ."          " F"$ $.  ."   U = V * EXP(A) / C ^ B" CR
+    ."                 - (A ^ U) / U ^ A " "$ $.  ."   ;"  CR CR
+    F"$ $.  ."  must always be terminated with " "$ $. CR
+    CR    THEN  ;
+
+: ARRAY   PAGE ." see also HELP 1ARRAY, 2ARRAY, } and }}" CR CR
+   F."$ $. ."  and " F"$ $. ."  can be used to store to array elements." CR
+   ." The array-naming convention V{ (1-array), A{{ (2-array) etc. must be"
+   CR ." followed.  Thus, " CR CR
+   F"$ $. ."  U(I)=V*EXP(A)/C^B(J,K)-(A^U)/U^A" "$ $.  ."  <cr>"  CR CR
+   ." will generate the proper code using our conventions."  CR CR
+   ." Say  FLOAD MATRIX.HSF  to make use of this facility."  CR
+   ." For test purposes using " F."$ $. ." , it is enough to define the" CR
+   ." array names as VARIABLES, as in VARIABLE A{{  A{{ 0! " CR
+   CR ." Remember to initialize the array-names to 0,1,2 or 3."  CR CR ;
+
+: FAIL   CR
+    ." If a word containing a formula fails to compile, use this procedure:"
+    CR CR  11 SPACES ." FORGET wordname"  CR
+    11 SPACES ." REDO"  CR CR
+    ." Correct what was wrong and then recompile. " CR  ;
+SYNONYM  REDO FAIL
+
+: DO>FTH   PAGE  ." see also HELP >FTH " CR CR
+    ." Convert FORTRAN DO loops and IF...ELSE...ELSEIF...ENDIF "
+    ." statements to their" CR
+    ." FORTH equivalents.  Places " F"$ $. ." ..." "$ $.
+    ."  pair around expressions."    CR CR
+    ." Use in the form $" "$ $. ."  in.fil" "$ $. ."  DO>FTH to get "
+    ." output to the screen. " ;
+
+: >FTH   PAGE
+    ." Convert expressions to FORTH code, in files prepared by DO>FTH."
+    CR CR
+    ." Use in the form $" "$ $. ."  in.fil" "$ $. ."  >FTH to get "
+    ." output to the screen. " ;
+
+: ?  PAGE ." HELP glossary:"  CR CR
+     ." TYPES" CR
+     ." SCALAR" CR
+     ." SCALARS" CR
+     ." >FS" CR ." FS>"  CR ." F>FS" CR ." FS>F"
+     ." 1ARRAY" CR
+     ." 2ARRAY" CR
+     ." }" CR
+     ." }}" CR
+     F."$ $.  CR
+     F"$ $.   CR
+     ." ARRAY" CR
+     ." FAIL" CR
+     ." DO>FTH" CR
+     ." >FTH" CR    ;
+
+FORTH DEFINITIONS
+: HELP  [COMPILE]  HELPS   FIND   ?DUP  [ ' HELPS ] LITERAL  OVER  U<  NOT
+        OVER   0=   OR
+        ABORT" NOT IN HELP FILE"   EXECUTE    [COMPILE] FORTH  ;
+
+
+

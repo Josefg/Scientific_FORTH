@@ -1,0 +1,245 @@
+\ ERRATA in "SCIENTIFIC FORTH:  a modern language for scientific computing"
+PAGE     ERROR/CORRECTION
+
+70, 71   HS/FORTH assembler does not define FILD. and FISTP.
+
+75       : F0>    FTSTP   4100  AND  NOT 0>  ;  \ WRONG
+         : F0>    FTSTP   4100  AND  0=  ;      \ RIGHT
+
+         : F<     FCOMPP  FSTSTW  4100  AND  NOT 0>  ;      \ WRONG
+         : F<     FCOMPP  FSTSTW  4100  AND  0=  ;          \ RIGHT
+
+100	 IFSTACK program is incomplete. See file IFSTACK on this disk.
+
+113	 Definition of } -- first R> should be >R , otherwise blooey!
+	 It's ok in file MATRIX .
+
+129	 Equation 14 reading a = ... should be b = ...
+
+132	 Definition )FALSI  got truncated in printing! See new version,
+	 which combines regula falsi and binary search.
+
+134	 Runge-Kutta program also truncated! :-(
+
+137	 Same here. :-(  :-(
+
+150      Definition of ARG is too simplistic. See file JVNTRIG .
+
+228      In definition of "refill":
+         SWAP  0 DO  I 2*  DDUP  +  !     \ WRONG
+         SWAP  0 DO  I DDUP  2*  +  !     \ RIGHT
+
+233      In definition : }}R1-R2*X
+            T >FS    \ ! result           \ WRONG
+            T FS>    \ ! result           \ RIGHT
+         Also note: I have improved IFSTACK as noted in READ.ME, hence
+         definition as given will not work.
+
+289      The stack notes  \ <subject>   and \ <expression> inadvertently
+         got shoved into the margin because too many tabs got printed
+         and the proof reader mised it. Sorry.
+
+
+85, 86
+
+The Forth words for the IIT 80xC87 matrix operations were
+translated directly from the IIT assembly code. Since the topic
+was peripheral and a deadline was near, this translation was not
+tested, hence the version in the book is not entirely correct.
+
+The 80xC87 has 3 banks of 8 80-bit registers available to the
+user. All 80x87 instructions begin with a 5-bit sequence, 11011b,
+called "ESCAPE" (not ASCII 27d). Thus their codes all begin with
+the letter D in hexadecimal notation (1101b). IIT noted that the
+sequence DBh had not been used by Intel, hence they could use it
+for new (that is, non-Intel) FPU instructions. Only four new
+instructions are re-quired: three to select register banks and
+the fourth to carry out the matrix multiply. The machine codes
+and mnemonics are:
+
+     DB E8   FSBP0     ; select bank 0
+     DB EB   FSBP1     ; select bank 1
+     DB EA   FSBP2     ; select bank 2
+     DB F1   F4X4      ; transform vector
+
+To carry out the matrix operation
+
+     y = Ax
+
+where A is a 4x4 matrix and x and y 4x1 column-vectors, we must
+load A and x into on-chip memory and invoke the fast multipli-
+cation, F4X4. Regrettably, the engineering notes and sample
+assembly language pro-grams were murkier than than they might
+have been; thus I spent longer on getting everything just right
+than I should have. Had I been programming in any other language
+but FORTH --say assembler linked to FORTRAN-- I would probably
+still be working on it.
+
+The 8 registers in each bank are organized as a stack. This
+mirrors the organization of the single register bank of the Intel
+and Cyrix 80x87s. A 3-bit internal stack pointer indicates the
+next avail- able register. The IIT 80xC87 chip uses the same
+stack pointer for each bank of registers. This presents diffi-
+culties because, e.g., external software extensions of the
+floating point stack (such as the ifstack) need to be aware of
+how full the on-chip stack is. A crucial aspect of loading the
+data, therefore, is when or whether to reset the stack pointer in
+the FPU.
+
+After some experimentation I came to understand that one must
+first switch to the desired bank (using FSBP0, FSBP1 or FSBP2),
+then reset the FPU with the FINIT instruction. Moreover, bank 0
+must be initialized and loaded last. Unless one performs the
+operations in just this order, the results will range from
+haphazard to hilarious.
+
+Another non-intuitive aspect of programming the 80xC87 is that
+the matrix must be loaded by columns rather than by rows.
+Here are tested(!!) FORTH words to control 80xC87 chips, with
+an example for testing. If we suppose the matrix is referenced
+by A{{ and the vector by V{ then loading and multiplying is done via
+
+        A{{ }}M->C87 V{ }V->C87
+
+\ Matrix instructions for IIT 80xC87 chip
+
+TASK C87
+
+CODE FSBP0   <% 9B DB E8 9B %>  END-CODE   \ select bank 0
+CODE FSBP1   <% 9B DB EB 9B %>  END-CODE   \ select bank 1
+CODE FSBP2   <% 9B DB EA 9B %>  END-CODE   \ select bank 2
+CODE F4X4    <% 9B DB F1 9B %>  END-CODE   \ y = Mx transform vector
+
+\ Definitions using generic arrays
+\ (this is convenient but not very fast)
+
+: }V->C87   FSBP0 FINIT   0 3  DO  DUP  I }  G@L  -1 +LOOP  DROP  ;
+: }C87->V   FSBP0         0 3  DO  DUP  I }  G!L  -1 +LOOP  DROP  ;
+: }}M->C87  FSBP2 FINIT   2 0  DO
+                            4 0 DO DUP I J }} G@L  LOOP
+                          LOOP
+            FSBP1 FINIT   4 2  DO
+                            4 0 DO DUP I J }} G@L  LOOP
+                          LOOP DROP    FSBP0  ;
+
+\ Example:
+
+4 LONG REAL*8 1ARRAY V{
+4 LONG BY 4 WIDE REAL*8 2ARRAY A{{
+
+FSBP0 FINIT
+%  1 V{ 0 } G!L
+%  3 V{ 1 } G!L
+%  5 V{ 2 } G!L
+% -7 V{ 3 } G!L
+
+%  3 A{{ 0 0 }} G!L
+%  2 A{{ 0 1 }} G!L
+%  4 A{{ 0 2 }} G!L
+%  6 A{{ 0 3 }} G!L
+
+% -5 A{{ 1 0 }} G!L
+%  5 A{{ 1 1 }} G!L
+%  7 A{{ 1 2 }} G!L
+% -6 A{{ 1 3 }} G!L
+
+%  0 A{{ 2 0 }} G!L
+% 18 A{{ 2 1 }} G!L
+%  0 A{{ 2 2 }} G!L
+% -8 A{{ 2 3 }} G!L
+
+% -9 A{{ 3 0 }} G!L
+%  9 A{{ 3 1 }} G!L
+%  1 A{{ 3 2 }} G!L
+%  1 A{{ 3 3 }} G!L
+
+A{{ }}M->C87  V{ }V->C87  F4X4  .FS
+
+
+Updates:
+
+The files IFSTACK, GLIB and FORTRAN.FTH were found to contain small
+but significant bugs. These have been corrected. They also now 
+use a slightly more transparent nomenclature. For example, the variable 
+that holds the type of the number on the 80x87 (representing the top of the 
+ifstack) is now called 87type rather than TS.type. IFSTACK had some occasion-
+al problems with getting pointers mixed up, as well as a more serious and 
+very subtle bug in the definition of SCALAR. These bugs had all es- 
+caped the first tests, but as I used the system they made their ugly 
+appearance, sometimes overwriting system code and crashing. They were 
+hard to find, but have now been eliminated. (I hope!)
+
+The revised FORmula TRANslator is an improved FORmula TRANslator. For 
+example, it will now translate expression fragments like 
+
+  B * C
+
+leaving the result on the ifstack. Of course it still does replacement 
+statements 
+
+  A = B * C
+
+which leave the ifstack clean. I have found this new ability useful. 
+
+The new version compiles formulas inline in a word definition, as in
+
+  : TEST    F" A = B * C "   ;
+
+or
+
+  : TEST    F" B * C "   ;
+
+More than one formula can be put in a single word, of course. While 
+distinctly unForth-like, the resulting code is self-documented.
+
+The mechanism for compiling formulas into words is to vector the out- 
+put from the FORmula TRANslator to a memory buffer, then to load from 
+this buffer as though it were a file. Most advanced Forth systems pro- 
+vide either such a facility or a word EVAL that evaluates a counted 
+string. One or another of these mechanisms can be used to replace 
+HS/FORTH's word MLOAD. 
+
+The Forth generated by the FORmula TRANslator is definitely not optim- 
+ized for speed. Nor does the FORmula TRANslator recognize repeated 
+sub-expressions. As noted in THE BOOK, I think optimizations based 
+on factoring repeated sub-expressions are trivial, and should be done 
+while coding. Thus, e.g., one may write
+
+         : WORD    F" A = B * SINH(C) + D / SINH(C) " ;
+
+but it would be better to write
+
+         : WORD    F" A = SINH(C) " 
+                   F" A = B * A + D / A "  ;
+
+
+The latest version of the FORmula TRANslator (6/93) now possesses the
+ability to embed user-defined functions in word definitions. That is,
+the notation FUNC{  fn.name }TION  (which were formerly stubs) has now
+been fully implemented. Moreover, user-defined functions can have lists
+of arguments, i.e. the function  MYFUN( A, B, C, C+D/SINH(A) ) with 4
+arguments (they can be literals, SCALARs or expressions, as shown) will
+be parsed and evaluated correctly.
+
+A minor bug in the handling of numeric literals has been corrected.
+
+If there is any feedback in favor of adding a facility to parse array
+elements in formulae -- e.g. F" A = a(I,J) * b(J) " -- I will add this
+ability to the next version. Initially it will involve Forth loop-index
+names only, i.e. all index arguments will be parsed as their names alone,
+and such names will have to follow the FORTRAN conventions (start with a
+letter, up to 6 chars long, only letters and digits). Thus if you need an
+integer expression, I suggest defining a VAR (VALUE in d-pANS Forth) as
+in the fragment 
+
+	0 VAR I0
+	: example    100 0 DO
+			100 0 DO	I  J  + 3 MOD   IS  I0
+					F" c(J) = a(J,I0) * b(I) "
+			LOOP
+		     LOOP  ;
+
+Finally, new versions of the integer formula parser MINI and the regula
+falsi equation solver FALSI.FTH replace the earlier versions.
+
+

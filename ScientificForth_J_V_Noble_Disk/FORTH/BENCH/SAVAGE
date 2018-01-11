@@ -1,0 +1,5 @@
+TASK SAVAGE
+: (SAVAGE)  F=1 F=0  0 DO  FOVER F+ F**2  FSQRT  FLN  FEXP
+                   FATAN  FTAN   LOOP  ;
+: SAV  FINIT  TIMER  2500 (SAVAGE)  ETIME  CR  F.  FDROP ;
+

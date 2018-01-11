@@ -1,0 +1,5 @@
+
+CODE TIMER  OPT" TIME@  DROP  60 *  +  100 M*   ROT  M+ "  END-CODE
+( -- d.100's.secs)
+: ETIME  TIMER  DSWAP  D-  <# # # 46 HOLD #S #> TYPE ." sec" ;
+

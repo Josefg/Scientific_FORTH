@@ -1,0 +1,136 @@
+\ TYPED DATA STACK MANAGER for
+\ SCIENTIFIC FORTH:  a modern language for scientific computing
+
+\ Note: most of these words are defined in high-level Forth for
+\       pedagogical reasons as well as for transportability.
+\       The words >FS and FS> can be improved considerably with
+\       machine-specific CODE definitions. In particular, the
+\       Intel 80386/87 allows for 32-bit @/! operations. These can
+\       be specified with the appropriate 1-byte prefixes. See e.g.
+\       Crawford and Gelsinger, p. 60, 75-76, 728.
+
+\ Also: this version improves on that given in THE BOOK. I realized
+\       after it went to press that the top of the IFSTACK should always
+\       reside on the 87stack. But then a place is needed to keep the
+\       type descriptor of the TOS. This is the variable "87type" .
+\       Doing things this way reduces the number of data moves during
+\       arithmetic and function evaluation.
+
+\ Finally: the notation [%" word1 ... wordn " %] is a cute trick HS/FORTH
+\       has for replacing hi-level definitions by equivalent in-line code,
+\       within a word. This technique can't optimize EXECUTE or EXECUTE@
+\       so don't try it. (This means it also won't work with G@, G! etc.)
+\ For other Forths, just remove the leading [%" and trailing " %] .
+
+TASK FSTACKS
+DECIMAL
+
+\ define data-type tokens
+0 CONSTANT REAL*4            \ 4 bytes
+1 CONSTANT REAL*8            \ 8 bytes
+2 CONSTANT COMPLEX           \ 8 bytes
+3 CONSTANT DCOMPLEX          \ 16 bytes
+
+CREATE types  CFA' REAL*4 , CFA' REAL*8 , CFA' COMPLEX , CFA' DCOMPLEX , OKLW
+: .type   ( type --)   0 MAX 3 MIN  2* types +  @  .WORD  ;
+
+CREATE <#bytes>  4 C, 8 C, 8 C, 16 C, OKLW
+CODE   #BYTES   BL <#bytes> +[BX]  MOV.  BH BH XOR.  END-CODE
+\ definition of typed variables
+
+: SCALAR  ( type -- )   CREATE  DUP ,   #BYTES  ALLOT
+          DOES>  >R  LISTS @   R@ 2+  R> @ ;  ( -- seg off type)
+
+\ CODE  <DOSCALAR>   BX PUSH.  LISTS +[] PUSH.  BX 2 +[DI] LEA.
+\       AX BX MOV.  AX INC. AX INC. AX PUSH. BX [BX] MOV.  END-CODE
+
+: SCALARS   ( n t -- )  SWAP  0 DO   DUP   SCALAR   LOOP  DROP ;
+
+\ generic fetch and store for typed data
+CASE: G@    F@   DF@   X@   DX@   ;CASE   ( : seg off t --  87: -- z)
+CASE: G!    F!   DF!   X!   DX!   ;CASE   ( : seg off t --  87: z --)
+CASE: G@L   F@L  DF@L  X@L  DX@L  ;CASE   ( : seg off t --  87: -- z)
+CASE: G!L   F!L  DF!L  X!L  DX!L  ;CASE   ( : seg off t --  87: z --)
+
+
+\ definitions for a multi-type fixed-width fstack
+CREATE  TSTACK  40 18 * ALLOT   \ 40 18-byte cells: type (2) + data (4-16)
+TSTACK  40 18 * +  CONSTANT T.TOP
+VARIABLE NS>                    \ holds adr of nos
+VARIABLE  87type                \ holds type of tos
+                                \ tos is on 87stack
+
+: FS.INIT   T.TOP NS> !   -1 87type !    FINIT  ;   FS.INIT
+
+: 87>FS      ( 87: z --  :: -- z)
+              87type @  DUP  0< IF DROP EXIT THEN
+              DUP>R  -18 NS> +!  NS> @  DUP>R ! R> 2+ R>   G!  ;
+
+: FS>87      ( :: z --  87: -- z)
+              NS> @  DUP  T.TOP =  IF DROP EXIT THEN
+              DUP@  >R  2+ R@    G@
+              R> 87type !   18 NS> +!   ;
+
+: >FS       ( : seg off type --  87: y -- z  :: -- y )
+            87>FS    DUP 87type !    G@L  ;
+
+\ : type?     87type @ OVER <> ABORT" Type mismatch in !" ;
+
+: FS>       ( : seg off type --  87: y -- z  :: z -- )
+            ( type?)   G!L   -1 87type !   FS>87  ;
+
+\ defining word for unary operators and library functions
+: GU:  CREATE  ]  DOES>    87type @  2 AND   +    EXECUTE@   ;
+
+GU:  g.   E.  X.  ;
+: G.   g.  -1 87type !  FS>87  ;
+
+GU: GDROP   FDROP XDROP ;
+
+: FS.DROP   -1 87type  DUP@
+            0<  ABORT" EMPTY IFSTACK"   GDROP  !  FS>87  ;
+
+GU:  GDUP  FDUP  XDUP  ;
+
+: FS.DUP   87type @  0< ABORT" EMPTY IFSTACK"
+           GDUP  87>FS  ;
+
+: FS.DUMP   FS.DUP
+            fdump  FSAVE   FINIT
+            T.TOP  NS> @  DO  I  DUP@  >R  2+  R@  G@
+                              CR  R@ .type  12 CTAB
+                              R> 2 AND  IF  X.  ELSE  E.  THEN
+            18 /LOOP   FINIT fdump FRESTORE   FS.DROP  ;
+
+
+\ examples
+\ CODE  AND!   AX POP.  [BX]  AX  AND.  END-CODE
+\ : XABS(TS)  XABS   1 87type AND! ;
+\ GU: GABS    FABS   XABS   ;
+\ GU: GSQRT   FSQRT  XSQRT  ;
+
+\ : NEW.TYPE   DDUP  AND   1 AND   -ROT   OR   2 AND   +  ;
+CODE NEW.TYPE   AX POP.   CX AX MOV.   CX BX  AND.  CX  1 IW  AND.
+      BX AX  OR.   BX 2 IW AND.  BX CX ADD.  END-CODE
+( t1 t2 -- t')
+
+\ : WHICH.OP   ( t1 t2 -- n)   2/ SWAP   2 AND   +  ;
+CODE  WHICH.OP   AX POP.  BX 1 SHR.  AX  2 IW AND.  BX AX ADD.  END-CODE
+
+\ defining word for binary operators: 2 arguments -> 1 answer
+: GB:  CREATE  ]  DOES>
+                  87type @  FS>87   87type @  ( -- adr t1 t2)  \ get args
+                   DDUP  NEW.TYPE  87type !   WHICH.OP  2*  +
+                  EXECUTE@ ;  \ compute new value
+
+\ examples
+\ : F*X   FROT  X*F ;  ( 87: f x y -- x*f y*f)
+\ GB: G*   F*  F*X  X*F  X*  ;
+
+\ : F/X   1/X  F*X  ;  ( :: f x y -- x*f/xabs[x+iy] -y*f/xabs[x+iy])
+\ GB: G/   F/  F/X  X/F  X/  ;
+
+CASE:  <gswap>   FSWAP  FROT  F-ROT  XSWAP  ;CASE
+: FS.SWAP   87type @  FS>87  87type @  ( -- t1 t2) DDUP WHICH.OP
+            <gswap>  SWAP  87type !   87>FS  87type !  ;
+

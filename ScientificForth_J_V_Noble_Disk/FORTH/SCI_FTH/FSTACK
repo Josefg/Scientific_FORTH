@@ -1,0 +1,41 @@
+\ FLOATING POINT STACK MANAGER
+TASK FSTACK
+
+DECIMAL
+VARIABLE  fsize                   ( size of fstack in TREALs)
+40 fsize !
+VARIABLE fsp                      ( current offset into fstack, in bytes)
+VARIABLE 87sp                     ( current depth of 87stack)
+fsize @  10 *  CONSTANT  fsp.max  ( #bytes in fstack)
+
+CREATE fstack  fsp.max  ALLOT   OKLW   ( fstack is 10*fsize bytes)
+
+: FSINIT    fsp  0!   87sp  0!   FINIT  ;   FSINIT
+
+CODE 10+ <%  83 C3 0A %> END-CODE  ( n -- n+10)
+CODE 10- <%  83 EB 0A %> END-CODE  ( n -- n-10)
+
+CODE FINCSTP  FINCSTP.   END-CODE  \ increment 80x87 stack ptr
+CODE FDECSTP  FDECSTP.   END-CODE  \ decrement 80x87 stack ptr
+
+: <fpop>   ( :: x --   87: -- x)
+           fsp  DUP@   10-     0  MAX  \ can't be < 0
+           DUP  fstack +  R80@
+           SWAP  !  ;
+
+: <<fpop>>  R80!   FINCSTP   <fpop>  FDECSTP  ;
+
+: <fpush>  ( :: -- x  87: x -- )
+           fsp  DUP@
+           DUP  fstack +  R80!
+           10+  fsp.max  MIN           \ can't be > fsp.max
+           SWAP  !  ;
+
+: <<fpush>>   FDECSTP   <fpush>  R80@  FINCSTP   ;
+
+CASE:  fpush   R80@  <<fpush>>  ;CASE
+CASE:  fpop    R80!  <<fpop>>   ;CASE
+
+: F@   87sp  DUP  1+!  @  7 >  ABS  fpush  ;
+: F!   87sp  @  8 <  ABS  fpop   87sp  DUP@  1-  0 MAX  SWAP !  ;
+

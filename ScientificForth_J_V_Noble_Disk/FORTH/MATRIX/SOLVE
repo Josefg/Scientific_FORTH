@@ -1,0 +1,166 @@
+\ LINEAR EQUATION SOLVER for
+\ SCIENTIFIC FORTH:  a modern language for scientific computing
+
+TASK SOLVE
+
+FIND }         0= ?( FLOAD MATRIX )
+FIND .M        0= ?( FLOAD MTOOL )
+\ -----------------------------------------------------------------------
+\ auxiliary words
+\ -----------------------------------------------------------------------
+: G<NP    FDUP   NS> @ 18 -  DUP@  SWAP 2+ SWAP  G@  F>  ;
+( -- f :: x y -- x y)
+: G*NP   G*  18 NS> +! ;  ( :: x y -- x x*y)
+GU: 1/G   1/F  1/X  ;     ( :: z -- 1/z )
+0 VAR }{                  \ place to vector }row{
+: }ROW{    }{  CFA  EXECUTE  ;
+\ -----------------------------------------------------------------------
+\ define pivot words
+\ -----------------------------------------------------------------------
+0 VAR T                      \ place to store type of matrix
+0 VAR length                 \ place to store length of matrix
+0 VAR  COL                   \ place to store column #
+0 VAR  IPIV                  \ IPIV is used to return the result
+0 VAR  a{{                   \ holds address of matrix
+
+: INIT.PIV    IS COL    COL IS IPIV   IS a{{ ; \ IS a{{ <-> DROP  faster
+
+: }}PIVOT  ( A{{  col --  :: --)  INIT.PIV  \ INITIALIZE assumed
+     a{{  COL }ROW{ COL }}   ( -- seg.off[M{{col,col}}] t )
+     >FS   GABS              ( :: -- |1st elt|)
+     length   COL 1+         \ loop limits
+     DO                      \ begin loop
+         a{{ I }ROW{ COL }}     ( -- seg.off[M{{i,col}}] t )
+         >FS  GABS  G<NP     \ test if new.elt > old.elt
+         IF   FS.SWAP  I IS IPIV   THEN   FS.DROP
+     LOOP                    \ end loop
+     FS.DROP    ;            \ clean up ifstack
+
+\ Usage:     A{{ N }}PIVOT
+
+\ -----------------------------------------------------------------------
+\ row * const.
+\ -----------------------------------------------------------------------
+: 3DUP   PAD !   D>R  DR@  PAD @   DR>   PAD @   ;
+
+: }}ROW*X   ( M{{ row --  :: x -- x)
+        IS COL
+        length COL DO  a{{ COL }ROW{ I }}  3DUP >FS  G*NP  FS>
+               LOOP  ;
+
+\ Ex:  A{{ 2 }}ROW*X
+
+
+\ -----------------------------------------------------------------------
+\ row[i] = row[i] - row[j] * x
+\ Inner loop should be hand-coded for speed.
+\ Note: presence of generic operations (EXECUTE@) prevents use of OPT" "
+\ -----------------------------------------------------------------------
+
+\ : ++   UNDER  +  >R    ROT + SWAP R> ;  hi-level version
+( s a s' a' n -- s a+n s' a'+n )
+CODE ++  AX POP.  CX POP.  DX POP.  DX BX ADD.  BX AX ADD.  DX PUSH.
+         CX PUSH.  END-CODE
+
+: 4DUP   DOVER DOVER ;
+\ CODE 4DUP  DX POP.  CX POP.  AX POP.
+\            AX PUSH. CX PUSH. DX PUSH. BX PUSH.
+\           AX PUSH. CX PUSH. DX PUSH.  END-CODE
+
+0 VAR ISTEP
+: }}R1-R2*X   ( M{{ r1 r2 -- :: x -- x)     \ INITIALIZE assumed
+    >R >R   DUP     \ setup      ( -- M{{ M{{ )
+    ( a{{ ) R> }ROW{ 0 }}  DROP  ( -- M{{ seg1 M[r1,0] )
+    ROT     R@ }ROW{ 0 }}  DROP  ( -- seg1 M[r1,0] seg2 M[r2,0] )
+    length  ISTEP * R> ISTEP *   \ loop indices
+    DO  4DUP  I ++  T >FS  G*NP  \ begin innermost loop (optimize for speed)
+        DDUP  T >FS  GR-  T FS>
+    ISTEP /LOOP    DDROP DDROP  ;
+
+\ Ex:   A{{ 6 4 }}R1-R2*X
+
+\ -----------------------------------------------------------------------
+\ v[i] = v[i] - v[j] * x
+\ -----------------------------------------------------------------------
+: }V1-V2*X  ( V{ r1 r2 --  :: x -- )
+    SWAP  >R >R
+    DUP R> }ROW{ }  >FS  G*
+    R> }ROW{ }  3DUP  >FS   GR-   FS> ;
+\ -----------------------------------------------------------------------
+\ permute row labels
+\ -----------------------------------------------------------------------
+: swapper   ( n -- )   CREATE   0 DO  I ,  LOOP  DOES> OVER + + @ ;
+: refill    ( n adr -- )  SWAP  0 DO  I DDUP 2* +  !  2 +LOOP  DROP ;
+: adrs  ( a m n -- a+2m a+2n)  >R  2*  OVER +  SWAP  R> 2*  +  ;
+0 VAR ?SWAP
+: }SWAP  ( a m n -- ) DDUP =
+         IF  DDROP  DROP
+         ELSE  adrs  DDUP  @ SWAP @  ROT !  SWAP !
+               -1 ?SWAP XOR  IS ?SWAP
+         THEN ;
+
+
+\ -----------------------------------------------------------------------
+\ triangularize matrix
+\ by Gauss-Jordan w/ partial
+\ pivoting
+\ -----------------------------------------------------------------------
+0 VAR b{
+
+DCOMPLEX SCALAR DET                              \ leave room for any type!
+: INIT.DET   T   1 OR   ' DET !                   \ set type - force double
+             T 2/  0=                             \ real or complex?
+             IF  F=1 ELSE X=1 THEN  DET  G!L  ;   \ det = 1
+
+: DETERMINANT   ( -- :: x -- x )
+      DET  >FS   G*NP              ( :: -- x D'=x*D)
+      FS.DUP  GABS  F0=  FS>F      \ or compare with condition criterion
+      IF ." DETERMINANT = 0"  ABORT THEN
+      GD  DET  FS>  ;
+
+\ -----------------------------------------------------------------------
+\                                         this is the key routine!
+\ -----------------------------------------------------------------------
+: INITIALIZE   FS.INIT    IS  }{    IS b{   IS a{{
+               a{{ D@  IS length  IS T
+               T #BYTES  IS ISTEP
+               length  }{  refill    \ set up swapper
+               INIT.DET  ;           \ det=1
+
+: }/PIVOT   ( adr n -- :: x -- )  }ROW{ }  3DUP  >FS  G*  FS>  ;
+: TRIANGULARIZE   ( -- )          \ Note:  INITIALIZE assumed!
+    length  0  DO                 \ outer loop - by rows
+       a{{ I }}PIVOT              \ find pivot in col I
+       }{ I IPIV }SWAP            \ exchange rows
+       a{{ I }ROW{ I }} >FS       \ pivot->fstack
+       DETERMINANT  ( :: x -- x ) \ update DET
+       1/G  a{{ I }}ROW*X         \ row[i] = row[i] / pivot
+       b{ I }/PIVOT               \ b[i] = b[i]/pivot
+         length   I 1+  DO        \ middle loop - by rows
+           a{{ I }ROW{ J }} >FS   \ multiplier on ifstack
+           a{{ I J }}R1-R2*X      \ row[i] = row[i]-row[j]*x
+           b{ I J }V1-V2*X        \ do same for B{ and drop x
+         LOOP                     \ end middle loop
+    LOOP    ;                     \ end outer loop
+
+\ -----------------------------------------------------------------------
+\ solve linear equations
+\ -----------------------------------------------------------------------
+REAL*8 SCALAR ZERO   F=0 ZERO G!L
+: BACK-SOLVE ( -- )
+        \ INITIALIZE assumed
+        0  length  2-  DO  ZERO >FS           \ begin outer loop
+           length I 1+                        \ inner loop limits
+           DO a{{ J }ROW{ I }} >FS            \ begin inner loop
+               b{ I }ROW{ }    >FS  G*  G+
+           LOOP                               \ end inner loop
+           b{ I }ROW{ }  3DUP  >FS  GR-  FS>
+        -1  +LOOP  ;                          \ end outer loop
+
+\ Usage:   A{{  B{  BACK-SOLVE
+
+: }}SOLVE ( M{{ V{ adr -- )   INITIALIZE  TRIANGULARIZE  BACK-SOLVE  ;
+
+\ Usage:  A{{  B{  ' }row{  }}SOLVE
+\         where }row{  is the name of the vector of permuted addresses
+

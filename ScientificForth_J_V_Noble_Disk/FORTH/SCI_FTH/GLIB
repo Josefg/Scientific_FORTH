@@ -1,0 +1,78 @@
+\ GENERIC OPERATOR AND FUNCTION LEXICON for
+\ SCIENTIFIC FORTH:  a modern language for scientific computing
+
+\ The definitions of GU: and GB: are as given in the file IFSTACK
+\ defining word for unary operators and library functions
+\ : GU:  CREATE  ]  DOES>   ( -- pfa t )
+\               [%"  87type @  2 AND   +  " %]  EXECUTE@   ;
+
+\ defining word for binary operators leaving 1 argument
+\ : GB:  CREATE  ]  DOES>
+\                   87type @  FS>87   87type @  ( -- adr t1 t2)  \ get args
+\                   [%" DDUP  NEW.TYPE  87type !   WHICH.OP  2*  +  " %]
+\                   EXECUTE@ ;  \ compute new value
+
+TASK GLIB
+: X+F   ( :: x y a -- x+a y )   FROT  F+  FSWAP ;
+: F+X   ( :: a x y -- x+a y )   F-ROT  F+ FSWAP ;
+
+\ binary functions
+GB: G+   F+  F+X  X+F  X+  ;  \ ok
+
+: X-F   ( :: x y a -- x-a y )     FROT  FR- FSWAP  ;
+: F-X   ( :: a x y -- a-x -y )    F-ROT F-  FSWAP FNEGATE  ;
+: FR-X  ( :: a x y -- x-a y )     F-ROT FR- FSWAP  ;
+: XR-F  ( :: x y a -- a-x -y )    F-ROT  F-X ;
+GB: G-   FR-  FR-X  XR-F  XR-  ;  \ ok
+GB: GR-  F-   F-X   X-F   X-   ;  \ ok
+
+: F*X   FROT  X*F ;  ( :: f x y -- x*f y*f)
+GB: G*   F*  F*X  X*F  X*  ;  \ ok
+
+: FR/X   F-ROT 1/X  F*X  ;  ( :: f x y -- x*f/xabs[x+iy] -y*f/xabs[x+iy])
+: XR/  XSWAP  X/  ;
+: XR/F  ( :: x y f -- x/f y/f)    FROT  X/F  ;
+
+GB: G/   FR/  XR/F  FR/X  XR/  ;  \ ok
+
+GU: G2*   F2*  X2* ;
+GU: G2/   F2/  X2/ ;
+
+: F^X   ( 87: a x y -- a^[x+iy] )  FROT   FLN   X*F   XEXP  ;
+: X^F   ( 87: x y a -- [x+iy]^[a+i0] )   F=0    X**  ;
+GB: G^   F**  F^X  X^F  X** ;  ( :: u v -- v^u)
+
+\ unary functions
+CODE  AND!   87type +[]  BX   AND.  BX POP.  END-CODE
+\ <% 21 1E %> 87type W%  5B C%
+
+: XABS(TS)    XABS   1 AND! ;
+GU: GABS      FABS     XABS(TS)  ;
+GU: GNEGATE   FNEGATE  XNEGATE   ;
+GU: GSQRT     FSQRT    XSQRT     ;
+GU: GEXP      FEXP     XEXP      ;
+GU: GLN       FLN      XLN       ;
+GU: GSIN      FSIN     XSIN      ;
+GU: GCOS      FCOS     XCOS      ;
+GU: GTAN      FTAN     XTAN      ;
+GU: GATAN     FATAN    XATAN     ;
+GU: GASIN     FASIN    XASIN     ;
+GU: GACOS     FACOS    XACOS     ;
+GU: GSINH     FSINH    XSINH     ;
+GU: GCOSH     FCOSH    XCOSH     ;
+GU: GTANH     FTANH    XTANH     ;
+GU: GASINH    FASINH   XASINH    ;
+GU: GACOSH    FACOSH   XACOSH    ;
+GU: GATANH    FATANH   XATANH    ;
+
+CODE  OR!  87type +[] BX  OR.  BX POP.  END-CODE
+: GS  2  AND!    ;             \ make single precision
+: GD  1  OR!     ;             \ make double precision
+: GRL 1  AND!    FDROP  ;      \ make real
+: GXX.err  ABORT" Can't make a complex number from a complex number!!!"  ;
+: GXX  ( :: a b -- a+ib) \ make COMPLEX from 2 REALs
+      87type @  DUP 2 AND  GXX.err
+      FS>87   87type @  DUP 2 AND  GXX.err
+      AND  2+   87type !  ;
+
+

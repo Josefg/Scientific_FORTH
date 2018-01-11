@@ -1,0 +1,16 @@
+CREATE FREQS  200 ALLOT OKLW
+: IRAND  RANDOM  100 1024  */  2* ;
+: INIT.FREQS  FREQS 200 0 FILL ;
+: GET.FREQS  1000 0 DO  IRAND  FREQS + 1+!  LOOP ;
+: START.CHISQ  INIT.FREQS  GET.FREQS ;
+: CHISQ  0  100 0 DO  I 2* FREQS + @ 10 - DUP * + LOOP ;
+: .FREQS  100 0 DO I 2*  FREQS + @  I CR . .  LOOP ;
+TIME@  XOR -ROT XOR 10 RANDOMIZE
+: TEST  FINIT  F=0 F=0            ( :: -- S2 S1)
+     25 0 DO  START.CHISQ  CHISQ  ( -- CHISQ*10)
+              S->F  10 S->F F/    ( :: S2 S1 CHISQ)
+              FROT  FOVER F**2  F+  F-ROT F+
+          LOOP
+        25 S->F F/  F**2  FSWAP  25 S->F F/ FR-  F. ;
+
+

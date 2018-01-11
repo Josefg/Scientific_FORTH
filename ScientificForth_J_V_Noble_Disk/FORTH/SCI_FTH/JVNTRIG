@@ -1,0 +1,93 @@
+\ TRIGONOMETRIC AND HYPERBOLIC FUNCTIONS lexicon for
+\ SCIENTIFIC FORTH: a modern language for scientific computing
+
+TASK JVNTRIG
+FIND FCONSTANT 0= ?( FLOAD JVNFLOAT )
+: XDUP   FOVER FOVER  ;  ( 87: x y -- x y x y)
+: XMODSQ  F**2  FSWAP  F**2  F+ ;
+: XABS    XMODSQ  FSQRT ;  ( 87: x y -- sqrt[ x^2 + y^2 ] )
+DECIMAL
+
+F=PI 180. D->F   F/ FCONSTANT F=PI/180
+180. D->F F=PI   F/ FCONSTANT F=180/PI
+: DG->RD     F=PI/180 F* ;
+: RD->DG     F=180/PI F* ;
+0 VAR (>con)   0 VAR (con>)
+: RADIANS   CFA' NEXT IS (>con)  CFA' NEXT IS (con>)  ;
+: DEGREES   CFA' DG->RD IS (>con)  CFA' RD->DG IS (con>) ;
+: >convert  (>con)  EXECUTE ;
+: convert>  (con>)  EXECUTE ;
+RADIANS
+
+CODE FPTAN   <% 9B D9 F2 %>  END-CODE
+CODE FPATAN  <% 9B D9 F3 %>  END-CODE
+
+\ computation of tan[x], sin[x], cos[x] for 8087/80287
+: ENUF?   FSTSW  1024 AND 0= ;   \ bit C2 = 0 ?
+: FNORM   FSWAP  BEGIN  FPREM  ENUF?  UNTIL  FPLUCK ;  ( 87: x k -- x MOD k)
+: REDUCE  ( 87: x k -- x -? k  : -- f)
+          XDUP   F>   DUP   IF  F-  ELSE  FDROP  THEN  ;
+
+: (FTAN)  ( 87: z -- tan[z/2] )   >convert  F2/
+          FDUP  F0=  IF  EXIT  THEN
+          FDUP  F0<  FABS            ( : sgn  87: |x| )
+          F=PI  FNORM                ( : sgn  87: |y| = |x| MOD pi )
+          F=PI F2/      REDUCE       ( : sgn f1q  87: |y| MOD pi/2 )
+          F=PI F2/ F2/  REDUCE       ( : sgn f1q f1o   87: |y| MOD pi/4 )
+          FPTAN  F/
+          IF  F=1 XDUP  F+ F-ROT FR-  F/  THEN  \ adj for octant
+          IF  1/F  FNEGATE    THEN          \ adj for quadrant
+          IF  FNEGATE  THEN   ;                \ adj for sign
+
+: FSIN   ( 87: x -- sin[x]   -- See 8087P )
+         (FTAN) F=1 FOVER  F**2  F+  F/   F2*  ;
+: FCOS   ( 87: x -- cos[x]   -- See 8087P )
+         (FTAN) F**2  F=1  XDUP  FR-  F-ROT  F+  F/  ;
+: FSINCOS ( 87: x -- cos[x] sin[x])  (FTAN) FDUP  F**2
+          F=1 FOVER F-   FSWAP F=1 F+  FUNDER F/  F-ROT  F/  F2* ;
+: FTAN   ( 87: x -- tan[x]   -- See 8087P )
+         (FTAN) F=1 FOVER  F**2  F-  F/   F2*  ;
+
+\ note: for 80387 and above, we can use the following instructions
+\ : FCOS   FABS  >convert  [% <% 9B D9 FF %> %]  FDROP  ;
+\ : FSIN   F0>NP FABS  >convert  [% <% 9B D9 FE %> %]
+\          FDROP  NOT  IF FNEGATE  THEN  ;
+\ : FTAN   F0>NP FABS  >convert  FPTAN  FDROP  NOT  IF FNEGATE  THEN  ;
+\ : FSINCOS   F0>NP FABS  >convert  [% <% 9B D9 FB %> %]
+\             FSWAP NOT  IF FNEGATE  THEN  ;  ( 87: x -- cos[X] sin[x] )
+
+\ computation of atan[x], asin[x], acos[x] for 8087/80287/80387
+HEX
+CODE FCOM  <% 9B D8 D1 %>  END-CODE    \ compare st1 to st0, no pop
+: F>NP    FCOM  FSTSW 0100 AND  0> ;
+: F<NP    FCOM  FSTSW 4100 AND  0= ;
+DECIMAL
+: FATAN   ( 87: x -- atan[x] )  F0<NP  FABS
+          F=1  F>NP  DUP  IF  FR/  F=1  THEN
+          FPATAN  IF  F=PI F2/ FR-  THEN
+          IF FNEGATE THEN    convert>  ;
+: FASIN   ( 87: x -- asin[x] )
+          FDUP F**2  F=1 FR-  F0>NP  NOT  ABORT" arcsin(|x| > 1)"
+          FSQRT  F/  FATAN  convert> ;
+: FACOS   ( 87: x -- atan[x] )
+          F=1  XDUP  FR-  F0>NP  NOT  ABORT" arccos(|x| > 1)"
+          F-ROT  F+ F/  FSQRT  FATAN  F2*  convert> ;
+
+
+: FE^+- ( 87:  x -- e^x e^-x )   FEXP FDUP  1/F  ;
+
+: FTANH   FE^+-  XDUP F- F-ROT F+ F/ ;
+: FCOTH   FE^+-  XDUP F- F-ROT F+ FR/ ;
+: FSINH   FE^+-  F- F2/ ;
+: FCOSH   FE^+-  F+ F2/ ;
+
+: FASINH  FDUP F=1 XABS F+ FLN   ;
+: FACOSH  FABS  FDUP F**2 F=1 F-
+          F0>NP NOT  ABORT" Arg of FACOSH <= 1"  FSQRT F+ FLN  ;
+: FATANH  FDUP F=1  F+ FSWAP F=1 FR- F/
+          F0>NP NOT  ABORT" Arg of FATANH >= 1"  FLN F2/   ;
+: FACOTH  FDUP F=1  F+ FSWAP F=1  F- F/
+          F0>NP NOT  ABORT" Arg of FACOTH <= 1"  FLN F2/   ;
+
+DECIMAL
+

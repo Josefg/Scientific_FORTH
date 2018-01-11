@@ -1,0 +1,130 @@
+\ Complex arithmetic lexicon for
+\ SCIENTIFIC FORTH: a modern language for scientific computing
+TASK JVNCMPLX
+\ complex numbers x+iy are stored on the 80x87 stack as ( 87: -- x y)
+\ ---------------------------------------- LOAD, STORE
+: X@  DUP  F@  4+  F@ ;
+: X!  DUP  4+  F!  F! ;
+: DX@  DUP  DF@  4+  4+  DF@ ;
+: DX!  DUP  4+  4+  DF!  DF! ;
+
+CODE  F@L  <% 8C DA 1F 9B D9 07 8E DA 5B 9B %> END-CODE  ( : seg off --)
+CODE  F!L  <% 8C DA 1F 9B D9 1F 8E DA 5B 9B %> END-CODE
+CODE  DF@L <% 8C DA 1F 9B DD 07 8E DA 5B 9B %> END-CODE
+CODE  DF!L <% 8C DA 1F 9B DD 1F 8E DA 5B 9B %> END-CODE
+
+: X@L  DDUP  F@L  4+  F@L ;
+: X!L  DDUP  4+  F!L  F!L ;
+: DX@L  DDUP  DF@L  4+  4+  DF@L ;
+: DX!L  DDUP  4+  4+  DF!L  DF!L ;
+\ ------------------------------------ END LOAD, STORE
+
+\ --------------------------------- MANIPULATE 87STACK
+: X. FSWAP  E. ."  + i " E. ;    ( 87: x y --)     \ emit complex #
+: X=0  F=0 F=0 ;                 ( 87: -- 0 0)
+: X=1  F=1 F=0 ;                 ( 87: -- 1 0)
+: X=i  X=1 FSWAP ;               ( 87: -- 0 1)
+: XDROP  FDROP FDROP ;           ( 87: x y --)
+FIND XDUP 0= ?( : XDUP   FOVER FOVER ; )     ( 87: x y -- x y x y)
+CODE XSWAP   2 FXCH.  FINCSTP. 2 FXCH.  FDECSTP.  END-CODE
+\ CODE XSWAP  <% 9B D9 CA 9B D9 F7 9B D9 CA 9B D9 F6 %> \ 8087 ver.
+\ CODE XSWAP  <% 9B D9 CA D9 F7 D9 CA D9 F6 %> \ 80287+ ver.
+( 87: x y a b -- a b x y)
+: REAL    STATE @  IF   COMPILE FDROP   ELSE   FDROP   THEN  ; IMMEDIATE
+: IMAG    STATE @  IF   COMPILE FPLUCK  ELSE   FPLUCK  THEN  ; IMMEDIATE
+: XCONJG  STATE @  IF   COMPILE FNEGATE ELSE   FNEGATE THEN  ; IMMEDIATE
+CODE XOVER  3 FLD. 3 FLD.  END-CODE   \ <% 9B D9 C3 9B D9 C3 %>
+: XUNDER   XSWAP  XOVER  ;
+
+CODE F*NP   FWAIT.  1 FMUL.  END-CODE  ( 87: x y -- x x*y)
+: X*F   ( 87: x y a -- x*a y*a)  FSWAP F*NP  F-ROT  F*  FSWAP ;
+: X/F     ( 87: x+iy a -- x/a + iy/a)   1/F X*F ;
+CODE X*NP   FWAIT.
+        1 FLD.     4 FMUL.
+        1 FLD.     4 FMUL.  1 FSUBRP.
+        2 FXCH.    3 FMUL.
+        1 FXCH.    4 FMUL.  1 FADDP.
+END-CODE                               ( 87: z1 z2 -- z1 z1*z2)
+
+: XPLUCK  XSWAP XDROP ;
+
+: X*   X*NP  XPLUCK ;   ( 87: x1 y1  x2 y2 -- x1*x2-y1*y2  x1*y2+y1*x2 )
+: X+   FROT F+  F-ROT F+ FSWAP ;  ( 87: a b x y -- a+x b+y)
+
+: XNEGATE  FSWAP FNEGATE FSWAP FNEGATE ;
+: X-  XNEGATE  X+ ;
+: XR-  XSWAP X- ;
+
+FIND XMODSQ 0= ?((( : XMODSQ  F**2  FSWAP   F**2  F+ ;
+                    : XABS  XMODSQ  FSQRT ; )))
+
+: 1/X   FNEGATE  XDUP  XMODSQ  X/F ;
+: X/    1/X  X* ;
+: X2/   F2/  FSWAP  F2/  FSWAP  ;
+: X2*   F2*  FSWAP  F2*  FSWAP  ;
+
+: ARG   ( 87: x y -- arg[x+iy] )
+        F0<NP FABS FSWAP  F0<NP FABS   ( : -- sgn[y] sgn[x]  87: -- |y| |x|)
+        F>NP DUP  IF  FSWAP  THEN  FPATAN
+        IF  F=PI F2/ FR-  THEN         \ correct for octant
+        SWAP 3 AND + ABS  DUP 1 AND IF FNEGATE THEN
+        DUP 2/ SWAP 1 AND + S->F F=PI  F*  F+   convert> ;
+
+: >POLAR  ( 87 x+iy -- r phi )  XDUP  XABS  F-ROT  ARG  ;
+: POLAR>  ( 87 r phi -- x+iy )  FSINCOS FROT  X*F ;
+
+: i*      FNEGATE FSWAP ;  ( 87: x+iy -- -y+ix)
+: (-i)*   FSWAP FNEGATE ;  ( 87: x+iy -- y-ix)
+
+: XLN   >POLAR   FSWAP  F0=NP  ABORT" Can't take XLN of 0"  FLN   FSWAP ;
+
+: XEXP   ( 87: z -- exp[z] )   FSINCOS  FROT  FEXP  X*F ;
+
+: X**2   XDUP  F**2 FSWAP F**2  FR-  F-ROT  F* F2*  ;
+: X**N   X=1   XSWAP       ( n --  87: z -- z**n )
+       DUP  50 < IF
+         BEGIN   DUP  0>  WHILE
+                 DUP  1 AND   IF XUNDER  X*  XSWAP THEN X**2
+                 2/
+         REPEAT  XDROP  DROP
+       ELSE   FLN  S->F  X*F  XEXP  THEN  ;
+
+: X**   ( 87:  x y u v --  [x+iy]**[u+iv] )  XSWAP XLN  X* XEXP  ;
+
+: XSQRT   ( 87: z -- z^.5 )
+     XDUP                                ( 87: -- x y x y)
+     XMODSQ                              ( 87: -- x y [x^2+y^2] )
+     F0=NP   IF   EXIT  THEN             ( 87: -- x y )
+     FSQRT FROT                          ( 87: -- y [x^2+y^2]^.5 x )
+     F+  F2/                             ( 87: -- y [[x^2+y^2]^.5+x]/2 )
+     FSQRT                               ( 87: -- y [[[x^2+y^2]^.5+x]/2]^.5 )
+     FOVER      F0<  IF  FNEGATE  THEN
+     FUNDER     F/  F2/   ;
+
+\ COMPLEX TRIGONOMETRIC FUNCTIONS
+: XCOSH    ( 87: z -- cosh[z] )  XEXP   XDUP   1/X   X+  X2/  ;
+: XSINH    ( 87: z -- sinh[z] )  XEXP   XDUP   1/X   X-  X2/  ;
+: XTANH    XEXP  X**2    i*   XDUP   F=1 F-   XSWAP   F=1 F+   X/  ;
+: XCOTH    XTANH  1/X ;
+: XCOS     ( 87: z -- cos[z] )   i*    XCOSH  ;
+: XSIN     ( 87: z -- sin[z] )   i*    XSINH  (-i)* ;
+: XTAN     ( 87: z -- tan[z] )   i*    XTANH  (-i)* ;
+
+\ COMPLEX INVERSE TRIGONOMETRIC FUNCTIONS
+\ after Abramowitz & Stegun, p. 80-81
+: AorB   ( 87: x y n -- a)   FROT  F+  XABS  F2/ ;
+: A   F=1  AorB ;
+: B   F=1 FNEGATE  AorB ;
+: ALPHA.BETA  ( 87: x y -- alpha beta)   XDUP  A  F-ROT  B
+              XDUP  F+  F-ROT  F-  ;
+: XASIN   ALPHA.BETA   FASIN  SWAP  FDUP  F**2 F=1 F-  FSQRT  F+  FLN ;
+: XACOS   ALPHA.BETA   FACOS  SWAP  FDUP  F**2 F=1 F-
+          FSQRT  F+  FLN  FNEGATE ;
+: XATAN   XDUP  FOVER  XMODSQ  FNEGATE F=1 F+  F/ F2*  FATAN  F2/  F-ROT
+          FSWAP  F**2  FOVER  F=1 F+ F**2  ( :87 -- re y x^2 [y+1]^2 )
+          FROT  F=1 F- F**2  FROT  FUNDER  F+  F-ROT  F+  F/  FLN  F2/ F2/ ;
+: XASINH  i*   XASIN  (-i)* ;
+: XACOSH  XACOS  i*   ;
+: XATANH  i*   XATAN  (-i)* ;
+BEHEAD'' AorB ALPHA.BETA
+
