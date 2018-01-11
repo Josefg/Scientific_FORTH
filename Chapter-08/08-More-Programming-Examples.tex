@@ -899,8 +899,7 @@ whose solution is
 \tau_{N} = \lambda N \log_{2}(N) + 2\tau_{N/2}
 \end{align}
 
-Although the FFT algorithm can be programmed recursively, it
-almost never is. To see why, imagine how the coefficients would be re-shufﬂed by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
+Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shufﬂed by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
 
 Table 8-1 Bit-reversal for re-ordering discrete data
 
@@ -1036,115 +1035,88 @@ Fig. 8-7 \textit{Power spectrum of FFT of 1983 IBM prices (from Table 63)}
 
 Table 8-3 \textit{FFT of IBM weekly stock prices, 1983}
 
-Table 8-4 \textit{Reconstructed IBM prices (inverse FFT)
+Table 8-4 \textit{Reconstructed IBM prices (inverse FFT)}
 
 \subsection{Gram polynomials}
-\TallC{Gram} polynomials are useful in fitting data by the linear least-
-squares method. The usual method is based on the following
-question: What is the “best" polynomial,
+\TallC{Gram} polynomials are useful in fitting data by the linear least-squares method. The usual method is based on the following question: What is the "best" polynomial,
 
-N
-P1111) = 207. r". (34)
+\begin{equation}
+P_N(x) = \sum_{n=0}^N \gamma_n x^n
+\end{equation}
 
-omvmunm-umm.
+(of order N) that I can use to fit some set of M pairs of data points,
 
-Cl'teptere—MoreProgrammingExamplee Sclendiic FORTH ,
+\begin{equation}
+, k=0,1, ... , M-1
+\end{equation}
 
-(of order N) that I can use to fit some set of M pairs of data points, 1
+(with M > N) where f(x) is measured at M distinct values of the independent variable x ?
 
-1
+The usual answer, found by Gauss, is to minimize the \textbf{squares} of the \textbf{deviations} (at the points $x_k$) of the fitting function $P_N(x)$ from the data --possibly weighted by the uncertainties of the data That is, we want to minimize the \textbf{statistic}
 
-{1"}, k=0, 1, ,M—1 1
-k
+\begin{equation}
+\chi^2 = \sum_{k=0}^{M-1} \left( f_k - \sum_{n=0}^{N} \gamma_n x_{k}^n \right) \frac{1}{\sigma_{k}^{2}}
+\end{equation}
 
-(with M > N) where f(x) is measured at M distinct values of the
-independent variable x ?
+with repect to the $N + 1$ parameters $\gamma_{n}$.
 
-The usual answer, found by Gauss, is to minimize the squares of
-the deviations (at the points xk ) of the fitting function PN (x) from
-the data -- possibly weighted by the uncertainties of the data That
-is, we want to minimize the statistic
+From the differential calculus we know that a function's first derivative vanishes at a minimum, hence we differentiate $\chi^{2} with respect to each $\gamma_{n}$ independently, and set the results equal to zero. This yields $N + 1$ linear equations in N + 1 unknowns:
 
-2 M—1 N
-X = 2 (ft _ 2 1’11in
-k=0
+\begin{equation}
+\sum_{m} A_{nm} \gamma_{m} = \beta_{n}, n = 0, 1, ... , N
+\end{equation}
 
-2 1
-“=0 ) 2 (35)
+where (the symbol $\triangleq$ means “is defined by”)
 
-with repect to the N + 1 parameters yl| .
-From the differential calculus we know that a function’g first
-derivative vanishes at a minimum, hence we differentiate x with
+\begin{equation}
+A_{nm} \triangleq \sum{k=0}^{M-1}(x_{k})^{n+m} \frac{1}{\sigma_{k}^{2}}
+\end{equation}
 
-respect to each yn independently, and set the results equal to
-zero. This yields N + 1 linear equations in N + 1 unknowns:
-
-2 Anm 7m =ﬂn 1 "=011, , N (36)
-
-where (the symbol 9 means “is defined by”)
-
-A M_1 71+m 1
-Anm = 20 (x11 ; (37a)
-' k
 and
-A ”'1 1
-fin = ongfk— (37b)
 
-In Chapter 9 we develop methods for solving linear equations.
-Unfortunately, they cannot be applied to Eq. 36 for N 2 9 be-
-cause the matrixAm approximates a Hilbert matrix,
+\begin{equation}
+\beta_{nm} \triangleq \sum{k=0}^{M-1}x_{k}^{n}f_{k}\frac{1}{\sigma_{k}^{2}}
+\end{equation}
 
- 
+In Chapter 9 we develop methods for solving linear equations. Unfortunately, they cannot be applied to Eq. 36 for $N \gt 9$ cause the matrix $A_{nm} approximates a Hilbert matrix,
 
-const.
-H“ - n+m+1 ’
+\begin{equation}
+H_{nm} = \frac{const.}{n+m+1} ,
+\end{equation}
 
-MI-MWW 195
+a particularly virulent example of an exponentially \textbf{ill-conditioned matrix}. That is, the round off error in solving 36 grows exponentially with $N$, and is generally unacceptable We can avoid roundolf problems by expanding in polynomials rather than monomials:
 
-a particularly virulent example of an exponentially ill-
-eondltlonetl matrlx. That is. the roundofl' error in solving 36
-grows exponentially with N, and is generally unacceptable We
+\begin{equation}
+\end{equation}
 
-can avoid roundolf problems by expanding' in polynomials rather
-than monomials:
-
-2 g 2 i
-z E. (1. lg) 7.12.0.1) of 138)
 The matrix then becomes
-14— 1
-=20 pn(xk)pm(xk)_ of (39a)
-and the inhomogeneous term is now
-M-1 1
-fin = 2 17110:)ka (39b)
-k-o 1:
 
-5 there any choice of the polynomials p,,(x) that will eliminate
-roundofi'? The best kinds of linear equations are those with
-nearly diagonal matrices. We note the sum in Eq. 39a is nearly an
-integral, if M is large. If we choose the polynomials so they are
-orthogonal with respect to the weight function
-W(x) =fi01x. - x) 0(x — ..-),
-k
+\begin{equation}
+\end{equation}
+
+and the inhomogeneous term is now
+
+\begin{equation}
+\end{equation}
+
+\TallC{Is} there any choice of the polynomials $p_{n}(x)$ that will eliminate roundoff? The best kinds of linear equations are those with nearly diagonal matrices. We note the sum in Eq. 39a is nearly an integral, if M is large. If we choose the polynomials so they are \textbf{orthogonal} with respect to the weight function
+
+\begin{equation}
+\end{equation}
 
 where
 
-0, <0
-0(x)={1:20
+\begin{equation}
+\end{equation}
 
-thenA“, will be nearly diagonal, and well-conditioned.
+then $A_{nm}$, will be nearly diagonal, and well-conditioned.
 
-196
+\TallC{Orthogonal} polynomials play an important role in numerical analysis and applied mathematics. They satisfy \textbf{orthogonality relations}\sepfootnote{08_23} of the form
 
-Chapter 3 - More Progmmmhg Examples Scientific FOR!
+\begin{equation}
+\end{equation}
 
-Orthogonal polynomials play an important role in numerical an:
-
-y%s and applied mathematics. They satisfy (Ithogmality rat
-tions of the form
-
-B _ = 1, m=n
-I,drw(x)p..(x)p..(x) — a... — {0, ,m (40)
-where the weight function w(x) is positive.
+where the \textbf{weight function} $w(x)$ is positive.
 
 For a given w(x) and interval [A,B], we can construct orthogom
 polynomials using the Gram-Schmidt orthogonalization process
