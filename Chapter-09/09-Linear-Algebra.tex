@@ -645,7 +645,7 @@ looks them up. Then the (swapped) element would be
 A{{ J }row{ I }}.
 \end{verbatim}
 
-To implement this syntax we define11
+To implement this syntax we define\sepfootnote{09_11}
 
 \begin{verbatim}
 :swapper (n - -) l
@@ -654,36 +654,29 @@ DOES> OVER + + @ ;
 \ this is a defining word
 \end{verbatim}
  
-We would define the array of row indices via
+We would define the array of row indices \textit{via}
 
 \begin{verbatim}
 A{{ D.LEN swapper }row{ \ create array }row{
 \end{verbatim}
 
-We have initilized the vector }row{ by filling it with integers
-from 0 to N-l while defining it.
+We have initilized the vector \verb|}row{| by filling it with integers
+from 0 to N-1 while defining it.
 
-Suppose we wanted to re-initialize the currently vectored row- 5
-index array: this is accomplished via
+Suppose we wanted to re-initialize the currently vectored row-index array: this is accomplished \textit{via}
 
-A{{ D.LEN '}row{ refill .i
+\begin{verbatim}
+A{{ D.LEN '}row{ refill 
+\end{verbatim}
 
 where
 
-ram-m. ,. . .m'. .
-
-: refill (n adr - -)
+\begin{verbatim}
+: refill (n adr --)
 SWAP 0 DO I 2* DDUP + !
 2 +LOOP DROP;
+\end{verbatim}
 
- 
-
-11.
-
-mm"... 'mn-Lk,fi-u\_ .. aims . Vannr
-
-The HS/FORTH words VAR and IS define a data structure that can be changed, like a FORTH
-VARIABLE: 0 VAR X 3 IS X but has the run-time behavior of a CONSTANT: X . 3 olt.
 
 % awe-mm 22.
 
