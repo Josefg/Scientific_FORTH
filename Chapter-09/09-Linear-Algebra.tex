@@ -725,7 +725,7 @@ and back again:
 
 \TallC{Next}, we need a word to find the pivot element in a given
 column, searching from a given n. The steps in this procedure
-are shown in Fig. \eref{fig:09_02} on page \pageref{fig:09_02} below.
+are shown in Fig. \ref{fig:09_02} on page \pageref{fig:09_02} below.
 
 We anticipate using generic operations Git defined in Chapter 5 
 to perform fetch, store and other useful manipulations on the
@@ -777,21 +777,6 @@ a LEN@ IS Length ;
 
 \ length - > Length
 
-\end{verbatim} 
-
-
-i
-
-\ a place to store data type
-
-i
-
- 
-
-
-
-% Guano-WNW 231
-\begin{verbatim}
 
 2))PIVOT (M{{ col-- ::--)
 
@@ -818,54 +803,45 @@ FDROP ; \deanupfstack
 \ Usage: A{{ 2 "PIVOT
 \end{verbatim}
 
-Mates:
+\underline{Notes:}
 
-0 We avoid filling us: the parameter stack with addresses that
-have to be Eagle , by putting arguments in named storage
-locations (J ). We anticifiate setting all the parameters in
-the beginning using IN! 21". which can be extended later
-if necessary.
+\begin{itemize}
+  \item We avoid filling up the parameter stack with addresses that have to be
+	  juggled, by putting arguments in named storage locations (\textbf{VAR}s).
+		We anticifiate setting all the parameters in the beginning using
+		\textbf{INITIALIZE} which can be extended later if necessary.
+  \item We have used a word from the COMPLEX arithmetic lexicon, namely
+	  \textbf{XDUP( FOVER FOVER)} to double-copy the contents of the fstack,
+		since the test $F<$ drops both arguments and leaves a flag.
+  \item There is little to be gained by optimizing (and if we did we should
+	  have had to avoid the generic Gx words because they cannot be optimized
+		by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
+		is used, negligible (for large N) compared with the $N^3/3$ in the
+		innermost oop.
+\end{itemize}
 
-0 We have used a word from the COMPLEX arithmetic lexicon,
-namely XDUP( FOVER FOVER) to double-copy the contents
 
-of the fstack, since the test F< drops both arguments and
-leaves a flag.
 
-0 There is little to be gained by optimizing (and if we did we
-should have had to avoid the generic Gx words because they
-cannot be optimized by the PIS/FORTH recursive-descent
-o timizer) because only}? /2 time is used, ne ligible (for large
+The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
 
-compared with the [3 in the innermost oop.
-
-The Gx operations are found in the file GLIBJ-TH.
-
-To test the word "PIVOT we can add some lines to the test file:
-
-oncn .(weammmmo.1.2)
-
-on
+To test the word \verb|}}PIVOT| we can add some lines to the test file:
 
 \begin{verbatim}
 G! .(A{{O})PIVOT mv .) BL EMIT A{{0)}PNOT IPN.
 on .(A{{1})PNOT IPIV .) BL em A{{1}}PNOT IPN .
 on .(A{{2})PIVOT IPN .) BL am A({2}}PNOT new.
 \end{verbatim}
-one:
-
-% Chapter 9 - Unear Algebra Scientific FORTH
-
 The result is the additional screen output
+
 
 \begin{verbatim}
 A{{ o }}PIVOT IPIV 1
 A{{1}}P|VOT IPIV 1
 A{{ 2 }}PIVOT IPIV 2
+OK
 \end{verbatim}
-OR
 
-From our pseudocode expression (see Fig. 9-1, p. 227) of the
+From our pseudocode expression (see Fig. \ref{fig:09_01}, p. \pageref{fig:09_01}) of the
 pivotal elimination algorithm we see that the next operation is to
 multiply a row by a constant. To do this we define
 
@@ -891,29 +867,27 @@ DO(ROW*X)LOOP ; \Ioop
 \Ex: A{{ 2 }ROW*X
 
 \end{verbatim}
-Mates:
 
-0 While DO(ROW'X)LO0P and ??ROW'X clear the param-
-eter stack in approved FORTH fashion, they leave the constant
-multiplier x on the fstack. That is, we antimpate next multipl -
-ing the corresponding row of the inhomogeneous term b (in
+\begin{itemize}
+  \item  While DO(ROW'X)LO0P and ??ROW'X clear the parameter stack in approved FORTH fashion, they leave the constant
+multiplier x on the fstack. That is, we antimpate next multipling the corresponding row of the inhomogeneous term b (in
 the matrix equation A-x = b) by the same constant x.
-
-e We assume INITIALIZE (includin INITJSTEP) has been
-invoked before "PIVOT or "110 'X.
-
-o Anticipating the (possible) need to optimize, we factor the loop
+  \item We assume INITIALIZE (includin INITJSTEP) has been
+	  invoked before \verb|}}PIVOT| or "110 'X.
+  \item Anticipating the (possible) need to optimize, we factor the loop
 right out of the word. We also com me the addresses fast by
 putting base addresses on the stac and then incrementing
 them by the cell-size, in bytes.
+\end{itemize}
 
 % aims-mum 233
 
 Subtracting row 1 (times a constant) from row I is quite similar to
 multiplying a row by a constant. The process can be broken down
-into the pseudocoded actions in Fig, 9-3 below.
+into the pseudocoded actions in Fig, \ref{fig:09_03} below.
 
  
+\begin{figure}
 \begin{verbatim}
 
  
@@ -930,8 +904,9 @@ LOOP
  
 
 \end{verbatim} 
-
-Fig. "Steps In nm-rwx
+	\caption{Fig. "Steps In nm-rwx}
+	\label{fig:09_03}
+\end{figure}
 
 A first attempt might look as follows:
 
@@ -1177,7 +1152,7 @@ LOOP ; \end loop 1
 
 Now at last we can back-solve the triangularized equations to find
 
-the unknown x 's. The word for this is }BACK-SOLVE, defined
+the unknown x 's. The word for this is \verb|}BACK-SOLVE|, defined
 as follows:
 
 % 238
@@ -1560,9 +1535,7 @@ ing track of zero elements we could reduce this time by anothel
 elimination) of 0(N3). However, the brute-force method is un-
 satisfactory for another reason: it takes twice the storage of more
 sophisticated algorithms. Modern matrix packages therefore "8:"
-LU decomposition for both linear equations and matrix inver~
-
-sion.
+LU decomposition for both linear equations and matrix inversion.
 
  
 
@@ -1571,7 +1544,7 @@ sion.
 We now investigate the LU decomposition algorithm". Sup-
 pose a given matrix A could be rewritten
 
-awam 1m 0 0 }lmflm
+awam 1m 0 0\}lmflm
 A: 310311 = L'U = 1401110 0  11 (42)
 .................. 0 0
 
