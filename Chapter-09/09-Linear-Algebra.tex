@@ -677,10 +677,7 @@ SWAP 0 DO I 2* DDUP + !
 2 +LOOP DROP;
 \end{verbatim}
 
-
-% awe-mm 22.
-
-% 'Ibswapthetworows
+To swap the two rows
 
 \begin{verbatim}
 :ADRS >R 2'OVER + SWAPR> 2' +;
@@ -696,94 +693,73 @@ nor! SWAP 1
 
 -1 ?SWAP XOR IS ?SWAP \ "' ?SWAP
 THEN ;
+\end{verbatim}
 
 Test this with a 3-dimensional row-index array:
 
+\begin{verbatim}
 3 swapper }row{
 
 :TEST ODOI}row{ CR. LOOP;
 3 TEST
-
 0
-
 1
-
 2 ok
+\end{verbatim}
 
 Now swap rows 1 and 2:
 
-'}row{ 1 2 }SWAP 3TEST
-o
-
-2
-10k
-
-and back again:
-
+\begin{verbatim}
 '}row{ 1 2 }SWAP 3 TEST
 0
-
+2
+1 ok
+\end{verbatim}
+and back again:
+\begin{verbatim}
+'}row{ 1 2 }SWAP 3 TEST
+0
 1
-20k
-
+2 ok
 \end{verbatim} 
-Next, we need a word to find the pivot element in a given
+
+\TallC{Next}, we need a word to find the pivot element in a given
 column, searching from a given n. The steps in this procedure
-are shown in Fig. 9-2 on page 230 below.
+are shown in Fig. \eref{fig:09_02} on page \pageref{fig:09_02} below.
 
-We anticipate using generic operations Git defined in Chapter 5
-
+We anticipate using generic operations Git defined in Chapter 5 
 to perform fetch, store and other useful manipulations on the
 matrix elements, without specifying their type until mn-time. lt
-
-% eJuhnvuouoma-Almm.
+is thus useful to have a place to store the type (other than the
+second cell of the array data structure). We arrange this \textit{via}
 
 % 230 Chapter 9 - Linear Algebra
-
-% Scientific FORTH
-
- 
-
+\begin{figure}
 \begin{verbatim}
 :A{{ col# }}PIVOT
 
 N col# 1+ DO
-
- 
-
 Yes IF
 No 1 Put larger on fstack
 set I.PIV = I
 t__l THEN
 . LOOP
 ; \ exit
+M{{ | }{ 00"" }}I > M{{ col# }{ 00h" }}I 7 
+\end{verbatim}
+% Fig. 9-2 Pseudocode for finding the pivot element
+    \caption{Pseudocode for finding the pivot element}
+	\label{fig:09_02}
+\end{figure}
 
- 
 
- 
 
-M{{ | }{ 00"" }}I > M{{ col# }{ 00h" }}I 7
-
- 
-
- 
-
- 
-
- 
+\begin{verbatim}
+0 VAR T		\ a place to store data type
 \end{verbatim}
 
-Fig. 9-2 Pseudocode for finding the pivot element
-
-is thus useful to have a place to store the type (other than the
-
-second cell of the array data structure). We arrange this via
-
-OVART
-
-The rest of the definition is rendered self-explanatory by the
-
-vertical commenting style (a must for long12 words):
+The rest of the definition is rendered self-explanatory by the 
+vertical commenting style (a must for long\sepfootnote{09_12} words):
 \begin{verbatim}
 OVAR Length \Iength of matrix
 OVAR COL \currentcol#
@@ -803,8 +779,6 @@ a LEN@ IS Length ;
 
 \end{verbatim} 
 
-12. While Brodie (11", p.180) quotes Charles Moore. FORTH's inventor, as offering l-line defini-
-tions as the goal in FORTH programming, sometimes this is just not possible.
 
 i
 
