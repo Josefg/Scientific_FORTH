@@ -97,6 +97,7 @@ below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 
 % (4)
 \begin{equation}
+    \label{eq:09_04}
     \overleftrightarrow{A} \cdot \vec{x} = 0
 \end{equation}
 exists if and only if $||\overleftrightarrow{A}||=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
@@ -107,6 +108,7 @@ The \textbf{secular equation} (or determinantal equation)
 
 % (5)
 \begin{equation}
+    \label{eq:09_05}
     || \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} || = 0
 \end{equation}
 is a polynomial of degree N in $\lambda$, hence has N roots (either real or
@@ -166,6 +168,7 @@ $\pm i \omega$ and hence to a solution that grows exponentially in time, as
 
 % (9)
 \begin{align}
+    \label{eq:09_09}
 \sin(i\, \omega t) = i \sinh(\omega t)\nonumber \\
 \\
 \cos(i\, \omega t) = i \cosh(\omega t)\nonumber
@@ -177,7 +180,7 @@ initial guess $x^{(0)}$ and let
     x^{(n)}=\frac{A x^{(n-1)}}{\Big(x^{(n-1)}, \rho x^{(n-1)}\Big)^{^1/_2}}\nonumber
 \end{equation}
 Assuming the largest eigenvalue is unique,the sequence of vectors $x^{(n)} , n = 1, 2,\dotsc$, is guaranteed to converge to the vector
-corresponding to that eigenvalue, usually after just a few iteralions.
+corresponding to that eigenvalue, usually after just a few iterations.
 
 If \textit{all} the eigenvalues are wanted, then the only choice is to solve
 the secular equation \ref{eq:09_05} for all N roots.
@@ -660,7 +663,7 @@ We would define the array of row indices \textit{via}
 A{{ D.LEN swapper }row{ \ create array }row{
 \end{verbatim}
 
-We have initilized the vector \verb|}row{| by filling it with integers
+We have initialized the vector \verb|}row{| by filling it with integers
 from 0 to N-1 while defining it.
 
 Suppose we wanted to re-initialize the currently vectored row-index array: this is accomplished \textit{via}
@@ -729,7 +732,7 @@ are shown in Fig. \ref{fig:09_02} on page \pageref{fig:09_02} below.
 
 We anticipate using generic operations Git defined in Chapter 5 
 to perform fetch, store and other useful manipulations on the
-matrix elements, without specifying their type until mn-time. lt
+matrix elements, without specifying their type until run-time. It
 is thus useful to have a place to store the type (other than the
 second cell of the array data structure). We arrange this \textit{via}
 
@@ -814,10 +817,10 @@ FDROP ; \deanupfstack
 	  \textbf{XDUP( FOVER FOVER)} to double-copy the contents of the fstack,
 		since the test $F<$ drops both arguments and leaves a flag.
   \item There is little to be gained by optimizing (and if we did we should
-	  have had to avoid the generic Gx words because they cannot be optimized
+	  have had to avoid the generic \textbf{Gx} words because they cannot be optimized
 		by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
 		is used, negligible (for large N) compared with the $N^3/3$ in the
-		innermost oop.
+		innermost loop.
 \end{itemize}
 
 
@@ -869,22 +872,22 @@ DO(ROW*X)LOOP ; \Ioop
 \end{verbatim}
 
 \begin{itemize}
-  \item  While DO(ROW'X)LO0P and ??ROW'X clear the parameter stack in approved FORTH fashion, they leave the constant
-multiplier x on the fstack. That is, we antimpate next multipling the corresponding row of the inhomogeneous term b (in
-the matrix equation A-x = b) by the same constant x.
-  \item We assume INITIALIZE (includin INITJSTEP) has been
-	  invoked before \verb|}}PIVOT| or "110 'X.
+	\item  While \regc{DO(ROW*X)LOOP} and \regc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
+		multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
+		the matrix equation \textbf{A-x = b}) by the same constant \textbf{x}.
+	\item We assume \regc{INITIALIZE} (including \regc{INIT.ISTEP}) has been
+		invoked before \verb|}}PIVOT| or \verb|}}ROW*X|.
   \item Anticipating the (possible) need to optimize, we factor the loop
 right out of the word. We also com me the addresses fast by
-putting base addresses on the stac and then incrementing
+putting base addresses on the stack and then incrementing
 them by the cell-size, in bytes.
 \end{itemize}
 
 % aims-mum 233
 
-Subtracting row 1 (times a constant) from row I is quite similar to
+Subtracting row I (times a constant) from row J is quite similar to
 multiplying a row by a constant. The process can be broken down
-into the pseudocoded actions in Fig, \ref{fig:09_03} below.
+into the pseudocoded actions in Fig.\ref{fig:09_03} below.
 
  
 \begin{figure}
@@ -904,7 +907,7 @@ LOOP
  
 
 \end{verbatim} 
-	\caption{Fig. "Steps In nm-rwx}
+	\caption{Fig. "Steps In \regc{\}\}R1-R2*X}}
 	\label{fig:09_03}
 \end{figure}
 
@@ -939,35 +942,23 @@ ISTEP [LOOP DDROP DDROP ;
 \ INITIALIZE is assumed
 
 \end{verbatim} 
-As with HROW'X we avoid the execution-speed penalty of
+As with \verb|}}ROW*X| we avoid the execution-speed penalty of
 calculating addresses within the loop by not using the phrase
-
-% emvmim-Mmm.
-
-% ChapterO-LhaarNgabra .'i'clamlllcFORTHi
-
-% a{{ l }row{ J }}.
-
-     
-  
- 
- 
- 
-
+\begin{verbatim}
+a{{ I }row{ J }} .
+\end{verbatim}
 However, we are doing a lot of unnecessary work inside the loop
-by making 5 choices based on datatype. There are also a lot ,
+by making 5 choices based on datatype. There are also a lot of
 unnecessary moves to/from the ifstack. This is an example where
 speed has been sacrificed to compactness of code: one program
-solves equations of any ("scientific") data format - REAL'4,
-REAL-8, COMPLEX'8 and COMPIJEX' 16. i
+solves equations of any ("scientific") data format - REAL*4,
+REAL*8, COMPLEX*8 and COMPLEX*16. 
 
-Conversely, we can both eliminate the extra work and accelerate?
-execution simply by defining a separate inner loop for each data;
-type, letting the choice take place once, outside the inner loopX
-This multiplies the needed code fourfold (or more-fold, if we?
+Conversely, we can both eliminate the extra work and accelerate
+execution simply by defining a \textit{separate} inner loop for each data;
+type, letting the choice take place once, outside the inner loop.
+This multiplies the needed code fourfold (or more-fold, if we
 optimize).
-
-I
 
 The 4 inner loops are
 \begin{verbatim}
@@ -997,19 +988,14 @@ DDUP DCP@L CPR- DCPIL
 16 /LOOP R> F>FS;
 \end{verbatim} 
 
-Not surprisingly, the loops contain some duplicate code. but this- '
-is a small price to pay for the speed increase. A significant furthe r3
-
- 
-
-% thlIanVNobIatm-Alrlditsraaarvad.
-
-increase can be obtained easily. using the HS/FOR'I'H recursive-
+Not surprisingly, the loops contain some duplicate code, but this
+is a small price to pay for the speed increase. A significant further
+increase can be obtained easily, using the HS/FORTH recursive-
 descent optimizer to define these inner loops, or by redefining
 the loops in assembler (for ultimate speed).
 
-Now we can redefine \verb|}}Rl-RZ'X| using vectored execution, via
-HS/FORI'H's CASE: . .. :CASE construct, or the equivalent high-
+Now we can redefine \verb|}}R1-R2*X| using vectored execution, \textit{via}
+HS/FORTH's \regc{CASE: ... ;CASE} construct, or the equivalent high-
 level version given here:
 
 \begin{verbatim}
@@ -1030,10 +1016,12 @@ R> I.STEP ' \ r2'I.STEP (lower limit)
 
 T DO(R1-R2'X)LOOP DDROP DDROP ;
 \ We assume INITIALIZE has been invoked
+\end{verbatim} 
 
 Another word is needed to perform the same manipulation on
-the inhomogeneous term. Since this latter process runs in 0(N )
+the inhomogeneous term. Since this latter process runs in $O(N^2)$
 time we need not concern ourselves unduly with efficiency.
+\begin{verbatim}
 
 :}V1-V2*X (r1 r2-- ::x--)
 SWAP >R >R
@@ -1042,21 +1030,18 @@ R> irowilSTEP' + >FS G'
 R> row ISTEP " + DDUP >FS GR- FS> ;
 
 \end{verbatim} 
-Hats:
+\underline{Notes:}
 
-0 After \}Vl-VZ'X executes, the multiplier x is no longer needed,
-so we drop it here by using 6' rather than G'NP.
+\begin{itemize}
+	\item  After \regc{\}V1-V2*X} executes, the multiplier x is no longer needed,
+		so we drop it here by using \regc{G*} rather than \regc{G*NP}.
+\end{itemize}
 
-We now combine the words \}SWAP, \}\}PIVOT, \}\}ROW'X.
+We now combine the words \regc{\}SWAP}, \regc{\}\}PIVOT}, \regc{\}\}ROW*X}.
 \}Rl-RZ'X and \}Vl-VZ'X to implement the triangularization por-
 tion of pivotal elimination.
 
-% OJtlhnltNoblaIm-Almmawad.
-
 % 236
-
-% Chapter 9 - Linear Algebra Scientific FORTH
-
 Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
 do so, especially as it is only an 0(N) process. By evaluating the
