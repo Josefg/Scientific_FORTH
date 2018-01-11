@@ -117,7 +117,7 @@ Following the function protocol and naming convention developed in Ch. 6 \S\ 1 \
     USE( F.name \% L.lim \% U.lim \% err )MONTE
 \end{lstlisting}
 
-We pass \bc{)MONTE} the name \bc{F.name} of the function $f(x)$, the limits of integration, and the absolute precision of the answer. The answer should be left on the ifstack. \bc{L.lim}, \bc{U.lim}, and \bc{err} stand for explicit floating point numbers that are placed on the 87stack by \bc{\%}\sepfootnote{08_05}. The word \bc{\%} appears explicitly because in a larger program --of which \bc{)MONTE} could be but a portion-- we might want to specify the parameters as numbers already on the 87stack. Since this is intended to be an illustrative program we keep the fstack simple by defining \bc{SCALAR}s to put the limits and precision into.
+We pass \bc{)MONTE} the name \bc{F.name} of the function $f(x)$, the limits of integration, and the absolute precision of the answer. The answer should be left on the ifstack. \bc{L.lim}, \bc{U.lim}, and \bc{err} stand for explicit ﬂoating point numbers that are placed on the 87stack by \bc{\%}\sepfootnote{08_05}. The word \bc{\%} appears explicitly because in a larger program --of which \bc{)MONTE} could be but a portion-- we might want to specify the parameters as numbers already on the 87stack. Since this is intended to be an illustrative program we keep the fstack simple by defining \bc{SCALAR}s to put the limits and precision into.
 
 \begin{lstlisting}
     3 REAL*4 SCALARS A B-A E
@@ -131,7 +131,7 @@ The program uses one of the pseudo-random number generators (\textbf{prng}’s) 
     : NEW.X RANDOM B-A G@ F* A G@ F+ ;
 \end{lstlisting}
 
-The program is described by the simple ﬂow diagram of Fig. 8-2 below:
+The program is described by the simple flow diagram of Fig. 8-2 below:
 
 \begin{lstlisting}
 Diagram yo:
@@ -148,7 +148,7 @@ Diagram yo:
 
 Fig. 8-2 \textit{Flow diagram of Monte Carlo Integration}
 
-From the ﬂow diagram we see we have to recompute $\bar{f} and $Var(\bar{f})$ at each step. From Eq. 5 we see that
+From the flow diagram we see we have to recompute $\bar{f} and $Var(\bar{f})$ at each step. From Eq. 5 we see that
 
 \begin{align}
 \bar{f}_{N+1} = \bar{f}_N + \frac{f(x_{N+1} - \bar{f}_{N}}{N + 1}
@@ -899,7 +899,7 @@ whose solution is
 \tau_{N} = \lambda N \log_{2}(N) + 2\tau_{N/2}
 \end{align}
 
-Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shufﬂed by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
+Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
 
 Table 8-1 Bit-reversal for re-ordering discrete data
 
@@ -925,7 +925,7 @@ The crucial columns are "Start" and "Step 3". Unfortunately, they are written in
 
 \TallC{A} standard FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
 
-\TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program. Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overﬂow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
+\TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program. Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overflow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
 
 \begin{verbatim}
   SUBROUTINE FOUR1(DATA, NN, ISIGN)
@@ -1016,7 +1016,7 @@ We list the FFT program on page 191 below. Since \bc{\}FFT} transforms a one-dim
     V{ n.pts FORWARD }FFT
 \end{lstlisting}
 
-where \bc{V\{} is the name of the (complex) array to be transformed, \bc{n.pts} (a power of 2) is the size of the array, and the ﬂag-setting words \bc{FORWARD} or \bc{INVERSE} determine whether we are taking a FFT or inverting one.
+where \bc{V\{} is the name of the (complex) array to be transformed, \bc{n.pts} (a power of 2) is the size of the array, and the flag-setting words \bc{FORWARD} or \bc{INVERSE} determine whether we are taking a FFT or inverting one.
 
 \TallC{Now} we test the program. Table 8-2 on page 192 contains the weekly stock prices of IBM stock, for the year 1983 (the 52 values have been made complex numbers by adding $0i$, and the table padded out to 64 entries (the nearest power of 2) with complex zeros)\sepfootnote{08_22}. The first two entries (2,64) are the type and length of the file. (The file reads from left to right.)
 
@@ -1118,125 +1118,91 @@ then $A_{nm}$, will be nearly diagonal, and well-conditioned.
 
 where the \textbf{weight function} $w(x)$ is positive.
 
-For a given w(x) and interval [A,B], we can construct orthogom
-polynomials using the Gram-Schmidt orthogonalization process
+For a given $w(x)$ and interval $[A,B]$, we can construct orthogonal polynomials using the \textbf{Gram-Schmidt orthogonalization} process.
 
-Denote the integral in Eq. 40 by (p, , Pm ) to save having to writ
-it many times. We start with
+Denote the integral in Eq. 40 by $(p_{n}, p_[m})$ to save having to writing it many times. We start with
 
-p—l = 0 )
--l/2
-P007) = (fi dr W(x)) = const. ,
+\begin{equation}
+p_{-1} = 0,
+p_{0}(x) = (\int_{A}^{B}dx w(x))^{-1/2} = const. ,
+\end{equation}
 
-and assume the polynomials satisfy the 2-term upward recursia
-relation
+and assume the polynomials satisfy the 2-term upward recursion relation
 
-Pn+1(x) = (an + xbn ) pn(x) + cup..-1(x) (41)
+\begin{equation}
+p_{n+1}(x) = (a_{n} + xb_{n} ) p_{n}(x) + c_{n}p_{n-1}
+\end{equation}
 
-Now apply Eq. 41: assume we have calculated pn and pr, an
-want to calculate 17,“. Clearly, the orthogonality property give:
+Now apply Eq. 41: assume we have calculated $p_{n}$ and p_{n-1} and want to calculate $p_{n+1}. Clearly, the orthogonality property gives
 
-(Pn+1.Pn)=(Pn+hPn-1)=(Pn:Pn-1)=0a
+\begin{equation}
+(p_{n+1},p_{n}) = (p_{n+1},p_{n-1}) = (p_{n},p_{n-1}) = 0
+\end{equation}
 
 and the assumed normalization gives
 
-(p...p..)=1-
+(p_{n},p_{n}) = 1
 
-These relations yields two equations for the three unknowns, 0
-bn and C n:
+These relations yields two equations for the three unknowns, $a_{n}$, $b_{n}$, and $c_{n}$:
 
- 
+\begin{equation}
+\end{equation}
 
-23.
+We express $a_{n}$ and $c_{n}$, in terms of $b_{n}$, to get
 
-Polynomials can be thought of as vectors in a space of infinitely many dimensions (“Hilbert'
-space). Certain polynomials are like the vectors that point in the (mutually orthogonal) direc.
-tions in ordinary 3-dlmensional space, and so are called «diagonal by analog.
+\begin{equation}
+\end{equation}
 
-awe-mew” 191
+We determine the remaining parameter $b_{n}$ by again using the normalization condition:
 
-a. +0.0». xp.)-o
-c. + b. 02.. xp.-.) - 0
-We express a. and c, in terms orb, to get
-p...(x) = b.[(x - (pi. xp. )) p.(x)
-- 02.. xp.-. mam]
+\begin{equation}
+\end{equation}
 
-We determine the remaining parameter b. by again using the
-normalization condition:
+In practice, we pretend $b_{n}=1$ and evaluate Eq. 42; then we calculate
 
-(42)
+\begin{equation}
+\end{equation}
 
-(pn4-1 v pn+l ) = 1
+multiply the (un-normalized) \bar{p}_{n+1} by $b_{n}$, and continue.
 
-In practice, we pretend b.l =1 and evaluate Eq. 42; then we cal-
-culate
+The process of successive orthogonalization guarantees that $p_{n} is orthogonal to all polynomials of lesser degree in the set. Why is this so? By construction, $p_{n+1} \perp p_{n}$ and $p_{n+1}$. Is it $\perp $p_{n-2}$? We need to ask whether
 
-b. = Gm. 5.... )‘W. (43)
+\begin{equation}
+\end{equation}
 
-multiply the (un-normalized) 1-3,,“ by b, , and continue.
+But we know that any polynomial of degree N-l can be expressed as a linear combination of independent polynomials of degrees $0, 1, ... , N-1. Thus
 
-The process of successive orthogonalization guarantees that p. is
-orthogonal to all polynomials of lesser degree in the set. Why is
-this so? By construction,p.,+1.l.p.. and p,,,. Is it tp, .2 ? We
-need to ask whether
+\begin{equation}
+\end{equation}
 
-(pn v (x — an)pn-2) = 0-
+and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. 44. hence it follows (by mathematical induction) that
 
-But we know that any polynomial of degree N-l can be expressed
-as a linear combination of independent polynomials of degrees
-0, 1, . N-l. Thus
+\begin{equation}
+\end{equation}
 
-n-l
+Let us illustrate the process for Legendre polynomials, defined by weight $w(x) = 1$, interval $[-1,1]:
 
-(at-amp“E 2 supra) (44)
+\begin{equation}
+\end{equation}
 
-x-o
-and (by hypothesis) pI .L every term of the rhs of Eq. 44. hence
-it follows (by mathematical induction) that
+These are in fact the first three (normalized) Legendre polynomials, as any standard reference will confirm.
 
-pa” J- {pn-thn-Si }.
+\TallC{Now} we can discuss Gram polynomials. While orthogonal polynomials are usually defined with respect to an \textbf{integral} as in Eq. 40, we might also define orthogonality in terms of a \textbf{sum}, as in Eq. 39a. That is, suppose we define the polynomials such that
 
-OJUMVNohletm-Almm.
-
-Were-Moro Programming!“ Scientific FORTH
-
-Let us illustrate the process for Legendre polynomials, defined
-by weight w(x) = 1, interval {-1.1}:
-
-_ 1 1/2
-PO" 2 I
-
-..................................................................
-
-These are in fact the first three (normalized) Legendre polynom-
-ials, as any standard reference will confirm.
-
-Now we can discuss Gram polynomials. While orthogonal poly-
-
-nomials are usually defined with respect to an integral as in
-Eq. 40, we might also define orthogonality in terms of a sum, as
-in Eq. 39a. That is, suppose we define the polynomials such that.
-
-”—1 { 1, m=n
-
-kgopn(xk)pm(xk);:; E dnm = 0, matn (45)
+\begin{equation}
+\end{equation}
 
 Then we can construct the Gram polynomials, calculating the
-coefficients by the algebraic steps of the Gram-Schmidt process.
-except now we evaluate sums rather than integrals. Since p..(x)
-satisfies 45 by construction, the coefficients y, in our fitting
-polynomial are simply
+coefficients by the algebraic steps of the Gram-Schmidt process, except now we evaluate sums rather than integrals. Since $p_{n}(x) satisfies 45 by construction, the coefficients $\gamma_{n}$, in our fitting polynomial are simply
 
-M-l 1
-7.. = E p..(xt) fig; (46)
-k-O k
-they can be evaluated without solving any coupled linear equa
-tions, ill-conditioned or otherwise. Roundoff error thus becomes
-irrelevant.
+\begin{equation}
+\end{equation}
 
-The algorithm for fitting data with Gram polynomials may in
-expressed in ﬂow-diagram form:
+they can be evaluated without solving any coupled linear equations, ill-conditioned or otherwise. Roundoff error thus becomes irrelevant.
 
+The algorithm for fitting data with Gram polynomials may in expressed in flow-diagram form:
+
+*** Diagram ***
 neodhpomt...x.¢mw. 1.1/0.3.
 DOn-ttoN-t (outerloop)
 Construct an , cn :
@@ -1254,32 +1220,14 @@ DO k =0 to M-1 (normalize)
 LOOP
 
 LOOP
+*** Diagram ***
 
- 
+Fig. 8-5 \textit{Construction of Gram polynomials}
 
- 
-
-Fig. 8-5 Construction ofGram polynomials
-
-The required storage is 5 vectors of length M to hold xb p,(xk),
-
-p.,.1(.\:.,),f.l and Wu -:- 1/03 . We also need to store the coefficients
-an, c. and the normalizations b. --that is, 3 vectors of length
-N < <M-- in case they should be needed to interpolate. The time
-involved is approximately 7M multiplications and additions for
-each n, giving 7NM. Since N can be no greater than M-l (M data
-determine at most a polynomial of degree M-l), the maximum
-possible running time is 7M2, which is much less than the time to
+The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \eqiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is 7M^{2}, which is much less than the time to
 solve M linear equations.
 
-In practice, we would never wish to fit a polynomial of order
-
-comparable to the number of data, since this would include the
-noise as well as the significant information
-
-emvuouoim-me.
-
-200 ChapterB-MoreProgrammthxamplee SclentlﬂcFORTH
+In practice, we would never wish to fit a polynomial of order comparable to the number of data, since this would include the noise as well as the significant information.
 
 We therefore calculate a statistic called zz/(degrce of freedom)“:
 With M data points and an N’th order polynomial, there are
@@ -1287,24 +1235,15 @@ M-N-l degrees of freedom. That is, we evaluate Eq. 38 for fixed
 N, and divide by M-N-l. We then increase N by l and do it again
 The value of N to stop at is the one where
 
-2
-= 1ng
-”'2“ M-N-l
+\begin{equation}
+\end{equation}
 
 stops decreasing (with N) and begins to increase.
 The best thing about the xfiN statistic is we can increase N without
 having to do any extra work:
 
-2 M-1
-
-ZM,N = 2 (ft -§ l’nPn(xk))2Wk
-
-- (47)
-M-l
-
-N
-a 2 «oz — 2 (7..)2
-k=0 n=0
+\begin{equation}
+\end{equation}
 
 The first term after E in Eq. 47 is independent of N, and the
 second term is computed as we go. Thus we could turn the outel
@@ -1326,17 +1265,12 @@ full in Appendix 8.4.
 
 24. That is, “chi-squared per degree of freedom".
 
-MFOR‘M
-
-DWI-MW!!!“ 201
-
-WWW
-
-ometimes we must fit data by a function that depends on
+\subsubsection
+\TallC{Sometimes} we must fit data by a function that depends on
 parameters in a nonlinear manner. An example is
 
-F
-‘- 1—7777) “3’
+\begin{equation}
+\end{equation}
 
 Although the dependence on the parameter F is linear, that on
 the parameters a and X is decidedly nonlinear.
@@ -1353,7 +1287,8 @@ us denote these by 00, 01 , , BN4 , and denote their possible
 range of variation by R. Then we want to find those values of
 { 0}C R that minimize a positive function:
 
-12 (so, ,UN_,) 101;?" 12(00,...9N-,) (49)
+\begin{equation}
+\end{equation}
 
 One way to accomplish the minimization is via calculus, using a
 method known as steepest descents. The idea is to differentiate
@@ -1469,27 +1404,22 @@ REPEAT
 
 Fig. 0-3 Flow dlagram of the slmplex algorithm
 
-OJUthNohletm—Almraaervod.
-
-204
-
-Ghana 3 — More Programming Examples Scientific FORTH
 
 Numerical Recipes 26, as an example of just how indecipherable
 traditional languages can be.
 
-53 Appendices
+\section{Appendices}
 
-§§1 Gaussian quadrature
+\subsection{Gaussian quadrature}
 
-aussian quadrature formulae are based on the following idea:
+\TallC{Gaussian} quadrature formulae are based on the following idea:
 
 if we let the points 6,, and weights wll be 2N free parameters
 (n runs from 1 to N), what values of them most accurately repre-
 sent an integral by the formula
 
-B N
-I = [A dx a(x)f(x) = E1 w,,f(§,,) ? (50)
+\begin{equation}
+\end{equation})
 
 In Eq. 50 0(x) is a (known) positive function and f(x) is the
 function we want to integrate. This problem can actually be
@@ -1518,10 +1448,6 @@ spaced rules, as they have twice as many parameters to play with.
  
 
 26.
-
-Press, et a1. , Numerical Recipes, laid... p. 29“.
-
-mum Owe-MW!” 206
 
 Some FORTH words for 5-point Gauss-Legendre integration:
 
@@ -1573,14 +1499,17 @@ n =2, hence we expect the error from summing two half-inter-
 vals to be 4x smaller than that from the whole interval.
 
 Thus, we can write (10 = I: , I'o = I£a+by2 , I, = ﬂaw/2 )
-I0 = Iexact + R (523)
+
+\begin{equation}
+\end{equation}
 
 Equation 52b is only an approximation because the R that ap-
 pears in it is not exactly the same as R in Eq. 52a. We will pretend
 the two R’s are equal, however, and eliminate R from the two
 equations (8.52a,b) ending with an expression for I...“ :
 
-1...... ==1§(I’o + I. - 1.) (53)
+\begin{equation}
+\end{equation}
 
 Equation 53 is exactly what appears in INTERPOLATE.
 
@@ -1701,3 +1630,206 @@ CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
 
 \subsubsection{Non-linear least squares: simplex method}
 \TallC{A} FORTRAN program for the simplex method is given belton page 209. The FORTH version, as discussed in \S\ 2 \S\ \S\ 3 given on pages 210 and 211.
+
+\begin{lstlisting}
+\ FUNCTION MINIMIZATION BY THE SIMPLEX METHOD
+\ VERSION OF 18:57:29  5/31/1990
+
+TASK AMOEBA
+
+\ ------------------------------------------------ FINITE STATE MACHINE
+: WIDE   0 ;
+: STATE.TAB:   ( width 0 -- )   CREATE   ,  ,   ]   DOES>   ( col# -- )
+               UNDER  D@        ( -- adr col# width state )
+               *  +   1+  4*    ( -- adr offset )
+               OVER +           ( -- adr adr' )
+               DUP@  SWAP 2+    ( -- adr [adr']  adr'+2 )
+               EXECUTE@         ( -- adr [adr']  state')
+               ROT !   EXECUTE   ;
+
+0 CONSTANT >0
+1 CONSTANT >1
+2 CONSTANT >2
+3 CONSTANT >3
+4 CONSTANT >4
+\ -------------------------------------------- END FINITE STATE MACHINE
+
+\ --------------------------------------------------- FUNCTION NOTATION
+    VARIABLE <F>
+    : USE(   [COMPILE]  '   CFA  <F> ! ;
+    : F(X)   <F>  EXECUTE@  ;
+    BEHEAD'  <F>
+\ ----------------------------------------------- END FUNCTION NOTATION
+
+\ ----------------------------------------------------- DATA STRUCTURES
+2 VAR Ndim
+0 VAR N
+0 VAR N.max
+0 VAR I.worst
+0 VAR I.best
+
+CREATE SIMPLEX{{  Ndim   4  ( bytes )  *  Ndim 1+  ( # points )  *  ALLOT
+CREATE F{  Ndim 1+  4  ( bytes )  *   ALLOT    \ residuals
+
+DVARIABLE  Residual
+DVARIABLE  Residual'
+DVARIABLE  Epsilon
+
+CREATE X{  Ndim     4  ( bytes )  *   ALLOT    \ trial point
+CREATE XP{ Ndim     4  ( bytes )  *   ALLOT    \ 2nd trial point
+CREATE Y{  Ndim     4  ( bytes )  *   ALLOT    \ geocenter
+
+: }    ( adr n -- adr + 4n)   4*  +  ;
+: }}   ( adr m n -- adr + [m*Ndim + n]*4 )   SWAP  Ndim *  +   }  ;
+\ ------------------------------------------------- END DATA STRUCTURES
+
+\ -------------------------------------------------------- ACTION WORDS
+: RESIDUALS   Ndim 1+  0  DO  SIMPLEX{{ I 0 }}  F(X)  F{ I }  R32!
+              LOOP  ;
+
+: CENTER  ( -- )   FINIT  Ndim S->F
+        Ndim 0  DO                            \ loop over components
+                                              ( :: -- N )
+             F=0                              \ loop over vectors
+             Ndim 1+ 0  DO   I I.worst  <>  IF
+                  SIMPLEX{{ I J }}  R32@  F+   THEN
+             LOOP   FOVER  F/   Y{ I }  R32!  \ put away
+        LOOP    FDROP  ;
+
+: DONE!    CR  ." We're finished."  ;
+: TOO.MANY   CR  ." Too many iterations."  ;
+
+: V.MOVE   ( src.adr  dest.adr -- )
+        Ndim 0  DO   OVER  I }   OVER  I }  2 MOVE   LOOP   DDROP  ;
+
+: STORE   ( adr1 adr2 -- )   0 }  SIMPLEX{{ I.worst 0 }} V.MOVE
+                             F{ I.worst }  2  MOVE  ;
+
+: ST0  Residual  X{  STORE ;
+: ST1  Residual'  XP{  STORE ;
+
+: New.F     X{   F(X)   Residual   R32!  ;
+
+FIND CPDUP  0= ?( : CPDUP  FOVER FOVER ;  )
+
+: Worst.Point   FINIT    F{ 0 } R32@   0
+                Ndim 1+  1  DO   F{ I }  R32@  CPDUP   F<
+                     IF   FSWAP  DROP  I   THEN   FDROP
+                LOOP   FDROP  ;
+
+: Best.Point    FINIT    F{ 0 } R32@   0
+                Ndim 1+  1  DO   F{ I }  R32@  CPDUP   F>
+                     IF   FSWAP  DROP  I   THEN   FDROP
+                LOOP   FDROP  ;
+
+: 2worst        FINIT  F{ I.best }  R32@  0
+                Ndim 1+  0  DO
+                     I I.worst <>
+                     IF   F{ I }  R32@   CPDUP   F<=
+                          IF   FSWAP  DROP  I   THEN  FDROP
+                     THEN
+                LOOP   FDROP  ;
+
+: SCALE     ( :: scale -- )
+            Ndim 0  DO  DUP  I }  R32@       ( :: -- sc x )
+                        Y{ I }  R32@  FUNDER  F-   ( :: -- sc y x-y)
+                        FROT  FUNDER  F*           ( :: -- y sc [x-y]*sc)
+                        FROT  F+                   ( :: -- sc y+[x-y]*sc)
+                        X{ I }  R32!
+            LOOP  DROP  FDROP  New.F  ;
+
+FIND F=1/2  0= ?( : F=1/2  F=1 FNEGATE F=1 FSCALE FPLUCK ; )
+FIND F=2    0= ?( : F=2    F=1 FDUP FSCALE FPLUCK ;  )
+\ -------------------------------------------------- DEBUGGING CODE
+0 VAR DBG
+: DEBUG-ON  -1 IS DBG ;
+: DEBUG-OFF 0 IS DBG ;
+
+: .V   3 SPACES  Ndim 0  DO   DUP I }  R32@  F.   LOOP  DROP  ;
+: .M   ( -- )   Ndim 1+ 0  DO  DBG  CR  IF  I .  2 SPACES  THEN
+                     SIMPLEX{{ I 0 }}  .V
+                     DBG  IF  F{ I }  R32@ F.  THEN
+                LOOP  CR
+                DBG  IF CR  X{ .V   Residual R32@ F. THEN ;
+
+: .F   Ndim 1+  0 DO  CR   F{ I }   R32@  F.   LOOP ;
+\ ---------------------------------------------- END DEBUGGING CODE
+: REFL      CENTER   F=1  FNEGATE  SIMPLEX{{ I.worst 0 }}
+            SCALE    DBG IF  CR ." REFLECTING"  THEN  .M    ;
+
+
+: DBL     Residual Residual'  2 MOVE       \ swap points, resid.
+          X{  XP{  V.MOVE
+          FINIT  F=2   FNEGATE  X{  SCALE
+          DBG IF  CR ." DOUBLING"  THEN  .M  ;
+
+: HALVE   FINIT  F=1/2   SIMPLEX{{ I.worst 0 }}  SCALE
+          DBG IF  CR ." HALVING"  THEN  .M  ;
+
+: SHRINK   SIMPLEX{{ I.best 0 }}  Y{  V.MOVE
+           Ndim 1+  0  DO
+                   Ndim 0  DO  SIMPLEX{{ J I }}  DUP
+                            R32@   Y{ I }  R32@    FUNDER  F-
+                            F=1/2  F*   F+     R32!
+                   LOOP
+           LOOP   RESIDUALS
+           DBG  IF  CR ." SHRINKING"   THEN  .M  ;
+\ ---------------------------------------------------- END ACTION WORDS
+
+SYNONYM >N NEXT
+\ ---------------------------------------------------------- TEST WORDS
+: (test)   FINIT  Residual  R32@  F{ SWAP }  R32@   F<  NOT ;
+: best>=    I.best   (test)  ;
+: worst>=   I.worst  (test)  ;
+: 2worst>=  2worst   (test)  ;
+
+: done?   F{ I.worst } R32@  F{ I.best }  R32@  CPDUP  F-  F2*
+          F-ROT  F+  F/   FABS   Epsilon  R32@   F<  ;
+\ ------------------------------------------------------ END TEST WORDS
+
+4 WIDE STATE.TAB:  New.Point
+\ Input:   |  best<   |  2worst< |  worst<  |  worst>= |
+\ State:   ---------------------------------------------
+  ( 0 )       DBL >1     ST0  >4    ST0  >2     >N  >2
+  ( 1 )       ST0 >4     ST1  >4    ST1  >4    ST1  >4
+  ( 2 )       >N  >4     >N   >4    HALVE >3   HALVE >3
+  ( 3 )       ST0 >4     ST0  >4    ST0  >4    SHRINK >4    ;
+
+: cat->col#  ( -- col#)  1  2worst>=   -
+                         worst>=  -     best>=  AND  ;
+
+: )MINIMIZE   ( n.iter --  :: error -- )
+       IS N.max   Epsilon R32!   0 IS N
+       RESIDUALS  Worst.Point IS I.worst
+                  Best.Point IS I.best
+       BEGIN    done?  NOT    N N.max  <  AND   WHILE
+            Worst.Point IS I.worst
+            Best.Point  IS I.best
+            REFL   ' New.Point  0!
+            BEGIN   cat->col#    New.Point
+                    ' New.Point @   4 =    UNTIL
+            N 1+  IS N
+       REPEAT   DONE!  ;
+
+
+\ EXAMPLE FUNCTIONS
+: F1  ( adr -- :: F )  DUP  0 }   R32@  F**2   1 }  R32@  F**2   F2*  F+  ;
+\ f1 = x^2 + 2*y^2
+
+: F2        ( adr -- :: F )  DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
+            F2* F+  36 S->F  F-  F**2  F2/  FSWAP  6 S->F  F*  F-  ;
+\  f2 = .5 * (x * x + 2 * y * y - 36) ^ 2 - 6 * x
+
+: F3        ( adr -- :: F )  DUP DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
+          F2* F+  36 S->F  F-  F**2  F2/  FSWAP  6 S->F  F*  F-
+          DUP 1 } R32@  0 } R32@  F/  FATAN  F2*  FCOS  F**2  F*  ;
+\ f3 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x)) ^ 2
+
+\ Usage:    USE( MYFUNC  10  1.E-3 )MINIMIZE
+
+FLOATS
+
+5. SIMPLEX{{ 0 0 }} R32!     -3.  SIMPLEX{{ 0 1 }} R32!
+5. SIMPLEX{{ 1 0 }} R32!     3.  SIMPLEX{{ 1 1 }} R32!
+-10. SIMPLEX{{ 2 0 }} R32!    1.  SIMPLEX{{ 2 1 }} R32!
+\end{lstlisting}
