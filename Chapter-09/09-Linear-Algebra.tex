@@ -202,9 +202,10 @@ rule is of theoretical interest because it is a closed form solution.
 Consider a square $N\times N$ matrix A Pretend for the moment we
 know how to compute the determinant of an $(N-1)\times(N-1)$
 matrix. The determinant of A is defined to be
-
+% according to  Josefg's comment this one is assumed to be Eq. (10) 
 \begin{equation}
-    \det(A) = \sum_{n=0}^{N-1}A_{mn} a_{nm}    \nonumber
+    \label{eq:09_10}
+    \det(A) = \sum_{n=0}^{N-1}A_{mn} a_{nm} 
 \end{equation}
 where the $a_{mn}$'s are called \textbf{co-factors} of the matrix elements $A_{mn}$
 and are in fact determinants of specially selected $(N-1)\times(N-1)$
@@ -213,7 +214,6 @@ sub-matrices of A.
 The sub-matrices are chosen by striking out of $A$ the n'th column
 and m'th row (leaving an $(N-1)\times(N-1)$ matrix). To illustrate,
 consider the $3 \times 3$ matrix
-\addtocounter{equation}{1} 
 % (11)
 \begin{equation}
     \label{eq:09_11}
