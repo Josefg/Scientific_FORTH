@@ -575,8 +575,7 @@ LOOP DROP;
 :TAB->MAT DUP D.LEN DUP * <DO-VEC> ;
 \end{verbatim}
 
-The file EX.3 will be found in the accompanying program disk-
-ette. The explanatory notes below refer to EX.3.
+The file EX.3 will be found in the accompanying program diskette. The explanatory notes below refer to EX.3.
 
 \underline{Notes:}
 
@@ -604,14 +603,16 @@ A{{ .M CR
 say Exa FORGET-TASKto graceitfly FORGET these words olt
 \end{verbatim}
 
-\subsection{Implementing pivotal elemination}
+\subsection{Implementing pivotal elimination}
 \TallC{Now} we have to define the FORTH words that will implement
-this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. 9-1 below.
+this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. \ref{fig:09_01} below.
 
  
-
-Fig. 9-1 Pseudocode for pivotal ellmlnaa'on
-
+\begin{figure}
+	\caption{
+		Fig. 9-1 Pseudocode for pivotal elimination}
+	\label{fig:09_01}
+\end{figure}
 \subsection{The program}
 \TallC{Whenever} we write a complex program we are faced with the
 problem "Where do we begin?" FORTH emphasizes the construction of components,
@@ -1077,8 +1078,7 @@ ABOR'l" determinant too small!' DET FS> ;
 
 \end{verbatim} 
 
-
-% Ware-Wm 237
+% 237
 
 Now we define the word that triangularizes the matrix:
 \begin{verbatim}
@@ -1123,8 +1123,7 @@ LOOP ; \end loop 1
 \end{verbatim}
 
 Now at last we can back-solve the triangularized equations to find
-
-the unknown x 's. The word for this is \verb|}BACK-SOLVE|, defined
+the unknown x's. The word for this is \verb|}BACK-SOLVE|, defined
 as follows:
 
 % 238
@@ -1144,26 +1143,23 @@ GR- T FS > \
 \end{verbatim} 
 
 Putting the entire program together we have the linear equation
-solver given in the file SOLVEl. Examples of solving dense 3x3
-and 4 X4 systems are included for testing purposes.
+solver given in the file SOLVE1. Examples of solving dense $3\times 3$
+and $4\times 4$ systems are included for testing purposes.
 
-\S\S6 Timing
-
-e should like to know how much time it will take to solve a
-
+\subsection{Timing}
+\TallC{We} should like to know how much time it will take to solve a 
 given system. (Of course it is also useful to know whether the
-solution is correct!) We time the solution of 4' sets of N equations,
+solution is correct!) We time the solution of 4 sets of N equations,
 with 4 different values of N. The running time can be expressed
 as a cubic polynomial in N with undetermined coefficients:
+% (19)
+\begin{equation}
+	T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19}
+\end{equation}
 
-TN=ao+a1N1+azN2+agN3 (19)
-
-Evaluating 19 for 4 different values of N, and measuring the 4
-times TNi , we produce 4 inhomogeneous linear equations in 4
-
-unknowns: a, , i = 0, 1, 2, 3 . As luck would have it, we just hap-
-
-pen to have on hand a linear equation solver, and are thus in a
+Evaluating \ref{eq:09_19} for 4 different values of N, and measuring the 4
+times $T_{N_i}$ , we produce 4 inhomogeneous linear equations in 4 
+unknowns: $a_i , i = 0, 1, 2, 3$. As luck would have it, we just happen to have on hand a linear equation solver, and are thus in a
 position to determine these coefficients numerically.
 
 For this timing and testing chore we need an exactly soluble dense
@@ -1178,9 +1174,6 @@ We employ the standard notation that a vector u is a column and an adjoint vecto
 Their outer product, uvi, is a matrix. Given a column v, we construct its adjoint (row) VIt by
 taking the complex conjugate of each element and placing it in the corresponding position in a
 
-row-vector.
-
-Gustavo-WNW 23.
 
 A - I - u v' (20)
 In terms of matrix elements,
