@@ -1175,44 +1175,83 @@ In terms of matrix elements,
 
 % (20'_)
 \begin{equation}
- \label{eq:09_20_}
+ \label{eq:09_20prime_}
 	A_{ij} = \delta_{ij} - u_i v_j^*
 \end{equation}
 \end{subequations}
 
-The solution of the system A 1 I: b is simple: using the standard
+The solution of the system $A\cdot x = b$ is simple: using the standard
 notation
-
-vi-x a (v, x) = 2 v. 'x. (21)
+% (21_)
+\begin{equation}
+ \label{eq:09_21_}
+	v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i
+\end{equation}
 we have
-X. = D: 'i' (V, X) U. (22)
+\begin{equation}
+ \label{eq:09_22_}
+	x_i = b_i + (v,x)\,u_i
+\end{equation}
 
-The coefficient (v, x) is just a (generally complex) number; we
-compute it from 22 via
-
-(V. X) = (V. Ii) + (V. u) (V. X) (23)
-Ol'
-\_ (v, b)
-(V. X) - 1 \_ (v. u) . (24)
-
-x, = o, + %u (25)
-
-Everythingin 25 is determined, hence the solution is known in
+The coefficient $(v, x)$ is just a (generally complex) number; we
+compute it from \ref{eq:09_22_}\textit{via}
+\begin{equation}
+ \label{eq:09_23_}
+	(v,x)=(v,b)+(v,u)(v,x)
+\end{equation}
+or
+\begin{equation}
+ \label{eq:09_24_}
+	(v,x)=\frac{(v,b)}{1-(v,u)}\quad .
+\end{equation}
+% (25)
+Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
+\begin{equation}
+ \label{eq:09_25_}
+	x_i=\frac{(v,b)}{1-(v,u)}
+\end{equation}
+Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
 
 An example that embodies the above idea is given in the file
 EX.20, where we make the special choices
 
-Chapter 9 - Unear Algebra Scientific FORTH
-
-N even
-
-GAO-s
-.s
-01
-
+\begin{equation*}
+ \label{eq:09_25_}
+	\mathbf{u}=
+	\begin{pmatrix}
+		1\\ 
+		1\\ 
+		1\\ 
+		\dots\\ 
+		\dots\\ 
+		\dots
+	\end{pmatrix}
+	\, ,\, 
+	v=\frac{1}{2N} u\, , \, 
+	\mathbf{b} =
+	\begin{pmatrix}
+		1\\ 
+		0\\ 
+		1\\ 
+		0\\ 
+		\dots\\ 
+		\dots
+	\end{pmatrix}
+	,\, \,  
+	\mathbf{x}=
+	\begin{pmatrix}
+		1.5\\ 
+		0.5\\ 
+		1.5\\ 
+		0.5\\ 
+		\dots\\ 
+		\dots
+	\end{pmatrix}
+	\, , N \; \textrm{even}
+\end{equation*}
 We give the times only for the case of a highly optimized inner
-loop (written in assembler), for the type REAL'4:
+loop (written in assembler), for the type REAL*4:
 
  
 
