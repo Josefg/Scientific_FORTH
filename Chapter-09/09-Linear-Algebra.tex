@@ -230,7 +230,7 @@ consider the $3 \times 3$ matrix
 and produce the co-factor of $A_{12}$:
 % (12)
 \begin{equation}
-	\texttt{TBD}\label{eq:09_12}
+    \texttt{TBD}\label{eq:09_12}
 \end{equation}
 We also attach the factor $(-1)^{m+n}$ to the determinant of the
 submatrix when we compute $a_{nm}$.
@@ -244,14 +244,14 @@ a determinant in which two rows are the same, hence we get zero.
 Thus Eq. \ref{eq:09_11} can be rewritten more generally
 % (13)
 \begin{equation}
-	\sum_{n=0}^{N-1}A_{kn}a_{nm}=||A||\;\delta_{km}\;.\label{eq:09_13}
+    \sum_{n=0}^{N-1}A_{kn}a_{nm}=||A||\;\delta_{km}\;.\label{eq:09_13}
 \end{equation}
 
 This feature of determinants lets us solve the linear equation
 $A \dot x = b$ by construction: try
 % (14)
 \begin{equation}
-	x_n=\frac{1}{\det(A)}\sum_{m}^{N-1}a_{nm}b_m.\label{eq:09_14}
+    x_n=\frac{1}{\det(A)}\sum_{m}^{N-1}a_{nm}b_m.\label{eq:09_14}
 \end{equation}
 We see from Eq. \ref{eq:09_13} that Eq. \ref{eq:09_14} solves the equation. Equation \ref{eq:09_14}
 also makes clear why the solution cannot be found if $\det(A) = 0$.
@@ -260,7 +260,7 @@ A determinant also vanishes when a row is a \textit{linear combination}
 of any of the other rows. Suppose row 0 can be written
 
 \begin{equation}
-	a_{0k}\equiv	\sum_{m=0}^{N-1}\beta _m a_{mk}\;;\nonumber
+    a_{0k}\equiv    \sum_{m=0}^{N-1}\beta _m a_{mk}\;;\nonumber
 \end{equation}
 that is, the 0'th equation can be derived from the other N-1
 equations, hence it contains no new information. We do not really
@@ -271,29 +271,29 @@ determinant tells us this by vanishing.
 As an example, we now use Cramer's rule to evaluate the determinant of Eq. \ref{eq:09_11}. We will write
 
 \begin{align*}
-	||A||&=A_{00}a_{00}+A_{01}a_{10}+	A_{02}a_{20}\\
-	a_{00} &= 
-	\begin{Vmatrix}
-		2 & 4\\
-		1 & 6
-	\end{Vmatrix}\\
-	a_{10} &= 
-	\begin{Vmatrix}
-		3 & 4\\
-		1 & 6
-	\end{Vmatrix} (-1)\\
-	a_{20} &= 
-	\begin{Vmatrix}
-		3 & 2\\
-		1 & 1
-	\end{Vmatrix}\\
+    ||A||&=A_{00}a_{00}+A_{01}a_{10}+   A_{02}a_{20}\\
+    a_{00} &= 
+    \begin{Vmatrix}
+        2 & 4\\
+        1 & 6
+    \end{Vmatrix}\\
+    a_{10} &= 
+    \begin{Vmatrix}
+        3 & 4\\
+        1 & 6
+    \end{Vmatrix} (-1)\\
+    a_{20} &= 
+    \begin{Vmatrix}
+        3 & 2\\
+        1 & 1
+    \end{Vmatrix}\\
 \end{align*}
 The determinant of a $1 \times 1$ matrix is just the matrix element, hence
 \begin{align*}
-	a_{00} &=  2 \cdot 6 + (-1)\cdot 4\cdot 1 = 8\\
-	a_{10} &=  -(18 - 4) = -14\\
-	a_{20} &=  (3 -2) = 1\\
-	||A||&= 1\cdot 8 + 0\cdot (-14)+ 5\cdot 1 =13\;.
+    a_{00} &=  2 \cdot 6 + (-1)\cdot 4\cdot 1 = 8\\
+    a_{10} &=  -(18 - 4) = -14\\
+    a_{20} &=  (3 -2) = 1\\
+    ||A||&= 1\cdot 8 + 0\cdot (-14)+ 5\cdot 1 =13\;.
 \end{align*}
 How many operations does it take to evaluate a determinant? We
 see that a determinant of order N requires N determinants of
@@ -301,11 +301,11 @@ order N-l to be evaluated, as well as N multiplications and N-1
 additions. If the addition time plus the multiplication time is $\tau$,
 then
 \begin{equation*}
-	T_N\approx N(\tau +T_{N-1})\;.
+    T_N\approx N(\tau +T_{N-1})\;.
 \end{equation*}
 It is easy to see\sepfootnote{09_06}\sepfootnote{09_07} the solution to this is
 \begin{equation*}
-	T_N =N!\tau \sum_{n=0}^{N}\frac{1}{n!} \underset{n\to\infty}{\rightarrow} N!\tau e\;.
+    T_N =N!\tau \sum_{n=0}^{N}\frac{1}{n!} \underset{n\to\infty}{\rightarrow} N!\tau e\;.
 \end{equation*}
 In other words, the time required to solve N linear equations by
 Cramer's rule increases so rapidly with N as to render the method
@@ -324,11 +324,11 @@ elements. This will be clearer with a concrete illustration rather
 than further description: Consider the $3 \times 3$ system of equations:
 %  (15)
 \begin{equation}
-	\begin{pmatrix}
-	1 &0 &5\\ 
-	3 &2 &4\\ 
-	1 &1 &6
-	\end{pmatrix}
+    \begin{pmatrix}
+    1 &0 &5\\ 
+    3 &2 &4\\ 
+    1 &1 &6
+    \end{pmatrix}
 \begin{pmatrix}
 x_0\\
 x_1\\
@@ -609,9 +609,9 @@ this algorithm. In pseudocode, we can express pivotal elimination as shown in Fi
 
  
 \begin{figure}
-	\caption{
-		Fig. 9-1 Pseudocode for pivotal elimination}
-	\label{fig:09_01}
+    \caption{
+        Fig. 9-1 Pseudocode for pivotal elimination}
+    \label{fig:09_01}
 \end{figure}
 \subsection{The program}
 \TallC{Whenever} we write a complex program we are faced with the
@@ -753,13 +753,13 @@ M{{ | }{ 00"" }}I > M{{ col# }{ 00h" }}I 7
 \end{verbatim}
 % Fig. 9-2 Pseudocode for finding the pivot element
     \caption{Pseudocode for finding the pivot element}
-	\label{fig:09_02}
+    \label{fig:09_02}
 \end{figure}
 
 
 
 \begin{verbatim}
-0 VAR T		\ a place to store data type
+0 VAR T     \ a place to store data type
 \end{verbatim}
 
 The rest of the definition is rendered self-explanatory by the 
@@ -811,17 +811,17 @@ FDROP ; \deanupfstack
 
 \begin{itemize}
   \item We avoid filling up the parameter stack with addresses that have to be
-	  juggled, by putting arguments in named storage locations (\textbf{VAR}s).
-		We anticifiate setting all the parameters in the beginning using
-		\textbf{INITIALIZE} which can be extended later if necessary.
+      juggled, by putting arguments in named storage locations (\textbf{VAR}s).
+        We anticifiate setting all the parameters in the beginning using
+        \textbf{INITIALIZE} which can be extended later if necessary.
   \item We have used a word from the COMPLEX arithmetic lexicon, namely
-	  \textbf{XDUP( FOVER FOVER)} to double-copy the contents of the fstack,
-		since the test $F<$ drops both arguments and leaves a flag.
+      \textbf{XDUP( FOVER FOVER)} to double-copy the contents of the fstack,
+        since the test $F<$ drops both arguments and leaves a flag.
   \item There is little to be gained by optimizing (and if we did we should
-	  have had to avoid the generic \textbf{Gx} words because they cannot be optimized
-		by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
-		is used, negligible (for large N) compared with the $N^3/3$ in the
-		innermost loop.
+      have had to avoid the generic \textbf{Gx} words because they cannot be optimized
+        by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
+        is used, negligible (for large N) compared with the $N^3/3$ in the
+        innermost loop.
 \end{itemize}
 
 
@@ -873,11 +873,11 @@ DO(ROW*X)LOOP ; \Ioop
 \end{verbatim}
 
 \begin{itemize}
-	\item  While \regc{DO(ROW*X)LOOP} and \regc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
-		multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
-		the matrix equation \textbf{A-x = b}) by the same constant \textbf{x}.
-	\item We assume \regc{INITIALIZE} (including \regc{INIT.ISTEP}) has been
-		invoked before \verb|}}PIVOT| or \verb|}}ROW*X|.
+    \item  While \regc{DO(ROW*X)LOOP} and \regc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
+        multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
+        the matrix equation \textbf{A-x = b}) by the same constant \textbf{x}.
+    \item We assume \regc{INITIALIZE} (including \regc{INIT.ISTEP}) has been
+        invoked before \verb|}}PIVOT| or \verb|}}ROW*X|.
   \item Anticipating the (possible) need to optimize, we factor the loop
 right out of the word. We also com me the addresses fast by
 putting base addresses on the stack and then incrementing
@@ -908,8 +908,8 @@ LOOP
  
 
 \end{verbatim} 
-	\caption{Fig. "Steps In \regc{\}\}R1-R2*X}}
-	\label{fig:09_03}
+    \caption{Fig. "Steps In \regc{\}\}R1-R2*X}}
+    \label{fig:09_03}
 \end{figure}
 
 A first attempt might look as follows:
@@ -1034,8 +1034,8 @@ R> row ISTEP " + DDUP >FS GR- FS> ;
 \underline{Notes:}
 
 \begin{itemize}
-	\item  After \regc{\}V1-V2*X} executes, the multiplier x is no longer needed,
-		so we drop it here by using \regc{G*} rather than \regc{G*NP}.
+    \item  After \regc{\}V1-V2*X} executes, the multiplier x is no longer needed,
+        so we drop it here by using \regc{G*} rather than \regc{G*NP}.
 \end{itemize}
 
 We now combine the words \regc{\}SWAP}, \regc{\}\}PIVOT}, \regc{\}\}ROW*X}.
@@ -1154,7 +1154,7 @@ as a cubic polynomial in N with undetermined coefficients:
 % ( restart from 19)
 \addtocounter{equation}{-3} % the next equation is back with 3 22 -> 19
 \begin{equation}
-	T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19_}
+    T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19_}
 \end{equation}
 
 Evaluating \ref{eq:09_19_} for 4 different values of N, and measuring the 4
@@ -1176,7 +1176,7 @@ In terms of matrix elements,
 % (20'_)
 \begin{equation}
  \label{eq:09_20prime_}
-	A_{ij} = \delta_{ij} - u_i v_j^*
+    A_{ij} = \delta_{ij} - u_i v_j^*
 \end{equation}
 \end{subequations}
 
@@ -1185,30 +1185,30 @@ notation
 % (21_)
 \begin{equation}
  \label{eq:09_21_}
-	v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i
+    v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i
 \end{equation}
 we have
 \begin{equation}
  \label{eq:09_22_}
-	x_i = b_i + (v,x)\,u_i
+    x_i = b_i + (v,x)\,u_i
 \end{equation}
 
 The coefficient $(v, x)$ is just a (generally complex) number; we
 compute it from \ref{eq:09_22_}\textit{via}
 \begin{equation}
  \label{eq:09_23_}
-	(v,x)=(v,b)+(v,u)(v,x)
+    (v,x)=(v,b)+(v,u)(v,x)
 \end{equation}
 or
 \begin{equation}
  \label{eq:09_24_}
-	(v,x)=\frac{(v,b)}{1-(v,u)}\quad .
+    (v,x)=\frac{(v,b)}{1-(v,u)}\quad .
 \end{equation}
 % (25)
 Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
 \begin{equation}
  \label{eq:09_25_}
-	x_i=\frac{(v,b)}{1-(v,u)}
+    x_i=\frac{(v,b)}{1-(v,u)}
 \end{equation}
 Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
@@ -1218,59 +1218,59 @@ EX.20, where we make the special choices
 
 \begin{equation*}
  \label{eq:09_25_}
-	\mathbf{u}=
-	\begin{pmatrix}
-		1\\ 
-		1\\ 
-		1\\ 
-		\dots\\ 
-		\dots\\ 
-		\dots
-	\end{pmatrix}
-	\, ,\, 
-	v=\frac{1}{2N} u\, , \, 
-	\mathbf{b} =
-	\begin{pmatrix}
-		1\\ 
-		0\\ 
-		1\\ 
-		0\\ 
-		\dots\\ 
-		\dots
-	\end{pmatrix}
-	,\, \,  
-	\mathbf{x}=
-	\begin{pmatrix}
-		1.5\\ 
-		0.5\\ 
-		1.5\\ 
-		0.5\\ 
-		\dots\\ 
-		\dots
-	\end{pmatrix}
-	\, , N \; \textrm{even}
+    \mathbf{u}=
+    \begin{pmatrix}
+        1\\ 
+        1\\ 
+        1\\ 
+        \dots\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    \, ,\, 
+    v=\frac{1}{2N} u\, , \, 
+    \mathbf{b} =
+    \begin{pmatrix}
+        1\\ 
+        0\\ 
+        1\\ 
+        0\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    ,\, \,  
+    \mathbf{x}=
+    \begin{pmatrix}
+        1.5\\ 
+        0.5\\ 
+        1.5\\ 
+        0.5\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    \, , N \; \textrm{even}
 \end{equation*}
 We give the times only for the case of a highly optimized inner
 loop (written in assembler), for the type REAL*4:
 
 % Table 9-1
 \begin{table}
-	\centering
-	\caption{Execution times for various N (9.54 MHz 8086 + 8087 machine)}
-	    \bigskip
+    \centering
+    \caption{Execution times for various N (9.54 MHz 8086 + 8087 machine)}
+        \bigskip
     \label{tbl:09_01} 
-	\setlength{\tabcolsep}{40pt}
+    \setlength{\tabcolsep}{40pt}
         \begin{tabular}{|ll|}
             \hline & \\
-			N   &  Time\\
-			& \\
-			20  &  1.20\\
-			& \\
-			50  &  7.75\\
-			& \\
-			75  &  19.6\\
-			& \\
-			100 &  38.8\\
+            N   &  Time\\
+            & \\
+            20  &  1.20\\
+            & \\
+            50  &  7.75\\
+            & \\
+            75  &  19.6\\
+            & \\
+            100 &  38.8\\
             & \\
             \hline
         \end{tabular}
@@ -1280,12 +1280,12 @@ The coefficients of the cubic polynomial extracted from the above
 are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
 
 \begin{equation*}
-	\begin{split}
-		a_0 &= 0.32727304\\
-		a_1 &= -0.01084850\\
-		a_2 &= 0.00241636\\
-		a_3 &= 0.00001539
-	\end{split}
+    \begin{split}
+        a_0 &= 0.32727304\\
+        a_1 &= -0.01084850\\
+        a_2 &= 0.00241636\\
+        a_3 &= 0.00001539
+    \end{split}
 \end{equation*}
 
 from them we can extrapolate the time to solve a $350 \times 350$ real
@@ -1305,26 +1305,26 @@ co-processor operation, as can the fetch-and-subtract. The times
 in cycles for these basic operations are\sepfootnote{09_16}
 % Table 9-2
 \begin{table}
-	\centering
-	\caption{Execution times of innermost loop operations}
-	    \bigskip
+    \centering
+    \caption{Execution times of innermost loop operations}
+        \bigskip
     \label{tbl:09_02} 
-	\setlength{\tabcolsep}{10pt}
+    \setlength{\tabcolsep}{10pt}
         \begin{tabular}{|ll|}
-			\hline &  \\
-			\underline{Operation} & \underline{Time} \; (cpu clocks)\\
-			&  \\
-			memory FMUL &  133  \\
-			&  \\
-			memory FSUBR &  128  \\
-			&  \\
-			memory FSTP &  100  \\ 
-			&  \\
-			overhead &  61  \\ 
-			&  \\
             \hline &  \\
-			Total &  422  \\ 
-			&  \\
+            \underline{Operation} & \underline{Time} \; (cpu clocks)\\
+            &  \\
+            memory FMUL &  133  \\
+            &  \\
+            memory FSUBR &  128  \\
+            &  \\
+            memory FSTP &  100  \\ 
+            &  \\
+            overhead &  61  \\ 
+            &  \\
+            \hline &  \\
+            Total &  422  \\ 
+            &  \\
             \hline
         \end{tabular}
 \end{table}
@@ -1354,34 +1354,34 @@ vector (a column, or $(N\times 1)$ matrix). We can think of the symbolic
 operation
  % (26)
 \begin{equation}
-	\label{eq:09_26}
-	y= A -x
+    \label{eq:09_26}
+    y= A -x
 \end{equation} 
 as a linear transformation of the column x to a new column y. In
 terms of matrix elements and components,
 
 \begin{equation}
-	\label{eq:09_27}
-	y_m = \sum_{n=0}^{N-1} A_{mn} x_n
+    \label{eq:09_27}
+    y_m = \sum_{n=0}^{N-1} A_{mn} x_n
 \end{equation}
 
 The transformation is \textbf{linear} because if x is the sum of 2 columns
 (added component by component)
 \begin{equation}
-	\label{eq:09_28}
-	x=x^{(1)}+x^{(2)}\;,
+    \label{eq:09_28}
+    x=x^{(1)}+x^{(2)}\;,
 \end{equation}
 we can calculate A 1 either by first adding the two vectors ant:
 then transforming, written
 \begin{equation}
-	\label{eq:09_29}
-	A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)
+    \label{eq:09_29}
+    A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)
 \end{equation}
 or we could transform first and then add the transformed vectors.
 The identity of the results is called the \textbf{distributive law}
 \begin{equation}
-	\label{eq:09_30}
-	A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} 
+    \label{eq:09_30}
+    A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} 
 \end{equation}
 of linear transformations.
 
@@ -1391,55 +1391,55 @@ Now, suppose we had several square matrices, \textbf{A, B, C,...} We
 could imagine performing successive linear transformations on a
 vector x \textit{via}
 \begin{subequations}
-	\begin{equation}
-		\label{eq:09_31a}
-		y= A \cdot x% (31a)
-	\end{equation}
-	\begin{equation}
-		\label{eq:09_31b}
-		z= B \cdot y % (31b)
-	\end{equation}
-	\begin{equation}
-		\label{eq:09_31c}
-		w = C \cdot z  % (31c)
-	\end{equation}
+    \begin{equation}
+        \label{eq:09_31a}
+        y= A \cdot x% (31a)
+    \end{equation}
+    \begin{equation}
+        \label{eq:09_31b}
+        z= B \cdot y % (31b)
+    \end{equation}
+    \begin{equation}
+        \label{eq:09_31c}
+        w = C \cdot z  % (31c)
+    \end{equation}
 \end{subequations}
 
 These can conveniently be written
 
 \begin{equation}
-	\label{eq:09_32}
-	w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .%  (32)
+    \label{eq:09_32}
+    w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .%  (32)
 \end{equation}
 
 The concept of successive transformations leads to the idea of
 multiplying two matrices to obtain a third:
 % (33)
 \begin{equation}
-	\label{eq:09_33}
-	D = B \cdot A \quad E = C \cdot D
+    \label{eq:09_33}
+    D = B \cdot A \quad E = C \cdot D
 \end{equation}
 D=B-A E=C-D (33)
 In terms of matrix elements we have, for example
 \begin{equation}
-	\label{eq:09_34}
-	D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}
+    \label{eq:09_34}
+    D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}
 \end{equation}
 
 The important point is that the (matrix) multiplications may be
 performed in any order, so long as the left-to-right ordering of
 the factors is maintained:
 \begin{equation}
-	\label{eq:09_35}
-	C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A
+    \label{eq:09_35}
+    C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A
 \end{equation}
 Equation \ref{eq:09_35} is known as the associative law of matrix
 multiplication. Finally, we note that -- as hinted above -- the left-to-right
 order of factors in matrix multiplication is significant. That is, i
 general,
 \begin{equation}
-	\label{eq:09_36}
-	A \cdot B \neq B \cdot A
+    \label{eq:09_36}
+    A \cdot B \neq B \cdot A
 \end{equation}
 We say that, unlike with ordinary or even complex arithmetics
 matrix multiplication -- even of s uare matrices -- does not in
@@ -1450,21 +1450,21 @@ With this introduction, what does it mean to invert a matrix? First
 of all, the concept can apply only to a square matrix. Given an
 $N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the property that
 \begin{equation}
-	\label{eq:09_37}
-	A^{-1} \cdot A \equiv A \cdot A^{-1}
+    \label{eq:09_37}
+    A^{-1} \cdot A \equiv A \cdot A^{-1}
 \end{equation} 
 where I is the unit matrix defined in the beginning of this chapter
 (Eq. 4  \underline{remark : probably it is 3}-- 1's on the main diagonal, 0's everywhere else). We have
 implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
 left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
 \begin{equation}
-	\label{eq:09_38}
-	\Big(A^{-1} \Big)^{-1} \equiv A
+    \label{eq:09_38}
+    \Big(A^{-1} \Big)^{-1} \equiv A
 \end{equation} 
 The condition that -- given A -- we can construct $A^{-1}$ is the same
 as the condition that we should be able to solve the linear equation
 \begin{equation*}
-	A \cdot x = b \,;
+    A \cdot x = b \,;
 \end{equation*} 
  namely, $\det(A) \neq 0$.
 
@@ -1482,81 +1482,97 @@ inverting unless we want to solve a number of equations with the
 same coefficient matrix but with different inhomogeneous terms.
 In this case, we can write
 \begin{equation}
-	\label{eq:09_39}
-	x = A^{-1} \cdot b
+    \label{eq:09_39}
+    x = A^{-1} \cdot b
 \end{equation} 
 and just recalculate for each \textbf{b}. Clearly this breaks even - relative
 to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior
 to re-solving for more than 3 \textbf{b}'s.
 
-s55 Anmmpie
-
-Let us now calculate the inverse of our 3x3 matrix from before.
-The equation is (let c = A " be the inverse")
-
-105 000301 can 100
-3 2 4 C10 C" C12 = 0 1 0 (40)
-116 CanCa 001
-
- 
-
-18. Note:ifCisaright-inverse,AC-l,itkalsoa|dl-inverse,CA=l.
-
-OJUIUIVNanim-Alrldasraaarvad.
-
-246
-
-CMptarO-Urngebra SclentlflcFORT
-
-It is easy to see that Eq. 40 is like 3 linear equations, the unkn
-being each column of the matrix C. The brute-force method I
-calculate A is then to work on the right-hand-side all at once
+\subsection{An Example} 
+Let us now calculate the inverse of our $3\times 3$ matrix from before.
+The equation is (let $C = A^{-1}$ be the inverse\sepfootnote{09_18})
+\begin{equation}
+    \label{eq:09_40}
+    \begin{pmatrix}
+        1&0 &5\\ 
+        3&2 &4\\ 
+        1&1 &6
+    \end{pmatrix}
+    \,
+    \begin{pmatrix}
+        c_{00}&c_{01} &c_{02}\\ 
+        c_{10}&c_{11} &c_{12}\\ 
+        c_{20}&c_{21} &c_{22}
+    \end{pmatrix}
+    \, = \,
+    \begin{pmatrix}
+        1&0 &0\\ 
+        0&1 &0\\ 
+        0&0 &1
+    \end{pmatrix}
+\end{equation} 
+% 246
+It is easy to see that Eq. \ref{q:09_40} is like 3 linear equations, the unknown
+being each column of the matrix C. The brute-force method to
+calculate A is then to work on the right-hand-side all at once as
 we triangularize, and back-solve. It is easy to see that
-gularization by pivotal elimination leads to
-
-1 2/3 Vs can cat can 0 V3 0
-0 1 *'1/2 C10 Ctr C12 = '3': V2 0 (41)
-0 O 1 C20 C12 022 V13 "V13  13 l
-
-results of back-solving, column by column. This is N times a.
-
-if
-
-1
-total time required for brute-force inversion is =5 gN3. By keep-
-
-To construct the inverse we replace the right-hand side with thq
-
-much work as back-solving a single set of equations, hence th
-
-ing track of zero elements we could reduce this time by anothel
-%N3, thereby obtaining the theoretical minimum (for Gaussian
-elimination) of 0(N3). However, the brute-force method is un-
-satisfactory for another reason: it takes twice the storage of more
-sophisticated algorithms. Modern matrix packages therefore "8:"
+triangularization by pivotal elimination leads to
+\begin{equation}
+    \label{eq:09_41}
+    \begin{pmatrix}
+        1&^2/_3 &^4/_3\\ 
+        0&1 &^{-11}/_2\\ 
+        0&0 &1
+    \end{pmatrix}
+    \begin{pmatrix}
+        c_{00}&c_{01} &c_{02}\\ 
+        c_{10}&c_{11} &c_{12}\\ 
+        c_{20}&c_{21} &c_{22}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        0&^1/_3&0\\ 
+        ^{-3}/_2 &^1/_2&0\\ 
+         ^1/_{13} &         ^{-1}/_{13} &        ^2/_{13}
+    \end{pmatrix}
+\end{equation} 
+To construct the inverse we replace the right-hand side with the 
+results of back-solving, column by column. This is N times as
+much work as back-solving a single set of equations, hence the
+total time required for brute-force inversion is $\approx \frac{4}{3}N^3$. By keeping track of zero elements we could reduce this time by another
+$\frac{1}{3}N^3$, thereby obtaining the theoretical minimum (for Gaussian
+elimination) of $O(N^3)$. However, the brute-force method is unsatisfactory for another reason: it takes twice the storage of more
+sophisticated algorithms. Modern matrix packages therefore use
 LU decomposition for both linear equations and matrix inversion.
 
- 
-
-\S4 LU decomposition
-
-We now investigate the LU decomposition algorithm". Sup-
-pose a given matrix A could be rewritten
-
-awam 1m 0 0\}lmflm
-A: 310311 = L'U = 1401110 0  11 (42)
-.................. 0 0
-
+\section{LU decomposition}
+\TallC{We} now investigate the LU decomposition algorithm". Suppose a given matrix A could be rewritten
+\begin{equation}
+    \label{eq:09_42}
+    A = 
+    \begin{pmatrix}
+        a_{00}&a_{01} &\dots\\
+        a_{10}&a_{11} &\dots\\
+        \dots&\dots &\dots
+    \end{pmatrix}
+    = L \cdot U =
+    \begin{pmatrix}
+        \lambda_{00}&0 &0\\
+        \lambda_{10}&\lambda_{11} &0\\
+        \dots&\dots &\dots
+    \end{pmatrix}
+    \cdot
+    \begin{pmatrix}
+        \mu_{00}&\mu_{01} &\dots\\
+        0&\mu_{11} &\dots\\
+        0&0 &\dots
+    \end{pmatrix}
+\end{equation} 
 then the solution of
 
  
 
-19.
-
-Sec, 2.3., WH. Press, B.P. F'Iannery, SA. Teukolsky and W.T. Vetterling. Numerical Recipe:
-(Cambridge University Press, Cambridge, 1986), p. 31H.
-
-owe-mm 241
 
 (L-u)-nL-(u-x) -b (43)
 can be found in two steps: First. solve
