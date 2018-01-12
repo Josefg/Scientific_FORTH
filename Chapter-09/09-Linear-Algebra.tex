@@ -1349,41 +1349,44 @@ We introduce this subject with a brief discourse on liners
 algebra of square matrices.
 
 \subsection{Linear transformations}
-Suppose A is a square (NXN) matrix and x is an N-dimensiomi
-vector (a column, or NXI matrix). We can think of the symbolic
+Suppose A is a square $(N\times N)$ matrix and x is an N-dimensional
+vector (a column, or $(N\times 1)$ matrix). We can think of the symbolic
 operation
-
-y= A -x (26)
-
- 
-
+ % (26)
+\begin{equation}
+	\label{eq:09_26}
+	y= A -x
+\end{equation} 
 as a linear transformation of the column x to a new column y. In
 terms of matrix elements and components,
 
-N-l
-Ym= E Amnxn (27)
+\begin{equation}
+	\label{eq:09_27}
+	y_m = \sum_{n=0}^{N-1} A_{mn} x_n
+\end{equation}
 
-n-o
-
-The transformation is linear because if x is the sum of 2 columns
+The transformation is \textbf{linear} because if x is the sum of 2 columns
 (added component by component)
-
-it = x") + is), (23) \_
-
-l
-
+\begin{equation}
+	\label{eq:09_28}
+	x=x^{(1)}+x^{(2)}\;,
+\end{equation}
 we can calculate A 1 either by first adding the two vectors ant:
 then transforming, written
-
-A-x-A-(am+am) (29)
-
+\begin{equation}
+	\label{eq:09_29}
+	A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)
+\end{equation}
 or we could transform first and then add the transformed vectors.
-The identity of the results is called the distribatlvs law
-
-A-x-A-(xm+a(2)) "amuse (30)
+The identity of the results is called the \textbf{distributive law}
+\begin{equation}
+	\label{eq:09_30}
+	A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} 
+\end{equation}
 of linear transformations.
 
-"2 Matrix m
+\subsection{Matrix multiplication}
+
 Now, suppose we had several square matrices, A, B, 0,... We
 could imagine performing successive linear transformations on a
 
