@@ -1253,28 +1253,31 @@ EX.20, where we make the special choices
 We give the times only for the case of a highly optimized inner
 loop (written in assembler), for the type REAL*4:
 
- 
-
-Table 9-1 Execution times for various N (9.54 MHz 8086 + 8087 machine)
-
- 
-
-N Time
-20 1.20
-50 7.75
-75 19.6
-100 38.8
-
- 
-
- 
-
- 
+% Table 9-1
+\begin{table}
+	\centering
+	\caption{Execution times for various N (9.54 MHz 8086 + 8087 machine)}
+	    \bigskip
+    \label{tbl:09_01} 
+	\setlength{\tabcolsep}{40pt}
+        \begin{tabular}{|ll|}
+            \hline & \\
+			N   &  Time\\
+			& \\
+			20  &  1.20\\
+			& \\
+			50  &  7.75\\
+			& \\
+			75  &  19.6\\
+			& \\
+			100 &  38.8\\
+            & \\
+            \hline
+        \end{tabular}
+\end{table}
 
 The coefficients of the cubic polynomial extracted from the above
-are (in seconds, 9.54 MHz 8086 machine, machine-coded inner
-
-loop)
+are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
 
 a0 = 032727304
 a. = -0.01084850
