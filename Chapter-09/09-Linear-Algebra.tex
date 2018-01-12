@@ -1630,31 +1630,22 @@ Clearly,
     \mu_{kn} &\equiv 0\;,\; k < n  \nonumber
 \end{align}
 so we can divide up the work as follows: for each n, write
+% (50)
+\begin{align}
+    \label{eq:09_50}
+    \mu_{mn} &= A_{mn} - \sum_{k=0}^{m-1}\lambda_{mk}\mu_{kn}\,,\;m=0,1,\dotsc,n  \nonumber \\
+    & \\
+    \lambda_{mn} &=\frac{1}{\mu_{nn}}\Big(A_{mn}-\sum_{k=0}^{n-1}\lambda_{mk}\mu_{kn}\Big)\,,\; m=n+1, n+2, \dotsc, N-1  \nonumber
+\end{align}
 
- 
-
- 
-
-m-l
-.umn =Amn - kzo Amkflkn ' m = 0,1,...,'l
-
-(50)
-
-n-l
-1m =i(A..... - 2 Amp") , m =n+1,n+2,...,N-1 -.
-.unn i=0
-
- 
-
-Inspection of Eq. 50 makes clear that the terms on the right side!
-are always computed before they are needed. We can store tln
-computed elements A." and uh, in place of the corresponding
-elements of the original matrix (on the diagonals we store  4..
-
-since A", = 1 is known).
+Inspection of Eq. \ref{eq:09_50} makes clear that the terms on the right side
+are always computed before they are needed. We can store the
+computed elements $\lambda_{mk}$ and $\mu_{kn}$ in place of the corresponding
+elements of the original matrix (on the diagonals we store  $\mu_{nn}$
+since $\lambda_{kk} = 1$ is known).
 
 To limit roundoff error we again pivot, which amounts to permutl
 ing so the row with the largest diagonal element is the currenf
 one. Much of the code developed for the Gauss eliminatios
-method is applicable, as the file LU.FI'H shows.
+method is applicable, as the file LU.FTH shows.
 
