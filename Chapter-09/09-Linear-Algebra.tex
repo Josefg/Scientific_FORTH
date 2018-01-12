@@ -1387,101 +1387,107 @@ of linear transformations.
 
 \subsection{Matrix multiplication}
 
-Now, suppose we had several square matrices, A, B, 0,... We
+Now, suppose we had several square matrices, \textbf{A, B, C,...} We
 could imagine performing successive linear transformations on a
-
-vectorxvia
-y= A -x (31a)
-2= e -y (31b)
-w = C -1 (31c)
+vector x \textit{via}
+\begin{subequations}
+	\begin{equation}
+		\label{eq:09_31a}
+		y= A \cdot x% (31a)
+	\end{equation}
+	\begin{equation}
+		\label{eq:09_31b}
+		z= B \cdot y % (31b)
+	\end{equation}
+	\begin{equation}
+		\label{eq:09_31c}
+		w = C \cdot z  % (31c)
+	\end{equation}
+\end{subequations}
 
 These can conveniently be written
 
-w=c-[B-(A-x) . (32)
-
- 
+\begin{equation}
+	\label{eq:09_32}
+	w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .%  (32)
+\end{equation}
 
 The concept of successive transformations leads to the idea of
 multiplying two matrices to obtain a third:
-
+% (33)
+\begin{equation}
+	\label{eq:09_33}
+	D = B \cdot A \quad E = C \cdot D
+\end{equation}
 D=B-A E=C-D (33)
 In terms of matrix elements we have, for example
-N-I
-Diir ' 1% all All- (34)
+\begin{equation}
+	\label{eq:09_34}
+	D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}
+\end{equation}
 
 The important point is that the (matrix) multiplications may be
 performed in any order, so long as the left-to-right ordering of
 the factors is maintained:
-
-oJilthNobinm-Alnohtaraaawad.
-
-Ci'iaptoro-LInaarAigabra Salem
-
-   
-  
-  
-  
-  
-
-c- (a -A) -=- (c .n) -A (35)
-
-Equation 35 is known as the associative law of matrix multipli
-tion. Finally, we note that -as hinted above- the left-to-ri
+\begin{equation}
+	\label{eq:09_35}
+	C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A
+\end{equation}
+Equation \ref{eq:09_35} is known as the associative law of matrix
+multiplication. Finally, we note that -- as hinted above -- the left-to-right
 order of factors in matrix multiplication is significant. That is, i
 general,
+\begin{equation}
+	\label{eq:09_36}
+	A \cdot B \neq B \cdot A
+\end{equation}
+We say that, unlike with ordinary or even complex arithmetics
+matrix multiplication -- even of s uare matrices -- does not in
+general obey the commutative law \sepfootnote{09_17}.
 
-A-B¢B-A (36) 1
-
-We say that, unlike with ordinary or even complex arithme '
-matrix multiplication -even of s uare matrices- does not i
-general obey the commutative law .
-
-\S\S3 Matrix Inversion
+\subsection{Matrix Inversion}
 With this introduction, what does it mean to invert a matrix? First
 of all, the concept can apply only to a square matrix. Given an
-NXN matrix A, we seek another N XN matrix A with theproper-
-ty that
+$N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the property that
+\begin{equation}
+	\label{eq:09_37}
+	A^{-1} \cdot A \equiv A \cdot A^{-1}
+\end{equation} 
+where I is the unit matrix defined in the beginning of this chapter
+(Eq. 4  \underline{remark : probably it is 3}-- 1's on the main diagonal, 0's everywhere else). We have
+implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
+left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
+\begin{equation}
+	\label{eq:09_38}
+	\Big(A^{-1} \Big)^{-1} \equiv A
+\end{equation} 
+The condition that -- given A -- we can construct $A^{-1}$ is the same
+as the condition that we should be able to solve the linear equation
+\begin{equation*}
+	A \cdot x = b \,;
+\end{equation*} 
+ namely, $\det(A) \neq 0$.
 
- 
+\subsection{Why invert matrices, anyway?}
 
-A"-AaA-A"=I (37)
-
-where I is the unit matrix defined in the beginning of this chapte r
-(Eq. 4 - 1's on the main diagonal, 0's everywhere else). We have:
-implied in Eq. 37 that a matrix that is an inverse with respect to
-left-multiplication is also an inverse with respect to right-multi-
-plication. Put another way, we imply that
-
-(r' )" a A (38)
-
-The condition that - given A- we can construct A'1 is the same.|
-as the condition that we should be able to solve the linear equa-(
-tion
-
-A-I-b;
-
-t namely, det(A) u 0.
-
-5'4 W invert matrices, W
 We have developed a linear equation solver program already
--why should we be interested in a matrix inversion program?
+-- why should we be interested in a matrix inversion program?
 
 Here is why: The time needed to solve a single system (that is,
-with a given inhomogeneous term) of linear equations is condi-
-tioned by the number of floating-point multiplications required:
-
-about 143/111): number needed to invert the matrix is about N3,
-roughly 3X as many, meaning roughly 3x as long to invert as to
+with a given inhomogeneous term) of linear equations is conditioned by the number of floating-point multiplications required:
+about $N^3/3$. The number needed to invert the matrix is about $N^3$,
+roughly $3\times$ as many, meaning roughly $3\times$ as long to invert as to
 solve, if the matrix is large. Clearly there is no advantage to
 inverting unless we want to solve a number of equations with the
 same coefficient matrix but with different inhomogeneous terms.
 In this case, we can write
-
-x=A'Lb a"
-
-and just recalculate for each h. Clearly this breaks even - relative
-to solving 3 sets of equations - for 3 different b's and is superior
-to re-solving for more than 3 Us
+\begin{equation}
+	\label{eq:09_39}
+	x = A^{-1} \cdot b
+\end{equation} 
+and just recalculate for each \textbf{b}. Clearly this breaks even - relative
+to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior
+to re-solving for more than 3 \textbf{b}'s.
 
 s55 Anmmpie
 
