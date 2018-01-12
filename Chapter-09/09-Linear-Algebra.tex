@@ -1228,7 +1228,7 @@ EX.20, where we make the special choices
         \dots
     \end{pmatrix}
     \, ,\, 
-    v=\frac{1}{2N} u\, , \, 
+    \mathbf{v}=\frac{1}{2N} \mathbf{u}\, , \, 
     \mathbf{b} =
     \begin{pmatrix}
         1\\ 
@@ -1371,7 +1371,7 @@ The transformation is \textbf{linear} because if x is the sum of 2 columns
     \label{eq:09_28}
     x=x^{(1)}+x^{(2)}\;,
 \end{equation}
-we can calculate A 1 either by first adding the two vectors ant:
+we can calculate $A \cdot x$ either by first adding the two vectors ant:
 then transforming, written
 \begin{equation}
     \label{eq:09_29}
@@ -1547,7 +1547,7 @@ sophisticated algorithms. Modern matrix packages therefore use
 LU decomposition for both linear equations and matrix inversion.
 
 \section{LU decomposition}
-\TallC{We} now investigate the LU decomposition algorithm". Suppose a given matrix A could be rewritten
+\TallC{We} now investigate the LU decomposition algorithm"\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
 \begin{equation}
     \label{eq:09_42}
     A = 
@@ -1570,60 +1570,66 @@ LU decomposition for both linear equations and matrix inversion.
     \end{pmatrix}
 \end{equation} 
 then the solution of
-
- 
-
-
-(L-u)-nL-(u-x) -b (43)
-can be found in two steps: First. solve
-Lty- b (44)
+\begin{equation}
+    \label{eq:09_43}
+    (L \cdot U ) \equiv L \cdot (U \cdot x) = b
+\end{equation} 
+can be found in two steps: First, solve
+% (44)
+\begin{equation}
+    \label{eq:09_44}
+    L \cdot y = b
+\end{equation} 
 for
-y: U-x (45)
-via
-looYo = bo
-MOYO'l'ltIYI =01 (46)
-130\% + 421Y1+ la)': = D:
-\textit{etc.}
+% (45)
+\begin{equation}
+    \label{eq:09_45}
+    y \equiv U  \cdot b
+\end{equation} 
+\textit{via}
+\begin{align}
+    \label{eq:09_46}
+    \lambda_{00} y_0 &= b_0 \nonumber \\
+    \lambda_{10} y_0 + \lambda_{11} y_1 &= b_1 \\
+    \lambda_{20} y_0 + \lambda_{21} y_1 + \lambda_{21} y_1 &= b_2 \nonumber \\
+    ... \textit{etc.} ... \nonumber
+\end{align}
 
 which can be solved successively by forward substtution. Next
-solve 45 successively (by back-substitution) for x:
+solve 45 successively (by back-substitution) for \textbf{x}:
+\begin{align}
+    \label{eq:09_47}
+    \mu_{N-1\, N-1} x_{N-1} &= y_{N-1} \nonumber \\
+    \mu_{N-2\, N-2} x_{N-2} + \mu_{N-2\, N-1} x_{N-1} &= y_{N-2} \\
+    ... \textit{etc.} ... \nonumber
+\end{align}
+The n'th term of Eq. \ref{eq:09_46} requires n multiplications and n additions.
+Since we must sum n from 0 to N-1, we find $N(N-1)/2 \approx N^2/2$
+multiplications and additions to solve all of \ref{eq:09_46}. Similarly, solving 
+\ref{eq:09_47} requires about $N^2/2$ additions and multiplications. Thus, the
+dominant time in solving must be the time to decompose according to Eq. \ref{eq:09_42}.
 
-l'N-tN-t XN-1 = YN-t
-I'M-2 N-2 XN-z + I'M-2 N-1 xN-i = YN-z (47)
-\textit{etc.}
-
-The n'th term of Eq. 46 requires n multiplications and n additions.
-Since we must sum n from 0 to N-l, we find N(N-1)/2 =4 Nz/Z
-multiplications and additions to solve all of 46. Similarly, solving
-
-47 requires about N2/2 additions and multiplications. Thus, the
-dominant time in solving must be the time to decompose accord-
-
-ing to Eq. 42.
-
-The decomposition time is =5 N 3/3, and the method for decom-
-posing is described clearly in Numerical Recipes. The equations
+The decomposition time is $\approx N^3/3$, and the method for decomposing is
+described clearly in \textit{Numerical Recipes}. The equations
 to be solved are
+% (48)
+\begin{equation}
+    \label{eq:09_48}
+    \sum_{k=0}^{N-1}\lambda_{mk}\mu_{kn}=A_{mn}
+\end{equation}
+constituting $N^2 + N$ equations for $N^2$ unknowns. Thus we may
+arbitrarily choose $\lambda = 1$.
 
-N-l
-
-[a luk/'h =Araa (48)
-
-constituting N2 + N equations for N2 unknowns. Thus we may
-arbitrarily choose I... = 1.
-
-eJuunMNobmm-nmm.
-
-Chapters-UnearNgobra ScbndflcFORTM
-
-The equations 48 are easy to solve if we do so in a sensible ordefi
+The equations \ref{eq:09_48} are easy to solve if we do so in a sensible order.
 Clearly,
-
-1mk50,m>k il
-(49)
-"knaos k<n
-
-so we can divide up the work as follows: for each 11, write
+% (49)
+\begin{align}
+    \label{eq:09_49}
+    \lambda_{mk} &\equiv 0\;,\; m > k  \nonumber \\
+    &\\
+    \mu_{kn} &\equiv 0\;,\; k < n  \nonumber
+\end{align}
+so we can divide up the work as follows: for each n, write
 
  
 
