@@ -1165,13 +1165,20 @@ position to determine these coefficients numerically.
 For this timing and testing chore we need an exactly soluble dense
 system of linear equations, of arbitrary order. The simplest such
 system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_14}:
-
-
-
-A - I - u v' (20)
+%  (20_)
+\begin{subequations}
+\begin{equation}
+ \label{eq:09_20_}
+A = I - u v^\dagger
+\end{equation}
 In terms of matrix elements,
 
-Ai-du-uw' (20')
+% (20'_)
+\begin{equation}
+ \label{eq:09_20_}
+	A_{ij} = \delta_{ij} - u_i v_j^*
+\end{equation}
+\end{subequations}
 
 The solution of the system A 1 I: b is simple: using the standard
 notation
