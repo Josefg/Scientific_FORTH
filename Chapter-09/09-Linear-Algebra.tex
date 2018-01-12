@@ -1279,21 +1279,22 @@ loop (written in assembler), for the type REAL*4:
 The coefficients of the cubic polynomial extracted from the above
 are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
 
-a0 = 032727304
-a. = -0.01084850
-32 = 000241636
-33 = 000001539
+\begin{equation*}
+	\begin{split}
+		a_0 &= 0.32727304\\
+		a_1 &= -0.01084850\\
+		a_2 &= 0.00241636\\
+		a_3 &= 0.00001539
+	\end{split}
+\end{equation*}
 
-from them we can extrapolate the time to solve a 350x350 real
-system to be about 16 minutes. On a 25 MHz 80386/8038'7 ma-
-chine with 32-bit addrgsing implemented, the time should
-decrease five- to tenfold .
+from them we can extrapolate the time to solve a $350 \times 350$ real
+system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addrgsing implemented, the time should
+decrease five- to tenfold \sepfootnote{09_15}.
 
-It is interesting to explore a bit further the extracted value of a3,
-
-. . 1
-which is 3-
-fined above as Re.LP and hand-coded in assembler for ultimate
+It is interesting to explore a bit further the extracted value of $a_3$,
+which is $\frac{1}{3}$ the time needed to evaluate the inner loop (defined
+above as Re.LP and hand-coded in assembler for ultimate
 speed). Converting to clock cycles on an IBM-PC compatible
 (running at 9.54 MHz) we have an average of 440 clock cycles per
 traversal (of this loop). Recall the operations that are needed: a
@@ -1301,71 +1302,53 @@ traversal (of this loop). Recall the operations that are needed: a
 memory fetch, a floating-point subtraction, and a 32-bit store.
 The initial fetch-and-multiply can be be compressed into a single
 co-processor operation, as can the fetch-and-subtract. The times
-in cycles for these basic operations are
-
-the time needed to evaluate the innermost loop (de-
-
-TaUe9-2Executiontlmesotlnnennostioopoperntions
-
+in cycles for these basic operations are\sepfootnote{09_16}
+% Table 9-2
+\begin{table}
+	\centering
+	\caption{Execution times of innermost loop operations}
+	    \bigskip
+    \label{tbl:09_02} 
+	\setlength{\tabcolsep}{10pt}
+        \begin{tabular}{|ll|}
+			\hline &  \\
+			\underline{Operation} & \underline{Time} \; (cpu clocks)\\
+			&  \\
+			memory FMUL &  133  \\
+			&  \\
+			memory FSUBR &  128  \\
+			&  \\
+			memory FSTP &  100  \\ 
+			&  \\
+			overhead &  61  \\ 
+			&  \\
+            \hline &  \\
+			Total &  422  \\ 
+			&  \\
+            \hline
+        \end{tabular}
+\end{table}
  
-
-Operation lime (cpu clock5)
-memory FMUL 133
-memory FSUBR 128
-memory FSTP 100
-
-overhead 61
-
- 
-
-Total 422
-
- 
-
- 
-
- 
-
- 
-
-15. thnlthinkthatsolvinglmxlflhystems -keytomyPh.D.researchin1966- tookthebetter
-putofanhornonanlnumnheseresuhsseeminaedible.
-
-16. See WP.
-
-% emvmrm-umw.
-
 % 242
 
-\S3 Matrix Inversion
-
-\S\S1 Unear transformations
-
-  
- 
-    
-   
-   
-  
-
-ChapterO-LlnaarAlgebra SciandflcFOfl
-
-We see from Table 9-2 above that the time computed from t
-cpu and coprocessor specifications (422 clocks) is close to
-measured time (440 clocks). The slight difference doub
-comes both from measurement error and from the fact th
-timing of CISC chips is not an exact art (for example, there a
-periodic interruptions for dynamic memory refreshment and f
+\section{Matrix Inversion}
+\TallC{We} see from Table \ref{tbl:09_02} above that the time computed from the
+cpu and coprocessor specifications (422 clocks) is close to the
+measured time (440 clocks). The slight difference doubtless
+comes both from measurement error and from the fact the
+timing of CISC chips is not an exact art (for example, there a \underline{??}
+periodic interruptions for dynamic memory refreshment and f \underline{??}
 the system clock).
 
 Finally, we confirm that little is to be gained by optimizing out
-loops. Suppose, «5.3., we could halve a; by clever programmin
-then we should cut the N =350 time from 16 to 13 minutes,
-the time for N = 1000 by some 20 minutes in 5 hours, or 6%.
+loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
+then we should cut the N = 350 time from 16 to 13 minutes, and 
+the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
 We introduce this subject with a brief discourse on liners
 algebra of square matrices.
 
+\subsection{Linear transformations}
 Suppose A is a square (NXN) matrix and x is an N-dimensiomi
 vector (a column, or NXI matrix). We can think of the symbolic
 operation
