@@ -1039,8 +1039,7 @@ R> row ISTEP " + DDUP >FS GR- FS> ;
 \end{itemize}
 
 We now combine the words \regc{\}SWAP}, \regc{\}\}PIVOT}, \regc{\}\}ROW*X}.
-\}Rl-RZ'X and \}Vl-VZ'X to implement the triangularization por-
-tion of pivotal elimination.
+\}R1-R2*X and \}V1-V2*X to implement the triangularization portion of pivotal elimination.
 
 % 236
 Since the Gaussian elimination method makes it very easy to
@@ -1152,27 +1151,21 @@ given system. (Of course it is also useful to know whether the
 solution is correct!) We time the solution of 4 sets of N equations,
 with 4 different values of N. The running time can be expressed
 as a cubic polynomial in N with undetermined coefficients:
-% (19)
+% ( restart from 19)
+\addtocounter{equation}{-3} % the next equation is back with 3 22 -> 19
 \begin{equation}
-	T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19}
+	T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19_}
 \end{equation}
 
-Evaluating \ref{eq:09_19} for 4 different values of N, and measuring the 4
+Evaluating \ref{eq:09_19_} for 4 different values of N, and measuring the 4
 times $T_{N_i}$ , we produce 4 inhomogeneous linear equations in 4 
 unknowns: $a_i , i = 0, 1, 2, 3$. As luck would have it, we just happen to have on hand a linear equation solver, and are thus in a
 position to determine these coefficients numerically.
 
 For this timing and testing chore we need an exactly soluble dense
-system of linear equations, of arbitrary order. The simplest siqch
-system involves a rank-1 matrix, that is, a matrix of the form :
+system of linear equations, of arbitrary order. The simplest such
+system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_14}:
 
- 
-
-14.
-
-We employ the standard notation that a vector u is a column and an adjoint vector VIf '3 a row.
-Their outer product, uvi, is a matrix. Given a column v, we construct its adjoint (row) VIt by
-taking the complex conjugate of each element and placing it in the corresponding position in a
 
 
 A - I - u v' (20)
