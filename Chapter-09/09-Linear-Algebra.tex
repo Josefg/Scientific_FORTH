@@ -1,34 +1,4 @@
 % 9 — Linear Algebra
-% :ontonts
-
-% \S1 Simultaneous linear equations
-% 551 Theory of linear algebraic equations
-% \S\S2 Eigenvalue problems
-% 52 Solving linear equations
-% \S\S1 Cramer's rule
-% \S\S2 Pivotal Elimination
-% 553 Testing
-% \S\S4 Implementing pivotal elimination
-% \S\S5 The program
-% 556 Timing
-% 53 Matrix inversion
-% \S\S1 Linear transformations
-% 5552 Matrix multiplication
-% \S\S3 Matrix inversion
-% \S\S4 Why invert matrices, anyway?
-% \S\S5 An example
-% 
-% 54 LU decomposition 214 214 215 218 218 221 225 227 227 242 242 243 244 245 245 246 213 214
-% 
-% 51 Simultaneous linear equations
-% 
-% \S\S1 Theory oi linear algebraic equations
-% 
-% ChapterB-LhearNgebra Sewncronr'
-
-      
- 
-   
  
 \chapter{Linear Algebra}
 
@@ -39,28 +9,28 @@ an important subject As an exercise in FORTH program
 development we shall now write programs to solve linear equations and invert matrices.
 
 \section{Simultaneous linear equations}
-\TallC{ We } begin with a dose of mathematics (linear algebra), and 
+\TallC{We} begin with a dose of mathematics (linear algebra), and 
 then develop programs. Several actual programming session
 are reproduced \textit{in toto} --mistakes and all-- to give the flavor of
-program development and debugging 1n FORTH.
-\subsection{Theory oi linear algebraic equations}
-\TallC{ We } begin by stating the problem. Given the equations
+program development and debugging in FORTH.
+\subsection{Theory of linear algebraic equations}
+\TallC{We} begin by stating the problem. Given the equations
 \begin{equation}
-    \sum_{n=0}^{N-1}A_{mn}x_n=b_m \;. \label{eq:09_01}
+    \sum_{n=0}^{N-1}A_{mn}x_n=b_m \,. \label{eq:09_01}
 \end{equation}
---\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,-- with known \textbf{coefficient
+--\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,--
+with known \textbf{coefficient
 matrix} $A_{mn}$ and known \textbf{inhomogeneous term} $b_m$: under what
 conditions can we find unique values of $x_n$ that simultaneously
-satisfy the N equations 1?
+satisfy the N equations \ref{eq:09_01}?
 
 The theory of simultaneous linear equations tells us that if not all
-the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{
-    determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
+the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
 Contrariwise, if $det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
 when $\vec{b}= 0$.
 
 \subsection{Eigenvalue problems} 
-\TallC{ Many } physical systems can be represented by systems of linear 
+\TallC{Many} physical systems can be represented by systems of linear 
 equations. Masses on springs, pendula, electrical circuits,
 structures\sepfootnote{09_02}, and molecules are examples. Such systems often can
 oscillate sinusoidally. If the amplitude of oscillation remains
@@ -78,7 +48,7 @@ problems can be expressed as the question: do linear equations
 of the form
 % (2)
 \begin{equation}
-    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{b} \label{eq:09_02}
+    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{x} \label{eq:09_02}
 \end{equation}
 have solutions? Here $\lambda$ is generally a complex number, called the
 \textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
@@ -134,7 +104,7 @@ numbers. How do we know? We simply consider Eq. \ref{eq:09_03} and its
 Equation ~\ref{eq:09_06b} can be rewritten (using the fact that $\overleftrightarrow{A}$ and $\overleftrightarrow{\rho}$are Hermitian)
     \begin{equation}
         \label{eq:09_06c}
-        \sum_{m} x_m^{*} A_{mn} = \lambda ^{*} \sum_{n} x_m^{*} \rho_{mn}^{*} 
+        \sum_{m} x_m^{*} A_{mn} = \lambda ^{*} \sum_{n} x_m^{*} \rho_{mn}
     \end{equation}
 \end{subequations}
  
@@ -176,17 +146,17 @@ $\pm i \omega$ and hence to a solution that grows exponentially in time, as
 There are many techniques for finding eigenvalues of matrices.
 If only the largest few are needed, the simplest method is iteration: make an
 initial guess $x^{(0)}$ and let
-\begin{equation}
-    x^{(n)}=\frac{A x^{(n-1)}}{\Big(x^{(n-1)}, \rho x^{(n-1)}\Big)^{^1/_2}}\nonumber
-\end{equation}
-Assuming the largest eigenvalue is unique,the sequence of vectors $x^{(n)} , n = 1, 2,\dotsc$, is guaranteed to converge to the vector
+\begin{equation*}
+    x^{(n)}=\frac{A x^{(n-1)}}{\Big(x^{(n-1)}, \rho x^{(n-1)}\Big)^{^1/_2}}
+\end{equation*}
+Assuming the largest eigenvalue is unique, the sequence of vectors $x^{(n)} , n = 1, 2,\dotsc$, is guaranteed to converge to the vector
 corresponding to that eigenvalue, usually after just a few iterations.
 
 If \textit{all} the eigenvalues are wanted, then the only choice is to solve
 the secular equation \ref{eq:09_05} for all N roots.
 
-\section{ Solving linear equations}
-\TallC{ The } test-and-development cycle in FORTH is short compared
+\section{Solving linear equations}
+\TallC{The} test-and-development cycle in FORTH is short compared
 with most languages. It is usually easy to create a working
 program that subsequently can be tuned for speed, again much
 % 218
@@ -195,16 +165,16 @@ benefit of the language.
 
 \subsection{Cramer's rule}
 
-\TallC{ Cramer's } rule is a constructive method for solving linear equations
+\TallC{Cramer's} rule is a constructive method for solving linear equations
 by computing determinants. It is completely impractical
 as a computer algorithm because it requires $O(N!)$ steps to solve
 N linear equations, whereas pivotal elimination (that we look at
 below) requires $O(N^3)$ steps, a much smaller number. Nevertheless Cramer's
 rule is of theoretical interest because it is a closed form solution.
 
-Consider a square $N\times N$ matrix A Pretend for the moment we
+Consider a square $N\times N$ matrix \textbf{A}. Pretend for the moment we
 know how to compute the determinant of an $(N-1)\times(N-1)$
-matrix. The determinant of A is defined to be
+matrix. The determinant of \textbf{A} is defined to be
 % according to  Josefg's comment this one is assumed to be Eq. (10) 
 \begin{equation}
     \label{eq:09_10}
@@ -212,9 +182,9 @@ matrix. The determinant of A is defined to be
 \end{equation}
 where the $a_{mn}$'s are called \textbf{co-factors} of the matrix elements $A_{mn}$
 and are in fact determinants of specially selected $(N-1)\times(N-1)$
-sub-matrices of A.
+sub-matrices of \textbf{A}.
 
-The sub-matrices are chosen by striking out of $A$ the n'th column
+The sub-matrices are chosen by striking out of \textbf{A} the n'th column
 and m'th row (leaving an $(N-1)\times(N-1)$ matrix). To illustrate,
 consider the $3 \times 3$ matrix
 % (11)
@@ -259,9 +229,9 @@ also makes clear why the solution cannot be found if $\det(A) = 0$.
 A determinant also vanishes when a row is a \textit{linear combination}
 of any of the other rows. Suppose row 0 can be written
 
-\begin{equation}
-    a_{0k}\equiv    \sum_{m=0}^{N-1}\beta _m a_{mk}\;;\nonumber
-\end{equation}
+\begin{equation*}
+    a_{0k}\equiv    \sum_{m=0}^{N-1}\beta _m a_{mk}\;;
+\end{equation*}
 that is, the 0'th equation can be derived from the other N-1
 equations, hence it contains no new information. We do not really
 have N equations for N unknowns, but at most N-1 equations. The
@@ -324,6 +294,7 @@ elements. This will be clearer with a concrete illustration rather
 than further description: Consider the $3 \times 3$ system of equations:
 %  (15)
 \begin{equation}
+    \label{eq:09_15}
     \begin{pmatrix}
     1 &0 &5\\ 
     3 &2 &4\\ 
@@ -357,6 +328,7 @@ roundoff error in the floating point arithmetic.
 \end{itemize}
 Transposition gives
 \begin{equation}
+    \label{eq:09_16}
     \begin{pmatrix}
         3 &2 &4\\ 
         1 &0 &5\\ 
@@ -377,6 +349,7 @@ Transposition gives
 Now divide row 0 by the new $A_{00}$ (in this case, 3) to get
 % (17)
 \begin{equation}
+    \label{eq:09_17}
     \begin{pmatrix}
         1 &^2/_3 &^4/_3\\ 
         1 &0 &5\\ 
@@ -398,6 +371,7 @@ Now divide row 0 by the new $A_{00}$ (in this case, 3) to get
 Subtract row 0 times $A_{n0}$ from rows with n $>$ 0
 % (18)
 \begin{equation}
+    \label{eq:09_18}
     \begin{pmatrix}
         1 &^2/_3 &^4/_3\\ 
         0 &^{-2}/_3 &^{11}/_3\\ 
@@ -420,6 +394,7 @@ Since $|A_{11}| > |A_{21}|$ we do not bother to switch rows 1 and 2, but
 divide row 1 by $A_{11} =-2/3$, getting
 % (19)
 \begin{equation}
+    \label{eq:09_19}
     \begin{pmatrix}
         1 & ^2/_3 & ^4/_3\\ 
         0 & 1 & ^{-11}/_2\\ 
@@ -441,6 +416,7 @@ We now multiply row 1 by A" a 1/3 and subtract it from row 2,
 and also divide through by A" to get
 % (20)
 \begin{equation}
+    \label{eq:09_20}
     \begin{pmatrix}
         1 & ^2/_3 & ^4/_3\\ 
         0 & 1 & ^{-11}/_2\\ 
@@ -1513,7 +1489,7 @@ The equation is (let $C = A^{-1}$ be the inverse\sepfootnote{09_18})
     \end{pmatrix}
 \end{equation} 
 % 246
-It is easy to see that Eq. \ref{q:09_40} is like 3 linear equations, the unknown
+It is easy to see that Eq. \ref{eq:09_40} is like 3 linear equations, the unknown
 being each column of the matrix C. The brute-force method to
 calculate A is then to work on the right-hand-side all at once as
 we triangularize, and back-solve. It is easy to see that
@@ -1547,7 +1523,7 @@ sophisticated algorithms. Modern matrix packages therefore use
 LU decomposition for both linear equations and matrix inversion.
 
 \section{LU decomposition}
-\TallC{We} now investigate the LU decomposition algorithm"\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
+\TallC{We} now investigate the LU decomposition algorithm\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
 \begin{equation}
     \label{eq:09_42}
     A = 
@@ -1572,7 +1548,7 @@ LU decomposition for both linear equations and matrix inversion.
 then the solution of
 \begin{equation}
     \label{eq:09_43}
-    (L \cdot U ) \equiv L \cdot (U \cdot x) = b
+    (L \cdot U ) \cdot x \equiv L \cdot (U \cdot x) = b
 \end{equation} 
 can be found in two steps: First, solve
 % (44)
@@ -1584,15 +1560,15 @@ for
 % (45)
 \begin{equation}
     \label{eq:09_45}
-    y \equiv U  \cdot b
+    y \equiv U  \cdot x
 \end{equation} 
 \textit{via}
 \begin{align}
     \label{eq:09_46}
     \lambda_{00} y_0 &= b_0 \nonumber \\
     \lambda_{10} y_0 + \lambda_{11} y_1 &= b_1 \\
-    \lambda_{20} y_0 + \lambda_{21} y_1 + \lambda_{21} y_1 &= b_2 \nonumber \\
-    ... \textit{etc.} ... \nonumber
+    \lambda_{20} y_0 + \lambda_{21} y_1 + \lambda_{22} y_2 &= b_2 \nonumber \\
+    \dots \;\textit{etc.} \;\dots \nonumber
 \end{align}
 
 which can be solved successively by forward substtution. Next
@@ -1601,7 +1577,7 @@ solve 45 successively (by back-substitution) for \textbf{x}:
     \label{eq:09_47}
     \mu_{N-1\, N-1} x_{N-1} &= y_{N-1} \nonumber \\
     \mu_{N-2\, N-2} x_{N-2} + \mu_{N-2\, N-1} x_{N-1} &= y_{N-2} \\
-    ... \textit{etc.} ... \nonumber
+    \dots \;\textit{etc.} \;\dots \nonumber
 \end{align}
 The n'th term of Eq. \ref{eq:09_46} requires n multiplications and n additions.
 Since we must sum n from 0 to N-1, we find $N(N-1)/2 \approx N^2/2$
@@ -1618,7 +1594,7 @@ to be solved are
     \sum_{k=0}^{N-1}\lambda_{mk}\mu_{kn}=A_{mn}
 \end{equation}
 constituting $N^2 + N$ equations for $N^2$ unknowns. Thus we may
-arbitrarily choose $\lambda = 1$.
+arbitrarily \textbf{choose} $\lambda_{kk} = 1$.
 
 The equations \ref{eq:09_48} are easy to solve if we do so in a sensible order.
 Clearly,
