@@ -537,22 +537,22 @@ some test words that do the following jobs:
 \end{itemize}
 \begin{verbatim}
 \ Display words
-V{ or M{{ stands torwhatanarrayputsonstack
-U: G. F. x. ;
-:.M (M{{--) FINIT DUP
-D.LEN 0 DO CR DUP
-D.LEN 0 DO DUP (--M{{ M{{ )
-J}{I}} DUP>R G@ G.
-LOOP
-LOOP DROP ;
+\ V{ or M{{ stands for what an array puts on stack
+GU: G. F. X. ;
+:.M ( M{{ --) FINIT DUP
+    D.LEN 0 DO CR DUP
+        D.LEN 0 DO DUP ( -- M{{ M{{ )
+            J }{ I }} DUP>R G@ G.
+        LOOP
+    LOOP DROP ;
 
-:.v (V{-~) DUP D.LEN
-0 DO on DUP l}{0} G@ G. LOOPDROP:
-
+:.V ( V{ --) DUP D.LEN
+    0 DO CR DUP I }{ 0 } G@ G. LOOP DROP ;
 \end{verbatim}
+
 We define a word to put ASCII numbers into matrices:
 \begin{verbatim}
-:GEFF# BL TEXT PAD S->F;
+:GET-F# BL TEXT PAD $->F ;
 \end{verbatim}
 
 This word takes the next string\sepfootnote{09_10} from the input stream (set off
@@ -562,13 +562,9 @@ convert the string to floating point format and put it on the
 
 \textbf{GET-F\#} is used in the following:
 \begin{verbatim}
-
-: <DO-VEC> ODO GET-F# DUP I0} G!
-LOOP DROP;
-
-:TAB->VEC DUP D.LEN <DO-VEC> ;
-
-:TAB->MAT DUP D.LEN DUP * <DO-VEC> ;
+: <DO-VEC>   0 DO GET-F#  DUP  I }   G!L  LOOP DROP ;
+: TAB->VEC  (length)  <DO-VEC> ;
+: TAB->MAT  (length)  DUP *   <DO-VEC> ;
 \end{verbatim}
 
 The file EX.3 will be found in the accompanying program diskette. The explanatory notes below refer to EX.3.
@@ -585,18 +581,18 @@ This is what it looks like when we load EX.3:
 
 \begin{verbatim}
 FLOAD EX.3 Loading EX.3
-ReadadimenslonSvectorand 3113 matrbtlrornatablethendispiaythem
-Now displaying vector.
+Read a dimenslon 3 vector and 3x3 matrix from a table, then dispiay them.
+Now displaying vector:
 V{ .V CR
 0.0000000
 4.0000000
 2.0000000
-Now displayhg matrbc
+Now displayhg matrix 
 A{{ .M CR
-1.0000000 0.000(1)") SIXJOOCDO
+1.0000000 0.0000000 5.0000000 
 3.0000000 2.0000000 4.0000000
 1.0000000 1.0000000 6.0000000
-say Exa FORGET-TASKto graceitfly FORGET these words olt
+say Ex.3 FORGET-TASK to graceitfly FORGET these words ok 
 \end{verbatim}
 
 \subsection{Implementing pivotal elimination}
