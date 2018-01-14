@@ -199,9 +199,33 @@ consider the $3 \times 3$ matrix
 \end{equation}
 and produce the co-factor of $A_{12}$:
 % (12)
-\begin{equation}
-    \texttt{TBD}\label{eq:09_12}
-\end{equation}
+
+\begin{samepage}
+    \nopagebreak
+    \vspace{1cm} % vertical space
+    \nopagebreak
+    \begin{equation}
+        \label{eq:09_12}
+        a_{21}=(-1)^{2+1}
+        \begin{Vmatrix}
+            &\scriptscriptstyle  0 \tikz[overlay,remember picture] \node (EndC){}; & \scriptscriptstyle 1 & \scriptscriptstyle 2 \\
+            \scriptscriptstyle  0 & 1 & \tikz[overlay,remember picture] \node (StartA){};0 & 5 \\
+            \scriptscriptstyle  1 & \tikz[overlay,remember picture] \node (StartB){};3 & 2 & \tikz[overlay,remember picture] \node (EndB){}; 4 \\
+            \scriptscriptstyle \tikz[overlay,remember picture] \node (EndD){}; 2 & 1 & \tikz[overlay,remember picture] \node (EndA){};1 & 6 
+        \end{Vmatrix}
+    \end{equation}
+    \nopagebreak
+    \begin{tikzpicture}[overlay,remember picture]
+        \node [rectangle, draw, above right, align=center] at (7.9,2.2) (StartC) {Column labels};
+        \draw[line width=0.25mm, blue] ($(StartA)+(0.1,0.1)$) -- ($(EndA)+(0.1,0.1)$);
+        \draw[line width=0.25mm, blue] ($(StartB)+(0.1,0.1)$) -- ($(EndB)+(0.1,0.1)$);
+        \node [rectangle, draw, above right, align=center] at ($(StartC)+(-1.3, -3.0)$) (StartD) {Row labels};
+        \draw [->](StartC) -- ($(StartC) - (2,0)$)  -- ($(StartC) - (2.3,0.3)$)  -- ($(StartC) - (2.3,0.6)$);
+        \draw [->](StartD) -- ($(StartD) - (2.1,0)$) -- ($(EndD)+(0.2,-0.2)$) ;
+    \end{tikzpicture}
+    \vspace{1cm} % vertical space
+\end{samepage}
+
 We also attach the factor $(-1)^{m+n}$ to the determinant of the
 submatrix when we compute $a_{nm}$.
 
