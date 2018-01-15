@@ -43,6 +43,58 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{02_08}{defined as \bc{: -ROT ROT ROT ;}}
 
+\sepfootnotecontent{02_09}{We discuss looping in 2.7 below.}
+
+\sepfootnotecontent{02_10}{See \FTR, p. 325ff for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2\S8\S\S3-2, 3\S5\S\S2, 5\S1\S\S2 and 11\S2 offer examples.}
+
+\sepfootnotecontent{02_11}{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \TF.}
+
+\sepfootnotecontent{02_12}{The original FORTH-79 used +1 for "true", 0 for "false"; many newer system that mostly follow FORTH-79 use -1 for "true". HS/FORTH is one such. Both FORTH-83 and ANSII FORTH require -1 for "true", 0 for "false".}
+
+\sepfootnotecontent{02_13}{This has led some FORTH gurus to prefer the synonymous word \bc{ENDIF} as clearer than \bc{THEN}.}
+
+\sepfootnotecontent{02_14}{Signed 16-bit integers run from -32768 to +32767, unsigned from 0 to 65535. See \FTR.}
+
+\sepfootnotecontent{02_15}{Michael Ham, "Structured Programming", \textit{Dr. Dobb's Journal of Software Tools}, October, 1986.}
+
+\sepfootnotecontent{02_16}{This usage is a non-standard construct of HS/FORTH.}
+
+\sepfootnotecontent{02_17}{Self-modifying machine code is considered a serious "no-no" by modern structured programming standards. Although it is sometimes valuable, few modern cpu's are capable of handling it safely. More often, because cpu's tend to use pipelining and parallelism to achieve speed, a piece of code might be modified in memory, but --having been pre-fetched before modification-- actually execute in unmodified form.}
+
+\sepfootnotecontent{02_18}{Of course \bc{CONSTANT} is usually a machine-code primitive, for speed.}
+
+\sepfootnotecontent{02_19}{An example (and its justification) of dimensioned data types in Ada is given by Do-While Jones, \textit{Dr. Dobb's Journal}, March 1987. The FORTH solution below is much simpler than the Ada version.}
+
+\sepfootnotecontent{02_20}{This example is based on 16-bit integer arithmetic. The word \regc{*/} means "multiply the third number on the stack by NOS, keeping 32 bits of precision, and divide by "TOS". That is, the stack comment for \regc{*/} is \regc{(a b c --a*b/c)}.}
+
+\sepfootnotecontent{02_21}{Headerless words are described in \FTR, p. 325ff. The word \textbf{BEHEAD'} is HS/FORTH's method for making a normal word into a headerless one. See Ch. 5\S1\S\S3 for further details.}
+
+\sepfootnotecontent{02_22}{Better methods will be described in Chapter 5.}
+
+\sepfootnotecontent{02_23}{The safety of an execution table can be increased by making the first (that is, the zero’th) action \textbf{WARNING}, and making the first step of \bc{BUTTON} a word \bc{CHECK-DATA} that maps any number not in the range 1-6 into 0. Then a wrong button number causes a \textbf{WARNING} to be issued and the system resets.}
+
+\sepfootnotecontent{02_24}{A single byte can represent positive numbers 0-255.}
+
+\sepfootnotecontent{02_25}{A system variable that returns the current starting address of the "scratchpad".}
+
+\sepfootnotecontent{02_26}{\FTR, Ch. 3.}
+
+\sepfootnotecontent{02_27}{Ironially, most programmers refuse to get along without spaghetti code, so commercial Pascal's now include GOTO. Only FORTH among major languages completely eschews both line labels and GOTOs, making it the most structured language available.}
+
+\sepfootnotecontent{02_28}{The FORmula TRANsIator in Ch. 11\S4 uses this method to implement its recursive structure.}
+
+\sepfootnotecontent{02_29}{Rather like the "cell" system in revolutionary conspiracies, where members of a cell know only each other but not the members of other cells. Mechanisms for receiving and transmitting messages between cells are double-blind. Hence, if an individual is captured or is a spy, he can betray at most his own cell and the damage is limited.}
+
+\sepfootnotecontent{02_30}{The right parenthesis, ) , is not a word but a \textbf{delimiter}.}
+
+\sepfootnotecontent{02_31}{See, \textit{e.g.}, L. Brodie, \TF, Ch. 5, Appendix E.}
+
+\sepfootnotecontent{02_32}{For those familiar with assembly language, \textbackslash is exactly analogous to ; in assembler. But since ; is already used to close colon definitions in FORTH, the symbol \textbackslash has been used in its place.}
+
+\sepfootnotecontent{02_33}{The matter of naming brings to mind Mark Twain's remark that the difference between the \textit{almost}-right word and the right one is the difference between the lightning-bug and the lightning.}
+
+\sepfootnotecontent{02_34}{See \FTR for a more thorough discussion of vectoring. Brodie, \TF, sugests a nice construct called \bc{DOER...MAKE} that can be used for graceful vectoring.}
+
 
 
 % **** Chapter  3 footnotes ****
@@ -134,7 +186,7 @@ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1}
 
 \sepfootnotecontent{08_04}{That is, this statement defines $\bar{f}$.}
 
-\sepfootnotecontent{08_05}{The word \% pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.}
+\sepfootnotecontent{08_05}{The word \bc{\%} pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.}
 
 \sepfootnotecontent{08_06}{J.M. Hammersley and D.C. Hanscomb, \textit{Monte Carlo Methods} (Methuen, London, 1964).}
 
@@ -161,13 +213,13 @@ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1}
 \end{lstlisting}
 Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
-\sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S\ 3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
+\sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
 
 \sepfootnotecontent{08_16}{The memory usage is shout the same: the recursive method pushes limits, \etc onto the fstack.}
 
 \sepfootnotecontent{08_17}{"Analytic" meants the ordinary derivatiove $df(z/dz$ exist. Coonsult any good text on the theory of functions of a complex variable.}
 
-\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for $sin(x)$. See, \eg, Abramowitz and Stegun, \textit{HMF}, \S\ 4.3.104.}
+\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for $sin(x)$. See, \eg, Abramowitz and Stegun, \textit{HMF}, \S4.3.104.}
 
 \sepfootnotecontent{08_19}{Although the 80x87 already uses a compact represtation of the trigonometric functions and is thus fairly hard to beat, especially if high accuracy is demanded.}
 
@@ -183,7 +235,7 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{08_25}{That is not by itself very useful. Useful modicfications can be found in Press, \textit{et al.}, \textit{Numerical Recipies}, \textit{ibid.}, p. 301ff.}
 
-\sepfootnotecontent{08_26}{Press, \textit{et al.}, \textit{Numerical Recipies}, \textit{\underline{ibid.}, p. 289ff.}
+\sepfootnotecontent{08_26}{Press, \textit{et al.}, \textit{Numerical Recipies}, \textit{\underline{ibid.}}, p. 289ff.}
 
 \sepfootnotecontent{08_27}{See, \eg, Abramowitz and Steegun, \textit{HMF}, p. 885.}
 
@@ -215,7 +267,7 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{10_02}{Voltaire once remarked that if Satan did not exist it would be necessary for God to create him. If your FORTH system lacks words with these functions, by all means, invent them. A MS-DOS programmer's manual (see below) is vital for this task.}
 
-\sepfootnotecontent{10_03}{Note that we only need to read in the type and order once, since the array descriptor (Ch. 5\S\ 4 \S\ \S\ 2.5) contains the same information.}
+\sepfootnotecontent{10_03}{Note that we only need to read in the type and order once, since the array descriptor (Ch. 5\S4\S\S2.5) contains the same information.}
 
 \sepfootnotecontent{10_04}{We use \bc{.M} and \bc{.V} from Chapter 9. The words \bc{>FILE}, \bc{MAKE-OUTPUT} and \bc{CLOSE-OUTPUT} are the output analogues of the input words \bc{<FILE}, \etc}
 
@@ -263,7 +315,7 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{11_16}{They are said to satisfy a \textbf{Clifford algebra}. See \, \eg, J.D. Bjorken and S.D. Drell, \textit{Relativistic Quantum Mechanics} (McGraw-Hill, Inc., New York, 1964); also V.B. Berestetskii, E.M. Lifshitz and L.P. Pitaevskii, \textit{Relativistic Quantum Theory, Part 1} (Pergaman Press, Oxford, 1971) p. 68ff.}
 
-\sepfootnotecontent{11_17}{It is not difficult to introduce one further level of indirection and produce Forth code for generating a "compiler". See T.A. Ivanco and G. Hunter, \textit{J. Forth Appl. and Res. \textbf{6}(1990) 15.}
+\sepfootnotecontent{11_17}{It is not difficult to introduce one further level of indirection and produce Forth code for generating a "compiler". See T.A. Ivanco and G. Hunter, \textit{J. Forth Appl. and Res. \textbf{6}(1990) 15.}}
 
 \sepfootnotecontent{11_18}{Note: Berestetskii, \textit{et al.} (\textit{op. cit.}) define $\gamma^{5}$ with an overall "-" sign relative to Eq. 9.}
 

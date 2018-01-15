@@ -1,4 +1,7 @@
 \chapter{Toward Scientific FORTH}
+\startcontents[chapters]
+\printcontents[chapters]{}{1}{}
+
 \TallC{This} book presents extensions to the FORTH programming language suitable for scientific and technical computation. The aim is to retain FORTRAN s good points while taking advantage of the simplicity, flexibility, extensibility, and control offered by FORTH.
 
 The resulting dialect has many advantages over more traditional languages, both for small, casual, throw-away programs as well as for large, complex projects. FORTH lends itself to many programming styles, including procedural, object oriented or event-driven. Its speed and economical use of memory suit FORTH for real-time, on-line data pre-processing well as as off-line analysis and computation.
@@ -16,13 +19,13 @@ The chief disadvantage of compilation is its tedium. Testing small portions of a
 \TallC{A} FORTRAN program consists of a master, or \textbf{main} program that either stands alone or can \textbf{call} (transfer control to) sub-programs. Sub-programs fall into two classes: \textbf{subroutines} and \textbf{functions}. Both receive \textbf{arguments} (input) from the calling program; they differ in how \textbf{results} (output) are returned to the calling program. Subroutines are called by the phrase
 
 \begin{verbatim}
-CALL SUB1(A,B,RESULT)
+    CALL SUB1(A,B,RESULT)
 \end{verbatim}
 
 where \verb|A| and \verb|B| are arguments and \verb|RESULT| is the result (which is returned in the argument list). By contrast, a function is called by having its name placed in an arithmetic expression. When the expression is evaluated, the value of the function (at its given arguments) is inserted in the expression where the function name appeared. That is, we might have a phrase like
 
 \begin{verbatim}
-OPSIDE = HYPOT*SIN(3.14159*ANGLE/180.).
+    OPSIDE = HYPOT*SIN(3.14159*ANGLE/180.).
 \end{verbatim}
 
 Here the argument of \verb|SIN| is also an expression which must be evaluated before being passed to the \verb|SIN| subroutine. When \verb|SIN| is evaluated, its value is returned, multiplied by \verb|HYPOT| and the product stored in the area labelled \verb|OPSIDE|.
@@ -37,7 +40,7 @@ FORTRAN arithmetic expressions can freely mix types. To make this possible, the 
 Consider, \eg, the actions performed by the FORTRAN compiler in parsing the arithmetic assignment statement 
 
 \begin{verbatim}
-A = B1*3 + B2*1.2E-5 - H(3)/3.14159265358969D14 + K
+    A = B1*3 + B2*1.2E-5 - H(3)/3.14159265358969D14 + K
 \end{verbatim}
 
 keeping in mind that FORTRAN, data types can be declared explicitly or implicitly\sepfootnote{01_03}:
@@ -95,7 +98,7 @@ permits the name of a function or subroutine to be inserted as an argument into 
 or
 \begin{verbatim}
     K = IFIX(A)
-    K = A
+    K = A .
 \end{verbatim}
 
 \subsection{Function library}
@@ -126,9 +129,9 @@ Worse, because the typical function or subroutine calling sequence wastes memory
 \section{What is FORTH ?}
 \TallC{When} I first encountered FORTH, it appeared to me as Looking Glass Land must have, to Alice. Twenty-five years' experience with FORTRAN colored my perceptions, making FORTH seem very strange indeed.
 
-FORTH makes no essential distinctions between data structures, operators, functions or subroutines. \textit{Every}thing in FORTH is the \textit{same} thing: a \textbf{word}. In appearance, words are strings of text separated by spaces. Functionally, words are \textbf{subroutines}. To execute a word, type its name, then a carriage return. No GOSUBs, CALLs or RETURNs are needed. This simple grammar is beautiful because it leaves nothing to remember.
+FORTH makes no essential distinctions between data structures, operators, functions or subroutines. \textit{Every}thing in FORTH is the \textit{same} thing: a \textbf{word}. In appearance, words are strings of text separated by spaces. Functionally, words are \textbf{subroutines}. To execute a word, type its name, then a carriage return. No GOSUBs, CALLs, or RETURNs are needed. This simple grammar is beautiful because it leaves nothing to remember.
 
-FORTRAN imposes stringent naming conventions -- names must begin with a letter, may be no longer than seven characters, and may use only letters and digits -- FORTH has no such restrictions. FORTH names can be much more expressive than those in FORTRAN or even Pascal and C, for that matter.
+Whereas FORTRAN imposes stringent naming conventions --names must begin with a letter, may be no longer than seven characters, and may use only letters and digits-- FORTH has no such restrictions. FORTH names can be much more expressive than those in FORTRAN or even Pascal and C, for that matter.
 
 \TallC{For} a preview of FORTH's flavor, consider the FORTH version of the Legendre polynomial function \sepfootnote{01_04}:
 
