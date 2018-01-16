@@ -882,25 +882,47 @@ Subtracting row I (times a constant) from row J is quite similar to
 multiplying a row by a constant. The process can be broken down
 into the pseudocoded actions in Fig.\ref{fig:09_03} below.
 
- 
-\begin{figure}
-\begin{verbatim}
+\begin{figure}[H]
+    %  Fig. 9-3
+	\center
+	\tikzstyle{line} = [draw, -latex']
+	\tikzset{%
+		do path picture/.style={%
+			path picture={%
+				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+		{\pgfpointanchor{path picture bounding box}{north east}}%
+	  \pgfgetlastxy\x\y%
+	  \tikzset{x=\x/2,y=\y/2}%
+	  #1
+	}
+	},
+	cross/.style={do path picture={    
+	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+	}},
+	dot/.style={do path picture={    
+	\draw [fill]  circle [radius=1]; 
+	}}
+	}
+    \begin{tikzpicture}
+		\draw (0,-0.5) rectangle (10,5.5);
+			\node [circle, draw, cross] at (1,4.5) (cross) {};
+			\coordinate (a) at (1,3.5);
+			\coordinate (b) at (1,2.5);
+			\coordinate (c) at (1,1.5);
+			\node [circle, draw, dot] at (1, 0.5) (dot)  {};
 
- 
-
-® no (K-JTOL)
-x e@
-
-M[I,K] e@ G'NP (::- - x M[l,K]'X)
-M{J,K] 6@ GR- (::--XM[J,K]-X'M[I,K])
-M{J.K] Gl
-
-LOOP
-
- 
-
-\end{verbatim} 
-    \caption{Fig. "Steps In \regc{\}\}R1-R2*X}}
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (1,0)$) (C1) {DO (K = J TO L)};
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (2,0.5)$) (C2) {X G@ };
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (2,0.5)$) (C3) {M[I,K] G@ G*NP (::--X M[I,J]*X)};
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2,0.5)$) (C4) {M[J,K] G@ GR- (::--X M[J,K]-X*M[I,K])};
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (2,0.5)$) (C5) {M[J,K] G!};
+			\node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1,0.0)$) (C6)  {LOOP};
+        \path [line]  (cross) -- (a);
+        \path [line]  (a) -- (b);
+        \path [line]  (b) -- (c);
+        \path [line]  (c) -- (dot);
+    \end{tikzpicture}
+	\caption{Steps in \texttt{\}\}R1-P2*X}}
     \label{fig:09_03}
 \end{figure}
 
