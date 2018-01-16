@@ -539,20 +539,20 @@ some test words that do the following jobs:
 \ Display words
 \ V{ or M{{ stands for what an array puts on stack
 GU: G. F. X. ;
-:.M ( M{{ --) FINIT DUP
+: .M ( M{{ --) FINIT DUP
     D.LEN 0 DO CR DUP
         D.LEN 0 DO DUP ( -- M{{ M{{ )
             J }{ I }} DUP>R G@ G.
         LOOP
     LOOP DROP ;
 
-:.V ( V{ --) DUP D.LEN
+: .V ( V{ --) DUP D.LEN
     0 DO CR DUP I }{ 0 } G@ G. LOOP DROP ;
-\end{verbatim}
+\ end{verbatim}
 
 We define a word to put ASCII numbers into matrices:
 \begin{verbatim}
-:GET-F# BL TEXT PAD $->F ;
+: GET-F# BL TEXT PAD $->F ;
 \end{verbatim}
 
 This word takes the next string\sepfootnote{09_10} from the input stream (set off
@@ -562,9 +562,10 @@ convert the string to floating point format and put it on the
 
 \textbf{GET-F\#} is used in the following:
 \begin{verbatim}
-: <DO-VEC>   0 DO GET-F#  DUP  I }   G!L  LOOP DROP ;
-: TAB->VEC  (length)  <DO-VEC> ;
-: TAB->MAT  (length)  DUP *   <DO-VEC> ;
+: <DO-VEC>   0 DO GET-F#  DUP  I 0}   G!
+             LOOP DROP ;
+: TAB->VEC  DUP D.LEN <DO-VEC> ;
+: TAB->MAT  DUP D.LEN DUP * <DO-VEC> ;
 \end{verbatim}
 
 The file EX.3 will be found in the accompanying program diskette. The explanatory notes below refer to EX.3.
@@ -592,19 +593,65 @@ A{{ .M CR
 1.0000000 0.0000000 5.0000000 
 3.0000000 2.0000000 4.0000000
 1.0000000 1.0000000 6.0000000
-say Ex.3 FORGET-TASK to graceitfly FORGET these words ok 
+say EX.3 FORGET-TASK to graceitfly FORGET these words ok 
 \end{verbatim}
 
 \subsection{Implementing pivotal elimination}
 \TallC{Now} we have to define the FORTH words that will implement
 this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. \ref{fig:09_01} below.
-
- 
 \begin{figure}
-    \caption{
-        Fig. 9-1 Pseudocode for pivotal elimination}
+%Fig. 9-1 
+	\center
+	\tikzstyle{line} = [draw, -latex']
+	\tikzset{%
+		do path picture/.style={%
+			path picture={%
+				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+		{\pgfpointanchor{path picture bounding box}{north east}}%
+	  \pgfgetlastxy\x\y%
+	  \tikzset{x=\x/2,y=\y/2}%
+	  #1
+	}
+	},
+	cross/.style={do path picture={    
+	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+	}},
+	dot/.style={do path picture={    
+	\draw [fill]  circle [radius=1]; 
+	}}
+	}
+    \begin{tikzpicture}
+		\draw (0,-0.1) rectangle (10,7.5);
+        \coordinate (a) at (1,7.0);
+        \node [circle, draw, cross] at (1,6) (cross) {};
+        \node [circle, draw, dot] at (1, 1.5) (dot)  {};
+        \coordinate (end) at (1,0.70);
+        \draw [fill, opacity=0.2] (.75,0.30) rectangle (1.25,.70) {};
+
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (0.5,-0.5)$) (C0) {\verb|A{{ B{ }}SOLVE| ( solution to Ax=B left in B)};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (0.5,0)$) (C1) {\verb|BEGIN|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (1.0,-2.5)$) (C2) {
+            set n=0\\
+            find pivot (row m $>$ n)\\
+            swap rows m \& n \\
+            \\
+            divide row n by pivot $A_{nm}^{'}=A_{nm}/A_{nn}$ \\
+            \\
+            subtract: $A_{kl}^{'}=A_{kl}-A_{kn}A_{nl}^{'}$ \\
+            increment n \\
+            n N =\\
+        };
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,0.0)$) (C6)  {\verb|UNTIL|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.0,-0.5)$) (C7) {Back-substitute: $x_n=b_n^{'}-\sum\limits_{m>n}A_{nm}x_m$(12)};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,-1.0)$) (C8) {\verb|DONE|};
+        \path [line]  (a) -- (cross);
+        \path [line]  (cross) -- (dot);
+        \path [line]  (dot) -- (end);
+    \end{tikzpicture}
+    \caption{Pseudocode for pivotal elimination}
     \label{fig:09_01}
 \end{figure}
+ 
 \subsection{The program}
 \TallC{Whenever} we write a complex program we are faced with the
 problem "Where do we begin?" FORTH emphasizes the construction of components,
@@ -629,25 +676,22 @@ row pointers and exchanging those, uses $O(N^2)$ time.
 
 We anticipate computing the address of an element of \textbf{A\{\{} in a
 \textbf{DO} loop via the phrase 
-
 \begin{verbatim}
-A{{JI}} ( Jis row,lis col)
+A{{ J I }} ( J is row, I is col)
 \end{verbatim}
 
 Suppose we have an array of row pointers and a word \verb|}row{| that
 looks them up. Then the (swapped) element would be
-
 \begin{verbatim}
 A{{ J }row{ I }}.
 \end{verbatim}
 
 To implement this syntax we define\sepfootnote{09_11}
-
 \begin{verbatim}
-:swapper (n - -) l
-CREATE 0 DO I , LOOP
-DOES> OVER + + @ ;
-\ this is a defining word
+: swapper ( n --)
+    CREATE 0 DO I , LOOP
+    DOES> OVER + + @ ;
+    \ this is a defining word
 \end{verbatim}
  
 We would define the array of row indices \textit{via}
@@ -669,26 +713,24 @@ where
 
 \begin{verbatim}
 : refill (n adr --)
-SWAP 0 DO I 2* DDUP + !
-2 +LOOP DROP;
+    SWAP 0 DO I 2* DDUP + !
+        2 +LOOP DROP;
 \end{verbatim}
 
 To swap the two rows
 
 \begin{verbatim}
-:ADRS >R 2'OVER + SWAPR> 2' +;
-(amn-a+2ma+2n)
-OVAR ?SWAP \to keep track of swaps
+:ADRS >R 2* OVER + SWAP R> 2* + ;
+( a m n -- a + 2m a + 2n)
+0 VAR ?SWAP           \to keep track of swaps
 
-:}SWAP (amn-)DDUP -
-IF DDROP DROP \noswap - deanup
-
-ELSE ADRS DDUP (.-121 2)
-@SWAP@ (-'12[21[1I)
-nor! SWAP 1
-
--1 ?SWAP XOR IS ?SWAP \ "' ?SWAP
-THEN ;
+: }SWAP ( a m n --) DDUP =
+    IF DDROP DROP \ noswap -- clean up
+    ELSE ADRS DDUP ( --1 2 1 2)
+        @ SWAP @ ( -- 1 2 [2] [1])
+        ROT ! SWAP !  
+        -1 ?SWAP XOR IS ?SWAP \ ~ ?SWAP
+    THEN ;
 \end{verbatim}
 
 Test this with a 3-dimensional row-index array:
@@ -696,7 +738,7 @@ Test this with a 3-dimensional row-index array:
 \begin{verbatim}
 3 swapper }row{
 
-:TEST ODOI}row{ CR. LOOP;
+: TEST 0 DO I }row{ CR. LOOP ;
 3 TEST
 0
 1
