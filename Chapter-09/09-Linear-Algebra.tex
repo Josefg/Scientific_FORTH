@@ -723,81 +723,97 @@ and back again:
 column, searching from a given n. The steps in this procedure
 are shown in Fig. \ref{fig:09_02} on page \pageref{fig:09_02} below.
 
-We anticipate using generic operations Git defined in Chapter 5 
+We anticipate using generic operations \regc{Gx} defined in Chapter 5 
 to perform fetch, store and other useful manipulations on the
-matrix elements, without specifying their type until run-time. It
-is thus useful to have a place to store the type (other than the
+matrix elements, without specifying their type until run-time.
+It is thus useful to have a place to store the type (other than the
 second cell of the array data structure). We arrange this \textit{via}
-
-% 230 Chapter 9 - Linear Algebra
-\begin{figure}
 \begin{verbatim}
-:A{{ col# }}PIVOT
-
-N col# 1+ DO
-Yes IF
-No 1 Put larger on fstack
-set I.PIV = I
-t__l THEN
-. LOOP
-; \ exit
-M{{ | }{ 00"" }}I > M{{ col# }{ 00h" }}I 7 
+0 VAR T     \ a place to store data type
 \end{verbatim}
+The rest of the definition is rendered self-explanatory by the 
+vertical commenting style (a must for long\sepfootnote{09_12} words):
+\begin{verbatim}
+0 VAR Length        \ Length of matrix
+0 VAR COL           \ current col#
+0 VAR I.PIV         \ I.PIV is used to return the result
+0 VAR a{{           \ a{{ stores the adress of M{{
+: INITIALIZE        ( M{{ -- ::--)
+    IS a{{
+    a{{ type@ IS T          \ initialize T
+    a{{ LEN@ IS Length ;    \ length - > Length
+: }}PIVOT           (M{{ col-- ::--)
+    IS COL ZECOL IS I.PIV
+    INITIALIZE
+    a{{ COL }row{ COL }}    ( --seg.off[M{{ col,col}}]t)
+    >FS GABS FS>F           ( 87:--|1st.elt|)
+    R> COL1+                \ loop limits:L, COL+1
+    DO                      \ begin loop
+        a{{ I }row{ COL }}  ( -- seg.off[M{{i,col}}] t)
+        >FS GABS FS>F       ( 87: -- |old.elt| |new.elt|)
+        XDUP F<             \ test if new.elt > old.elt
+        IF   FSSWAP I IS I.PIV   THEN   FDROP
+    LOOP                    \ end loop
+    FDROP    ;              \ clean up ifstack
+
+\ Usage:     A{{ 2 }}PIVOT
+\end{verbatim}
+% 230 Chapter 9 - Linear Algebra
+\begin{figure}[H]
+	\center
+	\tikzstyle{line} = [draw, -latex']
+	\tikzset{%
+		do path picture/.style={%
+			path picture={%
+				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+		{\pgfpointanchor{path picture bounding box}{north east}}%
+	  \pgfgetlastxy\x\y%
+	  \tikzset{x=\x/2,y=\y/2}%
+	  #1
+	}
+	},
+	cross/.style={do path picture={    
+	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+	}},
+	dot/.style={do path picture={    
+	\draw [fill]  circle [radius=1]; 
+	}}
+	}
+    \begin{tikzpicture}
+        \draw (-0.5,-0.2) rectangle (10,5.7);
+        \coordinate (a) at (0.5,5.5);
+        \node [circle, draw, cross] at (0.5,4.5) (cross) {};
+        \coordinate (b) at (0.5,3.5);
+        \coordinate (c) at (0.5,2.5);
+        \node [circle, draw, dot] at (0.5, 1.5) (dot)  {};
+        \coordinate (end) at (0.5,0.75);
+        \draw [fill, opacity=0.2] (.0,0.25) rectangle (1.0,.75) {};
+
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (1.0,-0.25)$) (C2) {\verb|:A{{ col# }}PIVOT|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (1.0,0)$) (C1) {\verb|N col# 1 + DO|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (0.0,0.25)$) (C3) {Yes};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (1.0,0.5)$) (C3) {\verb_|A{{ I }{ col# }}| > |A{{ col# }{ col# }}| ?_};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (-1.0,0.5)$) (C4) {No};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.0,1.0)$) (C4) {\verb|IF|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.5,0.7)$) (C4) {\verb|Put larger on fstack|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.5,0.4)$) (C5) {\verb|set I.PIV = I|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.0,0.0)$) (C5) {\verb|THEN|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.0,0.0)$) (C6)  {\verb|LOOP|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(end) + (1.0,-0.25)$) (C6)  {\verb| ; \ exit|};
+        \path [line]  (a) -- (cross);
+        \path [line]  (cross) -- (b);
+        \path [line]  (b) -- (c);
+        \path [line]  (b) -- ($(b)+(1,0)$);
+        \path [line]  ($(b)+(1,0)$) -- ($(b)+(1,-0.4)$);
+        \path [line]  ($(b)+(1,-0.6)$) -- ($(b)+(1,-1.0)$);
+        \path [line]  ($(b)+(1,-1.0)$) -- (c);
+        \path [line]  (c) -- (dot);
+        \path [line]  (dot) -- (end);
+    \end{tikzpicture}
 % Fig. 9-2 Pseudocode for finding the pivot element
     \caption{Pseudocode for finding the pivot element}
     \label{fig:09_02}
 \end{figure}
-
-
-
-\begin{verbatim}
-0 VAR T     \ a place to store data type
-\end{verbatim}
-
-The rest of the definition is rendered self-explanatory by the 
-vertical commenting style (a must for long\sepfootnote{09_12} words):
-\begin{verbatim}
-OVAR Length \Iength of matrix
-OVAR COL \currentcol#
-OVAR I.PIV
-OVAR a{{
-: INITIALIZE (M{{ -- ::--)
-IS a{{
-a type@ IS T
-a LEN@ IS Length ;
-
-\ |.PIV is used to return the result
-\ a{{ stores the adress of M{{
-
-\ initialize T
-
-\ length - > Length
-
-
-2))PIVOT (M{{ col-- ::--)
-
-IS COL ZECOL IS LPN
-
-INITIAU
-
-fl: COL row COL}} (--aog.ofl[M{% oot,ool}}]t)
-
-> 8 SF >F (87:--|1st.olt)
-
-R> COL1+ \Sloop|in£gLCOL+1
-
-DO I .
-a{{ I }row{ COL }} (- - seg.ofl[M{flI,col}}] t)
->FS GABS FS>F(87: - |old.olt Ineweltl)
-xoup F< \test' newett > olden
-IF FSWAP IISI.PIV THEN FDROP
-
-LOOP \ondloop
-
-FDROP ; \deanupfstack
-
-\ Usage: A{{ 2 "PIVOT
-\end{verbatim}
 
 \underline{Notes:}
 
@@ -815,8 +831,6 @@ FDROP ; \deanupfstack
         is used, negligible (for large N) compared with the $N^3/3$ in the
         innermost loop.
 \end{itemize}
-
-
 
 The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
 
