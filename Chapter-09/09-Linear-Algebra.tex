@@ -601,27 +601,27 @@ say EX.3 FORGET-TASK to graceitfly FORGET these words ok
 this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. \ref{fig:09_01} below.
 \begin{figure}
 %Fig. 9-1 
-	\center
-	\tikzstyle{line} = [draw, -latex']
-	\tikzset{%
-		do path picture/.style={%
-			path picture={%
-				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
-		{\pgfpointanchor{path picture bounding box}{north east}}%
-	  \pgfgetlastxy\x\y%
-	  \tikzset{x=\x/2,y=\y/2}%
-	  #1
-	}
-	},
-	cross/.style={do path picture={    
-	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
-	}},
-	dot/.style={do path picture={    
-	\draw [fill]  circle [radius=1]; 
-	}}
-	}
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
     \begin{tikzpicture}
-		\draw (0,-0.1) rectangle (10,7.5);
+        \draw (0,-0.1) rectangle (10,7.5);
         \coordinate (a) at (1,7.0);
         \node [circle, draw, cross] at (1,6) (cross) {};
         \node [circle, draw, dot] at (1, 1.5) (dot)  {};
@@ -771,7 +771,7 @@ matrix elements, without specifying their type until run-time.
 It is thus useful to have a place to store the type (other than the
 second cell of the array data structure). We arrange this \textit{via}
 \begin{verbatim}
-0 VAR T     		\ a place to store data type
+0 VAR T             \ a place to store data type
 \end{verbatim}
 The rest of the definition is rendered self-explanatory by the 
 vertical commenting style (a must for long\sepfootnote{09_12} words):
@@ -802,25 +802,25 @@ vertical commenting style (a must for long\sepfootnote{09_12} words):
 \end{verbatim}
 % 230 Chapter 9 - Linear Algebra
 \begin{figure}[H]
-	\center
-	\tikzstyle{line} = [draw, -latex']
-	\tikzset{%
-		do path picture/.style={%
-			path picture={%
-				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
-		{\pgfpointanchor{path picture bounding box}{north east}}%
-	  \pgfgetlastxy\x\y%
-	  \tikzset{x=\x/2,y=\y/2}%
-	  #1
-	}
-	},
-	cross/.style={do path picture={    
-	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
-	}},
-	dot/.style={do path picture={    
-	\draw [fill]  circle [radius=1]; 
-	}}
-	}
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
     \begin{tikzpicture}
         \draw (-0.5,-0.2) rectangle (10,5.7);
         \coordinate (a) at (0.5,5.5);
@@ -879,18 +879,20 @@ The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
 To test the word \verb|}}PIVOT| we can add some lines to the test file:
 
 \begin{verbatim}
-G! .(A{{O})PIVOT mv .) BL EMIT A{{0)}PNOT IPN.
-on .(A{{1})PNOT IPIV .) BL em A{{1}}PNOT IPN .
-on .(A{{2})PIVOT IPN .) BL am A({2}}PNOT new.
+CR CR .( flnd the pivot row for columns 0,1,2)
+CR
+CR .( A{{ 0 }}PIVOT IPIV .) BL EMTT A{{ 0 }}PIVOT IPIV .
+CR .( A{{ 1 }}PIVOT IPIV .) BL EMTT A{{ 1 }}PIVOT IPIV .
+CR .( A{{ 2 }}PIVOT IPIV .) BL EMTT A{{ 2 }}PIVOT IPIV .
+CR CR
 \end{verbatim}
 The result is the additional screen output
 
-
 \begin{verbatim}
-A{{ o }}PIVOT IPIV 1
-A{{1}}P|VOT IPIV 1
+A{{ 0 }}PIVOT IPIV 1
+A{{ 1 }}PIVOT IPIV 1
 A{{ 2 }}PIVOT IPIV 2
-OK
+ok
 \end{verbatim}
 
 From our pseudocode expression (see Fig. \ref{fig:09_01}, p. \pageref{fig:09_01}) of the
@@ -898,26 +900,23 @@ pivotal elimination algorithm we see that the next operation is to
 multiply a row by a constant. To do this we define
 
 \begin{verbatim}
-OVAR ISTEP
+0 VAR ISTEP
 \ include phrase
-
-T #BYTES DROP IS ISTEP
+\ T #BYTES DROP IS ISTEP
 \ in INITIALIZE
 
-: DO(ROW*X)LOOP (seg off Lfin I.beg - - :: x - - x)
-DO DDUP I + DDUP T >FS G'NP TFS>
-ISTEP /LOOP DDROP ;
-
+: DO(ROW*X)LOOP (seg off I.fin I.beg -- :: x -- x)
+    DO DDUP I + DDUP T >FS G*NP T FS>
+    ISTEP /LOOP DDROP ;
 \ G*NP means "(generic) multiply, no pop"
 
-:}}ROW*X M{{ row - :: x - x)
-UNDER }row{ 0 A (- - r seg offt)
-DROP ROT (- -seg off r)
-ISTEP * Length ISTEP * SWAP \Ioop indices
-DO(ROW*X)LOOP ; \Ioop
+: }}ROW*X       ( M{{ row -- :: x -- x)
+    UNDER }row{ 0 }}        ( -- r seg off t)
+    DROP ROT                ( --seg off r)
+    ISTEP * Length ISTEP * SWAP \Loop indices
+    DO(ROW*X)LOOP ; \Loop
 
-\Ex: A{{ 2 }ROW*X
-
+\Ex: A{{ 2 }ROW*X 
 \end{verbatim}
 
 \begin{itemize}
@@ -940,45 +939,45 @@ into the pseudocoded actions in Fig.\ref{fig:09_03} below.
 
 \begin{figure}[H]
     %  Fig. 9-3
-	\center
-	\tikzstyle{line} = [draw, -latex']
-	\tikzset{%
-		do path picture/.style={%
-			path picture={%
-				\pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
-		{\pgfpointanchor{path picture bounding box}{north east}}%
-	  \pgfgetlastxy\x\y%
-	  \tikzset{x=\x/2,y=\y/2}%
-	  #1
-	}
-	},
-	cross/.style={do path picture={    
-	\draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
-	}},
-	dot/.style={do path picture={    
-	\draw [fill]  circle [radius=1]; 
-	}}
-	}
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
     \begin{tikzpicture}
-		\draw (0,-0.5) rectangle (10,5.5);
-			\node [circle, draw, cross] at (1,4.5) (cross) {};
-			\coordinate (a) at (1,3.5);
-			\coordinate (b) at (1,2.5);
-			\coordinate (c) at (1,1.5);
-			\node [circle, draw, dot] at (1, 0.5) (dot)  {};
+        \draw (0,-0.5) rectangle (10,5.5);
+            \node [circle, draw, cross] at (1,4.5) (cross) {};
+            \coordinate (a) at (1,3.5);
+            \coordinate (b) at (1,2.5);
+            \coordinate (c) at (1,1.5);
+            \node [circle, draw, dot] at (1, 0.5) (dot)  {};
 
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (0.5,0)$) (C1) {\verb|DO (K = J TO L)|};
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (1.5,0.5)$) (C2) {\verb|X G@ |};
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (1.5,0.5)$) (C3) {\verb|M[I,K] G@ G*NP (::--X M[I,K]*X)|};
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (1.5,0.5)$) (C4) {\verb|M[J,K] G@ GR- (::--X M[J,K]-X*M[I,K])|};
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.5,0.5)$) (C5) {\verb|M[J,K] G!|};
-			\node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,0.0)$) (C6)  {\verb|LOOP|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (0.5,0)$) (C1) {\verb|DO (K = J TO L)|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (1.5,0.5)$) (C2) {\verb|X G@ |};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (1.5,0.5)$) (C3) {\verb|M[I,K] G@ G*NP (::--X M[I,K]*X)|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (1.5,0.5)$) (C4) {\verb|M[J,K] G@ GR- (::--X M[J,K]-X*M[I,K])|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.5,0.5)$) (C5) {\verb|M[J,K] G!|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,0.0)$) (C6)  {\verb|LOOP|};
         \path [line]  (cross) -- (a);
         \path [line]  (a) -- (b);
         \path [line]  (b) -- (c);
         \path [line]  (c) -- (dot);
     \end{tikzpicture}
-	\caption{Steps in \texttt{\}\}R1-P2*X}}
+    \caption{Steps in \texttt{\}\}R1-P2*X}}
     \label{fig:09_03}
 \end{figure}
 
