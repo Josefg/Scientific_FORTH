@@ -194,21 +194,29 @@ $A_{mn}$ by apptying rules famitiar from linear algebra. These rules define
 $||A||$ recursively in terms of determinants of matrices of square submatrices
 of $A$. See \S9\S\S2.1.}
 \sepfootnotecontent{09_02}{buildings, cars, airplanes, bridges ...}
-\sepfootnotecontent{09_03}{}
-This follows from the fundamental theorem of algebra: a polynomial equation, I
-p(z): a0 + all + azzz +.. .+ anz" =0, of degree n (in a complex variable 2) has exactly a solutions ,
-
-\sepfootnotecontent{09_04}{}
-\sepfootnotecontent{09_05}{}
-\sepfootnotecontent{09_06}{}
-\sepfootnotecontent{09_07}{}
+\sepfootnotecontent{09_03}{This follows from the fundamental theorem of algebra: a polynomial equation, $p(z) = a_0 + a_1z + a_2z^2 + \dotsc + a_nz^n = 0$, of degree n (in a complex variable z) has exactly n solutions.}
+%
+%8. A OMnputer stores a number with finite precision — say 6-7 decimal pUces with 32-bit floating-
+%point numbers. This is enough for many purposes, especiaUy in science and engineering, where
+%the data are rarely measured to better than 1% reUtive precision. Suppose, however, that two
+%numbers, about IO' 2 in magnitude, are mukipUed. Their product is of order IO^ and is known to
+%six significant figures. Now add k to a third number of order unity. The result wUl be that third
+%number ± 1 0 ^ . Later, a fourth number — ako of order unity — is subtracted from this sum. The
+%resuh wiU be a number of order 10^, but now known onfy to two «gn«fir*m figures. Matrix arith-
+%metic is fuU of muUipUcations and additions. The fesson is dear — to M i m m i ^ the (inevfcabk)
+%k m of precision Msoriatrd with roundoff, we must Uy to keep the * " g p ^ ^ H of products and
+%sunu as dose as potsiMe
+\sepfootnotecontent{09_04}{For clarity we now omit the vector "$\rightarrow$" and dyad "$\leftrightarrow$" symbol from vectors and matrices.}
+\sepfootnotecontent{09_05}{The only number equal to its negative is 0.} 
+\sepfootnotecontent{09_06}{Professors always say this, hee, hee! See R. Sedgewick, Algorithms. (Addison-Wesley Publishing Company, Reading, MA 1983).}
+\sepfootnotecontent{09_07}{$N!$ means $N \times (N-1) \times (N-2) \times \dotsc \times 2 \times 1$. The base of the "natural" fogarithms is \, $e = 2.7182818\dots$}
 \sepfootnotecontent{09_08}{}
 \sepfootnotecontent{09_09}{The exception to this general rule, where more
 complete optimization would pay, would be an application that requires solving
 many sets of equations of relatively small order.}
 \sepfootnotecontent{09_10}{The word \textbf{TEXT} inputs a counted string, using the FORTH-79 standard word \textbf{WORD} and
-places it at PAD. This is why PAD appears in the definition of \regc{GETF#}. A definition of TEXT
-might be \verb|: TEXT ( delimiter --) WORD DUP C@ 1 + PAD SWAP CMOVE ;| Note that all
+places it at \textbf{PAD}. This is why PAD appears in the definition of \textbf{GET-F\#}. A definition of \textbf{TEXT}
+might be \texttt{: TEXT ( delimiter --) WORD DUP C@ 1 + PAD SWAP CMOVE ;} Note that all
 words prefaced with C are byte operations by FORTH convention.}
 \sepfootnotecontent{09_11}{The HS/FORTH words \textbf{VAR} and \textbf{IS}
 define a data structure that can be changed, like a FORTH \textbf{VARIABLE: 0
