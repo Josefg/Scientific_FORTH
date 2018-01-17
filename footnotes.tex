@@ -195,22 +195,25 @@ $||A||$ recursively in terms of determinants of matrices of square submatrices
 of $A$. See \S9\S\S2.1.}
 \sepfootnotecontent{09_02}{buildings, cars, airplanes, bridges ...}
 \sepfootnotecontent{09_03}{This follows from the fundamental theorem of algebra: a polynomial equation, $p(z) = a_0 + a_1z + a_2z^2 + \dotsc + a_nz^n = 0$, of degree n (in a complex variable z) has exactly n solutions.}
-%
-%8. A OMnputer stores a number with finite precision — say 6-7 decimal pUces with 32-bit floating-
-%point numbers. This is enough for many purposes, especiaUy in science and engineering, where
-%the data are rarely measured to better than 1% reUtive precision. Suppose, however, that two
-%numbers, about IO' 2 in magnitude, are mukipUed. Their product is of order IO^ and is known to
-%six significant figures. Now add k to a third number of order unity. The result wUl be that third
-%number ± 1 0 ^ . Later, a fourth number — ako of order unity — is subtracted from this sum. The
-%resuh wiU be a number of order 10^, but now known onfy to two «gn«fir*m figures. Matrix arith-
-%metic is fuU of muUipUcations and additions. The fesson is dear — to M i m m i ^ the (inevfcabk)
-%k m of precision Msoriatrd with roundoff, we must Uy to keep the * " g p ^ ^ H of products and
-%sunu as dose as potsiMe
+
+
 \sepfootnotecontent{09_04}{For clarity we now omit the vector "$\rightarrow$" and dyad "$\leftrightarrow$" symbol from vectors and matrices.}
 \sepfootnotecontent{09_05}{The only number equal to its negative is 0.} 
 \sepfootnotecontent{09_06}{Professors always say this, hee, hee! See R. Sedgewick, Algorithms. (Addison-Wesley Publishing Company, Reading, MA 1983).}
 \sepfootnotecontent{09_07}{$N!$ means $N \times (N-1) \times (N-2) \times \dotsc \times 2 \times 1$. The base of the "natural" fogarithms is \, $e = 2.7182818\dots$}
-\sepfootnotecontent{09_08}{}
+\sepfootnotecontent{09_08}{A Computer stores a number with finite precision --
+say 6-7 decimal places with 32-bit floating-point numbers. This is enough for
+many purposes, especially in science and engineering, where the data are rarely
+measured to better than 1\% relative precision. Suppose, however, that two
+numbers, about $10^{-2}$ in magnitude, are multiplied. Their product is of
+order $10^{-4}$ and is known to six significant figures. Now add it to a third
+number of order unity. The result will be that third number $\pm10^{-4}$.
+Later, a fourth number -- also of order unity -- is subtracted from this sum. The
+result will be a number of order $10^{-4}$, but now known only to two
+significant figures. Matrix arithmetic is full of multiplications and
+additions. The lesson is clear -- to minimize the (inevitable) loss of
+precision associated with round-off, we must try to keep the magnitudes of
+products and sums as dose as possible.}
 \sepfootnotecontent{09_09}{The exception to this general rule, where more
 complete optimization would pay, would be an application that requires solving
 many sets of equations of relatively small order.}
