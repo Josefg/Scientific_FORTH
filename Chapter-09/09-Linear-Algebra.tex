@@ -16,7 +16,8 @@ program development and debugging in FORTH.
 \subsection{Theory of linear algebraic equations}
 \TallC{We} begin by stating the problem. Given the equations
 \begin{equation}
-    \sum_{n=0}^{N-1}A_{mn}x_n=b_m \,. \label{eq:09_01}
+    \mathrm{\sum_{n=0}^{N-1}A_{mn}x_n=b_m \,.}
+    \label{eq:09_01}
 \end{equation}
 --\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,--
 with known \textbf{coefficient
@@ -26,7 +27,7 @@ satisfy the N equations \ref{eq:09_01}?
 
 The theory of simultaneous linear equations tells us that if not all
 the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
-Contrariwise, if $det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
+Contrariwise, if $\det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
 when $\vec{b}= 0$.
 
 \subsection{Eigenvalue problems} 
@@ -48,14 +49,15 @@ problems can be expressed as the question: do linear equations
 of the form
 % (2)
 \begin{equation}
-    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{x} \label{eq:09_02}
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = \lambda \overleftrightarrow{\rho} \cdot \vec{\mathrm{x}}
+    \label{eq:09_02}
 \end{equation}
 have solutions? Here $\lambda$ is generally a complex number, called the
 \textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
 the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
 % (3)
 \begin{equation}
-I_{mn}=
+    \mathrm{I_{mn}=}
 \begin{cases}
      1, & m = n\\
      0, & m \neq n,
@@ -68,7 +70,7 @@ below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 % (4)
 \begin{equation}
     \label{eq:09_04}
-    \overleftrightarrow{A} \cdot \vec{x} = 0
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = 0
 \end{equation}
 exists if and only if $\lVert\overleftrightarrow{A}\rVert=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
 
@@ -79,7 +81,7 @@ The \textbf{secular equation} (or determinantal equation)
 % (5)
 \begin{equation}
     \label{eq:09_05}
-    \lVert \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} \rVert = 0
+    \mathrm{\lVert \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} \rVert = 0}
 \end{equation}
 is a polynomial of degree N in $\lambda$, hence has N roots (either real or
 complex)\sepfootnote{09_03}. When $\overleftrightarrow{\rho}=\overleftrightarrow{I}$, these roots are called the \textbf{eigenvalues}
@@ -1100,7 +1102,7 @@ Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
 do so, especially as it is only an O(N) process. By evaluating the
 determinants of simple cases, we realize the determinant is simply the product of all the pivot elements, multiplied by
-$(-1)^{\#swaps}$. Hence we need to keep track of swaps, as well as to
+$(-1)^{\#\mathbf{swaps}}$. Hence we need to keep track of swaps, as well as to
 multiply the determinant (at a given stage) by the next pivot
 element. The need to do these things has been anticipated in
 defining \bc{\}SWAP} above.
@@ -1214,14 +1216,14 @@ system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_1
 \begin{subequations}
 \begin{equation}
  \label{eq:09_20_}
-A = I - u v^\dagger
+    \mathrm{A = I - u v^\dagger}
 \end{equation}
 In terms of matrix elements,
 
 % (20'_)
 \begin{equation}
  \label{eq:09_20prime_}
-    A_{ij} = \delta_{ij} - u_i v_j^*
+    \mathrm{A_{ij} = \delta_{ij} - u_i v_j^*}
 \end{equation}
 \end{subequations}
 
@@ -1230,30 +1232,30 @@ notation
 % (21_)
 \begin{equation}
  \label{eq:09_21_}
-    v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i
+    \mathrm{v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i}
 \end{equation}
 we have
 \begin{equation}
  \label{eq:09_22_}
-    x_i = b_i + (v,x)\,u_i
+    \mathrm{x_i = b_i + (v,x)\,u_i}
 \end{equation}
 
 The coefficient $(v, x)$ is just a (generally complex) number; we
 compute it from \ref{eq:09_22_}\textit{via}
 \begin{equation}
  \label{eq:09_23_}
-    (v,x)=(v,b)+(v,u)(v,x)
+    \mathrm{(v,x)=(v,b)+(v,u)(v,x)}
 \end{equation}
 or
 \begin{equation}
  \label{eq:09_24_}
-    (v,x)=\frac{(v,b)}{1-(v,u)}\quad .
+    \mathrm{(v,x)=\frac{(v,b)}{1-(v,u)}\quad .}
 \end{equation}
 % (25)
 Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
 \begin{equation}
  \label{eq:09_25_}
-    x_i=b_i+\frac{(v,b)}{1-(v,u)}u_i
+    \mathrm{x_i=b_i+\frac{(v,b)}{1-(v,u)}u_i}
 \end{equation}
 Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
