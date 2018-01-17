@@ -980,37 +980,26 @@ into the pseudocoded actions in Fig.\ref{fig:09_03} below.
     \caption{Steps in \texttt{\}\}R1-P2*X}}
     \label{fig:09_03}
 \end{figure}
-
 A first attempt might look as follows:
-
 \begin{verbatim}
-\auxiliarywords
+\auxiliary words
+: 4DUP DOVER DOVER ;
+( a b c d -- a b c d a b c d )
+: ++   ( s1.o1 s2.o2 n -- s1.o1+n s2.o2+n)
+    DUP>R + ROT R> + -ROT ;
 
-:4DUP DOVER DOVER ;
-
-(abcd--abcdabcd)
-
-: + + (51.0152.02n -  1.01 +n 52.02+n)
-DUP>R + ROT R> + -ROT;
-
-:}}R1-R2"X (r1r2-- ::x--x)
-
-> R > R
-
-a R> row 0 DROP \M r10
-aila@imioli one.» \Miiaoli
-Length iSTEP " \ L'lSTEP (upper limit)
-
-R> ISTEP * \ r2'ISTEP (lower limit)
-
-DO 4DUP I ++ \duplicateaincbaseadrs
-
-T >FS G'NP (2: - xx*M[r2,k])
-DDUP T >FS GR-
-T >FS \ I result
-ISTEP [LOOP DDROP DDROP ;
+:}}R1-R2*X (r1r2 -- ::x--x)
+    > R > R
+    a{{ R> }row{ 0 }} DROP \ M{{ r1 0 }}
+    a{{ R@ }row{ 0 }} DROP \ M{{ r2 0 }}
+    Length ISTEP *  \ L*ISTEP (upper limit)
+    R> ISTEP *      \ r2*ISTEP (lower limit)
+    DO 4DUP I ++    \ duplicate & inc base adrs
+        T >FS G*NP  ( :: -- xx*M[r2,k])
+        DDUP T >FS GR-
+        T >FS       \ ! result
+    ISTEP /LOOP DDROP DDROP ;
 \ INITIALIZE is assumed
-
 \end{verbatim} 
 As with \verb|}}ROW*X| we avoid the execution-speed penalty of
 calculating addresses within the loop by not using the phrase
@@ -1032,32 +1021,30 @@ optimize).
 
 The 4 inner loops are
 \begin{verbatim}
+: Re.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ R32@L F*NP
+        DDUP R32@L FR- R32!L
+    4 /LOOP R> F>FS ;
 
-: Re.LP (\S1.01 52.02 L'istep r2*istep - - :2 x - - x)
-FS>F >R
-DO 4DUP I + + R32@L F*NP
-DDUP R32@L FR- R32IL
-4 /LOOP R> F>FS ;
+: DRe.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP l + + R64@L F*NP
+        DDUP R64@L FR- R64!L
+    8 /LOOP R> F>FS ;
 
-: DRe.LP ($1.01 $2.02 L'istep r2'istep - - z: x - - x)
-FS>F >R
-DO 4DUP l + + R64@L F*NP
-DDUP R64@L FR- R64!L
-8 /LOOP R> F>FS ;
+: X.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ CP@L X*NP
+        DDUP CP@L CPR- CP!L
+    8 /LOOP R> F>FS ;
 
-: X.LP (51.01 52.02 L*istep r2*istep - - z: x - - x)
-FS>F >R
-DO 4DUP l + + CP@L X'NP
-DDUP CP@L CPR- CPIL
-8 /LOOP R> F>FS ;
-
-: DX.LP (\S1.01 52.02 L'istep r2'istep - - :: x - - x)
-FS>F >R
-DO 4DUP I + + DCP@L X'NP
-DDUP DCP@L CPR- DCPIL
-16 /LOOP R> F>FS;
+: DX.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ DCP@L X*NP
+        DDUP DCP@L CPR- DCP!L
+    16 /LOOP R> F>FS ;
 \end{verbatim} 
-
 Not surprisingly, the loops contain some duplicate code, but this
 is a small price to pay for the speed increase. A significant further
 increase can be obtained easily, using the HS/FORTH recursive-
@@ -1069,36 +1056,32 @@ HS/FORTH's \regc{CASE: ... ;CASE} construct, or the equivalent high-
 level version given here:
 
 \begin{verbatim}
-: CASE: CREATE
-DOES> OVER + + @ EXECUTE ;
+: CASE: CREATE ]
+    DOES> OVER ++ @ EXECUTE ;
 : ;CASE [COMPILE] ; ; IMMEDIATE
 
-CASE: DO(R1-R2"X)LOOP
-Re.LP DRe.LP X.LP DX.LP ;CASE
+CASE: DO(R1-R2*X)LOOP
+    Re.LP DRe.LP X.LP DX.LP ;CASE
 
-2}}R1-R2'X (r1 r2-- ::x--x)
-
->R >R
-
-2112a mm; 328: {main
-Length I.STEP * \ ULSTEP (upper limit)
-R> I.STEP ' \ r2'I.STEP (lower limit)
-
-T DO(R1-R2'X)LOOP DDROP DDROP ;
+: }}R1-R2*X (r1 r2-- ::x--x)
+    >R >R
+    a{{ R> }row{ 0 }} DROP      \ M{{ r1 0 }} 
+    a{{ R@ }row{ 0 }} DROP      \ M{{ r2 0 }} 
+    Length I.STEP *      \ L*I.STEP (upper limit)
+    R> I.STEP *          \ r2*I.STEP (lower limit)
+    T DO(R1-R2*X)LOOP DDROP DDROP ;
 \ We assume INITIALIZE has been invoked
 \end{verbatim} 
-
 Another word is needed to perform the same manipulation on
 the inhomogeneous term. Since this latter process runs in $O(N^2)$
 time we need not concern ourselves unduly with efficiency.
 \begin{verbatim}
 
-:}V1-V2*X (r1 r2-- ::x--)
-SWAP >R >R
-b{ 0.0 } DROP DDUP \V[0] V[O]
-R> irowilSTEP' + >FS G'
-R> row ISTEP " + DDUP >FS GR- FS> ;
-
+: }V1-V2*X ( r1 r2-- ::x--)
+    SWAP >R >R
+    b{ 0.0 } DROP DDUP \V[0] V[O]
+    R> }row{ ISTEP * + >FS G*
+    R> }row{ ISTEP * + DDUP >FS GR- FS> ;
 \end{verbatim} 
 \underline{Notes:}
 
