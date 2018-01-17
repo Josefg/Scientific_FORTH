@@ -1,5 +1,19 @@
 \documentclass{book}
 \usepackage{errata} 
+% begin errata for math mode
+\usepackage{marginnote}
+\makeatletter
+\newcommand{\erratumMathReplace}[4][]{% keyvals, explanation, old, new
+\setkeys{erratum}{#1}\stepcounter{erratum}\record@erratum{#2}%
+\marginnote{Err(\arabic{erratum})}\immediate\typeout{Erratum!}%
+[#4]_r^{\arabic{erratum}}%
+\gdef\erratumMath@new{#2}%
+\gdef\erratumMath@old{#3}}
+\newcommand{\erratumMathPrint}{%
+\footnotetext[\value{erratum}]{\text{{\scshape{Erratum!}}%
+\@ifundefined{erratum@type}{}{(\erratum@type)} \(\erratumMath@new\) (original text was: ``\(\erratumMath@old\)'')}}}
+\makeatother
+%end errata 
 % math formatting
 \usepackage{amssymb, amsmath}
 \usepackage{multicol}
