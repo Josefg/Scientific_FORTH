@@ -283,8 +283,9 @@ As an example, we now use Cramer's rule to evaluate the determinant of Eq. \ref{
     \end{Vmatrix}\\
 \end{align*}
 The determinant of a $1 \times 1$ matrix is just the matrix element, hence
+    \erratumReplace{typo}{$a_{10}$}{$a_{00}$} 
 \begin{align*}
-    a_{00} &=  2 \cdot 6 + (-1)\cdot 4\cdot 1 = 8\\
+    \mbox{     \erratumReplace{typo}{$a_{10}$}{$a_{00}$} $a_{00}$} &=  2 \cdot 6 + (-1)\cdot 4\cdot 1 = 8\\
     a_{10} &=  -(18 - 4) = -14\\
     a_{20} &=  (3 -2) = 1\\
     ||A||&= 1\cdot 8 + 0\cdot (-14)+ 5\cdot 1 =13\;.
@@ -918,7 +919,7 @@ multiply a row by a constant. To do this we define
 
 \Ex: A{{ 2 }ROW*X 
 \end{verbatim}
-
+\underline{Notes:}
 \begin{itemize}
     \item  While \regc{DO(ROW*X)LOOP} and \regc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
         multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
@@ -1002,7 +1003,7 @@ A first attempt might look as follows:
 \ INITIALIZE is assumed
 \end{verbatim} 
 As with \verb|}}ROW*X| we avoid the execution-speed penalty of
-calculating addresses within the loop by not using the phrase
+calculating addresses within the loop by \textit{not} using the phrase
 \begin{verbatim}
 a{{ I }row{ J }} .
 \end{verbatim}
@@ -1023,7 +1024,7 @@ The 4 inner loops are
 \begin{verbatim}
 : Re.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
     FS>F >R
-    DO 4DUP I ++ R32@L F*NP
+    DO 4DUP I + + R32@L F*NP
         DDUP R32@L FR- R32!L
     4 /LOOP R> F>FS ;
 
@@ -1083,8 +1084,8 @@ time we need not concern ourselves unduly with efficiency.
     R> }row{ ISTEP * + >FS G*
     R> }row{ ISTEP * + DDUP >FS GR- FS> ;
 \end{verbatim} 
-\underline{Notes:}
 
+\underline{Note:}
 \begin{itemize}
     \item  After \regc{\}V1-V2*X} executes, the multiplier x is no longer needed,
         so we drop it here by using \regc{G*} rather than \regc{G*NP}.
@@ -1116,60 +1117,52 @@ intelligent fstack (ifstack) defined in Ch. 7.
 
 \begin{verbatim}
 DCOMPLEX SCALAR DET \ room for any type
-:INIT\_DEr T 'DEI' I \set Type
-TG=1 DEI' GI; \setdet=
 
-%1.E-10 FCONSTANT CONDITION
+: INIT\_DET T 'DET  ! \ set Type
+    T G=1 DET G! ;    \ set det = 1
 
-:DETERMINANT (- - 2: x - - x)
-DET >FS G*NP
-?SWAP IF GNEGATE THEN
-FS.DUP GABS FS>F CONDITION F<
-ABOR'l" determinant too small!' DET FS> ;
+% 1.E-10 FCONSTANT CONDITION
 
+: DETERMINANT ( -- :: x -- x)
+    DET >FS G*NP
+    ?SWAP IF GNEGATE THEN
+    FS.DUP GABS FS>F CONDITION F<
+    ABORT" determinant too small!" DET FS> ;
 \end{verbatim} 
 
 % 237
 
 Now we define the word that triangularizes the matrix:
 \begin{verbatim}
-0VARb( \tokeepthesteokehort
-: INITIAUZE (M{(V{o- ::--)
+0 VAR b{        \ to keep the stack short
+: INITIALIZE    ( M{{V{-- ::--)
+    IS b{
+    IS a{{
+    a{{ D.TYPE IS T
+    a{{ D.LEN IS Length
+    a{{ D.TYPE #BYTES DROP IS ISTEP
+    INIT.DET ;  \ set det=1
 
-le
+: }/PIVOT }row{ } DROP DDUP T >FS G* T FS> ;
+    ( seg ofd t--::x--)
 
-lSa
-
-3 .TYPE IS T
-
-a D.LEN is Length
-
-a D.TYPE #BYTES DROP ISISTEP
-
-iN .DET ; \setdet=1
-
-:}/PIVOT }row{) DROP DDUP T >FS G' TFS>;
-(segofIt--::x--)
-
-:TRIANGULAFIIZE (M{{ V{ - -)
-
-INITIAUZE
-Length 0 DO \ loop 1 -- by rows
-a{{l} PIVOT \findpivotincoil
-' )row I l.PlV }SWAP \ exchange rows
-a{{ I }row{ I }} >FS \pivot->iistack
-DETERMINANT \ mic det
-1/6 a{{ i }}ROW'X \row i Ipivot
-b{ l }/PIVOT \inhom. term /pivot
-Length l1+ DO \ioop2-byrows
-a l}row{J}} >FS \x->ifstack
-a lJ}}R1-R2"X
-
-\ row[i] = row[i]-row[j]'x
-b{ I J }V1-V2*X
-\ same for b{ and drop x
-LOOP \ and loop 2
-LOOP ; \end loop 1
+:TRIANGULARIZE ( M{{ V{ --)
+    INITIAUZE
+    Length 0 DO             \ loop 1 -- by rows
+    a{{ I }}PIVOT           \ find pivot in col I
+    '}row{ I I.PIV }SWAP    \ exchange rows
+    a{{ I }row{ I }} >FS    \ pivot->iistack
+    DETERMINANT             \ calc det
+    1/G a{{ I }}ROW*X       \ row I /pivot
+    b{ I }/PIVOT            \ inhom. term /pivot
+    Length I 1 + DO         \ loop 2 - by rows
+        a{{ I }row{ J }} >FS    \ x -> ifstack
+        a{{ I J }}R1-R2*X 
+                \ row[i] = row[i]-row[j]*x
+        b{ I J }V1-V2*X
+                \ same for b{ and drop x
+        LOOP            \ and loop 2
+    LOOP ;              \ end loop 1
 \Usege: A{{ B{ TRIANGULARIZE
 \end{verbatim}
 
@@ -1181,16 +1174,16 @@ as follows:
 
 % Chapter 9 - Linear Algebra Scientific FORTH
 \begin{verbatim}
-: }BACK-SOLVE (- - )
-0 LENGTH 2- DO \ outer loop
-T G=0
-LENGTH I 1 + DO \ inner loop
-a? J }row{ I }} > PS
-b I }row{ } >FS G*G+\
-LOOP \ inner loop
-b{ l ){ } DROP DDUP T >FS \
-GR- T FS > \
--1 +LOOP ; \outer loop J
+: }BACK-SOLVE ( -- )
+    0 LENGTH 2- DO              \ outer loop
+        T G=0                   \
+        LENGTH I 1 + DO         \ inner loop
+        a{{ J }row{ I }} > PS   \
+        bi{ I }row{ } >FS G* G+ \
+        LOOP                    \ inner loop
+    b{ I }{ } DROP DDUP T >FS   \
+    GR- T FS >                  \
+    -1 +LOOP ;                  \outer loop J
 \end{verbatim} 
 
 Putting the entire program together we have the linear equation
@@ -1494,7 +1487,7 @@ general,
     A \cdot B \neq B \cdot A
 \end{equation}
 We say that, unlike with ordinary or even complex arithmetics
-matrix multiplication -- even of s uare matrices -- does not in
+matrix multiplication -- even of square matrices -- does not in
 general obey the commutative law \sepfootnote{09_17}.
 
 \subsection{Matrix Inversion}
@@ -1506,7 +1499,7 @@ $N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the p
     A^{-1} \cdot A \equiv A \cdot A^{-1}
 \end{equation} 
 where I is the unit matrix defined in the beginning of this chapter
-(Eq. 4  \underline{remark : probably it is 3}-- 1's on the main diagonal, 0's everywhere else). We have
+(Eq. \erratumReplace{typo}{4}{\ref{eq:09_03}}-- 1's on the main diagonal, 0's everywhere else). We have
 implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
 left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
 \begin{equation}
@@ -1646,8 +1639,7 @@ for
     \lambda_{20} y_0 + \lambda_{21} y_1 + \lambda_{22} y_2 &= b_2 \nonumber \\
     \dots \;\textit{etc.} \;\dots \nonumber
 \end{align}
-
-which can be solved successively by forward substtution. Next
+which can be solved successively by forward \erratumReplace{typo}{substtution}{substitution}. Next
 solve 45 successively (by back-substitution) for \textbf{x}:
 \begin{align}
     \label{eq:09_47}
