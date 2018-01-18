@@ -1,4 +1,5 @@
 \documentclass{book}
+\setlength\parindent{0pt}
 \usepackage{errata} 
 % begin errata for math mode
 \usepackage{marginnote}
@@ -23,7 +24,9 @@
 \usepackage{listings}
     \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
             basicstyle=\ttfamily %, mathescape
-			}
+            }
+    \lstset{escapeinside={(*}{*)}
+}
 \newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
 \newcommand{\regc}[1]{\lstinline{#1}}
 % For code in paragraphs use \lstinline$word$
@@ -111,12 +114,16 @@
 \usepackage{titlesec}
     \renewcommand{\thesection}{\arabic{section}}
     \renewcommand{\thesubsection}{\arabic{subsection}}
+    \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
     \titleformat{\section}
         {\normalfont\large\bfseries}
-        {\S\ \thesection }{0.5em}{}
+        {\S\thesection }{0.5em}{}
     \titleformat{\subsection}
         {\normalfont\bfseries}
-        {\S\ \S\ \thesubsection }{.5em}{}
+        {\S\S\thesubsection }{.5em}{}
+    \titleformat{\subsubsection}
+        {\normalfont\bfseries}
+        {\thesubsubsection }{.5em}{}
 \usepackage{titletoc}
 
 % Thinking FORTH
@@ -143,11 +150,11 @@
 \tableofcontents
     % must include footnotes for all Chapters
     \input{footnotes}
-    % include{chapter on which you are working}
+    % *** include{chapter on which you are working} ***
     % \include{Chapter-01/01-Toward-Scientific-FORTH}
-    % \include{Chapter-02/02-Programming-in-FORTH}
+     \include{Chapter-02/02-Programming-in-FORTH}
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
-	\include{Chapter-09/09-Linear-Algebra}
-    %\include{Chapter-04/04-The-80x87-Family}
-    %\include{Chapter-10/10-Strings-and-IO-in-FORTH}
+    % \include{Chapter-04/04-The-80x87-Family}
+    % \include{Chapter-09/09-Linear-Algebra}
+    % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
 \end{document}

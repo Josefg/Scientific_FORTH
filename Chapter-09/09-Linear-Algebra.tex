@@ -2,59 +2,37 @@
  
 \chapter{Linear Algebra}
 
-Two common problems in scientific programming are the
-numerical solution of simultaneous linear algebraic equations
-and computing the inverse of a given square matrix. This is such
-an important subject As an exercise in FORTH program
-development we shall now write programs to solve linear equations and invert matrices.
+\TallC{Two} common problems in scientific programming are the numerical solution of simultaneous linear algebraic equations and computing the inverse of a given square matrix. This is such an important subject As an exercise in FORTH program development we shall now write programs to solve linear equations and invert matrices.
 
 \section{Simultaneous linear equations}
-\TallC{We} begin with a dose of mathematics (linear algebra), and 
-then develop programs. Several actual programming session
-are reproduced \textit{in toto} --mistakes and all-- to give the flavor of
-program development and debugging in FORTH.
+\TallC{We} begin with a dose of mathematics (linear algebra), and then develop programs. Several actual programming sessions are reproduced \textit{in toto} --mistakes and all-- to give the flavor of program development and debugging in FORTH.
+
 \subsection{Theory of linear algebraic equations}
 \TallC{We} begin by stating the problem. Given the equations
 \begin{equation}
     \mathrm{\sum_{n=0}^{N-1}A_{mn}x_n=b_m \,.}
     \label{eq:09_01}
 \end{equation}
---\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,--
-with known \textbf{coefficient
-matrix} $A_{mn}$ and known \textbf{inhomogeneous term} $b_m$: under what
-conditions can we find unique values of $x_n$ that simultaneously
-satisfy the N equations \ref{eq:09_01}?
+--\,more compactly written $\boldsymbol{\overleftrightarrow{A} \cdot \vec{x} = \vec{b}\,}$-- with known \textbf{coefficient matrix} $\boldsymbol{A_{mn}}$ and known \textbf{inhomogeneous term} $\boldsymbol{b_m}$: under what conditions can we find unique values of $x_n$ that simultaneously satisfy the N equations \ref{eq:09_01}?
 
-The theory of simultaneous linear equations tells us that if not all
-the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
-Contrariwise, if $\det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
-when $\vec{b}= 0$.
+The theory of simultaneous linear equations tells us that if not all the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\boldsymbol{\overleftrightarrow{A}}$ should not be 0. Contrariwise, if $\det($$\boldsymbol{\overleftrightarrow{A}}$$ )= 0$, a solution with $\boldsymbol{\vec{x} \neq 0 }$ \textit{can} be found when $\boldsymbol{\vec{b}= 0}$.
 
 \subsection{Eigenvalue problems} 
-\TallC{Many} physical systems can be represented by systems of linear 
-equations. Masses on springs, pendula, electrical circuits,
-structures\sepfootnote{09_02}, and molecules are examples. Such systems often can
-oscillate sinusoidally. If the amplitude of oscillation remains
-bounded, such motions are called stable. Conversely, sometimes
-the motions of physical systems are unbounded -- the amplitude
-of any small disturbance will increase exponentially with time. An
-example is a pencil balanced on its point. Exponentially growing
-motions are called -- for obvious reasons -- \textbf{unstable}.
+\TallC{Many} physical systems can be represented by systems of linear equations. Masses on springs, pendula, electrical circuits, structures\sepfootnote{09_02}, and molecules are examples. Such systems often can oscillate sinusoidally. If the amplitude of oscillation remains bounded, such motions are \textbf{called} stable. Conversely, sometimes the motions of physical systems are unbounded -- the amplitude of any small disturbance will increase exponentially with time. An example is a pencil balanced on its point. Exponentially growing motions are called -- for obvious reasons -- \textbf{unstable}.
 
-Clearly it can be vital to know whether a system is stable or
-unstable. If stable, we want to know its possible frequencies of
-free oscillation; whereas for unstable systems we want to know
-how rapidly disturbances increase in magnitude. Both these
-problems can be expressed as the question: do linear equations
-of the form
+Clearly it can be vital to know whether a system is stable or unstable. If stable, we want to know its possible frequencies of free oscillation; whereas for unstable systems we want to know how rapidly disturbances increase in magnitude. Both these problems can be expressed as the question: do linear equations of the form
+
 % (2)
 \begin{equation}
-    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = \lambda \overleftrightarrow{\rho} \cdot \vec{\mathrm{x}}
+    \boldsymbol{
+        \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}}
+        }
+    = \lambda \overleftrightarrow{\rho} \cdot \boldsymbol{\vec{\mathrm{x}}}
     \label{eq:09_02}
 \end{equation}
-have solutions? Here $\lambda$ is generally a complex number, called the
-\textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
-the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
+
+have solutions? Here $\lambda$ is generally a complex number, called the \textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
+
 % (3)
 \begin{equation}
     \mathrm{I_{mn}=}
@@ -64,6 +42,7 @@ the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit mat
     \end{cases}
     \label{eq:09_03}
 \end{equation}
+
 but in any case, $\overleftrightarrow{\rho}$ must be \textbf{positive-definite} (we define this
 below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 
@@ -651,15 +630,12 @@ this algorithm. In pseudocode, we can express pivotal elimination as shown in Fi
         \path [line]  (cross) -- (dot);
         \path [line]  (dot) -- (end);
     \end{tikzpicture}
-    \caption{Pseudocode for pivotal elimination}
+    \caption{\textit{Pseudocode for pivotal elimination}}
     \label{fig:09_01}
 \end{figure}
  
 \subsection{The program}
-\TallC{Whenever} we write a complex program we are faced with the
-problem "Where do we begin?" FORTH emphasizes the construction of components,
-and generally cares little which component
-we define first.
+\TallC{Whenever} we write a complex program we are faced with the problem "Where do we begin?" FORTH emphasizes the construction of components, and generally cares little which component we define first.
 
 For example, we must swap two rows of a matrix. The most
 obvious way moves data:
@@ -1006,23 +982,16 @@ A first attempt might look as follows:
     ISTEP /LOOP DDROP DDROP ;
 \ INITIALIZE is assumed
 \end{verbatim} 
-As with \bc{\}\}ROW*X} we avoid the execution-speed penalty of
-calculating addresses within the loop by \textit{not} using the phrase
+
+As with \bc{\}\}ROW*X} we avoid the execution-speed penalty of calculating addresses within the loop by \textit{not} using the phrase
+
 \begin{verbatim}
 a{{ I }row{ J }} .
 \end{verbatim}
-However, we are doing a lot of unnecessary work inside the loop
-by making 5 choices based on datatype. There are also a lot of
-unnecessary moves to/from the ifstack. This is an example where
-speed has been sacrificed to compactness of code: one program
-solves equations of any ("scientific") data format - REAL*4,
-REAL*8, COMPLEX*8 and COMPLEX*16. 
 
-Conversely, we can both eliminate the extra work and accelerate
-execution simply by defining a \textit{separate} inner loop for each data;
-type, letting the choice take place once, outside the inner loop.
-This multiplies the needed code fourfold (or more-fold, if we
-optimize).
+However, we are doing a lot of unnecessary work inside the loop by making 5 choices based on datatype. There are also a lot of unnecessary moves to/from the ifstack. This is an example where speed has been sacrificed to compactness of code: one program solves equations of any ("scientific") data format -- REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16. 
+
+Conversely, we can both eliminate the extra work and accelerate execution simply by defining a \textit{separate} inner loop for each data; type, letting the choice take place once, outside the inner loop. This multiplies the needed code fourfold (or more-fold, if we optimize).
 
 The 4 inner loops are
 \begin{verbatim}
@@ -1375,18 +1344,9 @@ in cycles for these basic operations are\sepfootnote{09_16}
 \end{table}
  
 % 242
-We see from Table \ref{tbl:09_02} above that the time computed from the
-cpu and coprocessor specifications (422 clocks) is close to the
-measured time (440 clocks). The slight difference doubtless
-comes both from measurement error and from the fact the
-timing of CISC chips is not an exact art (for example, there a \underline{??}
-periodic interruptions for dynamic memory refreshment and f \underline{??}
-the system clock).
+We see from Table \ref{tbl:09_02} above that the time computed from the cpu and coprocessor specifications (422 clocks) is close to the measured time (440 clocks). The slight difference doubtless comes both from measurement error and from the fact the timing of CISC chips is not an exact art (for example, there are periodic interruptions for dynamic memory refreshment and for the system clock).
 
-Finally, we confirm that little is to be gained by optimizing out
-loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
-then we should cut the N = 350 time from 16 to 13 minutes, and 
-the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
+Finally, we confirm that little is to be gained by optimizing out loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming then we should cut the N = 350 time from 16 to 13 minutes, and the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
 \section{Matrix Inversion}
 \TallC{We} introduce this subject with a brief discourse on liners
