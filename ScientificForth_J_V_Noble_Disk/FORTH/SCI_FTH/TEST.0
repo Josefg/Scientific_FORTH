@@ -1,0 +1,9 @@
+
+FINIT
+3 REAL*4 SCALARS A B C
+% 3.17E-10 A G!L
+% -2.55E7  B G!L
+% 9.162E15 C G!L
+2 COMPLEX SCALARS W Z
+% 7 % 5 W G!L    % -3 % 2 Z G!L
+

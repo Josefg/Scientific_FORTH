@@ -1,0 +1,237 @@
+\ FLOATING POINT LEXICON for
+\ "SCIENTIFIC FORTH: a modern language for scientific computing"
+TASK JVNFLOAT
+
+\ DEFINITIONS APPROPRIATE FOR HS/FORTH's ASSEMBLER
+\ note: <% xx xx xx xx %> in a CODE definition assembles those (hex) bytes
+
+HEX
+CODE FINIT   <% 9B DB E3 %>  END-CODE  FINIT
+
+VARIABLE cw
+CODE FLDCW    cw +[] BX  MOV.  cw +[]  FLDCW. BX POP.  END-CODE  ( cw -- )
+\ <% 89 1E %> cw W%  <% 9B D9 2E %> cw W%  5B C%
+CODE FSTCW    cw +[]  FSTCW.  BX PUSH.  BX cw +[] MOV. END-CODE  ( -- cw )
+\ <% 9B D9 3E %> cw W% <% 53 8B 1E %> cw W%
+CODE FSTSW    cw +[]  FSTSW.  BX PUSH.  BX cw +[] MOV. END-CODE  ( -- sw )
+\ <% 9B DD 3E %> cw W% <% 53 8B 1E %> cw W%
+CODE FXAM    FXAM. cw +[]  FSTSW.  BX PUSH.  BX cw +[] MOV. END-CODE ( -- sw )
+\ <% 9B D9 E5 9B DD 3E %> cw W% <% 53 8B 1E %> cw W%
+BEHEAD' cw
+
+: FCC&ST   FXAM  ( -- sw)  8 SLR  ( -- 00000000_B_C3_ST_C2_C1_C0)
+           DUP  OVER  7 AND SWAP
+           6 SLR 40 AND  +        ( -- etc 0..0_C3_C2_C1_C0)
+           SWAP  8/  7 AND  ;     ( -- 0..0_C3_C2_C1_C0  ST)
+
+: FDEPTH   FCC&ST  8 -  NEGATE  SWAP  1 AND  0=  AND  ;
+
+: init.mode  FSTCW  0F3FF AND  ;
+: FROUND   init.mode  0000 OR  FLDCW  ;   \ round to nearest even (default)
+: FROUND-  init.mode  0400 OR  FLDCW  ;   \ round toward -inf.
+: FROUND+  init.mode  0800 OR  FLDCW  ;   \ round toward +inf.
+: FTRUNC   init.mode  0C00 OR  FLDCW  ;   \ round toward 0
+\ : FMODE CREATE D, DOES> D@  FSTCW  AND OR FLDCW ;
+\ 0000 0F3FF FMODE FROUND            \ round to nearest even (default)
+\ 0400 0F3FF FMODE FROUND-           \ round toward -inf.
+\ 0800 0F3FF FMODE FROUND+           \ round toward +inf.
+\ 0C00 0F3FF FMODE FTRUNC            \ round toward 0
+
+CODE FSAVE     <% 9B DD 37 5B %>         END-CODE
+CODE FRESTORE  <% 9B DD 27 5B %>         END-CODE
+
+CODE FDROP     <% 9B DD D8 %>            END-CODE   ( 87: x y -- x)
+CODE FROT      <% 9B D9 C9 9B D9 CA %>   END-CODE   ( 87: x y z -- y z x)
+CODE F-ROT     <% 9B D9 CA 9B D9 C9 %>   END-CODE   ( 87: x y z -- z x y)
+CODE FSWAP     <% 9B D9 C9 %>            END-CODE   ( 87: x y -- y x)
+CODE FDUP      <% 9B D9 C0 %>            END-CODE   ( 87: x -- x x)
+CODE FOVER     <% 9B D9 C1 %>            END-CODE   ( 87: x y -- x y x)
+: FUNDER  FSWAP FOVER ;                             ( 87: x y -- y x y)
+: FPLUCK  FSWAP FDROP ;                             ( 87: x y -- y)
+
+HEX
+CODE  I16@   <% 9B DF 07 5B 9B %> END-CODE    ( adr --  87: -- n)
+CODE  I16!   <% 9B DF 1F 5B 9B %> END-CODE    ( adr --  87: n --)
+CODE  I32@   <% 9B DB 07 5B 9B %> END-CODE    ( adr --  87: -- d)
+CODE  I32!   <% 9B DB 1F 5B 9B %> END-CODE    ( adr --  87: d --)
+CODE  F@     <% 9B D9 07 5B 9B %> END-CODE    \ single precision (32-bit) @
+CODE  F!     <% 9B D9 1F 5B 9B %> END-CODE    \ single precision (32-bit) !
+CODE  DF@    <% 9B DD 07 5B 9B %> END-CODE    \ double precision (64-bit) @
+CODE  DF!    <% 9B DD 1F 5B 9B %> END-CODE    \ double precision (64-bit) !
+CODE  TR@    <% 9B DB 2F 5B 9B %> END-CODE    \ extra  precision (80-bit) @
+CODE  TR!    <% 9B DB 3F 5B 9B %> END-CODE    \ extra  precision (80-bit) !
+
+CODE F=0        <% 9B D9 EE %>  END-CODE      ( 87: -- 0)
+CODE F=1        <% 9B D9 E8 %>  END-CODE      ( 87: -- 1)
+CODE F=PI       <% 9B D9 EB %>  END-CODE      ( 87: -- 3.14159...)
+CODE F=L2(10)   <% 9B D9 E9 %>  END-CODE      ( 87: -- 3.32192...)
+CODE F=L2(E)    <% 9B D9 EA %>  END-CODE      ( 87: -- 1.44269...)
+CODE F=LOG(2)   <% 9B D9 EC %>  END-CODE      ( 87: -- 0.30102...)
+CODE F=LN(2)    <% 9B D9 ED %>  END-CODE      ( 87: -- 0.69314...)
+
+CODE FRNDINT    <% 9B D9 FC %>  END-CODE  \ round to integer
+CODE F+         <% 9B DE C1 %>  END-CODE
+CODE F-         <% 9B DE E9 %>  END-CODE       ( ::  x  y   --  x op y )
+CODE FR-        <% 9B DE E1 %>  END-CODE
+
+: FRAC     ( f - f-[f] )      FDUP FRNDINT F- ;
+: FSPLIT   ( f - [f] f-[f] )  FDUP FRNDINT FDUP F-ROT F- ;
+
+CODE F*         <% 9B DE C9 %>  END-CODE
+CODE F/         <% 9B DE F9 %>  END-CODE
+CODE FR/        <% 9B DE F1 %>  END-CODE
+: 1/F           F=1  FR/  ;  ( 87: x -- 1/x )
+CODE FPREM      <% 9B D9 F8 %>  END-CODE
+CODE FNEGATE    <% 9B D9 E0 %>  END-CODE
+CODE FSCALE     <% 9B D9 FD %>  END-CODE   ( 87: n x  --  x * 2**n )
+
+: F2*   F=1 FSWAP  FSCALE  FPLUCK ;
+: F2/   F=1 FNEGATE FSWAP  FSCALE  FPLUCK ;
+
+CODE FSQRT      <% 9B D9 FA %>  END-CODE
+CODE F**2       <% 9B D8 C8 %>  END-CODE
+CODE FABS       <% 9B D9 E1 %>  END-CODE
+CODE FXTRACT    <% 9B D9 F4 %>  END-CODE   ( 87: x=y*2**z -- z y )
+CODE F2XM1      <% 9B D9 F0 %>  END-CODE   ( 87: |x|<.5 -- 2**x-1)
+CODE FTST       <% 9B D9 E4 %>  END-CODE   \ compare st(0) with 0
+CODE FCOMPP     <% 9B DE D9 %>  END-CODE   \ compare st(1) with st(0)
+
+CREATE 1/2   4 ALLOT  OKLW   3F00.0000 1/2    D!
+
+: F0>NP    FTST  FSTSW   4100  AND  0=  ;  : F0>      F0>NP  FDROP  ;
+: F0=NP    FTST  FSTSW   4000  AND  0>  ;  : F0=      F0=NP  FDROP  ;
+: F0<NP    FTST  FSTSW   0100  AND  0>  ;  : F0<      F0<NP  FDROP  ;
+
+: F>       ( 87: x y --  : -- f)  FCOMPP  FSTSW  0100 AND  0>  ;
+: F=       ( 87: x y --  : -- f)  FCOMPP  FSTSW  4000 AND  0>  ;
+: F<       ( 87: x y --  : -- f)  FCOMPP  FSTSW  4100 AND  0=  ;
+
+: F2**    ( 87: x -- 2**x)
+          FROUND-  FSPLIT           ( 87: -- [x] x-[x])
+          1/2 F@  FUNDER  F-        ( 87: -- [x] .5 x-[x]-.5 )
+          F0>NP  FABS  F2XM1 F=1 F+ ( : -- f  87: [x] .5 2**|x-[x]-.5| )
+          NOT IF  1/F  THEN         ( : -- f  87: [x] .5 2**{x-[x]-.5} )
+          FSWAP  F2XM1 F=1 F+  F*  FSCALE  FPLUCK  ;
+
+CREATE 1-1/SQR(2)  4 ALLOT OKLW     3E95.F61A  1-1/SQR(2)  D!
+CODE FYL2X     FYL2X.    END-CODE  \ <% 9B D9 F1 %>  ( 87: y x -- y*lg[x])
+CODE FYL2XP1   FYL2XP1.  END-CODE  \ <% 9B D9 F9 %>  ( 87: y x -- y*lg[1+x])
+
+: <LOG>  FSWAP  FDUP F=1 F-  FDUP  FABS  1-1/SQR(2) F@  F<
+         IF  FPLUCK  FYL2XP1  ELSE  FDROP  FYL2X  THEN  ;
+
+: FLN    ( 87: x  -- ln[x] )  F=LN(2)   <LOG>  ;
+: FLOG2  ( 87: x -- log2[x] )  F=1      <LOG>  ;
+: FLOG10 ( 87: x -- log10[x] ) F=LOG(2) <LOG>  ;
+
+: F10**     ( 87: x -- 10**x )   F=L2(10)  F*  F2**  ;
+: F**       ( 87: x y -- x**y )   <LOG>  F2**  ;
+
+CREATE DTEMP 4 ALLOT OKLW
+: S->F   ( n --  87: -- n)  DTEMP  !   DTEMP I16@  ;
+: F->S   ( 87: n --  -- n)  DTEMP  I16!   DTEMP @  ;
+: D->F   ( d --  87: -- d)  DTEMP  D!  DTEMP I32@  ;
+: F->D   ( 87: d --  -- d)  DTEMP  I32!   DTEMP D@ ;
+BEHEAD' DTEMP
+
+CODE FLIT  <% 9B DB 2C 81 C6 0A 00 %> END-CODE
+\ CODE FLIT  R80 [SI] FLD.    SI 0A IW ADD. END-CODE
+\ Note: the SI register is used by HS/FORTH to point to the next
+\       word to be executed. Here it initially points to the
+\       beginning of the 10-byte field holding a (T-REAL) floating
+\       point literal (because it was incremented by 2 before the
+\       code for FLD T-BYTE PTR [SI] is executed). Then it is
+\       incremented by 10 (0Ah) to point to the next word.
+
+: F,        HERE-L 0A ALLOT TR! ;        \ compile a 10_byte literal
+: FLITERAL  STATE @  IF  COMPILE FLIT F,  THEN ; IMMEDIATE
+: FCONSTANT  CREATE   F,     DOES> TR@ ;
+: FVARIABLE  CREATE 0A ALLOT ;' DOVAR
+
+F=L2(E)  F2**       FCONSTANT F=E
+F=L2(10) F=LN(2) F* FCONSTANT F=LN(10)
+
+: FEXP  ( 87: x -- e**x)  F=L2(E)  F*  F2**  ;
+
+: F**N   F=1   FSWAP       ( n --  87: x -- x**n )
+         BEGIN   DUP  0>  WHILE
+                 DUP  1 AND   IF FUNDER  F*  FSWAP THEN F**2
+                 2/
+         REPEAT  FDROP  DROP   ;
+\ Note: this algorithm beats x**n = e**( n*LN(x) )
+\       for integer n < 50
+
+\ 80x87 i/o
+: UCASE    DUP  ASCII a  MAX  ASCII z MIN  OVER =  32 AND -  ;
+: skip    ( adr char -- adr')  >R  DUPC@  UCASE  R> =  -  ;
+          \ assumes "TRUE" = -1
+: skip_dp    ASCII .  skip  ;
+: digit?  ASCII 0 OVER ASCII 9  MIN  SWAP  MAX  =  ;
+
+0 VAR #digits
+
+CREATE BODY$ 10 ALLOT OKLW
+CREATE EXP$  6  ALLOT OKLW
+
+: 1+C!  DUPC@ 1+  SWAP  C! ;
+: skip_dig  ( adr -- adr')       \ skip to 1st non-digit
+     BEGIN  DUPC@  DUP>R  digit?   R> 0=  NOT   AND
+     WHILE  DUPC@   BODY$ COUNT +  C!
+            BODY$ 1+C!
+            1+   AT #digits 1+!
+     REPEAT  ;
+
+HEX
+: 1digit  DUPC@  DUP  digit?
+          IF   EXP$ COUNT +  C!   EXP$ 1+C!   1+   ELSE  DROP  THEN  ;
+
+: skip_exp  ( adr -- adr')   EXP$ 0!
+            ASCII E skip
+            DUPC@  ASCII - =  IF  2D01 EXP$ !  1+  THEN  \ EXP$ = "-"
+            ASCII + skip
+            1digit  1digit  1digit  ;
+
+: $+0   ( $adr --)  ( terminate $ with 0)  0 OVER  COUNT  +  C!  1+C! ;
+
+: fp#?  ( $adr -- f)  DUP $+0   1+  ( -- adr)
+        BODY$ 0!
+        DUPC@  ASCII - =  IF  2D01 BODY$ !  1+  THEN
+        skip_dig  skip_dp
+        AT #digits 0!  skip_dig  skip_exp  C@ 0=  ;
+
+: $->F     ( $adr --  87: -- x)  BODY$ 0!  EXP$ 0!
+           fp#?  NOT
+           ABORT" Not a floating point #"
+           BODY$ NUMBER D->F
+           EXP$  NUMBER DROP #digits -   S->F ( 87: -- mantissa exp)
+           F=L2(10)  F*   F2**  F*  ;
+
+: %   BL TEXT  PAD $->F  [COMPILE] FLITERAL ;  IMMEDIATE
+\ Usage: % fp# ( 87: -- fp#). Is state-smart also.
+
+\ output fp#'s
+
+VARIABLE  #PLACES  6 #PLACES !
+
+: F=10   0A S->F  ;
+
+
+: E.   ( 87: x --)  FDEPTH 0= ABORT" Empty 87stack"
+       F0=NP  IF  FDROP  ." 0.0"  EXIT  THEN
+       FXTRACT  FSWAP  F=LOG(2) F*  FROUND-  FSPLIT
+       F=L2(10) F*  F2** FROT  F*    ( 87: -- exp't mantissa)
+       #PLACES  @  F=10  F**N  F*
+       F->D  UNDER DABS
+       <# #PLACES @ 0 DO # LOOP  ASCII . HOLD #S  ROT  SIGN #> TYPE
+       F->D  UNDER DABS
+       <# #S ROT SIGN ASCII e HOLD #>  TYPE ;
+
+CREATE  fdump  6C ALLOT OKLW
+: .FS  FDEPTH  fdump  FSAVE  ?DUP  0=
+       IF  ." Empty 87stack"
+       ELSE
+           fdump 0E +  SWAP
+           0 DO  DUP  TR@  CR  ." st(" I 30 + EMIT ." )  "  E.  0A +
+                 LOOP   DROP
+       THEN    fdump FRESTORE  ;
+DECIMAL  FINIT

@@ -1,0 +1,61 @@
+\ ARRAY LEXICON for
+\ SCIENTIFIC FORTH:  a modern language for scientific computing
+
+TASK MATRIX
+
+1 SEGMENT SUPERSEG
+SUPERSEG @  S->D   DCONSTANT  MEM.START    \ beg. of free memory
+40.960  DCONSTANT   MAX.PARS               \ 40960 = 655360 /16
+
+0.0 DVAR  VHERE
+
+: TOTAL.PARS   MAX.PARS   MEM.START  D- ;   \ # pars avail. mem.
+\ TOTAL.PARS  DROP  1-  FREE-SIZE  \ tell DOS and HS/FORTH about it
+
+CODE   D16/   %' D2/
++CODE  D8/    %' D2/
++CODE  D4/    %' D2/  %' D2/  END-CODE
+
+\ : >SEG.OFF    OVER  15 AND  -ROT  ( -- off d)    D16/  DROP  SWAP ;
+CODE  >SEG.OFF  AX POP.  CX AX MOV.  CX 15 IW AND.  CX PUSH.  AX PUSH.
+                %' D16/  AX POP.  BX POP. AX PUSH.  END-CODE  ( d -- seg off)
+
+: TOO.BIG?    VHERE  >SEG.OFF  0 AND   TOTAL.PARS  D>
+              ABORT" INSUFFICIENT ROOM IN SUPERSEG" ;
+\ check whether new value of VHERE> passes end of SUPERSEG
+
+: VALLOT  ( d.#bytes --)    VHERE  D+  IS  VHERE    TOO.BIG? ;
+
+\ Array-defining words
+\ Ex:    50 LONG REAL 1ARRAY V{
+\        V{       ( -- adr)
+\        V{ 17 }  G@  ( 87: -- V[17])
+: LONG   DUP ;
+
+: 1ARRAY  ( l l t -- )   CREATE
+    UNDER  , ,               \ t,l into 1st 4 bytes  ( -- l t )
+    SUPERSEG @  16 M*        \ start of SUPERSEG
+    VHERE  D+  D,            \ abs. address into next 4 bytes
+    #BYTES  M*               ( -- #bytes to allot)
+    VALLOT  OKLW  ;          \ allot space in the segment
+\ run-time action: ( -- adr)
+\ Ex:  90 LONG REAL*4 1ARRAY V{
+
+: }  ( adr n -- seg.off[n] t )
+    [%" SWAP   DUP@  >R   4+  D@  ROT  R@
+    #BYTES  M*  D+  >SEG.OFF  R> " %]  ;      ( -- seg.off[n] t)
+
+\ 2ARRAY and }}
+
+\ Ex.  90 LONG BY 90 WIDE COMPLEX 2ARRAY XA{{
+
+: BY ;                  \ a do-nothing word for style
+: WIDE  *  SWAP  ;      ( l l w -- l*w l )
+
+: 2ARRAY  ( l*w l t -- )  1ARRAY ;
+
+: }}  ( adr m n -- seg.off[a[m*l+n]] t)
+     [%" >R  OVER  2+ @    *   R> + " %]    }  ;
+    ( -- adr m l*w)       ( -- seg.off[a[m*l+n]] t)
+
+

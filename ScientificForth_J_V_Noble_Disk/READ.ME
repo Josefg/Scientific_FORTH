@@ -1,0 +1,68 @@
+In order to ship your order of
+
+"SCIENTIFIC FORTH:  a modern language for scientific computing"
+
+within a reasonable time after receiving it, I did not have time
+to modify the Runge-Kutta integration routines (or the regula
+falsi, FFT and integration programs, for that matter) to ensure
+that they conformed to the latest version of the intelligent
+floating stack manager and generic library routines (IFSTACK and
+GLIB).
+
+The changes are relatively simple and will be posted on the GEnie
+FIG bulleting board within the next month.
+
+The files FLOATING and COMPLEX reflect the discussion and
+notations of THE BOOK. I have avoided duplicating Jim Callahan's
+HS/FORTH library to prevent copyright infringement and to permit
+easier portability. However, if you are an HS/FORTH user I
+recommend Callahan's versions of most of the floating point
+routines because they are optimized for speed and/or have a
+better user interface.
+
+Note, however, that Callahan's COMPLEX notation is as described
+in THE BOOK, namely words have a prefix C or CP rather than X as
+I have chosen to do here. A few minutes' search-and-replace will
+effect the necessary changes to make the code given herein work
+with HS/FORTH's libraries.
+
+I have spotted some ERRATA -- see the file of that name.
+
+The file structure of the program disk is
+
+ \ (ROOT)               ERRATA   MAKESYS.FTH   READ.ME
+  ³
+  ÃÄFORTH
+  ³ ÃÄALGEBRA           GAMMA.FTH
+  ³ ³
+  ³ ÃÄBENCH             FTEST   FTEST1   SAVAGE   TIMER   TST
+  ³ ³
+  ³ ÃÄDIFFEQ            DIFEX1.FTH   DIFEX2.FTH   FALSI.FTH
+  ³ ³                   RUNGE.FTH   RUNGE1.FTH   RUNGE1.OUT
+  ³ ³
+  ³ ÃÄFFT               FFT.FTH   IBM.EX   IBM.FFT   IBM.PWR
+  ³ ³
+  ³ ÃÄFORTRAN           FORTRAN.FTH   HELPS   MINI.FTH
+  ³ ³
+  ³ ÃÄGRAM              CUBE.DMP   CUBE.EX   IBM.DMP   IBMGM.EX
+  ³ ³                   LINEAR.DMP   LINEAR.EX   LLSQ.FTH
+  ³ ³                   QUAD.DMP   QUAD.EX
+  ³ ³
+  ³ ÃÄINTEGRAL          GAUSS5.FTH   INT.FTH   RINT.FTH
+  ³ ³
+  ³ ÃÄMATRIX            EX.3   EX.4   EX.4D
+  ³ ³                   MATRIX   MTOOL   SOLVE
+  ³ ³
+  ³ ÃÄM_CARLO           DIST.FTH   MCINT.FTH
+  ³ ³
+  ³ ÃÄNL_LSQ            AMOEBA.FTH
+  ³ ³
+  ³ ÃÄPRNG              CHISQ.FTH   NEWPRNG.FTH   PRNG.FTH
+  ³ ³
+  ³ ÀÄSCI_FTH           FSTACK   GLIB   IFSTACK   JVNCMPLX
+  ³                     JVNFLOAT   JVNTRIG   TEST.0   TEST.1
+  ³
+  ÀÄUTIL                COMPUTE.ASM   COMPUTE.COM   COMPUTE.DOC
+                        PRN2FILE.ASM   PRN2FILE.COM
+                        QSORT322.ZIP
+

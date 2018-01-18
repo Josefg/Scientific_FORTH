@@ -1,0 +1,30 @@
+\ MATRIX UTILITIES for
+\ SCIENTIFIC FORTH:  a modern language for scientific computing
+TASK MTOOL
+
+: (length)    ( adr -- adr len)  DUP 2+ @  ;
+0 VAR length
+0 VAR }{
+CASE:  GP.  E. X. ;CASE
+: display   ( seg off t --)  DUP>R G@L  R> 2 AND  GP.  ;
+: .M   ( M{{ cfa -- )   CFA IS }{   (length)  IS length
+      length 0  DO  CR
+              length  0  DO  DUP      ( -- M{{ M{{ )
+                   J }{ EXECUTE  I }}  I 14 * CTAB  display
+              LOOP
+      LOOP  DROP  ;
+\ Example:  A{{  ' }row{ .M
+
+: .V   ( V{ cfa -- )   CFA IS }{
+       (length)  0  DO  CR  DUP  I }{ EXECUTE }  display
+                    LOOP   DROP ;
+\ Example:  V{  ' }row{ .V
+
+: GET-F#  BL TEXT  PAD   $->F ;
+
+: <DO-VEC>   0 DO GET-F#  DUP  I }   G!L  LOOP DROP ;
+: TAB->VEC  (length)  <DO-VEC> ;
+: TAB->MAT  (length)  DUP *   <DO-VEC> ;
+BEHEAD'' (length) }{
+
+

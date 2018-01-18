@@ -1,0 +1,43 @@
+UTILITIES 
+MICHAEL J. MEFFORD
+Vol. 9, No. 10
+COMPUTE
+
+Command
+
+Purpose: A five-function calculator (addition, subtraction, multiplication, 
+         division, and modulo functions) that works directly from the DOS 
+         command line prompt.
+
+Format:	COMPUTE arithmetic expression
+
+Remarks: COMPUTE accepts decimal numbers only, and the operators in its 
+         arithmetic expression are +, -, *, /, and %.  Note that the % symbol 
+         does not stand for percent, but rather designates the module operator,
+         which returns the remainder of an integer division.  
+         (Example:  COMPUTE 8 % 5 returns the value 3, since 5 goes into 8 
+         once with a remainder of 3.)  When working on real numbers with a 
+         fractional part the modulo operator in COMPUTE rounds off the 
+         operands before the division.
+
+	 The standard order of precedence for arithmetic operations is 
+         followed by default.  Multiple levels of parentheses and/or square 
+         brackets are supported, however, so that the order in which 
+         calculations are made can be modified.  Thus, while COMPUTE 4 + 5 * 2
+         returns the value 14, the command COMPUTE (4 + 5) * 2 returns 18.
+
+	 COMPUTE stores its last calculated result within its own .COM file.  
+         This number, designated x, can be recovered and used in the next 
+         calculation, whose result becomes the new x.  The value of the 
+         currently-stored x can be seen by entering the command COMPUTE x, 
+         and x can be used as an operand, as in COMPUTE x + 5.
+
+	 The program can handle decimal numbers up to 20 digits on either side 
+         of the decimal point.  Rounding errors are precluded by using a binary
+         coded decimal (BCD) format.  Under DOS 3.x and later, COMPUTE can be 
+         renamed to a shorter name to save keystrokes.  Under DOS 2.x, however, 
+         the program cannot be renamed and must be stored either in the current
+         directory or in one designated in a PATH= statement.
+
+
+

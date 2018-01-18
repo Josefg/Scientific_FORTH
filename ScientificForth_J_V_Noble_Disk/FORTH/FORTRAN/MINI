@@ -1,0 +1,101 @@
+\ Mini expression parser
+\ version of 1/31/1993
+\ compiles to 987 bytes
+TASK MINI
+
+VARIABLE ()level    0 ()level !
+
+: +|-   ( c -- f)   DUP ASCII + =  SWAP  ASCII - =  OR  ;
+: *|/   ( c -- f)   DUP ASCII * =  SWAP  ASCII / =  OR  ;
+
+: find_pair ( beg end cfa -- adr|0 )
+            >R   0 ()level !                              \ initialize
+            BEGIN  DUPC@   DUP    ASCII ) =   ()level +!
+                           DUP    ASCII ( =  ABS ()level +!
+                           R@     EXECUTE                 ( -- beg end f)
+                   >R    DDUP  U<                         \ beg < end ?
+                   R>                                     \ found?
+                   ()level @  0=                          \ exposed?
+                   AND  NOT    AND
+            WHILE  1-  REPEAT                             \ dec end
+            UNDER  <>  AND   RDROP  ;   \ not end-pt, clean up
+
+: find&    CFA'  +|-  find_pair  ;
+: find%    CFA'  *|/  find_pair  ;
+
+: adr>ends  ( $adr -- $beg $end)  COUNT  OVER +  1-  ;
+
+: print   ( beg end .op -- )   -ROT  DUP C@  ASCII @ =  DUP>R  +
+          OVER -  1+  TYPE    R>    IF  ."  @ "  THEN
+          SPACE  EMIT  SPACE  ;
+
+: rearrange      ( beg end adr .op -- adr+1 end .op'  beg adr-1 .op )
+                 >R   DUP>R                   ( -- beg end adr)
+                 1+ SWAP  ROT  R@ C@          ( -- adr+1 end beg .op')
+                 SWAP  R>  1-   R>   ;
+
+CFA' NEXT  CONSTANT  'expression
+\ for forward reference, initialized for safety
+
+: (<expression)?   ( beg end -- f)
+                   C@ ASCII ) =   SWAP   C@ ASCII ( =   AND  ;
+
+: digit?      ( c -- f)   ASCII 0  OVER  ASCII 9  >  -ROT  <  OR  NOT  ;
+: letter?     ( c -- f)   32 OR  ASCII a OVER ASCII z > -ROT < OR NOT  ;
+
+: simple?   ( beg end -- f)       \ 0 if non-alphanumeric char
+            -1  -ROT              ( -1 beg end)
+            DUP C@  ASCII @ <> -  ( -1 beg end+1|end) \ ignore trailing @
+            SWAP                  ( -1 end+1|end beg)
+            DO  I C@  DUP digit?  OVER BL = OR
+                SWAP  letter?   OR  NOT
+                IF  NOT LEAVE  THEN
+            LOOP  ;
+
+
+VARIABLE BLBL   8224 BLBL !
+: NULL  ' BLBL   DUP 1+  ;
+
+: 3SWAP   ( a b c d e f -- d e f a b c)
+          6 ROLL 6 ROLL 6 ROLL ;
+
+: <factor>  ( beg end .op -- )
+            >R
+            DDUP  simple?  IF  R>  print  EXIT  THEN
+            DDUP  (<expression)?   IF  1-  SWAP 1+ SWAP  THEN
+            R>  'expression  EXECUTE  ; \ forward vectored <expression>
+
+: <term>  ( beg end .op -- )
+          DUP>R  BL <>
+          IF  BL NULL R> 3SWAP  RECURSE   print   EXIT  THEN
+          ( >R)  DDUP  find%   ?DUP  0=  IF  R>  <factor>  EXIT  THEN
+          R>  ( -- beg end adr .op)
+          rearrange    <factor>   RECURSE  ;
+
+: <expression>   ( beg end .op -- )
+                 >R DDUP  find&   ?DUP  0=  IF  R>  <term>  EXIT  THEN
+                 R>  ( -- beg end adr .op)
+                 rearrange    RECURSE  <term>  ;
+
+CFA' <expression>  '  'expression !        \ make forward reference
+
+: find=   ( beg end -- adr|0 )   \ replace = by ! , leave flag
+          0 -ROT  1+  SWAP       ( -- 0 end+1 beg)
+          DO  I C@   ASCII =  =   IF   DROP  I   LEAVE  THEN
+          LOOP  ( -- adr|0)   ;
+
+: <replacement>  ( beg end .op -- )
+      >R  DDUP   find=  ?DUP          ( -- beg end adr .op adr )
+      0=  IF    R>  <expression>     ELSE
+                ( -- beg end adr )
+                DUP>R  1-  SWAP   ASCII !  SWAP   ( -- beg adr-1 33 end )
+                R> 1+  SWAP  R>
+                <expression>   print
+          THEN  ;
+
+: ()_ok?   0    PAD  COUNT  OVER +  SWAP
+           DO   I C@  ASCII ( =  -   I C@  ASCII ) =  +  LOOP   0=  ;
+
+: i"    ASCII " TEXT  ()_ok?   NOT  ABORT" Unbalanced parentheses!"
+        PAD  adr>ends   BL  CR  <replacement>  ;
+
