@@ -16,7 +16,8 @@ program development and debugging in FORTH.
 \subsection{Theory of linear algebraic equations}
 \TallC{We} begin by stating the problem. Given the equations
 \begin{equation}
-    \sum_{n=0}^{N-1}A_{mn}x_n=b_m \,. \label{eq:09_01}
+    \mathrm{\sum_{n=0}^{N-1}A_{mn}x_n=b_m \,.}
+    \label{eq:09_01}
 \end{equation}
 --\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,--
 with known \textbf{coefficient
@@ -26,7 +27,7 @@ satisfy the N equations \ref{eq:09_01}?
 
 The theory of simultaneous linear equations tells us that if not all
 the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
-Contrariwise, if $det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
+Contrariwise, if $\det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
 when $\vec{b}= 0$.
 
 \subsection{Eigenvalue problems} 
@@ -48,14 +49,15 @@ problems can be expressed as the question: do linear equations
 of the form
 % (2)
 \begin{equation}
-    \overleftrightarrow{A} \cdot \vec{x} = \lambda \overleftrightarrow{\rho} \cdot \vec{x} \label{eq:09_02}
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = \lambda \overleftrightarrow{\rho} \cdot \vec{\mathrm{x}}
+    \label{eq:09_02}
 \end{equation}
 have solutions? Here $\lambda$ is generally a complex number, called the
 \textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
 the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
 % (3)
 \begin{equation}
-I_{mn}=
+    \mathrm{I_{mn}=}
 \begin{cases}
      1, & m = n\\
      0, & m \neq n,
@@ -68,9 +70,9 @@ below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 % (4)
 \begin{equation}
     \label{eq:09_04}
-    \overleftrightarrow{A} \cdot \vec{x} = 0
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = 0
 \end{equation}
-exists if and only if $||\overleftrightarrow{A}||=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
+exists if and only if $\lVert\overleftrightarrow{A}\rVert=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
 
 % 216 
 
@@ -79,7 +81,7 @@ The \textbf{secular equation} (or determinantal equation)
 % (5)
 \begin{equation}
     \label{eq:09_05}
-    || \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} || = 0
+    \mathrm{\lVert \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} \rVert = 0}
 \end{equation}
 is a polynomial of degree N in $\lambda$, hence has N roots (either real or
 complex)\sepfootnote{09_03}. When $\overleftrightarrow{\rho}=\overleftrightarrow{I}$, these roots are called the \textbf{eigenvalues}
@@ -739,7 +741,7 @@ Test this with a 3-dimensional row-index array:
 \begin{verbatim}
 3 swapper }row{
 
-: TEST 0 DO I }row{ CR. LOOP ;
+: TEST 0 DO I }row{ CR . LOOP ;
 3 TEST
 0
 1
@@ -781,11 +783,13 @@ vertical commenting style (a must for long\sepfootnote{09_12} words):
 0 VAR COL           \ current col#
 0 VAR I.PIV         \ I.PIV is used to return the result
 0 VAR a{{           \ a{{ stores the adress of M{{
+
 : INITIALIZE        ( M{{ -- ::--)
     IS a{{
     a{{ type@ IS T          \ initialize T
     a{{ LEN@ IS Length ;    \ length - > Length
-: }}PIVOT           (M{{ col-- ::--)
+
+: }}PIVOT           ( M{{ col-- ::--)
     IS COL ZECOL IS I.PIV
     INITIALIZE
     a{{ COL }row{ COL }}    ( --seg.off[M{{ col,col}}]t)
@@ -873,9 +877,9 @@ vertical commenting style (a must for long\sepfootnote{09_12} words):
         by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
         is used, negligible (for large N) compared with the $N^3/3$ in the
         innermost loop.
-\end{itemize}
 
-The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
+        The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
+\end{itemize}
 
 To test the word \verb|}}PIVOT| we can add some lines to the test file:
 
@@ -912,20 +916,20 @@ multiply a row by a constant. To do this we define
 \ G*NP means "(generic) multiply, no pop"
 
 : }}ROW*X       ( M{{ row -- :: x -- x)
-    UNDER }row{ 0 }}        ( -- r seg off t)
-    DROP ROT                ( --seg off r)
-    ISTEP * Length ISTEP * SWAP \Loop indices
-    DO(ROW*X)LOOP ; \Loop
+    UNDER }row{ 0 }}            ( -- r seg off t)
+    DROP ROT                    ( --seg off r)
+    ISTEP * Length ISTEP * SWAP \ loop indices
+    DO(ROW*X)LOOP ;             \ loop
 
 \Ex: A{{ 2 }ROW*X 
 \end{verbatim}
 \underline{Notes:}
 \begin{itemize}
-    \item  While \regc{DO(ROW*X)LOOP} and \regc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
+    \item  While \bc{DO(ROW*X)LOOP} and \bc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
         multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
         the matrix equation \textbf{A-x = b}) by the same constant \textbf{x}.
-    \item We assume \regc{INITIALIZE} (including \regc{INIT.ISTEP}) has been
-        invoked before \verb|}}PIVOT| or \verb|}}ROW*X|.
+    \item We assume \bc{INITIALIZE} (including \bc{INIT.ISTEP}) has been
+        invoked before \bc{\}\}PIVOT} or \bc{\}\}ROW*X}.
   \item Anticipating the (possible) need to optimize, we factor the loop
 right out of the word. We also com me the addresses fast by
 putting base addresses on the stack and then incrementing
@@ -983,14 +987,14 @@ into the pseudocoded actions in Fig.\ref{fig:09_03} below.
 \end{figure}
 A first attempt might look as follows:
 \begin{verbatim}
-\auxiliary words
+\ auxiliary words
 : 4DUP DOVER DOVER ;
 ( a b c d -- a b c d a b c d )
 : ++   ( s1.o1 s2.o2 n -- s1.o1+n s2.o2+n)
     DUP>R + ROT R> + -ROT ;
 
-:}}R1-R2*X (r1r2 -- ::x--x)
-    > R > R
+: }}R1-R2*X (r1r2 -- ::x--x)
+    >R >R
     a{{ R> }row{ 0 }} DROP \ M{{ r1 0 }}
     a{{ R@ }row{ 0 }} DROP \ M{{ r2 0 }}
     Length ISTEP *  \ L*ISTEP (upper limit)
@@ -1002,7 +1006,7 @@ A first attempt might look as follows:
     ISTEP /LOOP DDROP DDROP ;
 \ INITIALIZE is assumed
 \end{verbatim} 
-As with \verb|}}ROW*X| we avoid the execution-speed penalty of
+As with \bc{\}\}ROW*X} we avoid the execution-speed penalty of
 calculating addresses within the loop by \textit{not} using the phrase
 \begin{verbatim}
 a{{ I }row{ J }} .
@@ -1024,13 +1028,13 @@ The 4 inner loops are
 \begin{verbatim}
 : Re.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
     FS>F >R
-    DO 4DUP I + + R32@L F*NP
+    DO 4DUP I ++ R32@L F*NP
         DDUP R32@L FR- R32!L
     4 /LOOP R> F>FS ;
 
 : DRe.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
     FS>F >R
-    DO 4DUP l + + R64@L F*NP
+    DO 4DUP l ++ R64@L F*NP
         DDUP R64@L FR- R64!L
     8 /LOOP R> F>FS ;
 
@@ -1052,13 +1056,12 @@ increase can be obtained easily, using the HS/FORTH recursive-
 descent optimizer to define these inner loops, or by redefining
 the loops in assembler (for ultimate speed).
 
-Now we can redefine \verb|}}R1-R2*X| using vectored execution, \textit{via}
-HS/FORTH's \regc{CASE: ... ;CASE} construct, or the equivalent high-
-level version given here:
+Now we can redefine \bc{\}\}R1-R2*X} using vectored execution, \textit{via}
+HS/FORTH's \bc{CASE: ... ;CASE} construct, or the equivalent high-level version given here:
 
 \begin{verbatim}
 : CASE: CREATE ]
-    DOES> OVER ++ @ EXECUTE ;
+    DOES> OVER + + @ EXECUTE ;
 : ;CASE [COMPILE] ; ; IMMEDIATE
 
 CASE: DO(R1-R2*X)LOOP
@@ -1087,23 +1090,22 @@ time we need not concern ourselves unduly with efficiency.
 
 \underline{Note:}
 \begin{itemize}
-    \item  After \regc{\}V1-V2*X} executes, the multiplier x is no longer needed,
-        so we drop it here by using \regc{G*} rather than \regc{G*NP}.
+    \item  After \bc{\}V1-V2*X} executes, the multiplier x is no longer needed,
+        so we drop it here by using \bc{G*} rather than \bc{G*NP}.
 \end{itemize}
 
-We now combine the words \regc{\}SWAP}, \regc{\}\}PIVOT}, \regc{\}\}ROW*X}.
-\}R1-R2*X and \}V1-V2*X to implement the triangularization portion of pivotal elimination.
+We now combine the words \bc{\}SWAP}, \bc{\}\}PIVOT}, \bc{\}\}ROW*X}.
+\bc{\}R1-R2*X} and \bc{\}V1-V2*X} to implement the triangularization portion of pivotal elimination.
 
 % 236
 Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
 do so, especially as it is only an O(N) process. By evaluating the
-detemiinants of simple cases, we realize the determinant is simp-
-ly the product of all the pivot elements, multiplied by
-$(-1)^{\#swaps}$. Hence we need to keep track of swaps, as well as to
+determinants of simple cases, we realize the determinant is simply the product of all the pivot elements, multiplied by
+$(-1)^{\#\mathbf{swaps}}$. Hence we need to keep track of swaps, as well as to
 multiply the determinant (at a given stage) by the next pivot
 element. The need to do these things has been anticipated in
-defining \regc{\}SWAP} above.
+defining \bc{\}SWAP} above.
 
 Computing the determinant also lets us test as we go, that the
 equations can be solved: if at any stage the determinant is zero,
@@ -1214,14 +1216,14 @@ system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_1
 \begin{subequations}
 \begin{equation}
  \label{eq:09_20_}
-A = I - u v^\dagger
+    \mathrm{A = I - u v^\dagger}
 \end{equation}
 In terms of matrix elements,
 
 % (20'_)
 \begin{equation}
  \label{eq:09_20prime_}
-    A_{ij} = \delta_{ij} - u_i v_j^*
+    \mathrm{A_{ij} = \delta_{ij} - u_i v_j^*}
 \end{equation}
 \end{subequations}
 
@@ -1230,30 +1232,30 @@ notation
 % (21_)
 \begin{equation}
  \label{eq:09_21_}
-    v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i
+    \mathrm{v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i}
 \end{equation}
 we have
 \begin{equation}
  \label{eq:09_22_}
-    x_i = b_i + (v,x)\,u_i
+    \mathrm{x_i = b_i + (v,x)\,u_i}
 \end{equation}
 
 The coefficient $(v, x)$ is just a (generally complex) number; we
 compute it from \ref{eq:09_22_}\textit{via}
 \begin{equation}
  \label{eq:09_23_}
-    (v,x)=(v,b)+(v,u)(v,x)
+    \mathrm{(v,x)=(v,b)+(v,u)(v,x)}
 \end{equation}
 or
 \begin{equation}
  \label{eq:09_24_}
-    (v,x)=\frac{(v,b)}{1-(v,u)}\quad .
+    \mathrm{(v,x)=\frac{(v,b)}{1-(v,u)}\quad .}
 \end{equation}
 % (25)
 Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
 \begin{equation}
  \label{eq:09_25_}
-    x_i=\frac{(v,b)}{1-(v,u)}
+    \mathrm{x_i=b_i+\frac{(v,b)}{1-(v,u)}u_i}
 \end{equation}
 Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
@@ -1262,7 +1264,6 @@ An example that embodies the above idea is given in the file
 EX.20, where we make the special choices
 
 \begin{equation*}
- \label{eq:09_25_}
     \mathbf{u}=
     \begin{pmatrix}
         1\\ 
@@ -1326,15 +1327,14 @@ are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
 
 \begin{equation*}
     \begin{split}
-        a_0 &= 0.32727304\\
-        a_1 &= -0.01084850\\
-        a_2 &= 0.00241636\\
-        a_3 &= 0.00001539
+        a_0 &=\;\; 0.32727304\\
+        a_1 &=\;\; \llap{$-$}0.01084850\\
+        a_2 &=\;\; 0.00241636\\
+        a_3 &=\;\; 0.00001539
     \end{split}
 \end{equation*}
-
 from them we can extrapolate the time to solve a $350 \times 350$ real
-system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addrgsing implemented, the time should
+system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addressing implemented, the time should
 decrease five- to tenfold \sepfootnote{09_15}.
 
 It is interesting to explore a bit further the extracted value of $a_3$,
@@ -1375,9 +1375,7 @@ in cycles for these basic operations are\sepfootnote{09_16}
 \end{table}
  
 % 242
-
-\section{Matrix Inversion}
-\TallC{We} see from Table \ref{tbl:09_02} above that the time computed from the
+We see from Table \ref{tbl:09_02} above that the time computed from the
 cpu and coprocessor specifications (422 clocks) is close to the
 measured time (440 clocks). The slight difference doubtless
 comes both from measurement error and from the fact the
@@ -1390,7 +1388,8 @@ loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
 then we should cut the N = 350 time from 16 to 13 minutes, and 
 the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
-We introduce this subject with a brief discourse on liners
+\section{Matrix Inversion}
+\TallC{We} introduce this subject with a brief discourse on liners
 algebra of square matrices.
 
 \subsection{Linear transformations}
@@ -1400,33 +1399,33 @@ operation
  % (26)
 \begin{equation}
     \label{eq:09_26}
-    y= A -x
+    \mathbf{y= A \cdot x}
 \end{equation} 
 as a linear transformation of the column x to a new column y. In
 terms of matrix elements and components,
 
 \begin{equation}
     \label{eq:09_27}
-    y_m = \sum_{n=0}^{N-1} A_{mn} x_n
+    \mathrm{y_m = \sum_{n=0}^{N-1} A_{mn} x_n}
 \end{equation}
 
 The transformation is \textbf{linear} because if x is the sum of 2 columns
 (added component by component)
 \begin{equation}
     \label{eq:09_28}
-    x=x^{(1)}+x^{(2)}\;,
+    \mathrm{x=x^{(1)}+x^{(2)}\;,}
 \end{equation}
 we can calculate $A \cdot x$ either by first adding the two vectors ant:
 then transforming, written
 \begin{equation}
     \label{eq:09_29}
-    A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)
+    \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)}
 \end{equation}
 or we could transform first and then add the transformed vectors.
 The identity of the results is called the \textbf{distributive law}
 \begin{equation}
     \label{eq:09_30}
-    A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} 
+    \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} }
 \end{equation}
 of linear transformations.
 
@@ -1434,19 +1433,19 @@ of linear transformations.
 
 Now, suppose we had several square matrices, \textbf{A, B, C,...} We
 could imagine performing successive linear transformations on a
-vector x \textit{via}
+vector \textbf{x} \textit{via}
 \begin{subequations}
     \begin{equation}
         \label{eq:09_31a}
-        y= A \cdot x% (31a)
+        \mathrm{ y= A \cdot x} % (31a)
     \end{equation}
     \begin{equation}
         \label{eq:09_31b}
-        z= B \cdot y % (31b)
+        \mathrm{ z= B \cdot y} % (31b)
     \end{equation}
     \begin{equation}
         \label{eq:09_31c}
-        w = C \cdot z  % (31c)
+        \mathrm{ w = C \cdot z}  % (31c)
     \end{equation}
 \end{subequations}
 
@@ -1454,7 +1453,7 @@ These can conveniently be written
 
 \begin{equation}
     \label{eq:09_32}
-    w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .%  (32)
+    \mathrm{w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .}%  (32)
 \end{equation}
 
 The concept of successive transformations leads to the idea of
@@ -1462,13 +1461,12 @@ multiplying two matrices to obtain a third:
 % (33)
 \begin{equation}
     \label{eq:09_33}
-    D = B \cdot A \quad E = C \cdot D
+    \mathrm{D = B \cdot A \quad E = C \cdot D}
 \end{equation}
-D=B-A E=C-D (33)
 In terms of matrix elements we have, for example
 \begin{equation}
     \label{eq:09_34}
-    D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}
+    \mathrm{D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}}
 \end{equation}
 
 The important point is that the (matrix) multiplications may be
@@ -1476,7 +1474,7 @@ performed in any order, so long as the left-to-right ordering of
 the factors is maintained:
 \begin{equation}
     \label{eq:09_35}
-    C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A
+    \mathrm{C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A}
 \end{equation}
 Equation \ref{eq:09_35} is known as the associative law of matrix
 multiplication. Finally, we note that -- as hinted above -- the left-to-right
@@ -1484,7 +1482,7 @@ order of factors in matrix multiplication is significant. That is, i
 general,
 \begin{equation}
     \label{eq:09_36}
-    A \cdot B \neq B \cdot A
+    \mathrm{A \cdot B \neq B \cdot A}
 \end{equation}
 We say that, unlike with ordinary or even complex arithmetics
 matrix multiplication -- even of square matrices -- does not in
@@ -1496,7 +1494,7 @@ of all, the concept can apply only to a square matrix. Given an
 $N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the property that
 \begin{equation}
     \label{eq:09_37}
-    A^{-1} \cdot A \equiv A \cdot A^{-1}
+    \mathrm{A^{-1} \cdot A \equiv A \cdot A^{-1}}
 \end{equation} 
 where I is the unit matrix defined in the beginning of this chapter
 (Eq. \erratumReplace{typo}{4}{\ref{eq:09_03}}-- 1's on the main diagonal, 0's everywhere else). We have
@@ -1504,14 +1502,14 @@ implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
 left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
 \begin{equation}
     \label{eq:09_38}
-    \Big(A^{-1} \Big)^{-1} \equiv A
+    \mathrm{\Big(A^{-1} \Big)^{-1} \equiv A}
 \end{equation} 
 The condition that -- given A -- we can construct $A^{-1}$ is the same
 as the condition that we should be able to solve the linear equation
 \begin{equation*}
-    A \cdot x = b \,;
+    \mathrm{A \cdot x = b \,;}
 \end{equation*} 
- namely, $\det(A) \neq 0$.
+ namely, $\det(\mathrm{A}) \neq 0$.
 
 \subsection{Why invert matrices, anyway?}
 
@@ -1528,7 +1526,7 @@ same coefficient matrix but with different inhomogeneous terms.
 In this case, we can write
 \begin{equation}
     \label{eq:09_39}
-    x = A^{-1} \cdot b
+    \mathrm{x = A^{-1} \cdot b}
 \end{equation} 
 and just recalculate for each \textbf{b}. Clearly this breaks even - relative
 to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior
@@ -1595,6 +1593,7 @@ LU decomposition for both linear equations and matrix inversion.
 \TallC{We} now investigate the LU decomposition algorithm\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
 \begin{equation}
     \label{eq:09_42}
+    \mathrm{
     A = 
     \begin{pmatrix}
         a_{00}&a_{01} &\dots\\
@@ -1613,23 +1612,24 @@ LU decomposition for both linear equations and matrix inversion.
         0&\mu_{11} &\dots\\
         0&0 &\dots
     \end{pmatrix}
+}
 \end{equation} 
 then the solution of
 \begin{equation}
     \label{eq:09_43}
-    (L \cdot U ) \cdot x \equiv L \cdot (U \cdot x) = b
+    \mathrm{(L \cdot U ) \cdot x \equiv L \cdot (U \cdot x) = b}
 \end{equation} 
 can be found in two steps: First, solve
 % (44)
 \begin{equation}
     \label{eq:09_44}
-    L \cdot y = b
+    \mathrm{L \cdot y = b}
 \end{equation} 
 for
 % (45)
 \begin{equation}
     \label{eq:09_45}
-    y \equiv U  \cdot x
+    \mathrm{y \equiv U  \cdot x}
 \end{equation} 
 \textit{via}
 \begin{align}

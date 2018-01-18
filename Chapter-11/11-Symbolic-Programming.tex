@@ -27,7 +27,7 @@ Another area where pattern recognition helps the scientist is computer algebra. 
 
 \subsection{Rules}
 
-Before we can specify rules we need a language to express them in. We need to be able to describe the grammar of the rules in some way. The standard notation states rules as regular expressions\footnote{See A.V. Aho, R. Sethi and J.D. Ullman, \textit{Compilers:...} (Addison-Wesley, Reading. 1988).}. The following rules describing some parts of FORTRAN illustrate how this works.
+Before we can specify rules we need a language to express them in. We need to be able to describe the grammar of the rules in some way. The standard notation states rules as regular expressions\sepfootnote{11_01}. The following rules describing some parts of FORTRAN illustrate how this works.
 
 \begin{verbatim}
 
@@ -100,7 +100,7 @@ One often sees pattern recognizers expressed as complex logic trees, \textit{i.e
     \caption{Fig. 11-1 \textit{Logic tree for <floating point \#>}}
 \end{figure}
 
-and too complex either for easy comprehension or for easy maintainance\footnote{These defects of nested conditionals are generally recognized. Commercially available CASE tools such as Stirling Castle’s \textit{Logic Gem} (that translates logical rules to conditionals); and Matrix Software's \textit{Matrix Layout} and AYECO, Inc.'s \textit{COMPEDITOR} (that translate tabular representations of PSMs to conditionals in any of several languages) were originally developed as in house aids.}
+and too complex either for easy comprehension or for easy maintainance\sepfootnote{11_02}
 
 It has been known for many years that a better way to apply general rules — \textit{e.g.}, to detemiine whether a given string conforms to the rules for "floating point number" --- uses finite state machines (FSMs —we define them in §2 “2 below). Here is an example, written in standard FORTH:
 
@@ -152,7 +152,7 @@ which,as we see in Fig. 11-2 below, has nearly as convoluted a logic tree as Fig
 
 \subsubsection{Finite state machines}
 
-Just as we needed a FSM to achieve a graceful definition of fp\#?, we might try to define skip\_exponent as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to deterministic FSMs.) A finite state macliine\footnote{R. Sedgewick, Algorithms (Addison-Wesley Publishing Co., Reading MA 1983) p.257ff.}\footnote{A.V. Aho, R. Sethi and JD. Ullman, \textit{Compilers: Principles, TooLr and Techniques} (Addison Wesley Publishing Company, Reading, MA, 1988).} is a program (originally it was a hard-wired switching circuit\footnote{Zvi Kohavi, \textit{Switching and Finite Automata Theory}, 2nd ed. (McGraw-Hill Publishing Co., New York, 1978).}) that takes a set of discrete, mutually exclusive
+Just as we needed a FSM to achieve a graceful definition of fp\#?, we might try to define skip\_exponent as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to deterministic FSMs.) A finite state macliine\sepfootnote{11_03}\sepfootnote{11_04} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
 
 \begin{figure}
     \caption{ Fig. 11-2 \textit{Logic tree for <exponent>}}
@@ -177,7 +177,7 @@ State         ->          ->          ->          ->
 3       Next  5     Next  5     Next  5     1+    4
 4       Next  5     Next  5     Next  5     1+    5
 
-The tabular representation of a FSM is much clearer than the logic diagram, Fig. 11-2. Since the inputs must be mutually exclusive\footnote{"Mutually exclusive" means only one input at a time can be true.} and exhaustive\footnote{"Ehaustive" means every possible input must be represented.}, there are \textit{never} conditions that cannot be fulfilled —that is, leading to "dead" code— as frequently happens with logic trees (owing to human frailty). This means the chance of introducing bugs is reduced by FSMs in tabular form.
+The tabular representation of a FSM is much clearer than the logic diagram, Fig. 11-2. Since the inputs must be mutually exclusive\sepfootnote{11_06} and exhaustive\sepfootnote{11_07}, there are \textit{never} conditions that cannot be fulfilled —that is, leading to "dead" code— as frequently happens with logic trees (owing to human frailty). This means the chance of introducing bugs is reduced by FSMs in tabular form.
 
 FORTRAN, BASIC or Assembler can implement FSMs with computed GOTOs. In BASIC, \textit{e.g.},
 
@@ -227,27 +227,15 @@ In the preceding FORTH example we synthesized the FSM from \textbf{BEGIN. ..WHIL
 
 (three of four \textbf{IF...ELSE...THEN}s have been factored out and disguised as \textbf{CASE:}...\textbf{;CASE}), but this does not much improve clarity. We still need the state transition table to understand the program.
 
-Various authors have tried to improve FSMs in FORTH using what amount to line-labels and GOTOs\footnote{J. Basile, \textit{J. FORTH Appl. and Res.} 1,2 (1982) 76-78.}\footnote{E. Rawson, \textit{J. FORTH Appl. and Res.} 3,4 (1986) 45-64.}\footnote{D.W. Berrian, \textit{Proc. 1989 Rochester FORTH Conf.} (Inst. for Applied FORTH Res., Inc., Rochester, NY 1989) p. 1-5.}. The resulting code is less elegant than the BASIC version shown above.
+Various authors have tried to improve FSMs in FORTH using what amount to line-labels and GOTOs\sepfootnote{11_08}\sepfootnote{11_09}\sepfootnote{11_10}. The resulting code is less elegant than the BASIC version shown above.
 
-Whenever we reach a dead end, it is helpful to return to the
-starting point, restate the problem and re-examine our basic
-assumptions One fact our preceding false starts make abundantly
-clear is that nowhere have we used the power of FORTH. Rather,
-our attempts merely imitated traditional languages in FORTH.
+Whenever we reach a dead end, it is helpful to return to the starting point, restate the problem and re-examine our basic assumptions One fact our preceding false starts make abundantly clear is that nowhere have we used the power of FORTH. Rather, our attempts merely imitated traditional languages in FORTH.
 
-But FORTH is an endlessly protean language that lends itself to
-any programming style. Ideally FORTH relies on names so cun-
-ningly chosen that programs become self-documenting-
-readable at a glance.
+But FORTH is an endlessly protean language that lends itself to any programming style. Ideally FORTH relies on names so cunningly chosen that programs become self-documenting-- readable at a glance.
 
-Since state tables clearly document FSMs, it eventually occurred
-to me to let FORTH compile the state table —representing an
-FSM — directly to that FSM!
+Since state tables clearly document FSMs, it eventually occurred to me to let FORTH compile the state table --representing an FSM-- directly to that FSM!
 
-Compilation implies a compiling word; after some experimen-
-tation1 I settled on the following usage
-
- 
+\TallC{Compilation} implies a \textbf{compiling word}; after some experimentation\sepfootnote{11_11} I settled on the following usage\sepfootnote{11_12}
 
 4 WIDE FSM: (exporters)
 
@@ -262,18 +250,6 @@ state: ———————————————————————
 \begin{figure}
     \caption{Fig. 11-3 \textit{Form of a FORTH finite state machine}}
 \end{figure}
-
-
-
-
-
-11. The
-
-at process is described in detail in my article “Avoid Decisions”, Computers in
-
-Physics 5,“ (1991) 386.
-12. The FORTH word NEXT is the equivalent of N01’ in assembler.
-
 
 The new defining word FSM: has a colon “ : " in its name
 remind us of its function. Its children clearly must “know”
@@ -301,9 +277,9 @@ O CONSTANT >0
 etc.
 
 which are also actions to be compiled into the FSM. This follows the:
-general FORTH principle that words should execute themselves”..
+general FORTH principle that words should execute themselves\sepfootnote{11_13}.
 
-11 Chapter S§2§§6 we used components of the compiler, par‘
+\TallC{In} Chapter S§2§§6 we used components of the compiler, par‘
 
 ticularly the IMMEDIATE word ] (“switch to compile mode”),
 to create self-acting jump tables. We apply the same method here:
@@ -312,16 +288,7 @@ build in its width (number of columns) using “ , ”, and then
 compile in the actions and state transitions as cfa’s of the ap-
 propriate words.
 
-The runtime code installed by DOES> provides a mechanism
-for finding the addresses of action and state transition cor-1
-responding to the appropriate input and current state (that is, in
-the cell of interest). Then the runtime code updates the state.
-
- 
-
-13. That is, we should not continually reinvent interpreters equivalent to the FORTH interpreter. i
-
-Form-1 Mil—WW 271
+The runtime code installed by \bc{DOES>} provides a mechanism for finding the addresses of action and state transition corresponding to the appropriate input and current state (that is, in the cell of interest). Then the runtime code updates the \textbf{state}.
 
 11) slow nesting of FSMs (Le., compiling one into another), we
 incorporate the state variable for each child FSM within its data
@@ -466,16 +433,6 @@ O I 0 O 0
 2 0 O-l O
 3 O 0 O-I
 
- 
-
-14. ll. Pavelle, M. Rothslein and J. Fitch. “Computer Algebra". Scientiﬁc-American 145, #6
-(Dec. 1%!) 136.
-
-15. See. e4. M. WMMIWWAW (Springer-Vern Berlin, 1992).
-
-16. anidtomktyoulluiw.smq.,w. BjorkenaudSD. DrelLRelaa'w‘m‘c
-Marni Mechanic (Mdinw—Hill. he. New York. 1%); also v3. Bereuetskil. EM. Lifsllitz
-INLEWWQHMM nary. PmlﬂemumOxford. 1971) p.68ﬂ.
 
 emumrm-me.
 
@@ -562,17 +519,6 @@ A -B = 0, another simpliﬁcation occurs,
 The ability to recognize orthogonal vectors lets us ggorrectly)
 include the trace of a product times the special matrix
 
- 
-
-l7. hisuadiﬂialhmiuuoducemeﬁutherkwlofindiredionandproduceFonhcodefm
-generatinga “compiler". See‘l'A. lvancoaudG. HunterJ. FadlAppL makes. a (1990) 15.
-18. Note: may. (op. ea.)deaae¢withaaovenu“-"sigarelative to Eq. 9.
-
-omvmlm-umm.
-
-276
-
-Chptertt-Symbollcl’roqramilnq SclentIﬂcFOﬂﬂ-Iii
 0010
 __-01 _ 0001
 Y5"yyy2y3- 1000 (9)
@@ -651,27 +597,7 @@ sions 20 factors long, that should be large enough for practical
 
 purposes”.
 
- 
 
-l9. ThewordTEXTcanbedeﬁnedas :TEXT WORD HERE PAD 0|:
-20. Actually, 19 factorasinnewewantto ALLOT spaceinlnultiplesof 4to maintain even paragraph
-hellndaries.1‘hatis,theatringswillusembytesindudingthecount.
-
-OJtlianVNounm-Alriohtsreeerved.
-
-278
-
- 
-
- 
-
- 
-
- 
-
- 
-
-Chpter 11 - Symbolic Programming Scientiﬁc FORTH
 (59 : parse Spop \ a/b/x/
 yes Ziactors (--ab) \x/
 b=b'? \done?
@@ -705,12 +631,12 @@ suggests that for an expression of length n=2k, the maximum
 depth will be k + 1. Thus we should plan for a stack depth of at
 least 11, perhaps 12 for safety. Assuming factor-names up to three
 characters long, and strings of up to 20 names, we need =60
-characters per string. My ﬁrst impulse was to create a dynamic
+characters per string. My first impulse was to create a dynamic
 $stack that could accomodate strings of variable length, meaning
 that some 330 bytes of storage would be needed, at the cost of
 some complexity in keeping track of the addresses. This is a big
-improvement on 720 bytes needed for a 60-wide ﬁxed-width
-stack, of course. However, the convenience of a ﬁxed-width
+improvement on 720 bytes needed for a 60-wide fixed-width
+stack, of course. However, the convenience of a fixed-width
 Sstack led me ultimately to set up a table (array) of 20 names,
 whose indices would act as tokens; that is, the strings that actually
 go on the Sstack would be tokenized. The memory cost of the
@@ -1011,8 +937,8 @@ factor has been permuted following the rule
 Thus we set bit 7 (128 OR) to indicate “star", and bit 6 (64 OR)
 to indicate “prime".
 
-We still need to indicate the leading sign. My ﬁrst impulse was to
-use bit 5, but I realized the ﬁrst factor is never permuted, hence
+We still need to indicate the leading sign. My first impulse was to
+use bit 5, but I realized the first factor is never permuted, hence
 its 6th bit is available to signify the sign. It is toggled by the phrase
 84 XOR. (In the Sstack pictures appearing in the Figures we
 indicate toggling by a leading “ "‘ ”.)
@@ -1036,7 +962,7 @@ orthogonal adjacent factors. The possible responses to the dif-
 ferent cases are presented in decision-table form in Table 11-2:
 
 To avoid excessively convoluted logic we eschew nested branch-
-ing constructs. A ﬁnite state machine would be ideal for clarity;
+ing constructs. A finite state machine would be ideal for clarity;
 however, as Table 11-2 makes clear, the logic is not really that of
 a FSM, besides which, the FSM compiler described above would
 
@@ -1067,20 +993,20 @@ Note: characters shown in light typeface are EMthed.
 
  
 
-have to be modiﬁed to keep its state variable on the stack, since
+have to be modified to keep its state variable on the stack, since
 otherwise it could not support recursion. The resulting pseudo-
 code program is shown in Fig. 11-5. Implementing the code is now
-straightforward, so we omit the details, such as how to deﬁne
+straightforward, so we omit the details, such as how to define
 PERP to appropriately mark the symbols. The simplest method
-is a linked list or table of some sort, that is ﬁlled by PEHP and
+is a linked list or table of some sort, that is filled by PEHP and
 consulted by the test word perps?.
 
 ow might we implement a leading factor of y5? While there
-is no difﬁculty in taking traces of the form
+is no difficulty in taking traces of the form
 
 Tr( 1'54 18 a» ...) a iTr(e,..aA"B ’c‘y‘n ...), (11)
 
-expressions with y5 between “starred” factors are more difficult.
+expressions with y5 between "starred" factors are more difficult.
 However, the permutation properties of traces let us write, e.g.,
 
 Tr((A +mA)(B+mB)y5¢(D+mD)E...)
@@ -1088,31 +1014,6 @@ Tr((A +mA)(B+mB)y5¢(D+mD)E...)
 
 ETI(YS¢(D+MD)E---(A +mi)(B+ms)).
 
- 
-
- 
-
- 
-
-\ M ”“5"!
-
- 
-
- 
-
- 
-
- 
-
-ntuwwumm‘
-uhmmmmhﬁutdﬁtm
-
-«umummuuwmmsu-
-“Wm-Wuﬁmmmﬁ‘w
-
-.b‘u~>l*w
-
-Chapter 11 - Symbollc Programming Scientiﬁc FORTHI
 
 token which stands for “ " " as shown on page 276. This token is;
 marked orthogonal to all three of the vectors it represents, at the:
@@ -1122,12 +1023,12 @@ define a distinct word, TigS(, that uses the components of parsed
 to perform the above preliminary steps. Then 1195( will invokeli
 parse to do the rest of its work. i
 
-The only other signiﬁcant task is to extend the output routine to ‘
+The only other significant task is to extend the output routine to ‘
 
 a) recognize the special “ " ” token; and
 b) replace dot products like “ " .d ” by [a,b,c,d].
 
-A ﬁnal remark: one or another form of vectoring can simplify
+A final remark: one or another form of vectoring can simplify
 parse (relative to Fig. 11-5) by hiding the recursion within words
 that execute the branches. We have avoided this method here
 
@@ -1137,14 +1038,14 @@ vantage.
 FORmula TRANslator
 
 That prehistoric language FORTRAN -despite its manifold
-deﬁciencies relative to FORTH — contains a useful and widely
+deficiencies relative to FORTH — contains a useful and widely
 imitated invention that helps maintain its popularity despite come
 petition from more modern languages: This is the FORmula
 TRANslator from which the name FORTRAN derives.
 
 FORTH’s lack of FORmula TRANslator is keenly felt. Years of
-scientiﬁc FORTH programming have not entirely eliminated my
-habit of ﬁrst writing a pseudo-FORI'RAN version of a new algo-
+scientific FORTH programming have not entirely eliminated my
+habit of first writing a pseudo-FORI'RAN version of a new algo-
 rithm before reexpressing it in FORTH. Sometimes I will even
 write a test program in QuickBASIC‘D before re- coding it in
 FORTH for speed and power, just to avoid worry about getting
@@ -1165,7 +1066,7 @@ well as CODE words.
 
 In principle we could provide a true compiler that translates
 formulae to machine code (or anng, to assembler). But unless
-we use p-code or some such artiﬁce we would lose all hope of
+we use p-code or some such artifice we would lose all hope of
 portability. Thus, we take instead the simpler course of translating
 FORTRAN formulae to FORTH according to the rules
 
@@ -1195,7 +1096,7 @@ FORTRAN formulae to FORTH according to the rules
 -> <factor> “ <iactor>
 
 Clearly, the FORTH FORmula TRANslator could become the
-kernel of a more complete FORTRAN- >FORTH ﬁlter by ad-
+kernel of a more complete FORTRAN- >FORTH filter by ad-
 ding to the above rules for formulae the following rules for loops
 and conditionals:
 
@@ -1207,10 +1108,6 @@ and conditionals:
 
 \<do> -> DO<label><id>=<iim>,<lim><step>
 
- 
-
-21. thodeformmiﬁdaLgeneﬁcmachinewhoaewdembemppedeasﬂyouothein-
-slructionsetofarealcoanputer.
 
 288 cr-ptom -Symbollc Progunmlng SclenﬂﬂcFORTHQl
 
@@ -1260,11 +1157,6 @@ fairly standard is 96, which interprets a following number asE
 ﬂoating point, and places it on the fstack. With these conventions,
 we see that we shall want to translate an expression like
 
- 
-
-22. See, e.g., R.L. Kruse, Data Structure: and Program Design, 2nd Ed. (Prentice-Hall. Inc.,
-Englcwood Cliffs, NJ, 1987).
-
 A - -15.3€7'EXP(7/X) + Z/(W-SINUHETA'Pl/lmyﬂ
 into (generic) FORTH something like this:
 
@@ -1291,7 +1183,7 @@ G+
 
 A FS>
 
-Begin with the user interface. We will deﬁne a word, F' , that
+Begin with the user interface. We will define a word, F' , that
 will accept a terminated string and attempt to translate it to
 FORTH. That is, we might say
 
@@ -1309,17 +1201,17 @@ Although the second version differs somewhat from the hand
 translation, the two are functionally equivalent.
 
 We would also like to have the possibility of compiling the emitted
-FORTH words, if F' appears within a colon deﬁnition, as in
+FORTH words, if F' appears within a colon definition, as in
 
 : do.B F' B = 39.37/ATAN(X“W) + 7"Z/X' ;
 
 FORTRAN expression obeys the rules of algebra in a general-
 y obvious fashion. Parentheses can be used to eliminate all
-ambiguity and force a deﬁnite order on the evaluation of terms
+ambiguity and force a definite order on the evaluation of terms
 
 esuuvuouoiaaa-Mmm.
 
-Chapter 11 — Symbolic Programming Scientiﬁc FORTH
+Chapter 11 — Symbolic Programming Scientific FORTH
 
 and factors. However, to reduce the number of parentheses,
 FORTRAN adopted a heirarchy of operators that has been fol-
@@ -1370,18 +1262,18 @@ Let us hand-parse the example, reproduced below:
 
 A I -15.3€7'EXP(7/X) + Z/(W-SINCI'HETA'PII 1N)/4)
 
-Clearly, we must apply the ﬁrst rule
+Clearly, we must apply the first rule
 
 \<assignment> -> <subiect> n <expression>
 
 embodied in the word < assignment > . We split at the “ = " sign,
 and interpret the text to its left as a SCALAH. Since we want to
-emit the phrase A FS > last, yet have parsed it ﬁrst, we have to
+emit the phrase A FS > last, yet have parsed it first, we have to
 hold it somewhere. Clearly the buffer where we store it will be a
 first-in last-out type; and by induction, last-in, first-out also. But
 a LIFO buffer is a stack. Hence the fundamental data structure
 needed in our parsing algorithm is a string stack. So we might
-imagine that after the ﬁrst parsing step the string stack contains
+imagine that after the first parsing step the string stack contains
 
  
 
@@ -1425,7 +1317,7 @@ We now anticipate a new problem: suppose we have somehow —
 no need to worry about details yet — emitted the code for the
 < term > -15.3E7*EXP(7/X) on top of the Sstack. Then we
 would have to parse the line Z/(W-SINCI’ HETA'Pl/1 80)/4) G + .
-Assuming the program knows how to handle the ﬁrst part,
+Assuming the program knows how to handle the first part,
 Z/(W-SIN(THETA"PI/180)/4), how will it deal with the G + ?
 We do not want to use the space as a delimiter (an obvious out)
 because this will cause trouble with A FS > .
@@ -1453,7 +1345,7 @@ recognition, which will lead to a slow, complicated program.
 When this sort of impasse arises (and I am pretending it had
 
 been realized early in the design process, although the dif-
-ﬁculty did not register until somewhat later) it signals that a key
+ficulty did not register until somewhat later) it signals that a key
 issue has been overlooked. Here, we failed to distinguish FORTH
 words, FS > and G +, from FORTRAN expressions. We have, in
 effect, mixed disparate data types (like trying to add scalars and
@@ -1498,11 +1390,6 @@ Z/(W-SINO’HEI'A'Pl/180)/4) G + \ < term >
 EXPO/X) G‘ \ (term >
 -1 5.367 NOP
 
- 
-
-23. Leo Brodie, mammary (Prentice-Hall, Inc, NJ, 1984).
-
-Chapter 11 - Symbolic Programming Sclenrlﬂc FORTH
 
 The parsing has now reached a turning point: the top string on
 the E/S can be reduced no further. The program must recognize
@@ -1523,7 +1410,7 @@ EXP(7/X) NOP \ < function >
 What is NULL and why have we pushed it onto the E/S? Simply,
 it is not yet time to emit the 6" so we have to save it; however,
 we have another operator, G +, to associate with Z/(W-
-SlN(THETA*PI/180)/4) . Thus we have no choice but to deﬁne a
+SlN(THETA*PI/180)/4) . Thus we have no choice but to define a
 placeholder for the 13/5, analogous to NOP on the 0/5.
 
 S now contains a function. Assuming we can recognize it as
@@ -1569,7 +1456,7 @@ Wait! Why did we say REALM with —15.3E7, but REAL'B with
 7 just now? Can’t we make up our minds? The answer is that we
 want to respect precision over-rides via FORTRAN's E (single
 precision, so we say REALM) or D (double precision — REAL'B)
-exponent preﬁxes. However, where we are free to choose, it
+exponent prefixes. However, where we are free to choose, it
 makes sense to keep maximum precision.
 
 We continue, emitting the next simple items on the Sstack:
@@ -1584,7 +1471,7 @@ E18 018 Notes
 A FS > \ < subject >
 Z/(W-SlNCI’HETA'PI/180)l4) G + \ < term >
 
-Once again we ﬁnd the most exposed operator to be “ / which
+Once again we find the most exposed operator to be “ / which
 we split with the rule
 
 \<term> -> <factor> | <factor> 96 <term>
@@ -1597,11 +1484,11 @@ A FS> \ <subject>
 NULL G + \ < term >
 (ZW~SIN(THETA*Pi/180)/4) Slop \ ( < expr > )
 
-Chapter 11 - Symbolic Programming Scientiﬁc FORTH
+Chapter 11 - Symbolic Programming Scientific FORTH
 
 Emit the T082
 2 > PS
-and apply the rule (ﬁrst drop the parentheses)
+and apply the rule (first drop the parentheses)
 
 \<expr'n> -> <term> | <term> a <expr'n>
 
@@ -1617,7 +1504,7 @@ W NOP
 Why did we issue G + and keep the leading “—” sign with SIN?
 Simple: any 9th grader can tell the difference between a “—”
 binary operator (binop) and a “—” unary operator (unop) in an
-expression. But, while not impossible, it is unnecessarily difﬁcult
+expression. But, while not impossible, it is unnecessarily difficult
 to program this distinction. The FORTH philosophy is “Keep it
 simple!” Simplicity dictates that we embrace every opportunity
 to avoid a decision, such as that between “—” binop and “-" unop.
@@ -1642,7 +1529,7 @@ compiler will resolve the ambiguous expression
 Mir-WW 295
 
 in favor of the former alternative. if the latter is intended, it must
-be speciﬁed with explicit parentheses.
+be specified with explicit parentheses.
 
 After sending forth the phrase
 W > PS
@@ -1673,7 +1560,7 @@ NULL GNEGATE
 4 G/
 SINO‘HETA'PIHBO) NOP \( <expr'n> )
 
-After handling the function as before we ﬁnd the successive stacks
+After handling the function as before we find the successive stacks
 and FORTH code emissions
 
  
@@ -1689,7 +1576,7 @@ NULL GSIN
 
 (THETA'PI/180) NOP
 
-Chapter 1 t - Symbolic Programming Scientiﬁc FORTH
+Chapter 1 t - Symbolic Programming Scientific FORTH
 
  
 
@@ -1711,12 +1598,12 @@ G/ G+ AFS> ok
 
 §§4 Coding the FORmula TRANslator
 
-e proceed in the usual bottom-up manner. The ﬁrst question
+e proceed in the usual bottom-up manner. The first question
 
 is how to define the Sstack. In the interest of brevity, I chose
 not to push the actual strings on the E/S, but rather pointers to
 their beginnings and ends. By using a token to represent the
-operator, we can deﬁne a 6-byte wide stack which will point to
+operator, we can define a 6-byte wide stack which will point to
 the text of interest (which itself resides in a buffer), and will hold
 the token for the operator at the current level. This way only one
 stack is pushed or popped and the levels never get out of
@@ -1733,7 +1620,7 @@ A function is defined by the rule
 \<arglist> -> ( <expr'n> {, <expr'n>}")
 \<function> -> <id> <argl|st>
 
-We may therefore identify a function by splitting at the ﬁrst left
+We may therefore identify a function by splitting at the first left
 parenthesis,
 
 OJUthNobie 1N2-Alirightlmervod.
@@ -1742,7 +1629,7 @@ sand scrum new
 1- Beam 1mm ASCII ()- ,ii (
 ooup - a> UNTIL'
 
-and then applying appropriately deﬁned FSMs to determine
+and then applying appropriately defined FSMs to determine
 whether the pieces are as they should be.
 
 :<thction>($endSbeg--i)
@@ -1766,31 +1653,31 @@ SIN((A + B)/EXP(C-D))
 as a function.
 
 In FORTH there is no distinction between library functions and
-functions we deﬁne ourselves. In either case, the protocol deﬁned
-in Chapter 8 will work ﬁne. Thus the code generator for < func-
+functions we define ourselves. In either case, the protocol defined
+in Chapter 8 will work fine. Thus the code generator for < func-
 tion > emits the code
 
 USE( fn.name arg1 argz argN F(x)
 
 What, however, do we do about translating standard FORTRAN
 names such as SIN, COS and EXP to their generic FORTH
-equivalents? The simplest method deﬁnes words with the names
+equivalents? The simplest method defines words with the names
 of the FORTRAN library functions. The FORTH-83 word FIND
-locates the code-ﬁeld address of a name residing in a string. Thus
+locates the code-field address of a name residing in a string. Thus
 we could have (note: .GSIN is a CONSTANT containing a token)
 
 .GSIN CONSTANT sm \etc.
 
 omvmtm-umm.
 
-298 Chapter 11 — Symbolic Programming Scientiﬁc FORTH
+298 Chapter 11 — Symbolic Programming Scientific FORTH
 
 :LIBRARY? ($end$beg--cta | 0)
 —ROT UNDER — DUP>R
 PADt+ SWAP CMOVE R> PAD CI \makes
 PAD FIND (--cia n) o= NOT AND ;
 
-now we can deﬁne function! which, assuming pointers to the
+now we can define function! which, assuming pointers to the
 < id > and < arglist > are on the stack, rearranges the Sstack like
 
  
@@ -1801,7 +1688,7 @@ this:
 BS QIS Notes
 (argt, argz, argN) .F(X) \ an op.
 NULL .iib_name \ if library function
-or, if it is a user-deﬁned function, like this:
+or, if it is a user-defined function, like this:
 E18 018 Notes
 (arg1, argZ, argN) .F(X) \an op.
 name NOP \ user function
@@ -1818,7 +1705,7 @@ THEN ." USE( " ;
 
 For the program itself24 we work from the last word, < aslgn-
 
-ment > , to the ﬁrst (which we do not know the name of yet).
+ment > , to the first (which we do not know the name of yet).
 We shall describe the program in pseudocode only, in the interest
 of saving space. Clearly,
 
@@ -1826,10 +1713,6 @@ of saving space. Clearly,
 <subj> = <expr> \splitat "=" (- -t)
 IF subjl THEN \ put Subj and its code on $staci<
 .NOP $push ; \ then put expr on Sstack
-
- 
-
-24. File FT RAN .FI‘ H on the proyam diskette.
 
 Certain decisions need to be made here: for example, do we want
 F' to be able to parse an expression that is not an assignment (that
@@ -1849,7 +1732,7 @@ THEN ;
 Defined recursively in this way, < oxpreoolon > will keep
 working on the TOS until it has broken it up into term 5.
 
-We similarly deﬁne < term > recursively, so it will break up any
+We similarly define < term > recursively, so it will break up any
 term 5 into all their factors. It should also recognize < arglist > 5.
 Thus:
 
@@ -1874,13 +1757,9 @@ EXIT THEN
 < id > IF idI < expression > \ forward ref.
 EXIT THEN
 <f>"<f> \exponent’?
-IF f"fI RECURSE RECURSE
+IF f"fi RECURSE RECURSE
 EXIT THEN
 \ oont'd
-
-OWVNoUelﬂZ-Almmorved.
-
-Chapter 11 - Symbolic Programming Scientiﬁc FORTH
 
 < function >
 IF functionl < expression > \ forward ref.
@@ -1891,10 +1770,6 @@ EXIT THEN
 IF exposel < expression > \ forward ref.
 ELSE ." Notafactorl' ABORT THEN ;
 
-Note the forward references found in <factor>; since <ex-
-pression > is deﬁned later, we must use vectored execution or
-some similar method to permit this recursive call.
+Note the forward references found in \bc{<factor>}; since \bc{<expression >} is defined later, we must use vectored execution or some similar method to permit this recursive call.
 
-With this we conclude our discussion of rule-based programming.
-The complete code for the FORmula TRANslator is too lengthy
-to print, hence it will be found on the included diskette.
+With this we conclude our discussion of rule-based programming. The complete code for the FORmula TRANslator is too lengthy to print, hence it will be found on the included diskette.

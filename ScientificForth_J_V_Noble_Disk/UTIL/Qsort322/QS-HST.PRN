@@ -1,0 +1,198 @@
+
+
+
+
+
+
+
+                       Notes on Version 4.00 (Commercial)                       Notes on Version 4.00 (Commercial)                       __________________________________
+
+          * Massive rewrite of QSORT internal routines to enhance per-
+            formance, particularly  when sorting  large files.   QSORT
+            now uses  all of  available memory  as its sort buffer, so
+            the more  memory available, the better it works.  Tests on
+            my machine  indicate a 2:1 performance improvement doing a
+            simple sort  of a  4.5 meg  file with  a 400K+ sort buffer
+            available.   One beta  tester showed a 6:1 performance im-
+            provement sorting a 100 meg file!
+          * Added provisions  to prevent  merge file  name  collisions
+            when multiple  copies of  QSORT are  run concurrently on a
+            network.
+          * Added /N<term>[<term2>]  parameter for  newline  redefini-
+            tion.
+          * Removed newline  redefinition from  /D parameter,  and re-
+            laxed requirements  for specifying  number of  fields.  If
+            the delimiter  is not newline, <fields> need not be given,
+            and QSORT  will permit a variable number of fields in each
+            record.
+          * Added @<command_file> parameter to permit QSORT parameters
+            to be stored in an external file, and used repeatedly.
+
+                             Notes on Version 3.22                             Notes on Version 3.22                             _____________________
+
+          * Documentation changed to reflect new shareware policy, and
+            to point  out the need to enclose the messages redirection
+            parameter ("2><file>") in quotes for later DOS versions.
+          * No program changes.
+
+                             Notes on Version 3.21                             Notes on Version 3.21                             _____________________
+
+          * FINALLY  fixed the  bug causing QSORT to not notice it had
+            run out or disk space!  (Thanks to Andy Woolls for report-
+            ing the problem still existed.)
+          * Added standard error redirection feature (see QSORT.PRN).
+          * Modified  command line parameter parsing.  You may now re-
+            liably run  parameters together  (not recommended, but you
+            can do it).  However, now a slant bar (/) may only be used
+            as a  tag character  in a  /T parameter, or a delimiter or
+            record terminator  character in  a /D  parameter if  it is
+            preceded by  a back-slant  (\).   Otherwise, a  slant  bar
+            marks the  beginning of  a new  parameter.  The caution on
+            this subject  which appeared  in 3.20's notes has been re-
+            moved, as it no longer applies.
+
+                             Notes on Version 3.20                             Notes on Version 3.20                             _____________________
+
+          * This  started out  to be  maintenance release 3.14, but so
+            many changes  were made, it certainly warrants a minor re-
+            lease number.
+          * Added  a subparameter (V) to the /S parameter.  /SV causes
+            running status reports to be displayed on the console.
+
+
+
+                                        1
+
+
+
+
+
+
+
+
+          * Corrected a minor bug in the statistics display.  When you
+            sort a  file with  more than  32767 records, the number of
+            records reported looked strange.
+          * Revised  the method of displaying error messages, and made
+            error message text more or less consistent.
+          * Added  a whole  new section  to the  documentation dealing
+            with error messages and their causes.
+          * Revised  the method of parsing the command line.  Contrary
+            to  the  documentation,  you  may  now  run  command  line
+            switches together.   "/S/R/?/20:6/15:5"  will do precisely
+            what you would expect.
+
+                             Notes on Version 3.13                             Notes on Version 3.13                             _____________________
+
+          * This  release cleans  up the last (I hope) potential unde-
+            tected I/O errors.
+
+                             Notes on Version 3.12                             Notes on Version 3.12                             _____________________
+
+          * A  bug (an  oversight, actually) has existed for some time
+            which caused  QSORT to  fail to  recognize an "out of disk
+            spate" condition  when writing temporary merge files.  The
+            situation is corrected in this version.
+          * The  QSTMP environment  variable was documented in version
+            3.10,  but   through  another   oversighe,  not   actually
+            implimented 'till  now.   The current  version will search
+            for environment  variables QSTMP,  TMP and  TEMP  in  that
+            order, looking for a place to put temporaries.
+
+                             Notes on Version 3.11                             Notes on Version 3.11                             _____________________
+
+          * Rewrote many internal functions in assembly language.
+
+                             Notes on Version 3.10                             Notes on Version 3.10                             _____________________
+
+          * Added support for delimited field records.  A side benefit
+            of this feature is the ability to redefine the newline se-
+            quence for this  and other types of ASCII files.
+          * Improved output buffering.
+          * Converted all documentation to Microsoft Word.
+
+                             Notes on Version 3.00                             Notes on Version 3.00                             _____________________
+
+          * Converted from Lattice C, version 3.1 to Microsoft C, ver-
+            sion 4.0.   This  change alone  resulted in  about a  10 %
+            improvement in performance.
+          * Performed  major redesign  of QSORT's I/O, buffer handling
+            and internal  data structures.  This change resulted in an
+            additional 60 % performance improvement.  This improvement
+            was measured by sorting the same 210K file:
+               QSORT 2.1   1:48
+               QSORT 3.00  0:42
+          * Dropped support for QSORTL (large data model).
+
+
+
+
+                                        2
+
+
+
+
+
+
+
+
+          * Removed  the necessity  for the  /M<len> parameter.  QSORT
+            will now  sort files  with variable  length records of any
+            size, provided  only that the two largest records will fit
+            together in the sort buffer.  This imposes a record length
+            constraint of  about 50K  for  the  sum  of  these  record
+            lengths.
+          * Added  the option  of specifying the output file as a com-
+            mand line  argument.   The following  two commands are ex-
+            actly equivalent:
+               QSORT <INFILE >OUTFILE      and
+               QSORT  INFILE  OUTFILE
+          * Added support for the /? help parameter.
+          * Added  the /S  parameter to  produce a "statistics" screen
+            report at the end of a QSORT run.
+          * Added  support for the QSTMP and TMP environment variables
+            to specify a path for temporary merge files.
+          * QSORT documentation was largely rewritten.
+
+                              Notes on Version 2.1                              Notes on Version 2.1                              ____________________
+
+          * Converted form Lattice C version 3.0 to version 3.1.
+          * Added  /F<len>  parameter  and  support  for  fixed-length
+            records.   Records may  contain binary data, but keys must
+            be ASCII.
+          * Added  several special-purpose  record  compare  routines.
+            QSORT selects  the most  efficient one  for a  given sort,
+            based upon the combination parameters on the command line.
+
+                              Notes on Version 2.0                              Notes on Version 2.0                              ____________________
+
+          * Converted  from Lattice  C, version  2.14 to  version 3.0.
+            This change achieved about 15 % performance improvement.
+          * Began  distributing both  QSORT  and  QSORTL  (large  data
+            model).   The latter shows performance gains on very large
+            (> 750K) files.
+          * Added  /T[<tag_char>] parameter and support for multi-line
+            logical records.
+
+                              Notes on Version 1.2                              Notes on Version 1.2                              ____________________
+
+          * Added "lexical" ordering of key fields.
+
+                              Notes on Version 1.1                              Notes on Version 1.1                              ____________________
+
+          * Added  /M<len>  parameter  to  permit  specifying  maximum
+            record lengths in excess of the default 132 bytes.
+          * Corrected  bug to permit <col> element of key field speci-
+            fier to  be optional,  defaulting to column 1. Program now
+            matches documentation.
+          
+
+
+
+
+
+
+
+                                        3
+
+

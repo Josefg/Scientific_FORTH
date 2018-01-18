@@ -1,12 +1,16 @@
 % All footnotes are here.
 
 % ****    Preface footnotes ****
+
 \sepfootnotecontent{Pre_01}{Havard Softworks, P.O. Box 69, Springbro, OH45066}
 
 \sepfootnotecontent{Pre_02}{Ecclesiastes, 9.11.
 M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Englewood Cliffs, N.J., 1986). L. Brodie, \textit{Starting FORTH} (Prentice-Hall, Englewood Cliffs, N.J., 1981).}
 
+
+
 % **** Chapter  1 footnotes ****
+
 \sepfootnotecontent{01_01}{This description refers to FORTH's compilation scheme. See, e.g. R.G. Loeliger, \textit{Threaded Interpretive Languages} (Byte Publications, Inc., Peterborough, NH, 1981). We shall have more to say about it in Chatper 2.}
 
 \sepfootnotecontent{01_02}{Although some interpreted FORTRANs such as WATFOR have been developed.}
@@ -22,6 +26,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 
 % **** Chapter  2 footnotes ****
+
 \sepfootnotecontent{02_01}{L. Brodie, \textit{Starting FORTH}, 2nd ed. (Prentice-Hall, NJ, 1986), referred to hereafter as \SF.}
 
 \sepfootnotecontent{02_02}{L. Brodie, \textit{Thinking FORTH} (Prentice-Hall, NJ 1984), referred to hereafter as \TF.}
@@ -37,6 +42,58 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 \sepfootnotecontent{02_07}{This level could be either the outer interpreter or a word that invokes \bc{NEW-WORD}.}
 
 \sepfootnotecontent{02_08}{defined as \bc{: -ROT ROT ROT ;}}
+
+\sepfootnotecontent{02_09}{We discuss looping in 2.7 below.}
+
+\sepfootnotecontent{02_10}{See \FTR, p. 325ff for a description of beheading - a process to make variables local to a small set of subroutines. Another technique is to embed variables within a data structure so they cannot be referenccd inadvertently. Chapters 2\S8\S\S3-2, 3\S5\S\S2, 5\S1\S\S2 and 11\S2 offer examples.}
+
+\sepfootnotecontent{02_11}{\textbf{RDROP} is a handy way to exit from a word before reaching the final ";". See \TF.}
+
+\sepfootnotecontent{02_12}{The original FORTH-79 used +1 for "true", 0 for "false"; many newer system that mostly follow FORTH-79 use -1 for "true". HS/FORTH is one such. Both FORTH-83 and ANSII FORTH require -1 for "true", 0 for "false".}
+
+\sepfootnotecontent{02_13}{This has led some FORTH gurus to prefer the synonymous word \bc{ENDIF} as clearer than \bc{THEN}.}
+
+\sepfootnotecontent{02_14}{Signed 16-bit integers run from -32768 to +32767, unsigned from 0 to 65535. See \FTR.}
+
+\sepfootnotecontent{02_15}{Michael Ham, "Structured Programming", \textit{Dr. Dobb's Journal of Software Tools}, October, 1986.}
+
+\sepfootnotecontent{02_16}{This usage is a non-standard construct of HS/FORTH.}
+
+\sepfootnotecontent{02_17}{Self-modifying machine code is considered a serious "no-no" by modern structured programming standards. Although it is sometimes valuable, few modern cpu's are capable of handling it safely. More often, because cpu's tend to use pipelining and parallelism to achieve speed, a piece of code might be modified in memory, but --having been pre-fetched before modification-- actually execute in unmodified form.}
+
+\sepfootnotecontent{02_18}{Of course \bc{CONSTANT} is usually a machine-code primitive, for speed.}
+
+\sepfootnotecontent{02_19}{An example (and its justification) of dimensioned data types in Ada is given by Do-While Jones, \textit{Dr. Dobb's Journal}, March 1987. The FORTH solution below is much simpler than the Ada version.}
+
+\sepfootnotecontent{02_20}{This example is based on 16-bit integer arithmetic. The word \regc{*/} means "multiply the third number on the stack by NOS, keeping 32 bits of precision, and divide by "TOS". That is, the stack comment for \regc{*/} is \regc{(a b c --a*b/c)}.}
+
+\sepfootnotecontent{02_21}{Headerless words are described in \FTR, p. 325ff. The word \textbf{BEHEAD'} is HS/FORTH's method for making a normal word into a headerless one. See Ch. 5\S1\S\S3 for further details.}
+
+\sepfootnotecontent{02_22}{Better methods will be described in Chapter 5.}
+
+\sepfootnotecontent{02_23}{The safety of an execution table can be increased by making the first (that is, the zero’th) action \textbf{WARNING}, and making the first step of \bc{BUTTON} a word \bc{CHECK-DATA} that maps any number not in the range 1-6 into 0. Then a wrong button number causes a \textbf{WARNING} to be issued and the system resets.}
+
+\sepfootnotecontent{02_24}{A single byte can represent positive numbers 0-255.}
+
+\sepfootnotecontent{02_25}{A system variable that returns the current starting address of the "scratchpad".}
+
+\sepfootnotecontent{02_26}{\FTR, Ch. 3.}
+
+\sepfootnotecontent{02_27}{Ironially, most programmers refuse to get along without spaghetti code, so commercial Pascal's now include GOTO. Only FORTH among major languages completely eschews both line labels and GOTOs, making it the most structured language available.}
+
+\sepfootnotecontent{02_28}{The FORmula TRANsIator in Ch. 11\S4 uses this method to implement its recursive structure.}
+
+\sepfootnotecontent{02_29}{Rather like the "cell" system in revolutionary conspiracies, where members of a cell know only each other but not the members of other cells. Mechanisms for receiving and transmitting messages between cells are double-blind. Hence, if an individual is captured or is a spy, he can betray at most his own cell and the damage is limited.}
+
+\sepfootnotecontent{02_30}{The right parenthesis, ) , is not a word but a \textbf{delimiter}.}
+
+\sepfootnotecontent{02_31}{See, \textit{e.g.}, L. Brodie, \TF, Ch. 5, Appendix E.}
+
+\sepfootnotecontent{02_32}{For those familiar with assembly language, \textbackslash is exactly analogous to ; in assembler. But since ; is already used to close colon definitions in FORTH, the symbol \textbackslash has been used in its place.}
+
+\sepfootnotecontent{02_33}{The matter of naming brings to mind Mark Twain's remark that the difference between the \textit{almost}-right word and the right one is the difference between the lightning-bug and the lightning.}
+
+\sepfootnotecontent{02_34}{See \FTR for a more thorough discussion of vectoring. Brodie, \TF, sugests a nice construct called \bc{DOER...MAKE} that can be used for graceful vectoring.}
 
 
 
@@ -97,7 +154,7 @@ case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
 \sepfootnotecontent{03_19}{For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is
 $p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$
 is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
-\sepfootnotecontent{03_20}{MISSING FOOTNOTE}
+\sepfootnotecontent{03_20}{Strongly recommended, given the fragility of PRNGs.}
 \sepfootnotecontent{03_21}{Using, e.g., the Fast Fourier Transform program from Chapter8.2.}
 \sepfootnotecontent{03_22}{That is, random numbers uniformty distributes from 0 to 1.}
 \sepfootnotecontent{03_23}{Except in ease of compularion, of course.}
@@ -120,6 +177,7 @@ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1}
 
 
 % **** Chapter  8 footnotes ****
+
 \sepfootnotecontent{08_01}{If a rectangle lies below the horizontal axis, its area is considered to be \textbf{negative}.}
 
 \sepfootnotecontent{08_02}{f'(x)is the slope of the line tangent to the curve at the point $x$. It is called the first derivative of $f(x)$.}
@@ -128,7 +186,7 @@ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1}
 
 \sepfootnotecontent{08_04}{That is, this statement defines $\bar{f}$.}
 
-\sepfootnotecontent{08_05}{The word \% pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.}
+\sepfootnotecontent{08_05}{The word \bc{\%} pushes what follows in the unput stream onto the 87stack, assuming it can be interpreted as a floating point number.}
 
 \sepfootnotecontent{08_06}{J.M. Hammersley and D.C. Hanscomb, \textit{Monte Carlo Methods} (Methuen, London, 1964).}
 
@@ -155,13 +213,13 @@ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1}
 \end{lstlisting}
 Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
-\sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S\ 3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
+\sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
 
 \sepfootnotecontent{08_16}{The memory usage is shout the same: the recursive method pushes limits, \etc onto the fstack.}
 
 \sepfootnotecontent{08_17}{"Analytic" meants the ordinary derivatiove $df(z/dz$ exist. Coonsult any good text on the theory of functions of a complex variable.}
 
-\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for $sin(x)$. See, \eg, Abramowitz and Stegun, \textit{HMF}, \S\ 4.3.104.}
+\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for $sin(x)$. See, \eg, Abramowitz and Stegun, \textit{HMF}, \S4.3.104.}
 
 \sepfootnotecontent{08_19}{Although the 80x87 already uses a compact represtation of the trigonometric functions and is thus fairly hard to beat, especially if high accuracy is demanded.}
 
@@ -171,19 +229,19 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{08_22}{This example is taken from the article “FORTH and the Fast Fourier Transform" by Joe Barnhart, \textit{Dr. Dabb's Journal}, September 1984, p. 34.}
 
-\sepfootnotecontent{08_23}{}
+\sepfootnotecontent{08_23}{Polynomials can be thought of as vectors in a space of infinitely many dimensions ("Hilbert" space). Certain polynomials are like the vectors that point in the (mutually orthogonal) directions in ordinary 3-dlmensional space, and so are called \textbf{orthogonal} by analog.}
 
-\sepfootnotecontent{08_24}{}
+\sepfootnotecontent{08_24}{That is, "chi-squared per degree of freedom".}
 
-\sepfootnotecontent{08_25}{}
+\sepfootnotecontent{08_25}{That is not by itself very useful. Useful modicfications can be found in Press, \textit{et al.}, \textit{Numerical Recipies}, \textit{ibid.}, p. 301ff.}
 
-\sepfootnotecontent{08_26}{}
+\sepfootnotecontent{08_26}{Press, \textit{et al.}, \textit{Numerical Recipies}, \textit{\underline{ibid.}}, p. 289ff.}
 
-\sepfootnotecontent{08_27}{}
+\sepfootnotecontent{08_27}{See, \eg, Abramowitz and Steegun, \textit{HMF}, p. 885.}
 
-\sepfootnotecontent{08_28}{}
+\sepfootnotecontent{08_28}{$f''(x)$ is the second derivative of $f(x)$, \ie the first derivative of $f'(x)$}
 
-\sepfootnotecontent{08_29}{}
+\sepfootnotecontent{08_29}{Called so because the curve $f(x) is approximated by straight line segments between successive points $x$, $x + w$. This we evaluate the areas of trapezoinds rather than rectangles.}
 
 
 
@@ -244,62 +302,82 @@ column and an adjoint vector $v^\dagger$ a row.  Their outer product,
 $uv^\dagger$, is a matrix. Given a column $v$, we construct its adjoint (row)
 $v^\dagger$ by taking the complex conjugate of each element and placing it in
 the corresponding position in a row-vector.}
-\sepfootnotecontent{09_15}{When I think that solving $100\times 100$ systems -- key to my Ph.D. 
-research in 1966 -- took the better path of an hour on an IBM 7094, these results seem incredible.
-}
+\sepfootnotecontent{09_15}{When I think that solving $100\times 100$ systems --
+key to my Ph.D.  research in 1966 -- took the better path of an hour on an IBM
+7094, these results seem incredible.}
 \sepfootnotecontent{09_16}{See 8087P.}
-\sepfootnotecontent{09_17}{}
-\sepfootnotecontent{09_18}{}
+\sepfootnotecontent{09_17}{MISSING FOOTNOTE.Ref. in page 244, something about commutative law...}
+\sepfootnotecontent{09_18}{Note: if C is a right-inverse, AC = I, it is also a left-inverse, CA= I.}
 \sepfootnotecontent{09_19}{See, \textit{e.g.},William H. Press, Saul A.
 Teukolsky, William T. Vetterling and Brian P. Flannery. Numerical Recipes
 (Cambridge University Press, Cambridge, 1986), p. 31ff.}
-\sepfootnotecontent{09_20}{}
-\sepfootnotecontent{09_21}{}
-\sepfootnotecontent{09_22}{}
-\sepfootnotecontent{09_23}{}
-
-\sepfootnotecontent{09_24}{}
-
-\sepfootnotecontent{09_25}{}
-
-\sepfootnotecontent{09_26}{}
-
-\sepfootnotecontent{09_27}{}
-
-\sepfootnotecontent{09_28}{}
-
-\sepfootnotecontent{09_29}{}
-
-
 
 % **** Chapter 10 footnotes ****
-\sepfootnotecontent{10_23}{}
+\sepfootnotecontent{10_01}{Such as MS-DOS, OS/2, Pick, Unix, \etc}
 
-\sepfootnotecontent{10_24}{}
+\sepfootnotecontent{10_02}{Voltaire once remarked that if Satan did not exist it would be necessary for God to create him. If your FORTH system lacks words with these functions, by all means, invent them. A MS-DOS programmer's manual (see below) is vital for this task.}
 
-\sepfootnotecontent{10_25}{}
+\sepfootnotecontent{10_03}{Note that we only need to read in the type and order once, since the array descriptor (Ch. 5\S4\S\S2.5) contains the same information.}
 
-\sepfootnotecontent{10_26}{}
+\sepfootnotecontent{10_04}{We use \bc{.M} and \bc{.V} from Chapter 9. The words \bc{>FILE}, \bc{MAKE-OUTPUT} and \bc{CLOSE-OUTPUT} are the output analogues of the input words \bc{<FILE}, \etc}
 
-\sepfootnotecontent{10_27}{}
+\sepfootnotecontent{10_05}{\copyright Microsoft Corporation, 1983-.}
 
-\sepfootnotecontent{10_28}{}
+\sepfootnotecontent{10_06}{Radio Shack Cat. No. 26-5403.}
 
-\sepfootnotecontent{10_29}{}
+\sepfootnotecontent{10_07}{\bc{DOS"} must be defined in machine language to invoke the appropriate DOS function through another INT 21H call}
+
+\sepfootnotecontent{10_08}{PRN2FILE 1.0 \copyright 1987 Ziff Communications Co. Written by Tom Kihlken.}
 
 
 
 % **** Chapter 11 footnotes ****
-\sepfootnotecontent{11_23}{}
 
-\sepfootnotecontent{11_24}{}
+\sepfootnotecontent{11_01}{See A.V. Aho, R. Sethi and J.D. Ullman, \textit{Compilers:...} (Addison-Wesley, Reading. 1988).}
 
-\sepfootnotecontent{11_25}{}
+\sepfootnotecontent{11_02}{These defects of nested conditionals are generally recognized. Commercially available CASE tools such as Stirling Castle’s \textit{Logic Gem} (that translates logical rules to conditionals); and Matrix Software's \textit{Matrix Layout} and AYECO, Inc.'s \textit{COMPEDITOR} (that translate tabular representations of PSMs to conditionals in any of several languages) were originally developed as in house aids.}
 
-\sepfootnotecontent{11_26}{}
+\sepfootnotecontent{11_03}{R. Sedgewick, Algorithms (Addison-Wesley Publishing Co., Reading MA 1983) p.257ff.}
 
-\sepfootnotecontent{11_27}{}
+\sepfootnotecontent{11_04}{A.V. Aho, R. Sethi and JD. Ullman, \textit{Compilers: Principles, TooLr and Techniques} (Addison Wesley Publishing Company, Reading, MA, 1988).}
 
-\sepfootnotecontent{11_28}{}
+\sepfootnotecontent{11_05}{Zvi Kohavi, \textit{Switching and Finite Automata Theory}, 2nd ed. (McGraw-Hill Publishing Co., New York, 1978).}
 
-\sepfootnotecontent{11_29}{}
+\sepfootnotecontent{11_06}{"Mutually exclusive" means only one input at a time can be true.}
+
+\sepfootnotecontent{11_07}{"Exhaustive" means every possible input must be represented.}
+
+\sepfootnotecontent{11_08}{J. Basile, \textit{J. FORTH Appl. and Res.} 1,2 (1982) 76-78.}
+
+\sepfootnotecontent{11_09}{E. Rawson, \textit{J. FORTH Appl. and Res.} 3,4 (1986) 45-64.}
+
+\sepfootnotecontent{11_10}{D.W. Berrian, \textit{Proc. 1989 Rochester FORTH Conf.} (Inst. for Applied FORTH Res., Inc., Rochester, NY 1989) p. 1-5.}
+
+\sepfootnotecontent{11_11}{The developmental process is described in detail in my article "Avoid Decisions", \textit{Computers in Physics 5},\# 4 (1991) 386.}
+
+\sepfootnotecontent{11_12}{The FORTH word \bc{NEXT} is the equivalent of NOP in assembler.}
+
+\sepfootnotecontent{11_13}{That is, we should not continually reinvent interpreters equivalent to the FORTH interpreter.}
+
+\sepfootnotecontent{11_14}{R. Pavelle, M. Rothstein and J. Fitch. "Computer Algebra", \textit{Scientiﬁc-American} \textbf{245}, \#6 (Dec. 1981) 136.}
+
+\sepfootnotecontent{11_15}{See \eg M. Mignotte, \textit{Mathematics for Computer Algebra} (Springer-Verlag, Berlin, 1992).}
+
+\sepfootnotecontent{11_16}{They are said to satisfy a \textbf{Clifford algebra}. See \, \eg, J.D. Bjorken and S.D. Drell, \textit{Relativistic Quantum Mechanics} (McGraw-Hill, Inc., New York, 1964); also V.B. Berestetskii, E.M. Lifshitz and L.P. Pitaevskii, \textit{Relativistic Quantum Theory, Part 1} (Pergaman Press, Oxford, 1971) p. 68ff.}
+
+\sepfootnotecontent{11_17}{It is not difficult to introduce one further level of indirection and produce Forth code for generating a "compiler". See T.A. Ivanco and G. Hunter, \textit{J. Forth Appl. and Res. \textbf{6}(1990) 15.}}
+
+\sepfootnotecontent{11_18}{Note: Berestetskii, \textit{et al.} (\textit{op. cit.}) define $\gamma^{5}$ with an overall "-" sign relative to Eq. 9.}
+
+\sepfootnotecontent{11_19}{The word \bc{TEXT} can be defined as \bc{: TEXT  WORD HERE PAD $! ;}}
+
+\sepfootnotecontent{11_20}{Actually, 19 factors, since we want to \bc{ALLOT} space in multiples of 4 to maintain even paragraph boundaries. That is, the strings will use 20 bytes including the count.}
+
+\sepfootnotecontent{11_21}{That is, code for an artificial, generic machine whose code can be mapped easily onto the instruction set of a real computer}
+
+\sepfootnotecontent{11_22}{See, \eg, R.L. Kruse, \textit{Data Structure: and Program Design}, 2nd Ed. (Prentice-Hall. Inc.,
+Englcwood Cliffs, NJ, 1987).}
+
+\sepfootnotecontent{11_23}{Leo Brodie, \textit{Thinking FORTH} (Prentice-Hall, Inc, NJ, 1984).}
+
+\sepfootnotecontent{11_24}{File FTRAN.FTH on the program diskette.}

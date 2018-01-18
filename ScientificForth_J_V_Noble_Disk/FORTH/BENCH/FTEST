@@ -1,0 +1,11 @@
+TASK BENCH
+CODE TIMER  OPT" TIME@  DROP  60 *  +  100 M*   ROT  M+ "  END-CODE
+( -- d.100's.secs)
+: ETIME  TIMER  DSWAP  D-  <# # # 46 HOLD #S #> TYPE ." sec" ;
+
+5 REAL*8 SCALARS A B C D E
+
+: TESTFN    F"  A = (B+C)/(D+E) "  ;
+
+\ : TEST    0 DO   TESTFN  LOOP  ;
+
