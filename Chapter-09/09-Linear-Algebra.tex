@@ -1,121 +1,45 @@
-mm FORTH M 9 — Linear Algebra
-Linear Algebra
-:ontonts
-
-§1 Simultaneous linear equations
-551 Theory of linear algebraic equations
-§§2 Eigenvalue problems
-52 Solving linear equations
-§§1 Cramer's rule
-§§2 Pivotal Elimination
-553 Testing
-§§4 Implementing pivotal elimination
-§§5 The program
-556 Timing
-53 Matrix inversion
-§§1 Linear transformations
-5552 Matrix multiplication
-§§3 Matrix inversion
-§§4 Why invert matrices, anyway?
-§§5 An example
-
-54 LU decomposition
-
-214
-214
-
-215
-218
-218
-221
-225
-227
-227
-
-242
-242
-
-243
-244
-245
-245
-
-246
-
-213
-
-214
-
-51 Simultaneous linear equations
-
-§§1 Theory oi linear algebraic equations
-
-ChapterB-LhearNgebra Sewncronr‘
-
-      
+% 9 — Linear Algebra
  
-   
- 
+\chapter{Linear Algebra}
 
-0 common problems in scientiﬁc programming are
-numerical solution of simultaneous linear algebraic equation
-and computing the inverse of a given square matrix. This is sue“.
-an important subject As an exercise in FORTH progr
-development we shall now write programs to solve linear equa
-tions and invert matrices.
+Two common problems in scientific programming are the
+numerical solution of simultaneous linear algebraic equations
+and computing the inverse of a given square matrix. This is such
+an important subject As an exercise in FORTH program
+development we shall now write programs to solve linear equations and invert matrices.
 
-We begin with a dose of mathematics (linear algebra),
-
+\section{Simultaneous linear equations}
+\TallC{We} begin with a dose of mathematics (linear algebra), and 
 then develop programs. Several actual programming session
-are reproduced in toto —mistakes and all- to give the ﬂavor 0
-program development and debugging 1n FORTH.
+are reproduced \textit{in toto} --mistakes and all-- to give the flavor of
+program development and debugging in FORTH.
+\subsection{Theory of linear algebraic equations}
+\TallC{We} begin by stating the problem. Given the equations
+\begin{equation}
+    \mathrm{\sum_{n=0}^{N-1}A_{mn}x_n=b_m \,.}
+    \label{eq:09_01}
+\end{equation}
+--\,more compactly written $\overleftrightarrow{A} \cdot \vec{x} = \vec{b}$\,--
+with known \textbf{coefficient
+matrix} $A_{mn}$ and known \textbf{inhomogeneous term} $b_m$: under what
+conditions can we find unique values of $x_n$ that simultaneously
+satisfy the N equations \ref{eq:09_01}?
 
-We begin by stating the problem. Given the equations
+The theory of simultaneous linear equations tells us that if not all
+the $b_m$ 's are 0, the necessary and sufficient condition for solvability is that the \textbf{determinant}\sepfootnote{09_01} of the matrix $\overleftrightarrow{A}$ should not be 0.
+Contrariwise, if $\det(\overleftrightarrow{A} )= 0$, a solution with $\vec{x} \neq 0 $ \textit{can} be found
+when $\vec{b}= 0$.
 
-N-1
-
-2 Amrixn= m- (1)
-
-n=0
-
-—more compactly written K - i.= 5'- with known coemcielt
-matrix A"... and known inhomogeneous term bm: under what
-conditions can we ﬁnd unique values of x... that simultaneoust
-satisfy the N equations 1?
-
-The theory of simultaneous linear equations tells us that if not all.
-the bm’ s are 0, the necessary and sufﬁcient condition for so]-
-
-vability is that the determinant of the matrix A. should not be 0.
-Contrariwise, if det(‘ )= 0, a solution with x at 0 can be found
-when 5= 0.
-
- 
-
- 
-
-l. ﬂiedeterminant ol'anN'th-order square matixA - denotedbydct(A)or HAII - iaanumba
-wmpmedfromtheekmewhbyapplyingnﬂulamﬂhrﬁomﬁuualgebramm
-deﬁne ”All recursivelyintemsofdeterminanuolmurioesolsquaresubmauicuokaee
-
-”$52.1.
-
-lmmm
-
-Gaiters-WW 215
-
-m Elm-Ilium
-
-Many physical systems can be represented by systems of linear
-
-equat'ons. Masses on springs, pendula, electrical circuits,
-structures , and molecules are examples. Such systems often can
+\subsection{Eigenvalue problems} 
+\TallC{Many} physical systems can be represented by systems of linear 
+equations. Masses on springs, pendula, electrical circuits,
+structures\sepfootnote{09_02}, and molecules are examples. Such systems often can
 oscillate sinusoidally. If the amplitude of oscillation remains
 bounded, such motions are called stable. Conversely, sometimes
-the motions of physical systems are unbounded —the amplitude
+the motions of physical systems are unbounded -- the amplitude
 of any small disturbance will increase exponentially with time. An
 example is a pencil balanced on its point. Exponentially growing
-motions are called -for obvious reasons - unstable.
+motions are called -- for obvious reasons -- \textbf{unstable}.
 
 Clearly it can be vital to know whether a system is stable or
 unstable. If stable, we want to know its possible frequencies of
@@ -123,1671 +47,1649 @@ free oscillation; whereas for unstable systems we want to know
 how rapidly disturbances increase in magnitude. Both these
 problems can be expressed as the question: do linear equations
 of the form
+% (2)
+\begin{equation}
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = \lambda \overleftrightarrow{\rho} \cdot \vec{\mathrm{x}}
+    \label{eq:09_02}
+\end{equation}
+have solutions? Here $\lambda$ is generally a complex number, called the
+\textbf{eigenvalue} (or \textbf{characteristic} value) of Eq. \ref{eq:09_02}, and $\overleftrightarrow{\rho}$ is often called
+the \textbf{mass matrix}. Frequently $\overleftrightarrow{\rho}$ is the unit matrix \textbf{I},
+% (3)
+\begin{equation}
+    \mathrm{I_{mn}=}
+\begin{cases}
+     1, & m = n\\
+     0, & m \neq n,
+    \end{cases}
+    \label{eq:09_03}
+\end{equation}
+but in any case, $\overleftrightarrow{\rho}$ must be \textbf{positive-definite} (we define this
+below). A non-trivial solution, $\vec{x} \neq 0$, of the equation
 
-K-i’= Air-if (2)
+% (4)
+\begin{equation}
+    \label{eq:09_04}
+    \mathrm{\overleftrightarrow{A}} \cdot \vec{\mathrm{x}} = 0
+\end{equation}
+exists if and only if $\lVert\overleftrightarrow{A}\rVert=0$ . This fact is useful in solving \textbf{eigenvalue} problems such as Eq. \ref{eq:09_02} above.
 
-have solutions? Here A is generally a complex number, mllcd the
-eigenvalue (or characteristic value) of Eq. 2, and ﬁ’is often called
-the mass matrix. Frequently K is the unit matrix I,
+% 216 
 
-1, m=n
-I"‘"-{0,m=tn, (3)
+The \textbf{secular equation} (or determinantal equation)
 
-but in any case, I must be positive-deﬁnite (we deﬁne this
-below). A non-trivial solution, x is 0, of the equation
-
-K-ii'=o (4)
-
-exists if and only if "I" = o . This fact is useful in solving eigen-
-value problems such as Eq. 2 above.
-
- 
-
-2.
-
-eJuanvNoueiasa-Almm.
-
-216 CMpterO-LklearNgabi-a Sclenwlcronnd
-
-The secular equation (or determinantal equation)
-
-III—m=o (5)
-
-is a polynomial of degree N inl, hence has N roots (either real ori
-co.mplex) When p‘= T, these roots are called the eigenvalues
-(or‘ ‘characteristic values”) of the matrix K
+% (5)
+\begin{equation}
+    \label{eq:09_05}
+    \mathrm{\lVert \overleftrightarrow{A} - \lambda \overleftrightarrow{\rho} \rVert = 0}
+\end{equation}
+is a polynomial of degree N in $\lambda$, hence has N roots (either real or
+complex)\sepfootnote{09_03}. When $\overleftrightarrow{\rho}=\overleftrightarrow{I}$, these roots are called the \textbf{eigenvalues}
+(or "characteristic values") of the matrix $\overleftrightarrow{A}$.
 
 Eigenvalue problems arising in physical contexts usually involve
-a restricted class of matrices, called real-symmetric or Hermitiant
-
-(after the French mathematician Hermite) matrices, for which.
-
-A;,, =Am . (The superscript . denotes complex conjugation -_:
-
-see Ch. 7.) All the eigenvalues of Hermitian matrices are and:
-numbers. How do we know? We simply consider Eq. 3 and its
-complex conjugate:
-
+a restricted class of matrices, called \textbf{real-symmetric} or Hermitian
+(after the French mathematician Hermite) matrices, for which
+$A_{mn}^{*}=A_{nm}$ . (The superscript * denotes complex conjugation -- 
+see Ch. 7.) All the eigenvalues of Hermitian matrices are \textit{real}
+numbers. How do we know? We simply consider Eq. \ref{eq:09_03} and its
+\textbf{complex conjugate}:
+% (6a)
+\begin{subequations}
+    \begin{align}
+        \label{eq:09_06a}
+        \sum_{n} A_{mn} x_n &= \lambda \sum_{n} \rho_{mn} x_n ;\\
+        \label{eq:09_06b}
+        \sum_{n} x_n^* A_{nm}^* &= \lambda^* \sum_{n} x_n^* \rho_{nm}^* ;
+    \end{align}
+% (6b')
+Equation ~\ref{eq:09_06b} can be rewritten (using the fact that $\overleftrightarrow{A}$ and $\overleftrightarrow{\rho}$are Hermitian)
+    \begin{equation}
+        \label{eq:09_06c}
+        \sum_{m} x_m^{*} A_{mn} = \lambda ^{*} \sum_{n} x_m^{*} \rho_{mn}
+    \end{equation}
+\end{subequations}
  
 
-2AM x,| = 112 pm xn ; (6a)
 
-2 x:A:‘m = 1‘ 2 x: pi. ; (6b)
-Equation 6b can be rewritten (using the fact that K and ﬂare.
-Hermitian)
-
-2 MIA"... = 1' 2 x; Pm (6b')
-Multiply 6b’ by xm and 63 by x; , sum both over at and subtract:
+Multiply \ref{eq:09_06c} by $x_m$ and \ref{eq:09_06a} by $x_m^*$, sum both over at and subtract
 this gives
 
-0= (if—i) 2 x;p.,,x,. (7)
+% (7)
+\begin{equation}
+    \label{eq:09_07}
+    0 = \Big(\lambda^*-\lambda \Big) \sum_{n,m} x_m^{*} \rho_{mn} x_n\;. 
+\end{equation}
 
-However, as noted above, p is positive-deﬁnite, Le.
+However, as noted above, $\rho$ is \textbf{positive-definite}, i.e.
+% (8) 
+\begin{equation}
+    \label{eq:09_08}
+    x^\dagger \cdot \rho \cdot x \equiv
+    \sum_{n,m} x_m^{*} \rho_{mn} x_n > 0
+\end{equation}
+for any non-zero vector\sepfootnote{09_04} $x$. Thus, Eq. \ref{eq:09_07} $\lambda^*\equiv\lambda$, that is, $\lambda$ is real.
 
- 
+In vibration problems, the eigenvalue $\lambda$ usually stands for the
+square of the (angular) vibration frequency: $\lambda=\omega^2$. Thus, a positive eigenvalue $\lambda$ corresponds to a (double) real value, $\pm\omega$, of the
+angular frequency. Real frequencies correspond to sinusoidal
+vibration with time-dependence $\sin(\omega t)$ or $\cos(\omega t)$.
 
-3. This follows from the fundamental theorem of algebra: a polynomial equation, I
-p(z): a0 + all + azzz +.. .+ anz“ =0, of degree n (in a complex variable 2) has exactly a solutions ,
+Conversely, a negative $\lambda$ corresponds to an imaginary frequency,
+$\pm i \omega$ and hence to a solution that grows exponentially in time, as
 
-WM"!
+% (9)
+\begin{align}
+    \label{eq:09_09}
+\sin(i\, \omega t) = i \sinh(\omega t)\nonumber \\
+\\
+\cos(i\, \omega t) = i \cosh(\omega t)\nonumber
+\end{align}
+There are many techniques for finding eigenvalues of matrices.
+If only the largest few are needed, the simplest method is iteration: make an
+initial guess $x^{(0)}$ and let
+\begin{equation*}
+    x^{(n)}=\frac{A x^{(n-1)}}{\Big(x^{(n-1)}, \rho x^{(n-1)}\Big)^{^1/_2}}
+\end{equation*}
+Assuming the largest eigenvalue is unique, the sequence of vectors $x^{(n)} , n = 1, 2,\dotsc$, is guaranteed to converge to the vector
+corresponding to that eigenvalue, usually after just a few iterations.
 
-Quail—WM 217
+If \textit{all} the eigenvalues are wanted, then the only choice is to solve
+the secular equation \ref{eq:09_05} for all N roots.
 
-lt-p-XIZ x,’,,p,,..x,,>0 (8)
-
-I.”
-for any non-zero vector4 x .Thus, Eq. 7 o A. E A, that is, l is real.
-
-ln vibration problems, the eigenvalue A usually stands for the
-square of the (angular) vibration frequency: )1 2 (oz. Thus, a posi-
-tive eigenvalue). corresponds to a (double) real value, 1w, of the
-angular frequenq. Real frequencies correspond to sinusoidal
-vibration with time-dependence sin(alr) or cos(wi).
-
-Conversely, a negative). corresponds to an imaginary frequency,
-ti al and hence to a solution that grows exponentially in time, as
-
-sin(l' (0!) = isinh(wr)
-(9)
-
-0050' air) = cosh(alt)
-
-There are many techniques for ﬁnding eigenvalues of matrices.
-If only the largest few are needed, the simplest method is itera-
-
-tion: make an initial guess x (0) and let
-
-Axol-l)
-
-,(n) =
-
-Assuming the largest eigenvalue is unique,the sequence of vec-
-
-tors xm , n = 1, 2,..., is guaranteed to converge to the vector
-corresponding to that eigenvalue, usually after just a few itera-
-lions.
-
-Ifall the eigenvalues are wanted, then the only choice is to solve
-the secular equation 5 for all N roots.
-
-52 Solving linear equations
-
-The test-and-development cycle in FORTH is short compared
+\section{Solving linear equations}
+\TallC{The} test-and-development cycle in FORTH is short compared
 with most languages. It is usually easy to create a working
 program that subsequently can be tuned for speed, again much
+% 218
+more rapidly than with other languages. For me this is the chief
+benefit of the language.
 
- 
+\subsection{Cramer's rule}
 
-4. Fordaritywenowonitthevcaor“-°'anddyad“0'symbdsﬁ'omvectorsandmauiwe
-
-emvuouoim-me.
-
-218
-
-ChapterQ-LlnaarNgebra SclentlﬂcFORmi
-
-more rapidly than with other languages. For me this is the chief 1
-beneﬁt of the language.
-
-“I Cramer's rule
-
-Cramer’s rule is a constructive method for solving linear equa
-
-tions by computing determinants. It is completely impractical
-as a computer algorithm because it requires 0(N!) steps to solve
+\TallC{Cramer's} rule is a constructive method for solving linear equations
+by computing determinants. It is completely impractical
+as a computer algorithm because it requires $O(N!)$ steps to solve
 N linear equations, whereas pivotal elimination (that we look at
-below) requires 0(N3) steps, a much smaller number. Neverthe—
-less Cramer’s rule is of theoretical interest because it is a closed—
-form solution.
+below) requires $O(N^3)$ steps, a much smaller number. Nevertheless Cramer's
+rule is of theoretical interest because it is a closed form solution.
 
-Consider a square NXN matrix A Pretend for the moment we‘
-know how to compute the determinant of an (N-1)x(N-1)'
-matrix. The determinant of A is deﬁned to be
+Consider a square $N\times N$ matrix \textbf{A}. Pretend for the moment we
+know how to compute the determinant of an $(N-1)\times(N-1)$
+matrix. The determinant of \textbf{A} is defined to be
+% according to  Josefg's comment this one is assumed to be Eq. (10) 
+\begin{equation}
+    \label{eq:09_10}
+    \det(A) = \sum_{n=0}^{N-1}A_{mn} a_{nm} 
+\end{equation}
+where the $a_{mn}$'s are called \textbf{co-factors} of the matrix elements $A_{mn}$
+and are in fact determinants of specially selected $(N-1)\times(N-1)$
+sub-matrices of \textbf{A}.
 
-N—l
-det(A) = 2 A...,,a,,,,
+The sub-matrices are chosen by striking out of \textbf{A} the n'th column
+and m'th row (leaving an $(N-1)\times(N-1)$ matrix). To illustrate,
+consider the $3 \times 3$ matrix
+% (11)
+\begin{equation}
+    \label{eq:09_11}
+    A = 
+    \begin{pmatrix}
+        1 & 0 & 5\\ 
+        3 & 2 & 4\\ 
+        1 & 1 & 6
+    \end{pmatrix}
+\end{equation}
+and produce the co-factor of $A_{12}$:
+% (12)
 
-n-O
+\begin{samepage}
+    \nopagebreak
+    \vspace{1cm} % vertical space
+    \nopagebreak
+    \begin{equation}
+        \label{eq:09_12}
+        a_{21}=(-1)^{2+1}
+        \begin{Vmatrix}
+            &\scriptscriptstyle  0 \tikz[overlay,remember picture] \node (EndC){}; & \scriptscriptstyle 1 & \scriptscriptstyle 2 \\
+            \scriptscriptstyle  0 & 1 & \tikz[overlay,remember picture] \node (StartA){};0 & 5 \\
+            \scriptscriptstyle  1 & \tikz[overlay,remember picture] \node (StartB){};3 & 2 & \tikz[overlay,remember picture] \node (EndB){}; 4 \\
+            \scriptscriptstyle \tikz[overlay,remember picture] \node (EndD){}; 2 & 1 & \tikz[overlay,remember picture] \node (EndA){};1 & 6 
+        \end{Vmatrix}
+    \end{equation}
+    \nopagebreak
+    \begin{tikzpicture}[overlay,remember picture]
+        \node [rectangle, draw, above right, align=center] at (7.9,2.2) (StartC) {Column labels};
+        \draw[line width=0.25mm, blue] ($(StartA)+(0.1,0.1)$) -- ($(EndA)+(0.1,0.1)$);
+        \draw[line width=0.25mm, blue] ($(StartB)+(0.1,0.1)$) -- ($(EndB)+(0.1,0.1)$);
+        \node [rectangle, draw, above right, align=center] at ($(StartC)+(-1.3, -3.0)$) (StartD) {Row labels};
+        \draw [->](StartC) -- ($(StartC) - (2,0)$)  -- ($(StartC) - (2.3,0.3)$)  -- ($(StartC) - (2.3,0.6)$);
+        \draw [->](StartD) -- ($(StartD) - (2.1,0)$) -- ($(EndD)+(0.2,-0.2)$) ;
+    \end{tikzpicture}
+    \vspace{1cm} % vertical space
+\end{samepage}
 
-where the amn’s are called co-factors of the matrix elementsA...
-and are in fact determinants of specially selected (N-1)x(N-1)
-sub-matrices of A. ‘
+We also attach the factor $(-1)^{m+n}$ to the determinant of the
+submatrix when we compute $a_{nm}$.
 
-The sub-matrices are chosen by striking out of A the n’th column
-and m’th row (leaving an (N-1)X(N-1) matrix). To illustrate,
-consider the 3 X3 matrix
-
-1
-A = a (11)
-1
-
-4M0
-(7)-#01
-
-and produce the co-factor of A 12:
-
- 
-
-.21-(-1)2+'
-
-1 § 5 (12)
-1 6
-
-We also attach the factor (-l)"'+" to the determinant of the
-submatn'x when we compute a". .
-
-K's-DO
-
-A determinant changes sign when any two rows or any two
-
-columns are interchanged. Thus, a determinant with two iden-
-tical rows or columns is exactly zeros. What would happen to
-Eq. 11 if instead of putting A,“ in the sum we put A“ where
-krtm? By inspection we realize that this is the same as evaluating
+\TallC{A determinant} changes sign when any two rows or any two 
+columns are interchanged. Thus, a determinant with two identical rows or
+columns is exactly zeros\sepfootnote{09_05}. What would happen to
+Eq. \ref{eq:09_11} if instead of putting $A_{mn}$ in the sum we put $A_{kn}$ where
+$k\neq m$? By inspection we realize that this is the same as evaluating
 a determinant in which two rows are the same, hence we get zero.
-Thus Eq. 11 can be rewritten more generally
-
-N—l
-20AM anrn = llA ll 6km - (13)
+Thus Eq. \ref{eq:09_11} can be rewritten more generally
+% (13)
+\begin{equation}
+    \sum_{n=0}^{N-1}A_{kn}a_{nm}=\lVert A\rVert\;\delta_{km}\;.\label{eq:09_13}
+\end{equation}
 
 This feature of determinants lets us solve the linear equation
-A 'x = b by construction: try
+$A \cdot x = b$ by construction: try
+% (14)
+\begin{equation}
+    x_n=\frac{1}{\det(A)}\sum_{m}^{N-1}a_{nm}b_m.\label{eq:09_14}
+\end{equation}
+We see from Eq. \ref{eq:09_13} that Eq. \ref{eq:09_14} solves the equation. Equation \ref{eq:09_14}
+also makes clear why the solution cannot be found if $\det(A) = 0$.
 
-1 N-l
-
-xii = d—etm E: anmbm- (14)
-
-We see from Eq. 13 that Eq. 14 solves the equation. Equation 14
-also makes clear why the solution cannot be found if det(A) = 0.
-
-A determinant also vanishes when a row is a linear combination
+A determinant also vanishes when a row is a \textit{linear combination}
 of any of the other rows. Suppose row 0 can be written
 
- 
-
-5.
-
-Theonlynumberequaltoitsnegatiwiso.
-
-OJulanVNobletﬂz-Alrldusmarvcd.
-
-Chapter 9 — Linear Algebra Scientiﬁc FORTH
-
-N-l
-“or E 2 ﬁns amt;
-
-m=i
-
-that is, the O’th equation can be derived from the other N-l
+\begin{equation*}
+    a_{0k}\equiv    \sum_{m=0}^{N-1}\beta _m a_{mk}\;;
+\end{equation*}
+that is, the 0'th equation can be derived from the other N-1
 equations, hence it contains no new information. We do not really
 have N equations for N unknowns, but at most N-1 equations. The
-N unknowns therefore cannot be completely speciﬁed, and the
+N unknowns therefore cannot be completely specified, and the
 determinant tells us this by vanishing.
 
-As an example, we now use Cramer’s rule to evaluate the deter-
-minant of Eq. 11. We will write
+As an example, we now use Cramer's rule to evaluate the determinant of Eq. \ref{eq:09_11}. We will write
 
-||A||=Aooaoo+Amaio+Aozazo
-24
-in,“
-
-4
-mini-v
-
-The determinant of a 1 x 1 matrix is just the matrix element, hence
-
-32
-1
-
-320: 1
-
- 
-
- 
-
- 
-
-em = 2-6 + (—1)-4-1 = 8
-am = —(18 — 4) = —14
-320 = (3 —2) = 1
-“A II = 1-8 + 0-(—14)+ 5-1 =13.
+\begin{align*}
+    \lVert A\rVert&=A_{00}a_{00}+A_{01}a_{10}+   A_{02}a_{20}\\
+    a_{00} &= 
+    \begin{Vmatrix}
+        2 & 4\\
+        1 & 6
+    \end{Vmatrix}\\
+    a_{10} &= 
+    \begin{Vmatrix}
+        3 & 4\\
+        1 & 6
+    \end{Vmatrix} (-1)\\
+    a_{20} &= 
+    \begin{Vmatrix}
+        3 & 2\\
+        1 & 1
+    \end{Vmatrix}\\
+\end{align*}
+The determinant of a $1 \times 1$ matrix is just the matrix element, hence
+\begin{align*}
+     \erratumMathReplace{typo}{a_{10}}{a_{00}} &=  2 \cdot 6 + (-1)\cdot 4\cdot 1 = 8\\
+    a_{10} &=  -(18 - 4) = -14\\
+    a_{20} &=  (3 -2) = 1\\
+    \lVert A\rVert &= 1\cdot 8 + 0\cdot (-14)+ 5\cdot 1 =13\;.
+\end{align*}
+\erratumMathPrint% Printing the footnote
 How many operations does it take to evaluate a determinant? We
-
 see that a determinant of order N requires N determinants of
-order N-l to be evaluated, as well as N multiplications and N-l
-
-WWW-l
-
-Glaciers-Wm 221
-
-additions. If the addition time plus the multiplication time is r,
+order N-l to be evaluated, as well as N multiplications and N-1
+additions. If the addition time plus the multiplication time is $\tau$,
 then
-
-TN~N(r+T,.-,).
-
-It is easy to seem the solution to this is
-
-- Nire.
-
-" 1
-TN=leE 3" "an
-
+\begin{equation*}
+    T_N\approx N(\tau +T_{N-1})\;.
+\end{equation*}
+It is easy to see\sepfootnote{09_06}\sepfootnote{09_07} the solution to this is
+\begin{equation*}
+    T_N =N!\tau \sum_{n=0}^{N}\frac{1}{n!} \underset{n\to\infty}{\rightarrow} N!\tau e\;.
+\end{equation*}
 In other words, the time required to solve N linear equations by
-Cramer’s rule increases so rapidly with N as to render the method
+Cramer's rule increases so rapidly with N as to render the method
 thoroughly impractical.
 
-§§2 PlvotalEllmlnatlon
-
-The algorithm we shall use for solving linear equations is elimina-
-tion, just as we were taught in high school algebra. However we
-modify it to take into account the experience of 40 years‘s solving
+\subsection{Pivotal Elimination}
+The algorithm we shall use for solving linear equations is elimination, just as we were taught in high school algebra. However we
+modify it to take into account the experience of 40 years's solving
 linear equations on digital computers (not to mention a previous
 20 years's worth on mechanical calculators!), to minimize the
-buildup of round-off error and consequent loss of precision .
+buildup of round-off error and consequent loss of precision \sepfootnote{09_08}.
 
-The necessary additional step involves pivoting —selecting the
+The necessary additional step involves pivoting -- selecting the
 largest element in a given column to normalize all the other
-
- 
-
-6. Professors always say this, hee, heel See R. Sedgewick, Algorithm (AddisomWesky Publishing
-Company, Reading. MA 1983).
-
-5"3.‘I
-
-N! means Nx(N-1)x(N-2)x... x2x1. The base ofthe “natural" logarithmsis e =Z7182318...
-Acomputerstoresanumberwithﬁnite precision — say6-7decimalplaceswith32-bit ﬂoating-
-
-pointnumbers.'l'hisisenoughformanypurposes,upcdaﬂyinscienceandengineedngwhere
-thedataare rarely measured to betterthan 1% relative precision Suppose, however, thattwo
-numbers, about lO'zinmagnitude, are multiplied. Their productisoforder lO‘and'sknownto
-aixsigniﬁcantﬁgures.Nowaddittoathirdnumberoforderunity.’l‘heresultwillbethatthird
-number:10".l..ater,afourthnumber — alsooforderunity— issubtractedfromth'nsum'lhe
-resultwillbeanumberoforderlo‘mutnowknownonlytot'esigniﬁcantﬁgunMatrixarith—
-meticisfullofmultiplicationsandadditiouaThelessonisdear— tominimizetheﬁnevitable)
-kndwedshmassodatedwihmundvomwmwwmkcepthemayﬂudesdprodwsand
-sumsasekiseupossible.
-
-222
-
-Chapter 9 - Linear Algebra Sclermﬂc FORTH
-
 elements. This will be clearer with a concrete illustration rather
-than further description: Consider the 3 X3 system of equations:
+than further description: Consider the $3 \times 3$ system of equations:
+%  (15)
+\begin{equation}
+    \label{eq:09_15}
+    \begin{pmatrix}
+    1 &0 &5\\ 
+    3 &2 &4\\ 
+    1 &1 &6
+    \end{pmatrix}
+\begin{pmatrix}
+x_0\\
+x_1\\
+x_2
+\end{pmatrix}
+=
+\begin{pmatrix}
+    0\\
+    4\\
+    2
+\end{pmatrix}
+\end{equation}
+We check that the determinant is $\neq0$; in fact $\det(A) = 13$. The first
+step in solving these equations is to transpose rows in \textbf{A} and in \textbf{b}
+to bring the largest element in the first column to the $A_{00}$ position.
 
-105 x0 0
-324 1:1 =4 (15)
-116 x2 2
+\underline{Notes:}
 
-We check that the determinant is #0; in fact det(A) = 13. The ﬁrst
-step in solving these equations is to transpose rows in A and in b
-to bring the largest element in the ﬁrst column to the/loo position.
-
-Natl-a;
-
-e The x’s are not relabeled by this transposition. ,
-
-e We choose the row (n=1 ——second row) with the largest (in
-absolute value) element Ano because we are eventually going
+% (16)
+\begin{itemize}
+  \item The x's are not relabeled by this transposition. 
+  \item We choose the row (n=1 --second row) with the largest (in
+      absolute value) element $A_{n0}$ because we are eventually going
 to divide by it, and want to minimize the accumulation of
-roundoff error in the ﬂoating point arithmetic.
-
+roundoff error in the floating point arithmetic.  
+\end{itemize}
 Transposition gives
-3 2 4 xo 4
-1 0 5 x1 = 0 (16)
-1 1 6 x2 2
+\begin{equation}
+    \label{eq:09_16}
+    \begin{pmatrix}
+        3 &2 &4\\ 
+        1 &0 &5\\ 
+        1 &1 &6
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_0\\
+        x_1\\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        4\\
+        0\\
+        2
+    \end{pmatrix}
+\end{equation}
+Now divide row 0 by the new $A_{00}$ (in this case, 3) to get
+% (17)
+\begin{equation}
+    \label{eq:09_17}
+    \begin{pmatrix}
+        1 &^2/_3 &^4/_3\\ 
+        1 &0 &5\\ 
+        1 &1 &6
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_0\\
+        x_1\\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        ^4/_3\\
+        0\\
+        2
+    \end{pmatrix}
+\end{equation}
 
-Now divide row 0 by the neono (in this case, 3) to get
-1 2/3 4’3 x0 V3
-1 0 5 x1 = 0 (17)
-1 1 6 X2 2
+Subtract row 0 times $A_{n0}$ from rows with n $>$ 0
+% (18)
+\begin{equation}
+    \label{eq:09_18}
+    \begin{pmatrix}
+        1 &^2/_3 &^4/_3\\ 
+        0 &^{-2}/_3 &^{11}/_3\\ 
+        0 &^1/_3 &^{14}/_3
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_0\\
+        x_1\\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        ^4/_3\\
+        ^{-4}/_3\\
+        ^2/_3
+    \end{pmatrix}
+\end{equation}
 
-Subtract row 0 times Ana from rows with n > 0
-1 2/3 4’: 10 V:
-o —2/, 11/3 x, = -Va (13)
-0 1’3 W: x, 26
-
- 
-
-Since |An| > |A21| we do not bother to switch rows 1 and 2, but
-divide row 1 byAn =-2/3, getting
-
-cranes-mm 223
-
-l ’3 V: to V3
-0 1 -1V2 xi - 2 (19)
-0 V) IV! 12 V3
-
- 
-
- 
-
- 
-
- 
-
-We now multiply row 1 by A“ a 1/3 and subtract it from row 2,
-and also divide through by A” to get
-
-173 V3 10 V3
-0 1 -u/2 x; 8 2 (20)
-0 0 1 x; 0
-
- 
-
-The resulting transformed system of equations now has 0’s to the
+Since $|A_{11}| > |A_{21}|$ we do not bother to switch rows 1 and 2, but
+divide row 1 by $A_{11} =-2/3$, getting
+% (19)
+\begin{equation}
+    \label{eq:09_19}
+    \begin{pmatrix}
+        1 & ^2/_3 & ^4/_3\\ 
+        0 & 1 & ^{-11}/_2\\ 
+        0 & ^1/_3 & ^{14}/_3
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_0\\
+        x_1\\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        ^4/_3\\
+        2\\
+        ^2/_3
+    \end{pmatrix}
+\end{equation}
+We now multiply row 1 by $A_{21}$ a 1/3 and subtract it from row 2,
+and also divide through by $A_{22}$ to get
+% (20)
+\begin{equation}
+    \label{eq:09_20}
+    \begin{pmatrix}
+        1 & ^2/_3 & ^4/_3\\ 
+        0 & 1 & ^{-11}/_2\\ 
+        0 & 0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_0\\
+        x_1\\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        ^4/_3\\
+        2\\
+        0
+    \end{pmatrix}
+\end{equation}
+The resulting transformed system of equations now has 0's to the
 left and below the principal diagonal, and 1's along the diagonal.
 Its solution is almost trivial, as can be seen by actually writing out
 the equations:
-
-1Xo+2/3X«| +V3X2=4/3 (21.0)
-0x0 +1x1+(—11/2)X2 = 2 (21.1)
-Oxo+0x1+1x2=0 (21.2)
-
-That is, from Eq. 21.2, x; = 0. We can back-substitute this in 21.1,
-then solve for x, to get
-
-x, = 2 — (—11/2)-(0) = 2
-
-and similarly, from 21.0 we ﬁnd
-xo=V3—2/3(2)+V3(0)=O.
+% (21)
+\begin{subequations}
+    \begin{align}
+         \label{eq:09_21_0}
+        1 x_0 + 2/3 x_1 + 4/3 x_2 &= 4/3\\
+         \label{eq:09_21_1}
+        0 x_0 + 1 x_1 + (-11/2) x_2 &= 2 \\
+        0 x_0 + 0 x_1 + 1 x_2 &= 0 \label{eq:09_21_2}
+    \end{align} 
+\end{subequations}
+That is, from Eq. \ref{eq:09_21_2}, $x_2 = 0$. We can back-substitute this in  \ref{eq:09_21_1},
+then solve for $x_1$, to get
+\begin{equation*}
+    x_1 = 2 - (-11/2)\cdot(0) = 2
+\end{equation*} 
+and similarly, from \ref{eq:09_21_0} we find
+\begin{equation*}
+x_0 = 4/3 - 2/3\,(2)+4/3\,(0) = 0 \; .
+\end{equation*} 
 We test to, see whether this is the correct solution by direct trial:
-1-O+0-2+5-O=0
-3-0+2-2 +4-0=4
-1-O+2-2+6-O=2
+\begin{align*}
+1 \cdot 0+0 \cdot 2+5 \cdot 0=0\\
+3 \cdot 0+2 \cdot 2+4 \cdot 0=4\\
+1 \cdot 0+2 \cdot 2+6 \cdot 0=2
+\end{align*} 
 
-his works —we have indeed found the solution.
-
-cmvlioueieaa-Alrlgium.
-
-224
-
-Chapter 9 - Unear Algebra Scientiﬁc FORTH
+This works -- we have indeed found the solution.
+% 224
 
 How much time is needed to perform pivotal elimination? We
-concentrate on the terms that dominate as N - on.
+concentrate on the terms that dominate as $N\to\infty$.
 
 The pivot has to be found once for each row; this takes N-k
-comparisons for the k’th row. Thus we make ~N l2 comparisons
+comparisons for the k'th row. Thus we make $\approx$ N /2 comparisons
 of 2 real numbers. (For complex matrices we compare the
-squared moduli of 2 complex numbers, requiring two multiplica-
-tions and an addition for each modulus.)
+squared moduli of 2 complex numbers, requiring two multiplications and an addition for each modulus.)
 
-We have to divide the k’th (pivot) row by the pivot, at a point in I
-the calculation when the row contains N-k elements that have not _
-been reduced to 0. We have to do this for k = 0, 1, ..., N-l, ‘
+We have to divide the k'th (pivot) row by the pivot, at a point in
+the calculation when the row contains N-k elements that have not
+been reduced to 0. We have to do this for k = 0, 1, ..., N-1, 
+requiring $\approx N^2/2$ divisions.
 
-requiring =N /2 divisions.
-
-The back-substitution requires 0 steps for rm, 1 multiplication
-and 1 addition for x“, 2 each for it)“, etc. That is, it requires
-
-k=0
-2 (N—l—k) =N2/2
-k=N-1
-
+The back-substitution requires 0 steps for $x_{N-1}$, 1 multiplication
+and 1 addition for $x_{N-2}$, 2 each for $x_{N-3}$, \textit{etc.} That is, it requires
+\begin{equation*}
+    \sum_{k=N-1}^{k=0}(N-1-k) \approx N^2/2
+\end{equation*} 
 multiplications and additions.
 
-The really time-consuming step is multiplying the k’th row by
-A", , j > k, and subtracting it from row j. Each such step requires
-N-k multiplications and subtractions, for j=k+1 to N-l, or
-(N -k) - (N —k— 1) multiplications and subtractions. This has to be
-repeated for k= 0 to N-2, giving approximately N3/3 multiplica-
+The really time-consuming step is multiplying the k'th row by
+$A_{jk}, j > k$, and subtracting it from row $j$. Each such step requires
+N-k multiplications and subtractions, for j=k+1 to N-1, or
+$(N -k) \cdot (N -k- 1)$ multiplications and subtractions. This has to be
+repeated for k = 0 to N-2, giving approximately $N^3/3$ multiplications and subtractions. In other words, the leading contribution to the time is $\tau N^3/3$, which is a lot better than $\tau e N!$ as with
+Cramer's rule.
 
- 
+\TallC{When} we optimize for speed, only the innermost loop -- requiring $O (N^3 /3)$ operations needs careful tuning; the $O (N^2/2)$ 
+operations -- comparing floating point numbers, dividing by the pivot, and
+back-substituting -- need not be optimized bgecause for
+large N they are overshadowed by the innermost loop\sepfootnote{09_09}.
 
-l
-l
-l
-i
-i}
-;
-i
-
- 
-
-tions and subtracti30ns. In other words, the leading contribution l
-
-to the time is rN 3/3, which is a lot better than reN! as with
-Cramer’ 5 rule.
-
-Whenweog timize for speed, only the innermost loop —re uir-
-
-mg O (N13 /3) operations needs careful tuning; the O (N [2) 3
-
-operations — comparing ﬂoating point numbers, dividing by the .i
-
-pivot, and back-substituting — need not be optimized bgecause for
-large N they are overshadowed by the innermost loop .
-
- 
-
-9.
-
-The exception to this general rule, where more complete optimization would pay, would be an
-application that requires solving many sets of equations of relatively small order.
-
- 
-
-MM"!
-
-“3
-
-cleans—mm 225
-
-Mia
-
-Since we have worked out a speciﬁc 3 x 3 set of linear equations,
+% 225 
+\subsection{Testing}
+\TallC{Since} we have worked out a specific $3 \times 3$ set of linear equations,
 we might as well use it for testing and debugging. Begin with
 some test words that do the following jobs:
 
-e Create matrix and vector (inhomogeneous term)
-e Initialize them to the values in the example
-
-e Display the matrix at any stage of the calculation
-e Display inhomogeneous term at any stage
-
+\begin{itemize}
+  \item Create matrix and vector (inhomogeneous term)
+  \item Initialize them to the values in the example
+  \item Display the matrix at any stage of the calculation
+  \item Display inhomogeneous term at any stage
+\end{itemize}
+\begin{verbatim}
 \ Display words
-V{ or M{{ stands torwhatanarrayputsonstack
-U: G. F. x. ;
-:.M (M{{--) FINIT DUP
-D.LEN 0 DO CR DUP
-D.LEN 0 DO DUP (--M{{ M{{ )
-J}{I}} DUP>R G@ G.
-LOOP
-LOOP DROP ;
+\ V{ or M{{ stands for what an array puts on stack
+GU: G. F. X. ;
+: .M ( M{{ --) FINIT DUP
+    D.LEN 0 DO CR DUP
+        D.LEN 0 DO DUP ( -- M{{ M{{ )
+            J }{ I }} DUP>R G@ G.
+        LOOP
+    LOOP DROP ;
 
-:.v (V{-~) DUP D.LEN
-0 DO on DUP l}{0} G@ G. LOOPDROP:
+: .V ( V{ --) DUP D.LEN
+    0 DO CR DUP I }{ 0 } G@ G. LOOP DROP ;
+\ end{verbatim}
 
-We deﬁne a word to put ASCII numbers into matrices:
-:GEFF# BL TEXT PAD $->F;
+We define a word to put ASCII numbers into matrices:
+\begin{verbatim}
+: GET-F# BL TEXT PAD $->F ;
+\end{verbatim}
 
-This word takes the next string10 from the input stream (set off
-by ASCII blank, BL) and uses the PIS/FORTH word $~> F to
-convert the string to ﬂoating point format and put it on the
+This word takes the next string\sepfootnote{09_10} from the input stream (set off
+by ASCII blank, \textbf{BL}) and uses the HS/FORTH word \$ $\to F$ to
+convert the string to floating point format and put it on the
 87stack.
 
- 
+\textbf{GET-F\#} is used in the following:
+\begin{verbatim}
+: <DO-VEC>   0 DO GET-F#  DUP  I 0}   G!
+             LOOP DROP ;
+: TAB->VEC  DUP D.LEN <DO-VEC> ;
+: TAB->MAT  DUP D.LEN DUP * <DO-VEC> ;
+\end{verbatim}
 
-10. ‘l'heword'lEX'l‘inputsacountedstringusingtheFORTH-DstandardwordWOIlD,aad
-placesit“PADJ'hisiswhyPADappeaninthedeﬁniﬁonofGﬂ-FlAdeﬁnkionofEXT
-miditbe :‘IEX'l‘(delirniter--)WORDDUPC@1+ unswxrcuovs; Notethatall
-words prefacedwithC arebyteoperatioasbyPORTH convention.
+The file EX.3 will be found in the accompanying program diskette. The explanatory notes below refer to EX.3.
 
-OJilthNoUetm-Mlldusleseived.
+\underline{Notes:}
 
-Chapter 9 - Unear Algebra Sclentlﬂc FORTH
-
-GET-F# is used in the following:
-
-: <DO-VEC> ODO GET-F# DUP I0} G!
-LOOP DROP;
-
-:TAB->VEC DUP D.LEN <DO-VEC> ;
-
-:TAB->MAT DUP D.LEN DUP * <DO-VEC> ;
-
-The ﬁle EX.3 will be found in the accompanying program disk-
-ette. The explanatory notes below refer to EX.3.
-
-Notes:
-
-e The word .( emits everything up to a terminating) .
-
-e HS/FORT'I-I, because of its segmented dictionary, uses a word
-TASK to deﬁne a task-name, and FORGET-TASK to FORGET
-eve hing following the task-name. The FORTH word FOR-
-GE fails in HS/FORTH when it has to reach too deeply into
-the dictionary.
-
-e Ex.3 uses the word }row{ deﬁned below.
+\begin{itemize}
+  \item The word .( emits everything up to a terminating) .
+  \item HS/FORTH, because of its segmented dictionary, uses a word TASK to define a task-name, and FORGET-TASK to FORGET everything following the task-name. The FORTH word FORGET fails in HS/FORTH when it has to reach too deeply into the dictionary.
+  \item Ex.3 uses the word \}row\{ defined below.
+\end{itemize}
 
 This is what it looks like when we load EX.3:
 
+\begin{verbatim}
 FLOAD EX.3 Loading EX.3
-ReadadimenslonSvectorand 3113 matrbtlrornatablethendispiaythem
-Now displaying vector.
+Read a dimenslon 3 vector and 3x3 matrix from a table, then dispiay them.
+Now displaying vector:
 V{ .V CR
 0.0000000
 4.0000000
 2.0000000
-Now displayhg matrbc
+Now displayhg matrix 
 A{{ .M CR
-1.0000000 0.000(1)“) SIXJOOCDO
+1.0000000 0.0000000 5.0000000 
 3.0000000 2.0000000 4.0000000
 1.0000000 1.0000000 6.0000000
-say Exa FORGET-TASKto graceitﬂy FORGET these words olt
+say EX.3 FORGET-TASK to graceitfly FORGET these words ok 
+\end{verbatim}
 
-WM”!
+\subsection{Implementing pivotal elimination}
+\TallC{Now} we have to define the FORTH words that will implement
+this algorithm. In pseudocode, we can express pivotal elimination as shown in Fig. \ref{fig:09_01} below.
+\begin{figure}
+%Fig. 9-1 
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
+    \begin{tikzpicture}
+        \draw (0,-0.1) rectangle (10,7.5);
+        \coordinate (a) at (1,7.0);
+        \node [circle, draw, cross] at (1,6) (cross) {};
+        \node [circle, draw, dot] at (1, 1.5) (dot)  {};
+        \coordinate (end) at (1,0.70);
+        \draw [fill, opacity=0.2] (.75,0.30) rectangle (1.25,.70) {};
 
-Mil-Wm 227
-
-"4 WWW
-
-Now we have to deﬁne the FORTH words that will implement
-this algorithm. In pseudooode, we can express pivotal elimina-
-tion as shown in Fig. 9-1 below.
-
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (0.5,-0.5)$) (C0) {\verb|A{{ B{ }}SOLVE| ( solution to Ax=B left in B)};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (0.5,0)$) (C1) {\verb|BEGIN|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (1.0,-2.5)$) (C2) {
+            set n=0\\
+            find pivot (row m $>$ n)\\
+            swap rows m \& n \\
+            \\
+            divide row n by pivot $A_{nm}^{'}=A_{nm}/A_{nn}$ \\
+            \\
+            subtract: $A_{kl}^{'}=A_{kl}-A_{kn}A_{nl}^{'}$ \\
+            increment n \\
+            n N =\\
+        };
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,0.0)$) (C6)  {\verb|UNTIL|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.0,-0.5)$) (C7) {Back-substitute: $x_n=b_n^{'}-\sum\limits_{m>n}A_{nm}x_m$(12)};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,-1.0)$) (C8) {\verb|DONE|};
+        \path [line]  (a) -- (cross);
+        \path [line]  (cross) -- (dot);
+        \path [line]  (dot) -- (end);
+    \end{tikzpicture}
+    \caption{Pseudocode for pivotal elimination}
+    \label{fig:09_01}
+\end{figure}
  
+\subsection{The program}
+\TallC{Whenever} we write a complex program we are faced with the
+problem "Where do we begin?" FORTH emphasizes the construction of components,
+and generally cares little which component
+we define first.
 
-ch
-
- 
-
- 
-
- 
-
-A{{ B{ }}SOLVE (solutiontoAxsaleltinB)
-BEGIN
-
-setn=0
-
-ﬁndpivot(rowm > n)
-
-swaprowsman
-
-divide row n by pivot: A'M. =AMJAM
-
-subtract: A'... =A..—A..,.A',..
-increment n
-n N =
-UNTIL
-Back-substitute: x" = b'n — 2 Am... xm(12)
-
-m>n
-
-DONE
-
- 
-
- 
-
-Fig. 9-1 Pseudocode for pivotal ellmlnaa'on
-
-“5 The program
-
-Whenever we write a complex program we are faced with the
-problem “Where do we begin?” FORTH emphasizes the con-
-
-struction of components. and generally cares little which component
-we deﬁne ﬁrst.
-
-For example. we must swap two rows of a matrix. The most
+For example, we must swap two rows of a matrix. The most
 obvious way moves data:
 
-row1 - > temp
-row2 - > row1
-
+\begin{verbatim}
+row1 -> temp
+row2 -> row1
 temp -> row2
+\end{verbatim}
 
-Although data moves are relatively fast, up to N2/2 swaps may be
-needed, each row containing N data; row-swapping is an O (N 3)
-operation which must be avoided. lndirectio setting up a list of
-row pointers and exchanging those. uses 0 (N ) time.
+Although data moves are relatively fast, up to $N^2/2$ swaps may be
+needed, each row containing N data; row-swapping is an $O(N^3)$
+operation which must be avoided. Indirection, setting up a list of
+row pointers and exchanging those, uses $O(N^2)$ time.
 
-OWVNobletm—Almm.
+% 228
 
-228
+We anticipate computing the address of an element of \textbf{A\{\{} in a
+\textbf{DO} loop via the phrase 
+\begin{verbatim}
+A{{ J I }} ( J is row, I is col)
+\end{verbatim}
 
-Chapter 9 - Llnear Algebra Scientiﬁc FOR‘n-l
-
-We anticipate computing the address of an element of A{{ in a ,
-DO loop via the phrase i
-
-A{{JI}} ( Jis row,lis col)
-
-Suppose we have an array of row pointers and a word }row{ that
+Suppose we have an array of row pointers and a word \verb|}row{| that
 looks them up. Then the (swapped) element would be
-
+\begin{verbatim}
 A{{ J }row{ I }}.
+\end{verbatim}
 
-To implement this syntax we define11
-
-:swapper (n - -) l
-CREATE 0 DO I , LOOP
-DOES> OVER + + @ ;
-\ this is a deﬁning word
-
+To implement this syntax we define\sepfootnote{09_11}
+\begin{verbatim}
+: swapper ( n --)
+    CREATE 0 DO I , LOOP
+    DOES> OVER + + @ ;
+    \ this is a defining word
+\end{verbatim}
  
+We would define the array of row indices \textit{via}
 
- 
-
-We would define the array of row indices via
-
+\begin{verbatim}
 A{{ D.LEN swapper }row{ \ create array }row{
+\end{verbatim}
 
-We have initilized the vector }row{ by filling it with integers
-from 0 to N-l while deﬁning it.
+We have initialized the vector \verb|}row{| by filling it with integers
+from 0 to N-1 while defining it.
 
-Suppose we wanted to re-initialize the currently vectored row- 5
-index array: this is accomplished via
+Suppose we wanted to re-initialize the currently vectored row-index array: this is accomplished \textit{via}
 
-A{{ D.LEN ’}row{ reﬁll .i
+\begin{verbatim}
+A{{ D.LEN '}row{ refill 
+\end{verbatim}
 
 where
 
-ram—m. ,. . .m‘. .
+\begin{verbatim}
+: refill (n adr --)
+    SWAP 0 DO I 2* DDUP + !
+        2 +LOOP DROP;
+\end{verbatim}
 
-: reﬁll (n adr - -)
-SWAP 0 DO I 2* DDUP + !
-2 +LOOP DROP;
+To swap the two rows
 
- 
+\begin{verbatim}
+:ADRS >R 2* OVER + SWAP R> 2* + ;
+( a m n -- a + 2m a + 2n)
+0 VAR ?SWAP           \to keep track of swaps
 
-11.
-
-mm“... ‘mn—Lk,ﬁ-u_ .. aims . Vannr
-
-The HS/FORTH words VAR and IS deﬁne a data structure that can be changed, like a FORTH
-VARIABLE: 0 VAR X 3 IS X but has the run-time behavior of a CONSTANT: X . 3 olt.
-
-awe-mm 22.
-
-'Ibswapthetworows
-
-:ADRS >R 2'OVER + SWAPR> 2' +;
-(amn-a+2ma+2n)
-OVAR ?SWAP \to keep track of swaps
-
-:}SWAP (amn-)DDUP -
-IF DDROP DROP \noswap - deanup
-
-ELSE ADRS DDUP (.-121 2)
-@SWAP@ (-‘12[21[1I)
-nor! SWAP 1
-
--1 ?SWAP XOR IS ?SWAP \ "‘ ?SWAP
-THEN ;
+: }SWAP ( a m n --) DDUP =
+    IF DDROP DROP \ noswap -- clean up
+    ELSE ADRS DDUP ( --1 2 1 2)
+        @ SWAP @ ( -- 1 2 [2] [1])
+        ROT ! SWAP !  
+        -1 ?SWAP XOR IS ?SWAP \ ~ ?SWAP
+    THEN ;
+\end{verbatim}
 
 Test this with a 3-dimensional row-index array:
 
+\begin{verbatim}
 3 swapper }row{
 
-:TEST ODOI}row{ CR. LOOP;
+: TEST 0 DO I }row{ CR . LOOP ;
 3 TEST
-
 0
-
 1
-
 2 ok
+\end{verbatim}
 
 Now swap rows 1 and 2:
 
-'}row{ 1 2 }SWAP 3TEST
-o
-
-2
-10k
-
-and back again:
-
+\begin{verbatim}
 '}row{ 1 2 }SWAP 3 TEST
 0
-
+2
+1 ok
+\end{verbatim}
+and back again:
+\begin{verbatim}
+'}row{ 1 2 }SWAP 3 TEST
+0
 1
-20k
+2 ok
+\end{verbatim} 
 
-Next, we need a word to ﬁnd the pivot element in a given
+\TallC{Next}, we need a word to find the pivot element in a given
 column, searching from a given n. The steps in this procedure
-are shown in Fig. 9-2 on page 230 below.
+are shown in Fig. \ref{fig:09_02} on page \pageref{fig:09_02} below.
 
-We anticipate using generic operations Git deﬁned in Chapter 5
-
+We anticipate using generic operations \regc{Gx} defined in Chapter 5 
 to perform fetch, store and other useful manipulations on the
-matrix elements, without specifying their type until mn-time. lt
+matrix elements, without specifying their type until run-time.
+It is thus useful to have a place to store the type (other than the
+second cell of the array data structure). We arrange this \textit{via}
+\begin{verbatim}
+0 VAR T             \ a place to store data type
+\end{verbatim}
+The rest of the definition is rendered self-explanatory by the 
+vertical commenting style (a must for long\sepfootnote{09_12} words):
+\begin{verbatim}
+0 VAR Length        \ Length of matrix
+0 VAR COL           \ current col#
+0 VAR I.PIV         \ I.PIV is used to return the result
+0 VAR a{{           \ a{{ stores the adress of M{{
 
-eJuhnvuouoma—Almm.
+: INITIALIZE        ( M{{ -- ::--)
+    IS a{{
+    a{{ type@ IS T          \ initialize T
+    a{{ LEN@ IS Length ;    \ length - > Length
 
-230 Chapter 9 — Linear Algebra
+: }}PIVOT           ( M{{ col-- ::--)
+    IS COL ZECOL IS I.PIV
+    INITIALIZE
+    a{{ COL }row{ COL }}    ( --seg.off[M{{ col,col}}]t)
+    >FS GABS FS>F           ( 87:--|1st.elt|)
+    R> COL1+                \ loop limits:L, COL+1
+    DO                      \ begin loop
+        a{{ I }row{ COL }}  ( -- seg.off[M{{i,col}}] t)
+        >FS GABS FS>F       ( 87: -- |old.elt| |new.elt|)
+        XDUP F<             \ test if new.elt > old.elt
+        IF   FSSWAP I IS I.PIV   THEN   FDROP
+    LOOP                    \ end loop
+    FDROP    ;              \ clean up ifstack
 
-Scientific FORTH
+\ Usage:     A{{ 2 }}PIVOT
+\end{verbatim}
+% 230 Chapter 9 - Linear Algebra
+\begin{figure}[H]
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
+    \begin{tikzpicture}
+        \draw (-0.5,-0.2) rectangle (10,5.7);
+        \coordinate (a) at (0.5,5.5);
+        \node [circle, draw, cross] at (0.5,4.5) (cross) {};
+        \coordinate (b) at (0.5,3.5);
+        \coordinate (c) at (0.5,2.5);
+        \node [circle, draw, dot] at (0.5, 1.5) (dot)  {};
+        \coordinate (end) at (0.5,0.75);
+        \draw [fill, opacity=0.2] (.0,0.25) rectangle (1.0,.75) {};
 
- 
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (1.0,-0.25)$) (C2) {\verb|:A{{ col# }}PIVOT|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (1.0,0)$) (C1) {\verb|N col# 1 + DO|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (0.0,0.25)$) (C3) {Yes};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (1.0,0.5)$) (C3) {\verb_|A{{ I }{ col# }}| > |A{{ col# }{ col# }}| ?_};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (-1.0,0.5)$) (C4) {No};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.0,1.0)$) (C4) {\verb|IF|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.5,0.7)$) (C4) {\verb|Put larger on fstack|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.5,0.4)$) (C5) {\verb|set I.PIV = I|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (2.0,0.0)$) (C5) {\verb|THEN|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.0,0.0)$) (C6)  {\verb|LOOP|};
+        \node [draw=none,fill=none,anchor=west, align=left] at ($(end) + (1.0,-0.25)$) (C6)  {\verb| ; \ exit|};
+        \path [line]  (a) -- (cross);
+        \path [line]  (cross) -- (b);
+        \path [line]  (b) -- (c);
+        \path [line]  (b) -- ($(b)+(1,0)$);
+        \path [line]  ($(b)+(1,0)$) -- ($(b)+(1,-0.4)$);
+        \path [line]  ($(b)+(1,-0.6)$) -- ($(b)+(1,-1.0)$);
+        \path [line]  ($(b)+(1,-1.0)$) -- (c);
+        \path [line]  (c) -- (dot);
+        \path [line]  (dot) -- (end);
+    \end{tikzpicture}
+% Fig. 9-2 Pseudocode for finding the pivot element
+    \caption{Pseudocode for finding the pivot element}
+    \label{fig:09_02}
+\end{figure}
 
-:A{{ col# }}PIVOT
+\underline{Notes:}
 
-N col# 1+ DO
+\begin{itemize}
+  \item We avoid filling up the parameter stack with addresses that have to be
+      juggled, by putting arguments in named storage locations (\textbf{VAR}s).
+        We anticifiate setting all the parameters in the beginning using
+        \textbf{INITIALIZE} which can be extended later if necessary.
+  \item We have used a word from the COMPLEX arithmetic lexicon, namely
+      \textbf{XDUP( FOVER FOVER)} to double-copy the contents of the fstack,
+        since the test $F<$ drops both arguments and leaves a flag.
+  \item There is little to be gained by optimizing (and if we did we should
+      have had to avoid the generic \textbf{Gx} words because they cannot be optimized
+        by the HS/FORTH recursive-descent optimizer) because only $N^2/2$ time
+        is used, negligible (for large N) compared with the $N^3/3$ in the
+        innermost loop.
 
- 
+        The \textbf{Gx} operations are found in the file \textbf{GLIB.FTH}\,.
+\end{itemize}
 
-Yes IF
-No 1 Put larger on fstack
-set I.PIV = I
-t__l THEN
-. LOOP
-; \ exit
+To test the word \verb|}}PIVOT| we can add some lines to the test file:
 
- 
-
- 
-
-M{{ | }{ 00““ }}I > M{{ col# }{ 00h“ }}I 7
-
- 
-
- 
-
- 
-
- 
-
-Fig. 9-2 Pseudocode for finding the pivot element
-
-is thus useful to have a place to store the type (other than the
-
-second cell of the array data structure). We arrange this via
-
-OVART
-
-The rest of the deﬁnition is rendered self-explanatory by the
-
-vertical commenting style (a must for long12 words):
-
-OVAR Length \Iength of matrix
-OVAR COL \currentcol#
-OVAR I.PIV
-OVAR a{{
-: INITIALIZE (M{{ -- ::--)
-IS a{{
-a type@ IS T
-a LEN@ IS Length ;
-
-\ |.PIV is used to return the result
-\ a{{ stores the adress of M{{
-
-\ initialize T
-
-\ length - > Length
-
- 
-
-12. While Brodie (11", p.180) quotes Charles Moore. FORTH's inventor, as offering l-line deﬁni-
-tions as the goal in FORTH programming, sometimes this is just not possible.
-
-i
-
-\ a place to store data type
-
-i
-
- 
-
-
-
-Guano-WNW 231
-
-2))PIVOT (M{{ col-- ::--)
-
-IS COL ZECOL IS LPN
-
-INITIAU
-
-ﬂ: COL row COL}} (--aog.oﬂ[M{$oot,ool}}]t)
-
-> 8 SF >F (87:--|1st.olt)
-
-R> COL1+ §loop|in£gLCOL+1
-
-DO I .
-a{{ I }row{ COL }} (- - seg.oﬂ[M{ﬂI,col}}] t)
->FS GABS FS>F(87: — |old.olt Ineweltl)
-xoup F< \test' newett > olden
-IF FSWAP IISI.PIV THEN FDROP
-
-LOOP \ondloop
-
-FDROP ; \deanupfstack
-
-\ Usage: A{{ 2 ”PIVOT
-
-Mates:
-
-0 We avoid ﬁlling us: the parameter stack with addresses that
-have to be Eagle , by putting arguments in named storage
-locations (J ). We anticiﬁate setting all the parameters in
-the beginning using IN! 21". which can be extended later
-if necessary.
-
-0 We have used a word from the COMPLEX arithmetic lexicon,
-namely XDUP( FOVER FOVER) to double-copy the contents
-
-of the fstack, since the test F< drops both arguments and
-leaves a ﬂag.
-
-0 There is little to be gained by optimizing (and if we did we
-should have had to avoid the generic Gx words because they
-cannot be optimized by the PIS/FORTH recursive-descent
-o timizer) because only}? /2 time is used, ne ligible (for large
-
-compared with the [3 in the innermost oop.
-
-The Gx operations are found in the ﬁle GLIBJ-TH.
-
-To test the word ”PIVOT we can add some lines to the test file:
-
-oncn .(weammmmo.1.2)
-
-on
-
-G! .(A{{O})PIVOT mv .) BL EMIT A{{0)}PNOT IPN.
-on .(A{{1})PNOT IPIV .) BL em A{{1}}PNOT IPN .
-on .(A{{2})PIVOT IPN .) BL am A({2}}PNOT new.
-one:
-
-Chapter 9 - Unear Algebra Scientiﬁc FORTH
-
+\begin{verbatim}
+CR CR .( flnd the pivot row for columns 0,1,2)
+CR
+CR .( A{{ 0 }}PIVOT IPIV .) BL EMTT A{{ 0 }}PIVOT IPIV .
+CR .( A{{ 1 }}PIVOT IPIV .) BL EMTT A{{ 1 }}PIVOT IPIV .
+CR .( A{{ 2 }}PIVOT IPIV .) BL EMTT A{{ 2 }}PIVOT IPIV .
+CR CR
+\end{verbatim}
 The result is the additional screen output
 
-A{{ o }}PIVOT IPIV 1
-A{{1}}P|VOT IPIV 1
+\begin{verbatim}
+A{{ 0 }}PIVOT IPIV 1
+A{{ 1 }}PIVOT IPIV 1
 A{{ 2 }}PIVOT IPIV 2
-OR
+ok
+\end{verbatim}
 
-From our pseudocode expression (see Fig. 9-1, p. 227) of the
+From our pseudocode expression (see Fig. \ref{fig:09_01}, p. \pageref{fig:09_01}) of the
 pivotal elimination algorithm we see that the next operation is to
-multiply a row by a constant. To do this we deﬁne
+multiply a row by a constant. To do this we define
 
-OVAR ISTEP
+\begin{verbatim}
+0 VAR ISTEP
 \ include phrase
-
-T #BYTES DROP IS ISTEP
+\ T #BYTES DROP IS ISTEP
 \ in INITIALIZE
 
-: DO(ROW*X)LOOP (seg off Lﬁn I.beg - - :: x - - x)
-DO DDUP I + DDUP T >FS G'NP TFS>
-ISTEP /LOOP DDROP ;
+: DO(ROW*X)LOOP (seg off I.fin I.beg -- :: x -- x)
+    DO DDUP I + DDUP T >FS G*NP T FS>
+    ISTEP /LOOP DDROP ;
+\ G*NP means "(generic) multiply, no pop"
 
-\ G*NP means “(generic) multiply, no pop”
+: }}ROW*X       ( M{{ row -- :: x -- x)
+    UNDER }row{ 0 }}            ( -- r seg off t)
+    DROP ROT                    ( --seg off r)
+    ISTEP * Length ISTEP * SWAP \ loop indices
+    DO(ROW*X)LOOP ;             \ loop
 
-:}}ROW*X M{{ row - :: x — x)
-UNDER }row{ 0 A (- - r seg offt)
-DROP ROT (- -seg off r)
-ISTEP * Length ISTEP * SWAP \Ioop indices
-DO(ROW*X)LOOP ; \Ioop
-
-\Ex: A{{ 2 }ROW*X
-
-Mates:
-
-0 While DO(ROW‘X)LO0P and }}ROW‘X clear the param-
-eter stack in approved FORTH fashion, they leave the constant
-multiplier x on the fstack. That is, we antimpate next multipl -
-ing the corresponding row of the inhomogeneous term b (in
-the matrix equation A-x = b) by the same constant x.
-
-e We assume INITIALIZE (includin INITJSTEP) has been
-invoked before ”PIVOT or ”110 ‘X.
-
-o Anticipating the (possible) need to optimize, we factor the loop
+\Ex: A{{ 2 }ROW*X 
+\end{verbatim}
+\underline{Notes:}
+\begin{itemize}
+    \item  While \bc{DO(ROW*X)LOOP} and \bc{\}\}ROW*X} clear the parameter stack in approved FORTH fashion, they leave the constant
+        multiplier \textbf{x} on the fstack. That is, we anticipate next multiplying the corresponding row of the inhomogeneous term \textbf{b} (in
+        the matrix equation \textbf{A-x = b}) by the same constant \textbf{x}.
+    \item We assume \bc{INITIALIZE} (including \bc{INIT.ISTEP}) has been
+        invoked before \bc{\}\}PIVOT} or \bc{\}\}ROW*X}.
+  \item Anticipating the (possible) need to optimize, we factor the loop
 right out of the word. We also com me the addresses fast by
-putting base addresses on the stac and then incrementing
+putting base addresses on the stack and then incrementing
 them by the cell-size, in bytes.
+\end{itemize}
 
-aims-mum 233
+% aims-mum 233
 
-Subtracting row 1 (times a constant) from row I is quite similar to
+Subtracting row I (times a constant) from row J is quite similar to
 multiplying a row by a constant. The process can be broken down
-into the pseudocoded actions in Fig, 9-3 below.
+into the pseudocoded actions in Fig.\ref{fig:09_03} below.
 
- 
+\begin{figure}[H]
+    %  Fig. 9-3
+    \center
+    \tikzstyle{line} = [draw, -latex']
+    \tikzset{%
+        do path picture/.style={%
+            path picture={%
+                \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+    },
+    cross/.style={do path picture={    
+    \draw [line cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+    }},
+    dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+    }}
+    }
+    \begin{tikzpicture}
+        \draw (0,-0.5) rectangle (10,5.5);
+            \node [circle, draw, cross] at (1,4.5) (cross) {};
+            \coordinate (a) at (1,3.5);
+            \coordinate (b) at (1,2.5);
+            \coordinate (c) at (1,1.5);
+            \node [circle, draw, dot] at (1, 0.5) (dot)  {};
 
- 
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(cross) + (0.5,0)$) (C1) {\verb|DO (K = J TO L)|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(a) + (1.5,0.5)$) (C2) {\verb|X G@ |};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(b) + (1.5,0.5)$) (C3) {\verb|M[I,K] G@ G*NP (::--X M[I,K]*X)|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(c) + (1.5,0.5)$) (C4) {\verb|M[J,K] G@ GR- (::--X M[J,K]-X*M[I,K])|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (1.5,0.5)$) (C5) {\verb|M[J,K] G!|};
+            \node [draw=none,fill=none,anchor=west, align=left] at ($(dot) + (0.5,0.0)$) (C6)  {\verb|LOOP|};
+        \path [line]  (cross) -- (a);
+        \path [line]  (a) -- (b);
+        \path [line]  (b) -- (c);
+        \path [line]  (c) -- (dot);
+    \end{tikzpicture}
+    \caption{Steps in \texttt{\}\}R1-P2*X}}
+    \label{fig:09_03}
+\end{figure}
+A first attempt might look as follows:
+\begin{verbatim}
+\ auxiliary words
+: 4DUP DOVER DOVER ;
+( a b c d -- a b c d a b c d )
+: ++   ( s1.o1 s2.o2 n -- s1.o1+n s2.o2+n)
+    DUP>R + ROT R> + -ROT ;
 
-® no (K-JTOL)
-x e@
-
-M[I,K] e@ G'NP (::- - x M[l,K]'X)
-M{J,K] 6@ GR- (::--XM[J,K]-X‘M[I,K])
-M{J.K] Gl
-
-LOOP
-
- 
-
- 
-
-Fig. ”Steps In nm-rwx
-
-A ﬁrst attempt might look as follows:
-
-\auxiliarywords
-
-:4DUP DOVER DOVER ;
-
-(abcd--abcdabcd)
-
-: + + (51.0152.02n — $1.01 +n 52.02+n)
-DUP>R + ROT R> + -ROT;
-
-:}}R1-R2"X (r1r2-- ::x--x)
-
-> R > R
-
-a R> row 0 DROP \M r10
-aila@imioli one.» \Miiaoli
-Length iSTEP " \ L'lSTEP (upper limit)
-
-R> ISTEP * \ r2'ISTEP (lower limit)
-
-DO 4DUP I ++ \duplicateaincbaseadrs
-
-T >FS G'NP (2: — xx*M[r2,k])
-DDUP T >FS GR-
-T >FS \ I result
-ISTEP [LOOP DDROP DDROP ;
+: }}R1-R2*X (r1r2 -- ::x--x)
+    >R >R
+    a{{ R> }row{ 0 }} DROP \ M{{ r1 0 }}
+    a{{ R@ }row{ 0 }} DROP \ M{{ r2 0 }}
+    Length ISTEP *  \ L*ISTEP (upper limit)
+    R> ISTEP *      \ r2*ISTEP (lower limit)
+    DO 4DUP I ++    \ duplicate & inc base adrs
+        T >FS G*NP  ( :: -- xx*M[r2,k])
+        DDUP T >FS GR-
+        T >FS       \ ! result
+    ISTEP /LOOP DDROP DDROP ;
 \ INITIALIZE is assumed
-
-As with HROW‘X we avoid the execution-speed penalty of
-calculating addresses within the loop by not using the phrase
-
-emvmim-Mmm.
-
-ChapterO-LhaarNgabra .‘i‘clamlllcFORTHi
-
-a{{ l }row{ J }}.
-
-     
-  
- 
- 
- 
-
+\end{verbatim} 
+As with \bc{\}\}ROW*X} we avoid the execution-speed penalty of
+calculating addresses within the loop by \textit{not} using the phrase
+\begin{verbatim}
+a{{ I }row{ J }} .
+\end{verbatim}
 However, we are doing a lot of unnecessary work inside the loop
-by making 5 choices based on datatype. There are also a lot ,
+by making 5 choices based on datatype. There are also a lot of
 unnecessary moves to/from the ifstack. This is an example where
-speed has been sacriﬁced to compactness of code: one program
-solves equations of any (“scientiﬁc”) data format — REAL‘4,
-REAL-8, COMPLEX‘8 and COMPIJEX' 16. i
+speed has been sacrificed to compactness of code: one program
+solves equations of any ("scientific") data format - REAL*4,
+REAL*8, COMPLEX*8 and COMPLEX*16. 
 
-Conversely, we can both eliminate the extra work and accelerate?
-execution simply by deﬁning a separate inner loop for each data;
-type, letting the choice take place once, outside the inner loop}
-This multiplies the needed code fourfold (or more-fold, if we?
+Conversely, we can both eliminate the extra work and accelerate
+execution simply by defining a \textit{separate} inner loop for each data;
+type, letting the choice take place once, outside the inner loop.
+This multiplies the needed code fourfold (or more-fold, if we
 optimize).
 
-I
-
 The 4 inner loops are
+\begin{verbatim}
+: Re.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ R32@L F*NP
+        DDUP R32@L FR- R32!L
+    4 /LOOP R> F>FS ;
 
-: Re.LP ($1.01 52.02 L'istep r2*istep - - :2 x - - x)
-FS>F >R
-DO 4DUP I + + R32@L F*NP
-DDUP R32@L FR- R32IL
-4 /LOOP R> F>FS ;
+: DRe.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP l ++ R64@L F*NP
+        DDUP R64@L FR- R64!L
+    8 /LOOP R> F>FS ;
 
-: DRe.LP ($1.01 $2.02 L’istep r2'istep - - z: x - - x)
-FS>F >R
-DO 4DUP l + + R64@L F*NP
-DDUP R64@L FR- R64!L
-8 /LOOP R> F>FS ;
+: X.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ CP@L X*NP
+        DDUP CP@L CPR- CP!L
+    8 /LOOP R> F>FS ;
 
-: X.LP (51.01 52.02 L*istep r2*istep - - z: x - - x)
-FS>F >R
-DO 4DUP l + + CP@L X‘NP
-DDUP CP@L CPR- CPIL
-8 /LOOP R> F>FS ;
-
-: DX.LP ($1.01 52.02 L‘istep r2'istep - - :: x - - x)
-FS>F >R
-DO 4DUP I + + DCP@L X'NP
-DDUP DCP@L CPR- DCPIL
-16 /LOOP R> F>FS;
-
-Not surprisingly, the loops contain some duplicate code. but this- '
-is a small price to pay for the speed increase. A signiﬁcant furthe r3
-
- 
-
-thlIanVNobIatm—Alrlditsraaarvad.
-
-increase can be obtained easily. using the HS/FOR’I'H recursive-
-descent optimizer to deﬁne these inner loops, or by redeﬁning
+: DX.LP ( s1.o1 s2.o2 L*istep r2*istep -- ::x--x)
+    FS>F >R
+    DO 4DUP I ++ DCP@L X*NP
+        DDUP DCP@L CPR- DCP!L
+    16 /LOOP R> F>FS ;
+\end{verbatim} 
+Not surprisingly, the loops contain some duplicate code, but this
+is a small price to pay for the speed increase. A significant further
+increase can be obtained easily, using the HS/FORTH recursive-
+descent optimizer to define these inner loops, or by redefining
 the loops in assembler (for ultimate speed).
 
-Now we can redeﬁne }}Rl-RZ‘X using vectored execution, via
-HS/FORI'H’s CASE: . .. :CASE construct, or the equivalent high-
-level version given here:
+Now we can redefine \bc{\}\}R1-R2*X} using vectored execution, \textit{via}
+HS/FORTH's \bc{CASE: ... ;CASE} construct, or the equivalent high-level version given here:
 
-: CASE: CREATE
-DOES> OVER + + @ EXECUTE ;
+\begin{verbatim}
+: CASE: CREATE ]
+    DOES> OVER + + @ EXECUTE ;
 : ;CASE [COMPILE] ; ; IMMEDIATE
 
-CASE: DO(R1-R2"X)LOOP
-Re.LP DRe.LP X.LP DX.LP ;CASE
+CASE: DO(R1-R2*X)LOOP
+    Re.LP DRe.LP X.LP DX.LP ;CASE
 
-2}}R1-R2‘X (r1 r2-- ::x--x)
-
->R >R
-
-2112a mm; 328: {main
-Length I.STEP * \ ULSTEP (upper limit)
-R> I.STEP ' \ r2'I.STEP (lower limit)
-
-T DO(R1-R2'X)LOOP DDROP DDROP ;
+: }}R1-R2*X (r1 r2-- ::x--x)
+    >R >R
+    a{{ R> }row{ 0 }} DROP      \ M{{ r1 0 }} 
+    a{{ R@ }row{ 0 }} DROP      \ M{{ r2 0 }} 
+    Length I.STEP *      \ L*I.STEP (upper limit)
+    R> I.STEP *          \ r2*I.STEP (lower limit)
+    T DO(R1-R2*X)LOOP DDROP DDROP ;
 \ We assume INITIALIZE has been invoked
-
+\end{verbatim} 
 Another word is needed to perform the same manipulation on
-the inhomogeneous term. Since this latter process runs in 0(N )
+the inhomogeneous term. Since this latter process runs in $O(N^2)$
 time we need not concern ourselves unduly with efficiency.
+\begin{verbatim}
 
-:}V1—V2*X (r1 r2-- ::x--)
-SWAP >R >R
-b{ 0.0 } DROP DDUP \V[0] V[O]
-R> irowilSTEP‘ + >FS G‘
-R> row ISTEP " + DDUP >FS GR- FS> ;
+: }V1-V2*X ( r1 r2-- ::x--)
+    SWAP >R >R
+    b{ 0.0 } DROP DDUP \V[0] V[O]
+    R> }row{ ISTEP * + >FS G*
+    R> }row{ ISTEP * + DDUP >FS GR- FS> ;
+\end{verbatim} 
 
-Hats:
+\underline{Note:}
+\begin{itemize}
+    \item  After \bc{\}V1-V2*X} executes, the multiplier x is no longer needed,
+        so we drop it here by using \bc{G*} rather than \bc{G*NP}.
+\end{itemize}
 
-0 After }Vl-VZ‘X executes, the multiplier x is no longer needed,
-so we drop it here by using 6‘ rather than G‘NP.
+We now combine the words \bc{\}SWAP}, \bc{\}\}PIVOT}, \bc{\}\}ROW*X}.
+\bc{\}R1-R2*X} and \bc{\}V1-V2*X} to implement the triangularization portion of pivotal elimination.
 
-We now combine the words }SWAP, }}PIVOT, }}ROW'X.
-}Rl-RZ'X and }Vl-VZ‘X to implement the triangularization por-
-tion of pivotal elimination.
-
-OJtlhnltNoblaIm-Almmawad.
-
-236
-
-Chapter 9 — Linear Algebra Scientiﬁc FORTH
-
+% 236
 Since the Gaussian elimination method makes it very easy to
 compute the determinant of the matrix as we go, we might as well
-do so, especially as it is only an 0(N) process. By evaluating the
-detemiinants of simple cases, we realize the determinant is simp-
-ly the product of all the pivot elements, multiplied by
-
-(_1)#swaps. Hence we need to keep track of swaps, as well as to
+do so, especially as it is only an O(N) process. By evaluating the
+determinants of simple cases, we realize the determinant is simply the product of all the pivot elements, multiplied by
+$(-1)^{\#\mathbf{swaps}}$. Hence we need to keep track of swaps, as well as to
 multiply the determinant (at a given stage) by the next pivot
 element. The need to do these things has been anticipated in
-defining }SWAP above.
+defining \bc{\}SWAP} above.
 
 Computing the determinant also lets us test as we go, that the
 equations can be solved: if at any stage the determinant is zero,
 (at least) two of the equations must have been equivalent. Should
-it be necessary to test the condition of the equations, this too
+it be necessary to test the condition\sepfootnote{09_13} of the equations, this too
 can be found as we proceed, by computing the determinant.
 
 Here is a simple recipe for computing the determinant, with
 checking to be sure it does not vanish identically. We use the
-intelligent fstack (ifstack) deﬁned in Ch. 7.
+intelligent fstack (ifstack) defined in Ch. 7.
 
+\begin{verbatim}
 DCOMPLEX SCALAR DET \ room for any type
-:INIT_DEr T 'DEI' I \set Type
-TG=1 DEI‘ GI; \setdet=
 
-%1.E-10 FCONSTANT CONDITION
+: INIT\_DET T 'DET  ! \ set Type
+    T G=1 DET G! ;    \ set det = 1
 
-:DETERMINANT (- - 2: x - - x)
-DET >FS G*NP
-?SWAP IF GNEGATE THEN
-FS.DUP GABS FS>F CONDITION F<
-ABOR‘l“ determinant too small!‘ DET FS> ;
+% 1.E-10 FCONSTANT CONDITION
 
- 
+: DETERMINANT ( -- :: x -- x)
+    DET >FS G*NP
+    ?SWAP IF GNEGATE THEN
+    FS.DUP GABS FS>F CONDITION F<
+    ABORT" determinant too small!" DET FS> ;
+\end{verbatim} 
 
-13.
+% 237
 
-The condition of a system of linear equations refers to how accurately they can be solved. Equa-
-tions can be hard to solve precisely if the inverse matrix A“ has some large elements. Thus, the
-error vector for a calculated solution, d= —-b-A szlc can be small, but the difference between the
-exact solution and the calculated solution can be large, since (see {9&3 below)
+Now we define the word that triangularizes the matrix:
+\begin{verbatim}
+0 VAR b{        \ to keep the stack short
+: INITIALIZE    ( M{{V{-- ::--)
+    IS b{
+    IS a{{
+    a{{ D.TYPE IS T
+    a{{ D.LEN IS Length
+    a{{ D.TYPE #BYTES DROP IS ISTEP
+    INIT.DET ;  \ set det=1
 
-xBar-ct ‘cnc =A W6
-A test for ill-condition is whether the determinant gets small compared with the precision of the
-arithmetic. See, 43.3., A. Ralston,A First Course in Numerical Analysis (McGraw-Hill Book Co.,
-New York, 1965).
+: }/PIVOT }row{ } DROP DDUP T >FS G* T FS> ;
+    ( seg ofd t--::x--)
 
-Ware—Wm 237
-
-Now we deﬁne the word that triangularizes the matrix:
-
-0VARb( \tokeepthesteokehort
-: INITIAUZE (M{(V{o- ::--)
-
-le
-
-lSa
-
-3 .TYPE IS T
-
-a D.LEN is Length
-
-a D.TYPE #BYTES DROP ISISTEP
-
-iN .DET ; \setdet=1
-
-:}/PIVOT }row{) DROP DDUP T >FS G' TFS>;
-(segofIt--::x--)
-
-:TRIANGULAFIIZE (M{{ V{ - -)
-
-INITIAUZE
-Length 0 DO \ loop 1 -— by rows
-a{{l} PIVOT \ﬁndpivotincoil
-' )row I l.PlV }SWAP \ exchange rows
-a{{ I }row{ I }} >FS \pivot->iistack
-DETERMINANT \ mic det
-1/6 a{{ i }}ROW‘X \row i Ipivot
-b{ l }/PIVOT \inhom. term /pivot
-Length l1+ DO \ioop2-byrows
-a l}row{J}} >FS \x->ifstack
-a lJ}}R1-R2"X
-
-\ row[i] = row[i]-row[j]'x
-b{ I J }V1-V2*X
-\ same for b{ and drop x
-LOOP \ and loop 2
-LOOP ; \end loop 1
+:TRIANGULARIZE ( M{{ V{ --)
+    INITIAUZE
+    Length 0 DO             \ loop 1 -- by rows
+    a{{ I }}PIVOT           \ find pivot in col I
+    '}row{ I I.PIV }SWAP    \ exchange rows
+    a{{ I }row{ I }} >FS    \ pivot->iistack
+    DETERMINANT             \ calc det
+    1/G a{{ I }}ROW*X       \ row I /pivot
+    b{ I }/PIVOT            \ inhom. term /pivot
+    Length I 1 + DO         \ loop 2 - by rows
+        a{{ I }row{ J }} >FS    \ x -> ifstack
+        a{{ I J }}R1-R2*X 
+                \ row[i] = row[i]-row[j]*x
+        b{ I J }V1-V2*X
+                \ same for b{ and drop x
+        LOOP            \ and loop 2
+    LOOP ;              \ end loop 1
 \Usege: A{{ B{ TRIANGULARIZE
+\end{verbatim}
 
-Now at last we can back-solve the triangularized equations to ﬁnd
-
-the unknown x 's. The word for this is }BACK-SOLVE, deﬁned
+Now at last we can back-solve the triangularized equations to find
+the unknown x's. The word for this is \verb|}BACK-SOLVE|, defined
 as follows:
 
-238
+% 238
 
-Chapter 9 - Linear Algebra Scientiﬁc FORTH
-: }BACK-SOLVE (- - )
-0 LENGTH 2- DO \ outer loop
-T G=0
-LENGTH I 1 + DO \ inner loop
-a? J }row{ I }} > PS
-b I }row{ } >FS G*G+\
-LOOP \ inner loop
-b{ l ){ } DROP DDUP T >FS \
-GR- T FS > \
-—1 +LOOP ; \outer loop J
+% Chapter 9 - Linear Algebra Scientific FORTH
+\begin{verbatim}
+: }BACK-SOLVE ( -- )
+    0 LENGTH 2- DO              \ outer loop
+        T G=0                   \
+        LENGTH I 1 + DO         \ inner loop
+        a{{ J }row{ I }} > PS   \
+        bi{ I }row{ } >FS G* G+ \
+        LOOP                    \ inner loop
+    b{ I }{ } DROP DDUP T >FS   \
+    GR- T FS >                  \
+    -1 +LOOP ;                  \outer loop J
+\end{verbatim} 
 
 Putting the entire program together we have the linear equation
-solver given in the ﬁle SOLVEl. Examples of solving dense 3x3
-and 4 X4 systems are included for testing purposes.
+solver given in the file SOLVE1. Examples of solving dense $3\times 3$
+and $4\times 4$ systems are included for testing purposes.
 
-§§6 Timing
-
-e should like to know how much time it will take to solve a
-
+\subsection{Timing}
+\TallC{We} should like to know how much time it will take to solve a 
 given system. (Of course it is also useful to know whether the
-solution is correct!) We time the solution of 4‘ sets of N equations,
+solution is correct!) We time the solution of 4 sets of N equations,
 with 4 different values of N. The running time can be expressed
-as a cubic polynomial in N with undetermined coefﬁcients:
+as a cubic polynomial in N with undetermined coefficients:
+% ( restart from 19)
+\addtocounter{equation}{-3} % the next equation is back with 3 22 -> 19
+\begin{equation}
+    T_N=a_0+a_1N^1+a_2N^2+a_3N^3 \label{eq:09_19_}
+\end{equation}
 
-TN=ao+a1N1+azN2+agN3 (19)
-
-Evaluating 19 for 4 different values of N, and measuring the 4
-times TNi , we produce 4 inhomogeneous linear equations in 4
-
-unknowns: a, , i = 0, 1, 2, 3 . As luck would have it, we just hap-
-
-pen to have on hand a linear equation solver, and are thus in a
-position to determine these coefﬁcients numerically.
+Evaluating \ref{eq:09_19_} for 4 different values of N, and measuring the 4
+times $T_{N_i}$ , we produce 4 inhomogeneous linear equations in 4 
+unknowns: $a_i , i = 0, 1, 2, 3$. As luck would have it, we just happen to have on hand a linear equation solver, and are thus in a
+position to determine these coefficients numerically.
 
 For this timing and testing chore we need an exactly soluble dense
-system of linear equations, of arbitrary order. The simplest siqch
-system involves a rank-1 matrix, that is, a matrix of the form :
-
- 
-
-14.
-
-We employ the standard notation that a vector u is a column and an adjoint vector VIf '3 a row.
-Their outer product, uvi, is a matrix. Given a column v, we construct its adjoint (row) VIt by
-taking the complex conjugate of each element and placing it in the corresponding position in a
-
-row-vector.
-
-Gustavo—WNW 23.
-
-A - I - u v' (20)
+system of linear equations, of arbitrary order. The simplest such
+system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_14}:
+%  (20_)
+\begin{subequations}
+\begin{equation}
+ \label{eq:09_20_}
+    \mathrm{A = I - u v^\dagger}
+\end{equation}
 In terms of matrix elements,
 
-Ai-du-uw' (20’)
+% (20'_)
+\begin{equation}
+ \label{eq:09_20prime_}
+    \mathrm{A_{ij} = \delta_{ij} - u_i v_j^*}
+\end{equation}
+\end{subequations}
 
-The solution of the system A 1 I: b is simple: using the standard
+The solution of the system $A\cdot x = b$ is simple: using the standard
 notation
-
-vi-x a (v, x) = 2 v. 'x. (21)
+% (21_)
+\begin{equation}
+ \label{eq:09_21_}
+    \mathrm{v^\dagger \cdot x \equiv (v,x) = \sum_{i}v_i^*x_i}
+\end{equation}
 we have
-X. = D: 'i' (V, X) U. (22)
+\begin{equation}
+ \label{eq:09_22_}
+    \mathrm{x_i = b_i + (v,x)\,u_i}
+\end{equation}
 
-The coefﬁcient (v, x) is just a (generally complex) number; we
-compute it from 22 via
-
-(V. X) = (V. Ii) + (V. u) (V. X) (23)
-Ol’
-_ (v, b)
-(V. X) — 1 _ (v. u) . (24)
-
-x, = o, + %u (25)
-
-Everythingin 25 is determined, hence the solution is known in
+The coefficient $(v, x)$ is just a (generally complex) number; we
+compute it from \ref{eq:09_22_}\textit{via}
+\begin{equation}
+ \label{eq:09_23_}
+    \mathrm{(v,x)=(v,b)+(v,u)(v,x)}
+\end{equation}
+or
+\begin{equation}
+ \label{eq:09_24_}
+    \mathrm{(v,x)=\frac{(v,b)}{1-(v,u)}\quad .}
+\end{equation}
+% (25)
+Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
+\begin{equation}
+ \label{eq:09_25_}
+    \mathrm{x_i=b_i+\frac{(v,b)}{1-(v,u)}u_i}
+\end{equation}
+Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
 
-An example that embodies the above idea is given in the ﬁle
+An example that embodies the above idea is given in the file
 EX.20, where we make the special choices
 
-Chapter 9 — Unear Algebra Scientiﬁc FORTH
-
-N even
-
-GAO-s
-.s
-01
-
+\begin{equation*}
+    \mathbf{u}=
+    \begin{pmatrix}
+        1\\ 
+        1\\ 
+        1\\ 
+        \dots\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    \, ,\, 
+    \mathbf{v}=\frac{1}{2N} \mathbf{u}\, , \, 
+    \mathbf{b} =
+    \begin{pmatrix}
+        1\\ 
+        0\\ 
+        1\\ 
+        0\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    ,\, \,  
+    \mathbf{x}=
+    \begin{pmatrix}
+        1.5\\ 
+        0.5\\ 
+        1.5\\ 
+        0.5\\ 
+        \dots\\ 
+        \dots
+    \end{pmatrix}
+    \, , N \; \textrm{even}
+\end{equation*}
 We give the times only for the case of a highly optimized inner
-loop (written in assembler), for the type REAL‘4:
+loop (written in assembler), for the type REAL*4:
 
- 
+% Table 9-1
+\begin{table}
+    \centering
+    \caption{Execution times for various N (9.54 MHz 8086 + 8087 machine)}
+        \bigskip
+    \label{tbl:09_01} 
+    \setlength{\tabcolsep}{40pt}
+        \begin{tabular}{|ll|}
+            \hline & \\
+            N   &  Time\\
+            & \\
+            20  &  1.20\\
+            & \\
+            50  &  7.75\\
+            & \\
+            75  &  19.6\\
+            & \\
+            100 &  38.8\\
+            & \\
+            \hline
+        \end{tabular}
+\end{table}
 
-Table 9-1 Execution times for various N (9.54 MHz 8086 + 8087 machine)
+The coefficients of the cubic polynomial extracted from the above
+are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
 
- 
+\begin{equation*}
+    \begin{split}
+        a_0 &=\;\; 0.32727304\\
+        a_1 &=\;\; \llap{$-$}0.01084850\\
+        a_2 &=\;\; 0.00241636\\
+        a_3 &=\;\; 0.00001539
+    \end{split}
+\end{equation*}
+from them we can extrapolate the time to solve a $350 \times 350$ real
+system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addressing implemented, the time should
+decrease five- to tenfold \sepfootnote{09_15}.
 
-N Time
-20 1.20
-50 7.75
-75 19.6
-100 38.8
-
- 
-
- 
-
- 
-
-The coefﬁcients of the cubic polynomial extracted from the above
-are (in seconds, 9.54 MHz 8086 machine, machine-coded inner
-
-loop)
-
-a0 = 032727304
-a. = -0.01084850
-32 = 000241636
-33 = 000001539
-
-from them we can extrapolate the time to solve a 350x350 real
-system to be about 16 minutes. On a 25 MHz 80386/8038’7 ma-
-chine with 32-bit addrgsing implemented, the time should
-decrease ﬁve- to tenfold .
-
-It is interesting to explore a bit further the extracted value of a3,
-
-. . 1
-which is 3-
-ﬁned above as Re.LP and hand-coded in assembler for ultimate
+It is interesting to explore a bit further the extracted value of $a_3$,
+which is $\frac{1}{3}$ the time needed to evaluate the inner loop (defined
+above as Re.LP and hand-coded in assembler for ultimate
 speed). Converting to clock cycles on an IBM-PC compatible
 (running at 9.54 MHz) we have an average of 440 clock cycles per
 traversal (of this loop). Recall the operations that are needed: a
-32-bit memory fetch, a ﬂoating-point multiply, another 32-bit
-memory fetch, a ﬂoating-point subtraction, and a 32-bit store.
+32-bit memory fetch, a floating-point multiply, another 32-bit
+memory fetch, a floating-point subtraction, and a 32-bit store.
 The initial fetch-and-multiply can be be compressed into a single
 co-processor operation, as can the fetch-and-subtract. The times
-in cycles for these basic operations are
-
-the time needed to evaluate the innermost loop (de-
-
-TaUe9—2Executiontlmesotlnnennostioopoperntions
-
+in cycles for these basic operations are\sepfootnote{09_16}
+% Table 9-2
+\begin{table}
+    \centering
+    \caption{Execution times of innermost loop operations}
+        \bigskip
+    \label{tbl:09_02} 
+    \setlength{\tabcolsep}{10pt}
+        \begin{tabular}{|ll|}
+            \hline &  \\
+            \underline{Operation} & \underline{Time} \; (cpu clocks)\\
+            &  \\
+            memory FMUL &  133  \\
+            &  \\
+            memory FSUBR &  128  \\
+            &  \\
+            memory FSTP &  100  \\ 
+            &  \\
+            overhead &  61  \\ 
+            &  \\
+            \hline &  \\
+            Total &  422  \\ 
+            &  \\
+            \hline
+        \end{tabular}
+\end{table}
  
-
-Operation lime (cpu clock5)
-memory FMUL 133
-memory FSUBR 128
-memory FSTP 100
-
-overhead 61
-
- 
-
-Total 422
-
- 
-
- 
-
- 
-
- 
-
-15. thnlthinkthatsolvinglmxlﬂhystems —keytomyPh.D.researchin1966— tookthebetter
-putofanhornonanlnumnheseresuhsseeminaedible.
-
-16. See WP.
-
-emvmrm—umw.
-
-242
-
-§3 Matrix Inversion
-
-§§1 Unear transformations
-
-  
- 
-    
-   
-   
-  
-
-ChapterO-LlnaarAlgebra SciandﬂcFOﬂ
-
-We see from Table 9-2 above that the time computed from t
-cpu and coprocessor speciﬁcations (422 clocks) is close to
-measured time (440 clocks). The slight difference doub
-comes both from measurement error and from the fact th
-timing of CISC chips is not an exact art (for example, there a
-periodic interruptions for dynamic memory refreshment and f
+% 242
+We see from Table \ref{tbl:09_02} above that the time computed from the
+cpu and coprocessor specifications (422 clocks) is close to the
+measured time (440 clocks). The slight difference doubtless
+comes both from measurement error and from the fact the
+timing of CISC chips is not an exact art (for example, there a \underline{??}
+periodic interruptions for dynamic memory refreshment and f \underline{??}
 the system clock).
 
-Finally, we conﬁrm that little is to be gained by optimizing out
-loops. Suppose, «5.3., we could halve a; by clever programmin
-then we should cut the N =350 time from 16 to 13 minutes,
-the time for N = 1000 by some 20 minutes in 5 hours, or 6%.
+Finally, we confirm that little is to be gained by optimizing out
+loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
+then we should cut the N = 350 time from 16 to 13 minutes, and 
+the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
-We introduce this subject with a brief discourse on liners
+\section{Matrix Inversion}
+\TallC{We} introduce this subject with a brief discourse on liners
 algebra of square matrices.
 
-Suppose A is a square (NXN) matrix and x is an N-dimensiomi
-vector (a column, or NXI matrix). We can think of the symbolic
+\subsection{Linear transformations}
+Suppose A is a square $(N\times N)$ matrix and x is an N-dimensional
+vector (a column, or $(N\times 1)$ matrix). We can think of the symbolic
 operation
-
-y= A -x (26)
-
- 
-
+ % (26)
+\begin{equation}
+    \label{eq:09_26}
+    \mathbf{y= A \cdot x}
+\end{equation} 
 as a linear transformation of the column x to a new column y. In
 terms of matrix elements and components,
 
-N—l
-Ym= E Amnxn (27)
+\begin{equation}
+    \label{eq:09_27}
+    \mathrm{y_m = \sum_{n=0}^{N-1} A_{mn} x_n}
+\end{equation}
 
-n-o
-
-The transformation is linear because if x is the sum of 2 columns
+The transformation is \textbf{linear} because if x is the sum of 2 columns
 (added component by component)
-
-it = x“) + is), (23) _
-
-l
-
-we can calculate A 1 either by ﬁrst adding the two vectors ant:
+\begin{equation}
+    \label{eq:09_28}
+    \mathrm{x=x^{(1)}+x^{(2)}\;,}
+\end{equation}
+we can calculate $A \cdot x$ either by first adding the two vectors ant:
 then transforming, written
-
-A-x-A-(am+am) (29)
-
-or we could transform ﬁrst and then add the transformed vectors.
-The identity of the results is called the distribatlvs law
-
-A-x-A-(xm+a(2)) “amuse (30)
+\begin{equation}
+    \label{eq:09_29}
+    \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)}
+\end{equation}
+or we could transform first and then add the transformed vectors.
+The identity of the results is called the \textbf{distributive law}
+\begin{equation}
+    \label{eq:09_30}
+    \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} }
+\end{equation}
 of linear transformations.
 
-“2 Matrix m
-Now, suppose we had several square matrices, A, B, 0,... We
-could imagine performing successive linear transformations on a
+\subsection{Matrix multiplication}
 
-vectorxvia
-y= A -x (31a)
-2= e -y (31b)
-w = C -1 (31¢)
+Now, suppose we had several square matrices, \textbf{A, B, C,...} We
+could imagine performing successive linear transformations on a
+vector \textbf{x} \textit{via}
+\begin{subequations}
+    \begin{equation}
+        \label{eq:09_31a}
+        \mathrm{ y= A \cdot x} % (31a)
+    \end{equation}
+    \begin{equation}
+        \label{eq:09_31b}
+        \mathrm{ z= B \cdot y} % (31b)
+    \end{equation}
+    \begin{equation}
+        \label{eq:09_31c}
+        \mathrm{ w = C \cdot z}  % (31c)
+    \end{equation}
+\end{subequations}
 
 These can conveniently be written
 
-w=c-[B-(A-x) . (32)
-
- 
+\begin{equation}
+    \label{eq:09_32}
+    \mathrm{w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .}%  (32)
+\end{equation}
 
 The concept of successive transformations leads to the idea of
 multiplying two matrices to obtain a third:
-
-D=B-A E=C-D (33)
+% (33)
+\begin{equation}
+    \label{eq:09_33}
+    \mathrm{D = B \cdot A \quad E = C \cdot D}
+\end{equation}
 In terms of matrix elements we have, for example
-N-I
-Diir ' 1% all All- (34)
+\begin{equation}
+    \label{eq:09_34}
+    \mathrm{D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}}
+\end{equation}
 
 The important point is that the (matrix) multiplications may be
 performed in any order, so long as the left-to-right ordering of
 the factors is maintained:
-
-oJilthNobinm-Alnohtaraaawad.
-
-Ci'iaptoro-LInaarAigabra Salem
-
-   
-  
-  
-  
-  
-
-c- (a -A) -=- (c .n) -A (35)
-
-Equation 35 is known as the associative law of matrix multipli
-tion. Finally, we note that —as hinted above— the left-to-ri
-order of factors in matrix multiplication is signiﬁcant. That is, i
+\begin{equation}
+    \label{eq:09_35}
+    \mathrm{C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A}
+\end{equation}
+Equation \ref{eq:09_35} is known as the associative law of matrix
+multiplication. Finally, we note that -- as hinted above -- the left-to-right
+order of factors in matrix multiplication is significant. That is, i
 general,
+\begin{equation}
+    \label{eq:09_36}
+    \mathrm{A \cdot B \neq B \cdot A}
+\end{equation}
+We say that, unlike with ordinary or even complex arithmetics
+matrix multiplication -- even of square matrices -- does not in
+general obey the commutative law \sepfootnote{09_17}.
 
-A-B¢B-A (36) 1
-
-We say that, unlike with ordinary or even complex arithme '
-matrix multiplication —even of s uare matrices— does not i
-general obey the commutative law .
-
-§§3 Matrix Inversion
+\subsection{Matrix Inversion}
 With this introduction, what does it mean to invert a matrix? First
 of all, the concept can apply only to a square matrix. Given an
-NXN matrix A, we seek another N XN matrix A with theproper-
-ty that
+$N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the property that
+\begin{equation}
+    \label{eq:09_37}
+    \mathrm{A^{-1} \cdot A \equiv A \cdot A^{-1}}
+\end{equation} 
+where I is the unit matrix defined in the beginning of this chapter
+(Eq. \erratumReplace{typo}{4}{\ref{eq:09_03}}-- 1's on the main diagonal, 0's everywhere else). We have
+implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
+left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
+\begin{equation}
+    \label{eq:09_38}
+    \mathrm{\Big(A^{-1} \Big)^{-1} \equiv A}
+\end{equation} 
+The condition that -- given A -- we can construct $A^{-1}$ is the same
+as the condition that we should be able to solve the linear equation
+\begin{equation*}
+    \mathrm{A \cdot x = b \,;}
+\end{equation*} 
+ namely, $\det(\mathrm{A}) \neq 0$.
 
- 
+\subsection{Why invert matrices, anyway?}
 
-A“-AaA-A"=I (37)
-
-where I is the unit matrix deﬁned in the beginning of this chapte r
-(Eq. 4 — 1’s on the main diagonal, 0’s everywhere else). We have:
-implied in Eq. 37 that a matrix that is an inverse with respect to
-left-multiplication is also an inverse with respect to right-multi-
-plication. Put another way, we imply that
-
-(r‘ )“ a A (38)
-
-The condition that - given A— we can construct A'1 is the same.|
-as the condition that we should be able to solve the linear equa-(
-tion
-
-A-I-b;
-
-t namely, det(A) u 0.
-
-5‘4 W invert matrices, W
 We have developed a linear equation solver program already
-—why should we be interested in a matrix inversion program?
+-- why should we be interested in a matrix inversion program?
 
 Here is why: The time needed to solve a single system (that is,
-with a given inhomogeneous term) of linear equations is condi-
-tioned by the number of ﬂoating-point multiplications required:
-
-about 143/111): number needed to invert the matrix is about N3,
-roughly 3X as many, meaning roughly 3x as long to invert as to
+with a given inhomogeneous term) of linear equations is conditioned by the number of floating-point multiplications required:
+about $N^3/3$. The number needed to invert the matrix is about $N^3$,
+roughly $3\times$ as many, meaning roughly $3\times$ as long to invert as to
 solve, if the matrix is large. Clearly there is no advantage to
 inverting unless we want to solve a number of equations with the
-same coefﬁcient matrix but with different inhomogeneous terms.
+same coefficient matrix but with different inhomogeneous terms.
 In this case, we can write
+\begin{equation}
+    \label{eq:09_39}
+    \mathrm{x = A^{-1} \cdot b}
+\end{equation} 
+and just recalculate for each \textbf{b}. Clearly this breaks even - relative
+to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior
+to re-solving for more than 3 \textbf{b}'s.
 
-x=A'Lb a”
-
-and just recalculate for each h. Clearly this breaks even — relative
-to solving 3 sets of equations — for 3 different b's and is superior
-to re-solving for more than 3 Us
-
-s55 Anmmpie
-
-Let us now calculate the inverse of our 3x3 matrix from before.
-The equation is (let c = A " be the inverse“)
-
-105 000301 can 100
-3 2 4 C10 C“ C12 = 0 1 0 (40)
-116 CanCa 001
-
- 
-
-18. Note:ifCisaright-inverse,AC-l,itkalsoa|dl-inverse,CA=l.
-
-OJUIUIVNanim-Alrldasraaarvad.
-
-246
-
-CMptarO-Urngebra SclentlﬂcFORT
-
-It is easy to see that Eq. 40 is like 3 linear equations, the unkn
-being each column of the matrix C. The brute-force method I
-calculate A is then to work on the right-hand-side all at once
+\subsection{An Example} 
+Let us now calculate the inverse of our $3\times 3$ matrix from before.
+The equation is (let $C = A^{-1}$ be the inverse\sepfootnote{09_18})
+\begin{equation}
+    \label{eq:09_40}
+    \begin{pmatrix}
+        1&0 &5\\ 
+        3&2 &4\\ 
+        1&1 &6
+    \end{pmatrix}
+    \,
+    \begin{pmatrix}
+        c_{00}&c_{01} &c_{02}\\ 
+        c_{10}&c_{11} &c_{12}\\ 
+        c_{20}&c_{21} &c_{22}
+    \end{pmatrix}
+    \, = \,
+    \begin{pmatrix}
+        1&0 &0\\ 
+        0&1 &0\\ 
+        0&0 &1
+    \end{pmatrix}
+\end{equation} 
+% 246
+It is easy to see that Eq. \ref{eq:09_40} is like 3 linear equations, the unknown
+being each column of the matrix C. The brute-force method to
+calculate A is then to work on the right-hand-side all at once as
 we triangularize, and back-solve. It is easy to see that
-gularization by pivotal elimination leads to
+triangularization by pivotal elimination leads to
+\begin{equation}
+    \label{eq:09_41}
+    \begin{pmatrix}
+        1&^2/_3 &^4/_3\\ 
+        0&1 &^{-11}/_2\\ 
+        0&0 &1
+    \end{pmatrix}
+    \begin{pmatrix}
+        c_{00}&c_{01} &c_{02}\\ 
+        c_{10}&c_{11} &c_{12}\\ 
+        c_{20}&c_{21} &c_{22}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        0&^1/_3&0\\ 
+        ^{-3}/_2 &^1/_2&0\\ 
+         ^1/_{13} &         ^{-1}/_{13} &        ^2/_{13}
+    \end{pmatrix}
+\end{equation} 
+To construct the inverse we replace the right-hand side with the 
+results of back-solving, column by column. This is N times as
+much work as back-solving a single set of equations, hence the
+total time required for brute-force inversion is $\approx \frac{4}{3}N^3$. By keeping track of zero elements we could reduce this time by another
+$\frac{1}{3}N^3$, thereby obtaining the theoretical minimum (for Gaussian
+elimination) of $O(N^3)$. However, the brute-force method is unsatisfactory for another reason: it takes twice the storage of more
+sophisticated algorithms. Modern matrix packages therefore use
+LU decomposition for both linear equations and matrix inversion.
 
-1 2/3 Vs can cat can 0 V3 0
-0 1 *‘1/2 C10 Ctr C12 = ‘3': V2 0 (41)
-0 O 1 C20 C12 022 V13 “V13 #13 l
-
-results of back-solving, column by column. This is N times a.
-
-if
-
-1
-total time required for brute-force inversion is =5 gN3. By keep—
-
-To construct the inverse we replace the right-hand side with thq
-
-much work as back-solving a single set of equations, hence th
-
-ing track of zero elements we could reduce this time by anothel
-%N3, thereby obtaining the theoretical minimum (for Gaussian
-elimination) of 0(N3). However, the brute-force method is un-
-satisfactory for another reason: it takes twice the storage of more
-sophisticated algorithms. Modern matrix packages therefore “8:“
-LU decomposition for both linear equations and matrix inver~
-
-sion.
-
- 
-
-§4 LU decomposition
-
-We now investigate the LU decomposition algorithm”. Sup-
-pose a given matrix A could be rewritten
-
-awam 1m 0 0 }lmﬂm
-A: 310311 = L'U = 1401110 0 #11 (42)
-.................. 0 0
-
+\section{LU decomposition}
+\TallC{We} now investigate the LU decomposition algorithm\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
+\begin{equation}
+    \label{eq:09_42}
+    \mathrm{
+    A = 
+    \begin{pmatrix}
+        a_{00}&a_{01} &\dots\\
+        a_{10}&a_{11} &\dots\\
+        \dots&\dots &\dots
+    \end{pmatrix}
+    = L \cdot U =
+    \begin{pmatrix}
+        \lambda_{00}&0 &0\\
+        \lambda_{10}&\lambda_{11} &0\\
+        \dots&\dots &\dots
+    \end{pmatrix}
+    \cdot
+    \begin{pmatrix}
+        \mu_{00}&\mu_{01} &\dots\\
+        0&\mu_{11} &\dots\\
+        0&0 &\dots
+    \end{pmatrix}
+}
+\end{equation} 
 then the solution of
-
- 
-
-19.
-
-Sec, 2.3., WH. Press, B.P. F'Iannery, SA. Teukolsky and W.T. Vetterling. Numerical Recipe:
-(Cambridge University Press, Cambridge, 1986), p. 31H.
-
-owe-mm 241
-
-(L-u)-nL-(u-x) -b (43)
-can be found in two steps: First. solve
-Lty- b (44)
+\begin{equation}
+    \label{eq:09_43}
+    \mathrm{(L \cdot U ) \cdot x \equiv L \cdot (U \cdot x) = b}
+\end{equation} 
+can be found in two steps: First, solve
+% (44)
+\begin{equation}
+    \label{eq:09_44}
+    \mathrm{L \cdot y = b}
+\end{equation} 
 for
-y: U-x (45)
-via
-looYo = bo
-MOYO‘l‘ltIYI =01 (46)
-130% + 421Y1+ la)’: = D:
-etc.
+% (45)
+\begin{equation}
+    \label{eq:09_45}
+    \mathrm{y \equiv U  \cdot x}
+\end{equation} 
+\textit{via}
+\begin{align}
+    \label{eq:09_46}
+    \lambda_{00} y_0 &= b_0 \nonumber \\
+    \lambda_{10} y_0 + \lambda_{11} y_1 &= b_1 \\
+    \lambda_{20} y_0 + \lambda_{21} y_1 + \lambda_{22} y_2 &= b_2 \nonumber \\
+    \dots \;\textit{etc.} \;\dots \nonumber
+\end{align}
+which can be solved successively by forward \erratumReplace{typo}{substtution}{substitution}. Next
+solve 45 successively (by back-substitution) for \textbf{x}:
+\begin{align}
+    \label{eq:09_47}
+    \mu_{N-1\, N-1} x_{N-1} &= y_{N-1} \nonumber \\
+    \mu_{N-2\, N-2} x_{N-2} + \mu_{N-2\, N-1} x_{N-1} &= y_{N-2} \\
+    \dots \;\textit{etc.} \;\dots \nonumber
+\end{align}
+The n'th term of Eq. \ref{eq:09_46} requires n multiplications and n additions.
+Since we must sum n from 0 to N-1, we find $N(N-1)/2 \approx N^2/2$
+multiplications and additions to solve all of \ref{eq:09_46}. Similarly, solving 
+\ref{eq:09_47} requires about $N^2/2$ additions and multiplications. Thus, the
+dominant time in solving must be the time to decompose according to Eq. \ref{eq:09_42}.
 
-which can be solved successively by forward substtution. Next
-solve 45 successively (by back-substitution) for x:
-
-l‘N—tN-t XN—1 = YN—t
-I‘M-2 N-2 XN-z + I‘M—2 N-1 xN—i = YN—z (47)
-etc.
-
-The n'th term of Eq. 46 requires n multiplications and n additions.
-Since we must sum n from 0 to N-l, we ﬁnd N(N—1)/2 =4 Nz/Z
-multiplications and additions to solve all of 46. Similarly, solving
-
-47 requires about N2/2 additions and multiplications. Thus, the
-dominant time in solving must be the time to decompose accord-
-
-ing to Eq. 42.
-
-The decomposition time is =5 N 3/3, and the method for decom-
-posing is described clearly in Numerical Recipes. The equations
+The decomposition time is $\approx N^3/3$, and the method for decomposing is
+described clearly in \textit{Numerical Recipes}. The equations
 to be solved are
+% (48)
+\begin{equation}
+    \label{eq:09_48}
+    \sum_{k=0}^{N-1}\lambda_{mk}\mu_{kn}=A_{mn}
+\end{equation}
+constituting $N^2 + N$ equations for $N^2$ unknowns. Thus we may
+arbitrarily \textbf{choose} $\lambda_{kk} = 1$.
 
-N-l
-
-[a luk/‘h =Araa (48)
-
-constituting N2 + N equations for N2 unknowns. Thus we may
-arbitrarily choose I... = 1.
-
-eJuunMNobmm-nmm.
-
-Chapters—UnearNgobra ScbndﬂcFORTM
-
-The equations 48 are easy to solve if we do so in a sensible ordeﬁ
+The equations \ref{eq:09_48} are easy to solve if we do so in a sensible order.
 Clearly,
+% (49)
+\begin{align}
+    \label{eq:09_49}
+    \lambda_{mk} &\equiv 0\;,\; m > k  \nonumber \\
+    &\\
+    \mu_{kn} &\equiv 0\;,\; k < n  \nonumber
+\end{align}
+so we can divide up the work as follows: for each n, write
+% (50)
+\begin{align}
+    \label{eq:09_50}
+    \mu_{mn} &= A_{mn} - \sum_{k=0}^{m-1}\lambda_{mk}\mu_{kn}\,,\;m=0,1,\dotsc,n  \nonumber \\
+    & \\
+    \lambda_{mn} &=\frac{1}{\mu_{nn}}\Big(A_{mn}-\sum_{k=0}^{n-1}\lambda_{mk}\mu_{kn}\Big)\,,\; m=n+1, n+2, \dotsc, N-1  \nonumber
+\end{align}
 
-1mk50,m>k il
-(49)
-”knaos k<n
-
-so we can divide up the work as follows: for each 11, write
-
- 
-
- 
-
-m—l
-.umn =Amn — kzo Amkﬂkn ’ m = 0,1,...,’l
-
-(50)
-
-n-l
-1m =i(A..... — 2 Amp“) , m =n+1,n+2,...,N-1 -.
-.unn i=0
-
- 
-
-Inspection of Eq. 50 makes clear that the terms on the right side!
-are always computed before they are needed. We can store tln
-computed elements A.“ and uh, in place of the corresponding
-elements of the original matrix (on the diagonals we store #4..
-
-since A”, = 1 is known).
+Inspection of Eq. \ref{eq:09_50} makes clear that the terms on the right side
+are always computed before they are needed. We can store the
+computed elements $\lambda_{mk}$ and $\mu_{kn}$ in place of the corresponding
+elements of the original matrix (on the diagonals we store  $\mu_{nn}$
+since $\lambda_{kk} = 1$ is known).
 
 To limit roundoff error we again pivot, which amounts to permutl
 ing so the row with the largest diagonal element is the currenf
 one. Much of the code developed for the Gauss eliminatios
-method is applicable, as the ﬁle LU.FI'H shows.
+method is applicable, as the file LU.FTH shows.
 

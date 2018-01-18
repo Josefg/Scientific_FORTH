@@ -1,4 +1,19 @@
 \documentclass{book}
+\usepackage{errata} 
+% begin errata for math mode
+\usepackage{marginnote}
+\makeatletter
+\newcommand{\erratumMathReplace}[4][]{% keyvals, explanation, old, new
+\setkeys{erratum}{#1}\stepcounter{erratum}\record@erratum{#2}%
+\marginnote{Err(\arabic{erratum})}\immediate\typeout{Erratum!}%
+[#4]_r^{\arabic{erratum}}%
+\gdef\erratumMath@new{#2}%
+\gdef\erratumMath@old{#3}}
+\newcommand{\erratumMathPrint}{%
+\footnotetext[\value{erratum}]{\text{{\scshape{Erratum!}}%
+\@ifundefined{erratum@type}{}{(\erratum@type)} \(\erratumMath@new\) (original text was: ``\(\erratumMath@old\)'')}}}
+\makeatother
+%end errata 
 % math formatting
 \usepackage{amssymb, amsmath}
 \usepackage{multicol}
@@ -130,8 +145,9 @@
     \input{footnotes}
     % include{chapter on which you are working}
     % \include{Chapter-01/01-Toward-Scientific-FORTH}
-     \include{Chapter-02/02-Programming-in-FORTH}
+    % \include{Chapter-02/02-Programming-in-FORTH}
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
-    % \include{Chapter-04/04-The-80x87-Family}
-    % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
+	\include{Chapter-09/09-Linear-Algebra}
+    %\include{Chapter-04/04-The-80x87-Family}
+    %\include{Chapter-10/10-Strings-and-IO-in-FORTH}
 \end{document}
