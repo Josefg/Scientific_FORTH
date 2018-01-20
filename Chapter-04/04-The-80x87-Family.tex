@@ -682,6 +682,7 @@ as for \textit{bmatrix vector}. If one must load the 4x4 matrix each time, the s
 The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\footnote{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time-consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
 
 \begin{align}
+\begin{split}
     \begin{bmatrix}A\end{bmatrix}
     \begin{bmatrix}B\end{bmatrix} =& 
     \begin{bmatrix}
@@ -699,27 +700,33 @@ The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5
       a_{11}b_{11}+a_{12}b_{21} & a_{11}b_{12}+a_{12}b_{22} \\
       a_{21}b_{11}+a_{22}b_{21} & a_{21}b_{12}+a_{22}b_{22}
     \end{bmatrix}
+\end{split}
 \end{align}
 
 requires 8 matrix multiplications and 4 matrix additions to evaluate. Strassen has shown that in fact the evaluation can be performed with 7 matrix multiplications:
 
 \begin{align}
+\begin{split}
     p_{1} =&\ (a_{ll} + a_{22}) (b_{11} + b_{22})  \\
     p_{2} =&\ (a_{21} + a_{22}) b_{11}             \\
     p_{3} =&\ a_{ll} (b_{12} - b_{22})             \\
     p_{4} =&\ (-a_{ll} + a_{21}) (b_{11} + b_{12}) \\
     p_{5} =&\ (a_{ll} + a_{l2}) b_{22}             \\
     p_{6} =&\ a_{22} (-b_{11} + b_{21})            \\
-    p_{7} =&\ (a_{12} - a_{22}) (b_{21} + b_{22})
+    p_{7} =&\ (a_{12} - a_{22}) (b_{21} + b_{22})  
+\end{split}
 \end{align}
 
 and 18 matrix additions:
 
 \begin{align}
-    c_{11} =&\ p_{1} - p_{5} + p_{6} + p_{7} \\
-    c_{12} =&\ p_{3} + p_{5}                 \\
-    c_{21} =&\ p_{2} + p_{6}                 \\
+\begin{split}
+    c_{11} =&\ p_{1} - p_{5} + p_{6} + p_{7}    \\
+    c_{12} =&\ p_{3} + p_{5}                    \\
+                                                \\
+    c_{21} =&\ p_{2} + p_{6}                    \\
     c_{22} =&\ p_{1} - p_{2} + p_{3} + p_{4}
+\end{split}
 \end{align}
 
 Equations 10 and 11 look at first blush half as efficient as 8 multiplications and 4 additions. But let us examine the time to multiply two partitioned matrices, first by the straightforward method and then by Strassen's: clearly,
@@ -756,9 +763,9 @@ or
 
 where
 
-\begin{align}
+\begin{align*}
     lg\ 7 \equiv log_{2}\ 7 = 2.807...
-\end{align}
+\end{align*}
 
 That is, partitioning allows a potentially large reduction in the time to multiply dense matrices.
 
@@ -824,11 +831,13 @@ Ax\ =&\ y
 
 reduces to three sub-problems:
 
+\begin{subequations}
 \begin{align}
-    a_{11}u_{1} =& y_{1}                 \\
-         zx_{2} =& y_{2} - a_{21}{u}_1   \\
-    a_{11}x_{1} =& y_{1} - a_{12}x_{2}
+   & a_{11}u_{1} = y_{1}                 \\
+   & zx_{2} = y_{2} - a_{21}{u}_1   \\
+   & a_{11}x_{1} = y_{1} - a_{12}x_{2};
 \end{align}
+\end{subequations}
 
 that is, we have the recursion
 
