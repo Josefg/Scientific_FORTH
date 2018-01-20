@@ -243,15 +243,30 @@ Real and complex can then be distinguished via the code fragment
 
 2 AND ( type -- 0 = real| 2 = complex )
 
-Table 5-1 \textit{Bit-patterns of data type descriptors}
-Type BINARY representation
-REAL*4      00000000 00000000
+% Table 5-1
+\begin{table}
+    \centering
+    \caption{\textit{Bit-patterns of data type descriptors}}
+        \bigskip
+    \label{tbl:09_01} 
+    \setlength{\tabcolsep}{30pt}
+        \begin{tabular}{|lll|}
+            \hline
+            & &\\
+            \textbf{Type} & \textbf{BINARY} & \textbf{representation} \\
+            & &\\
+            REAL*4     &  00000000 & 00000000 \\
+            & &\\
+            REAL*8     &  00000000 & 00000001 \\
+            & &\\
+            COMPLEX    &  00000000 & 00000010 \\
+            & &\\
+            DCOMPLEX   &  00000000 & 00000011 \\
+            &&\\
+            \hline 
+        \end{tabular}
+\end{table}
 
-REAL*8      00000000 00000001
-
-COMPLEX     00000000 00000010
-
-DCOMPLEX    00000000 00000011
 
 Since most unary operators produce results of the same type as their argument, we write a defining word for generic unary operators:
 
