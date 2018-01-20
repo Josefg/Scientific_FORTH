@@ -35,7 +35,7 @@ An ifstack-base protocol for floating point and complex arithmetic has drawbacks
 The chief advantages of the ifstack are:
 \begin{itemize}
     \item Unlike FORTRAN, this scheme permits generic routines that will accept several types of input. Hence, \eg, a matrix inversion routine will happily invert REAL*4, REAL*8, COMPLEX, and DCOMPLEX matrices.
-    \item A FORTRAN \rightarrow FORTH translator\footnote{See J.V. Noble, \textit{J. FORTH Ap. and Res.} 6 (1990) 131. See also Chapter 11, where we describe a FORmula TRANslator} becomes simple with generic operators.
+    \item A FORTRAN $\rightarrow$ FORTH translator\footnote{See J.V. Noble, \textit{J. FORTH Ap. and Res.} 6 (1990) 131. See also Chapter 11, where we describe a FORmula TRANslator} becomes simple with generic operators.
     \item The ifstack permits recursive programming \textit{a la} LISP.
 \end{itemize}
 
@@ -155,7 +155,7 @@ But the typed data have varying lengths, from 4 to 16 bytes. We can deal with th
 
 The 18-byte wide ifstack wastes memory, but is easy to program. (In retrospect, this is exactly the method I used to program adaptive numerical quadrature\footnote{J.V. Noble, "Scientific Computation in FORTH". \textit{Computers in Physics} 3 (1989) 31; and Ch 8.1.5 of this book.}.) After several false attempts I settled on the fixed-width ifstack. High level FORTH code for this variant is given below.
 
-\begine{lstlisting}
+\begin{lstlisting}
     \ TYPED DATA STACK MANAGER
     TASK FSTACKS
     FIND CP@ 0=
@@ -272,11 +272,11 @@ GU: GNEGATE FNEGATE XNEGATE ;
 
 A few unary operators like \bc{XABS} (complex absolute value) return real values from complex arguments. If we want to use \bc{GU:} to define, say, \bc{GABS}, we must remember to redefine \bc{XABS} so it zeros the second bit of the type descriptor left on the stack, before returning its result to the ifstack. This is just a \bc{1 AND} so is fast.
 
-A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))
+A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))}
 
-TYPE\_{ab}
+TYPE$_{ab}$
 
-Dx__x ox x ox
+Dx  x ox x ox
 
 flg. 5-2 \textit{Types resulting from 2-argument operators}
 
@@ -328,6 +328,7 @@ Thus we come to the binary generic-operator defining word
             @ EXECUTE           \ select binop
         F>FS ;                  \ save result
     \say: GB: G*   F*  F*X  X*F  X* ;
+\end{lstlisting}
 
 The generic multiply \bc{G*}, \eg, picks out, at run-time, which of four routines to use. By using only logical or shift operations we have made even the high-level definitions fairly quick in comparison with the times of floating point operations.
 
@@ -354,32 +355,32 @@ This leaves the second possibility, where "(" becomes part of the array name, \r
 
 The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie forbidden. This leaves the curly braces { }, which are unused by FORTH.
 
-Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the advantage that the opening brace, \regc{{}, is only part of the name, but reminds us that the name \regc{V{} is an array, exactly as names ending with \bc{$} are strings, \textit{etc}. The notation suggests a further mnemonic refinement, namely to place \bc{{{} and \bc{}}} at the ends of 2-dimensional arrays, as in \bc{M{{dot3dot5dot}}}.
+Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the advantage that the opening brace, \regc{\{}, is only part of the name, but reminds us that the name \regc{V\{} is an array, exactly as names ending with \bc{\$} are strings, \textit{etc}. The notation suggests a further mnemonic refinement, namely to place \bc{\{\{} and \bc{\}\}} at the ends of 2-dimensional arrays, as in \bc{M\{\{dot3dot5dot\}\}}.
 
 How will this notation operate? Clearly, to place the (generalized) address of the n'th element (of a 1-dimensional array) on the stack we would say
 
-\begin{align*)
-    V{dot n dot}
+\begin{align*}
+    V\{dot n dot\}
 \end{align*}
 
 whereas
 
-\begin{align*)
-    M{{ dot m dot n dot}}
+\begin{align*}
+    M\{\{ dot m dot n dot\}\}
 \end{align*}
 
 should analogously place the address of the m,n'th element of a 2-dimensional array on the stack.
 
 \subsection{Large matrices}
-The defining word \bc{SCALAR} given in ch2 above allots space in the dictionary -for most FORTHs, code + data must fit here- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\gte$64 Kbyte) LISTS segment.
+The defining word \bc{SCALAR} given in ch2 above allots space in the dictionary -for most FORTHs, code + data must fit here- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
 
-A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, 2^16) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\footnote{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by -say- Gaussian elimination with partial pivoting is
-
+A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, $2^{16}$) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\footnote{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by --say-- Gaussian elimination with partial pivoting is
+\[
 T = 1/3 mn^{3}
-
+\]
 where m is the time for 1 multiply and 1 add, and n is the order of the matrix. We should also include the fetch + store time, since the bus bandwidth is as much a limiting factor as the FPU arithmetic speed. For the 8086/8087 the time $m$ is of order 400 clock cycles. Thus the asymptotic execution time on a 10 MHz machine should be of order 10 minutes for n = 350.
 
-On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the [ITT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4.8), to tackle 10^{3} x 10^{3} dense matrix problems.
+On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the [ITT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4.8), to tackle $10^{3} x 10^{3}$ dense matrix problems.
 
 The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines - 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
 
@@ -406,7 +407,7 @@ to 1 megabyte) in the following manner:
     \item Then tell both FORTH and DOS how much memory you want.
 \end{itemize} 
 
-As might be expected, HS/FORTH defines non-standard words (coded as DOS function calls) to use the various DOS service routines that allocate memory, \textit{etc}.\footnote{See, \eg, D.N. Jump, \textit{Programmer's guide to MS-DOS}, rev. ed. (Brady Books, New York, 1987).
+As might be expected, HS/FORTH defines non-standard words (coded as DOS function calls) to use the various DOS service routines that allocate memory, \textit{etc}.\footnote{See, \eg, D.N. Jump, \textit{Programmer's guide to MS-DOS}, rev. ed. (Brady Books, New York, 1987).}
 
 \begin{lstlisting}
     MEMORY 4+ @ S->D
@@ -437,7 +438,7 @@ the reverse translation, of an absolute address (in bytes) to the segment + offs
 
 The 80386 CPU has a third mode that permits direct 32-bit addressing of 4 gigabytes (albeit few computer users have quite this much fast memory available). A scheme for addressing large amounts of RAM in 80386 machines (without leaving MS-DOS) has been discussed in \textit{Dr Dobb's Journal}\footnote{See, \eg, Al Williams, "DOS + 386 = 4 Gigabytes", Dr. Dobb's Journal, July 1990, p. 62.}.
 
-For 8086 PC's and/or real-mode programming on 80286 + machines, we can merely ignore whether segments overlap. Oddly, standard assembly programming books\footnote{C. Morph and M. Waite, \textit{8086/8088 16-bit microprocessor primer} (Byte/McGraw-Hill, Peterborough, 1982); L. Scanlon, \textit{IBM PC & XT assembly language: a guide for programmers} (Brady/Prentice-Hall, Bowie, Md., 1983); R. Lafore, \textit{Assembly language primer for the IBM PC & XT} (Plume/Waite, New York, 1984).} omit this way of addressing segmented memory.
+For 8086 PC's and/or real-mode programming on 80286 + machines, we can merely ignore whether segments overlap. Oddly, standard assembly programming books\footnote{C. Morph and M. Waite, \textit{8086/8088 16-bit microprocessor primer} (Byte/McGraw-Hill, Peterborough, 1982); L. Scanlon, \textit{IBM PC \& XT assembly language: a guide for programmers} (Brady/Prentice-Hall, Bowie, Md., 1983); R. Lafore, \textit{Assembly language primer for the IBM PC \& XT} (Plume/Waite, New York, 1984).} omit this way of addressing segmented memory.
 
 The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to the segment + offset notation expected by the 80x86 processors in real mode. A word that performs this conversion is \bc{SEG.OFF}, defined as
 
@@ -451,9 +452,9 @@ The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to t
 The 32-bit address is placed on the stack as a double-length integer, with the low-order (\ie offset part) above the segment part. The phrase \bc{OVER 15 AND} saves bits 0-3 (of the 32-bit address); \bc{-ROT D/16 DROP} then shifts the (32-bit) address right 4 bits and drops the least-significant part, to produce the offset. This conversion method produces offsets in the range 00-0F (hex), that clearly have nothing to do with the original offsets (that led to the 32-bit absolute address \textit{via} 16*seg + off ).
 
 \subsection{A general typed-array definition}
-\TallC{For} the new syntax to work the word \bc{}} must compute the addresses of the n'th element of \bc{V{} from the information on the stack, and \bc{}}} must do the same for \bc{M{{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V{ n }}and \bc{M{{ m n }}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
+\TallC{For} the new syntax to work the word \bc{\}} must compute the addresses of the n'th element of \bc{V\{} from the information on the stack, and \bc{\}\}} must do the same for \bc{M\{\{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V\{ n \}}and \bc{M\{\{ m n \}\}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
 
-Before we can define \bc{}}, however, we must specify the data: structure it operates on, \ie the array header.
+Before we can define \bc{\}}, however, we must specify the data: structure it operates on, \ie the array header.
 
 Once again we begin with the user interface. We can opt for maximum generality or maximum simplicity. My first attempt fell into the first category, permitting the user to define a named segment of given length and to define an array in that segment. Lately I realized this generality accomplishes little, so have abandoned it. All arrays will be defined in the heap, named SUPERSEG as above. To define a length-50 \bc{1ARRAY} of 4-byte number we will say
 
@@ -566,7 +567,7 @@ Finally, here is a useful diagnostic word
 \end{lstlisting}
 
 This leads to the definitions
-\begine{lstlisting}
+\begin{lstlisting}
     : BY ; \a do-nothing word for style
     : WIDE * ; (I w -- I*w)
     : 2ARRAY   (I*w t -- ) 1ARRAY ;
@@ -589,10 +590,12 @@ Some of the words in our typed-data/matrix lexicons should be optimized or redef
 
 Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
-\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \texit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \texit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
+\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \textit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \textit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
 
 \leftbar[1\linewidth]
 FORTH data structures, especially as defined in this Chapter, do little- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.
 
 The new fetch and store words were defined in high-level FORTH for safety. Adding bounds-checking to arrays, at least during the debug cycle, is \underline{strongly recommended} to avoid crashing, or even damaging, the system.
 \endleftbar
+
+
