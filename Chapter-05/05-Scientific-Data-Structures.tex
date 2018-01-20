@@ -355,38 +355,43 @@ This leaves the second possibility, where "(" becomes part of the array name, \r
 
 The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie forbidden. This leaves the curly braces { }, which are unused by FORTH.
 
-Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the advantage that the opening brace, \regc{\{}, is only part of the name, but reminds us that the name \regc{V\{} is an array, exactly as names ending with \bc{\$} are strings, \textit{etc}. The notation suggests a further mnemonic refinement, namely to place \bc{\{\{} and \bc{\}\}} at the ends of 2-dimensional arrays, as in \bc{M\{\{dot3dot5dot\}\}}.
+Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the
+advantage that the opening brace, \regc{\{}, is only part of the name, but
+reminds us that the name \regc{V\{} is an array, exactly as names ending with
+\bc{\$} are strings, \textit{etc}. The notation suggests a further mnemonic
+refinement, namely to place \bc{\{\{} and \bc{\}\}} at the ends of
+2-dimensional arrays, as in $\mathbf{M\{\{\bullet \;3 \bullet 5 \;\bullet \}\}}$.
 
 How will this notation operate? Clearly, to place the (generalized) address of the n'th element (of a 1-dimensional array) on the stack we would say
 
 \begin{align*}
-    V\{dot n dot\}
+    V\{\bullet \;n \;\bullet\}
 \end{align*}
 
 whereas
 
 \begin{align*}
-    M\{\{ dot m dot n dot\}\}
+    M\{\{ \bullet \;m \bullet n \;\bullet\}\}
 \end{align*}
 
 should analogously place the address of the m,n'th element of a 2-dimensional array on the stack.
 
 \subsection{Large matrices}
-The defining word \bc{SCALAR} given in ch2 above allots space in the dictionary -for most FORTHs, code + data must fit here- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
+\TallC{The} defining word \bc{SCALAR} given in \S2 above allots space in the dictionary --for most FORTHs, code + data must fit here-- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
 
 A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, $2^{16}$) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\footnote{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by --say-- Gaussian elimination with partial pivoting is
 \[
-T = 1/3 mn^{3}
+T = \frac{1}{3} mn^{3}
 \]
 where m is the time for 1 multiply and 1 add, and n is the order of the matrix. We should also include the fetch + store time, since the bus bandwidth is as much a limiting factor as the FPU arithmetic speed. For the 8086/8087 the time $m$ is of order 400 clock cycles. Thus the asymptotic execution time on a 10 MHz machine should be of order 10 minutes for n = 350.
 
-On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the [ITT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4.8), to tackle $10^{3} x 10^{3}$ dense matrix problems.
+On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the IIT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4 \S8), to tackle $10^{3} x 10^{3}$ dense matrix problems.
 
 The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines - 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
 
 The chips contain 4 segment registers: SS (stack segment), CS (code segment), DS (data segment) and ES (extra segment). Five registers, BP, SP, SI, DI, and BX, can be used for offsets, although they are not entirely interchangeable (some have specific functions in some of the more complex machine instructions, such as string operations). Manifestly, since the 8086 can address
 
-$2^{20} = 1,048,576 bytes ("1 megabyte")$,
+$2^{20} = 1,048,576 \textrm{ bytes ("1 megabyte")}$,
 
 the largest segment number is $2^{14}-1 = 16,383$.
 
