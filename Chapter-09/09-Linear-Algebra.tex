@@ -1342,11 +1342,19 @@ in cycles for these basic operations are\sepfootnote{09_16}
             \hline
         \end{tabular}
 \end{table}
- 
-% 242
-We see from Table \ref{tbl:09_02} above that the time computed from the cpu and coprocessor specifications (422 clocks) is close to the measured time (440 clocks). The slight difference doubtless comes both from measurement error and from the fact the timing of CISC chips is not an exact art (for example, there are periodic interruptions for dynamic memory refreshment and for the system clock).
 
-Finally, we confirm that little is to be gained by optimizing out loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming then we should cut the N = 350 time from 16 to 13 minutes, and the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
+We see from Table \ref{tbl:09_02} above that the time computed from the
+cpu and coprocessor specifications (422 clocks) is close to the
+measured time (440 clocks). The slight difference doubtless
+comes both from measurement error and from the fact the
+timing of CISC chips is not an exact art (for example, there are
+periodic interruptions for dynamic memory refreshment and for
+the system clock).
+
+Finally, we confirm that little is to be gained by optimizing out
+loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
+then we should cut the N = 350 time from 16 to 13 minutes, and 
+the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
 \section{Matrix Inversion}
 \TallC{We} introduce this subject with a brief discourse on liners
