@@ -489,6 +489,24 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
 7 3'RD FROM TOP
 fig. 4.1 The 00:87 snack. from seen:
 \end{lstlisting}
+\begin{figure}
+%Fig. 4-1 
+    \center
+    \begin{tikzpicture}
+        \draw (0,-1) rectangle (10,8.0);
+        \newcounter{shifty} \setcounter{shifty}{7}
+        \foreach \n/\w in {0/4'TH,1/5'TH,2/6'TH,3/7'TH,4/0'TH,5/1'ST,6/2'ND,7/3'RD}{
+            %\node[xshift=5cm, yshift=0.9*\theshifty cm,draw,minimum height=0.9 cm,anchor=west,outer sep=0pt] (N\n) {\n\space \space \w\space FROM TOP};
+            \node[xshift=6cm, yshift=0.9*\theshifty cm,draw,minimum height=0.9 cm,anchor=west,outer sep=0pt] (N\n) {\texttt{\n\space \space \w\space FROM TOP}};
+            \addtocounter{shifty}{-1}
+        }
+        \node[draw, xshift=1.1cm,yshift=6.3cm, text width=1.1 cm] (A) {\texttt{100 ST}}; 
+        \path(A.east) -- (N3.west)  coordinate[pos=0.4](mid);
+        \draw[-latex] (A.east) -| (mid) |- ($(0,0.3)+(N3.west)$);
+    \end{tikzpicture}    
+    \caption{The 80x87 stack, from 8087P}
+    \label{fig:04_01}
+\end{figure}
 
 The algorithm has the following expression in pseudo-FORTH
 
