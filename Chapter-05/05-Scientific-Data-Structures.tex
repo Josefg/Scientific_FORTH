@@ -317,18 +317,34 @@ GU: GNEGATE FNEGATE XNEGATE ;
 A few unary operators like \bc{XABS} (complex absolute value) return real values from complex arguments. If we want to use \bc{GU:} to define, say, \bc{GABS}, we must remember to redefine \bc{XABS} so it zeros the second bit of the type descriptor left on the stack, before returning its result to the ifstack. This is just a \bc{1 AND} so is fast.
 
 A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))}
-
-TYPE$_{ab}$
-
-Dx  x ox x ox
-
-flg. 5-2 \textit{Types resulting from 2-argument operators}
-
-   R D  X DX
-R  R R  X X
-D  R D  X DX
-X  X X  X X
-DX X DX X DX 
+%flg. 5-2 
+\begin{figure}
+    \center
+    \label{fig:05_02}
+    \newcolumntype{x}[1]{>{\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+    \setlength{\extrarowheight}{0.1cm}
+    \begin{tabular}{|llm{7cm}|}
+        \hline
+        &&\\
+        TYPE\textsubscript{ab} && \\
+        &&
+        \begin{tabular}{ x{0.8cm}x{0.8cm} x{0.8cm} x{0.8cm} x{0.8cm} }
+            \textsubscript{\space \space b}&&&&\\
+            %\textsuperscript{b}&&&&\\
+             
+            \diaghead(-3,2){\hskip \hsize} a & R & D & X & DX \\
+            \cline{2-5}
+            \multicolumn{1}{ x{0.8cm}|}{R  }&  R & R & X & X \\
+            \multicolumn{1}{ x{0.8cm}|}{D  }&  R & D & X & DX \\
+            \multicolumn{1}{ x{0.8cm}|}{X  }&  X & X & X & X \\
+            \multicolumn{1}{ x{0.8cm}|}{DX }&  X & DX & X & DX 
+        \end{tabular}
+        \\
+        &&\\
+        \hline
+    \end{tabular}
+    \caption{\textit{Types resulting from 2-argument operators}}
+\end{figure}
 
 \leftbar[1\linewidth]
 Note: this protocol avoids misleading precision for the results of computations. It seems more scientific than FORTRAN's "convert intermediate results to the precision of the highest-precision operand" protocol.
