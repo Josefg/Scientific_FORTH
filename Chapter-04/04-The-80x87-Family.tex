@@ -444,7 +444,7 @@ To calculate the inverse functions, we make use of standard identities (the form
 
 \begin{align}
     Arcsin(z) =& Arctan\left(\frac{z}{\sqrt{(1-z)(1+z)}}\right) \\
-    Arccos(z) =& 2 Arctan\Big(\{\left(\frac{1-z}{1+z}\right)^{\frac{1}{2}\Big)}
+    Arccos(z) =& 2 Arctan\left \{\left (\frac{1-z}{1+z}\right)^{\frac{1}{2}}\right \}
 \end{align}
 
 \begin{lstlisting}
@@ -478,17 +478,6 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
     \item Keep track of where we have stored the last number removed from the 87stack.
 \end{itemize}
 
-\begin{lstlisting}
-0 4'TH FROM TOP
-1 5'TH FROM TOP
-2 6'TH FROM TOP
-3 7'TH FROM TOP
-4 0'TH FROM TOP
-5 1'ST FROM TOP
-6 2’ND FROM TOP
-7 3'RD FROM TOP
-fig. 4.1 The 00:87 snack. from seen:
-\end{lstlisting}
 \begin{figure}
 %Fig. 4-1 
     \center
