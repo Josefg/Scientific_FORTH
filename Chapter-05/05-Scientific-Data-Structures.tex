@@ -57,9 +57,38 @@ Here is how we label types:
 
 \subsection{Typed scalars}
 
-\TallC{We} want the machine to remember for us the data-specific fetches and stores to the co-processor. To accomplish this, the typed variable has to place its address and type on the stack. Thus we need a data structure that we might visualize diagramatically in Fig. 5-1 below (a cell  represents 2 bytes):
-
-Fig. 5-1 Memory structure a! a typed scalar
+\TallC{We} want the machine to remember for us the data-specific fetches and
+stores to the co-processor. To accomplish this, the typed variable has to place
+its address and type on the stack. Thus we need a data structure that we might
+visualize diagramatically in Fig. \ref{fig:05_01} below (a cell $\mathbf{\big |}$
+{\colorbox{gray}{\color{gray}X}} \space {\colorbox{gray}{\color{gray}X}}
+$\mathbf{\big |}$ represents 2 bytes): 
+% Fig. 5-1 Memory structure a! a typed scalar
+\begin{figure}
+    \center
+    \begin{tikzpicture}
+        \newcounter{shiftx} \setcounter{shiftx}{0}
+        \foreach \n in {0,...,3}
+        {
+            \draw [xshift=1.2*\theshiftx cm,thick] (0,.4cm)--(0,-.0cm);
+            \draw [xshift=1.2*\theshiftx cm,fill, opacity=0.2] (+.1,0.4) rectangle (+.4,-.0) {};
+            \draw [xshift=1.2*\theshiftx cm,fill, opacity=0.2] (+.5,0.4) rectangle (+.8,-.0) {};
+            \draw [xshift=1.2*\theshiftx cm,thick] (.9,.4cm)--(0.9,-.0cm);
+            \coordinate (C\n) at (1.2*\theshiftx cm, .2);
+            \addtocounter{shiftx}{1}
+        }
+        \node[right=1.6cm of C3, anchor=north] (N0) {$\dots$};
+        \node[right=2cm of C3] (N1) {$\rightarrow$};
+        \node[right=0 of N1] (N2) {to higher memory};
+        \node[draw, below= of C0.west,anchor=west] (N3) {type};
+        \node[draw, above=1.2cm of C1.west,anchor=west] at (0.6,0) (N4) {start of data};
+        \draw[-latex] ($(N4)+(-0.25,-0.25)$) -- ++(0,-.5);
+        \draw[-latex] ($(N3.west)+(0.2,0.25)$)  -- ++(0,.5) ;
+    \end{tikzpicture}  
+    \caption{\textit{Memory structure of a typed scalar}}
+    \label{fig:05_01}
+\end{figure}
+ 
 
 We implement a scalar through the defining word
 
