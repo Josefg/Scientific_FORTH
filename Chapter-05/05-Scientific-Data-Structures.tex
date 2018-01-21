@@ -482,7 +482,7 @@ as
     CS: [BX + SI + 0008]
 \end{lstlisting}
 
-which translates in words to "add the offset in BX to that in SI and then add 8 to get the total offset; take the segment descriptor in CS, multiply by 16 and add to produce the absolute address.
+which translates in words to "add the offset in BX to that in SI and then add 8 to get the total offset; take the segment descriptor in CS, multiply by 16 and add to produce the absolute address\erratumAdd{forgotten word}{"}.
 
 \subsection{Using high memory}
 \TallC{HS/FORTH} permits accessing all the memory in a PC/AT (up
