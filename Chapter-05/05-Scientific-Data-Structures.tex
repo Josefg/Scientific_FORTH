@@ -12,7 +12,7 @@
 
 FORTH pre-defines a minimal set of data structures but allows unlimited definition of new structures. How is this different from Pascal, Ada, or even C? FORTH not only permits extension of the set of data structures, it permits definition of new operators on them. Thus, \eg, FORTH permits simple implementation of complex arithmetic whereas the aforementioned do not.
 
-This chapter\footnote{Much of the material in this chapter has appeared previously in J.V.Noble, \textit{J.FORTH Ap. and Res.} 6 (1990) 47.} suggests protocols for arrays and typed data\footnote{Most languages classify data by type: in FORTRAN, \eg, we have INTEGER, INTEGER*4, REAL, REAL*8, COMPLEX, and COMPLEX*16, requiring 2, 4, 4, 8, 8, and 16 bytes of memory, respectively.} that will increase the portability of code and encourage the exchange of scientific programs. The keys to this are generic operations that recognize the data type of a scalar or array variable at run-time and act appropriately.
+This chapter\sepfootnote{05_01} suggests protocols for arrays and typed data\sepfootnote{05_02} that will increase the portability of code and encourage the exchange of scientific programs. The keys to this are generic operations that recognize the data type of a scalar or array variable at run-time and act appropriately.
 
 \section{Typed data structures}
 
@@ -35,7 +35,7 @@ An ifstack-base protocol for floating point and complex arithmetic has drawbacks
 The chief advantages of the ifstack are:
 \begin{itemize}
     \item Unlike FORTRAN, this scheme permits generic routines that will accept several types of input. Hence, \eg, a matrix inversion routine will happily invert REAL*4, REAL*8, COMPLEX, and DCOMPLEX matrices.
-    \item A FORTRAN $\rightarrow$ FORTH translator\footnote{See J.V. Noble, \textit{J. FORTH Ap. and Res.} 6 (1990) 131. See also Chapter 11, where we describe a FORmula TRANslator} becomes simple with generic operators.
+    \item A FORTRAN $\rightarrow$ FORTH translator\sepfootnote{05_03} becomes simple with generic operators.
     \item The ifstack permits recursive programming \textit{a la} LISP.
 \end{itemize}
 
@@ -116,13 +116,13 @@ This idiosyncracy can be traced to FORTH's abhorrence of variables:
     \item The standard FORTH kernel therefore discourages named variables by making them as tedious as possible.
 \end{itemize}
 
-Most objections to variables can be resolved by making them local. Local variables are relatively easy to define in FORTH: a straightforward but cumbersome method for making "headerless" words is given in Kelly's and Spies's book\footnote{M.G. Kelly and N. Spies, \textit{Forth, a Text and Reference} (Prentice-Hall, New Jersey, 1986), p. 324 ff.}.
+Most objections to variables can be resolved by making them local. Local variables are relatively easy to define in FORTH: a straightforward but cumbersome method for making "headerless" words is given in Kelly's and Spies's book\sepfootnote{05_04}.
 
-HS/FORTH\footnote{Harvard Softworkts, PO. Box 69, Springboro, Ohio 45066 Tel: (513) 748-0390.} provides beheading in a particularly simple form: \bc{BEHEAD' NAME}, or \bc{BEHEAD" NAME1 NAME2}.
+HS/FORTH\sepfootnote{05_05} provides beheading in a particularly simple form: \bc{BEHEAD' NAME}, or \bc{BEHEAD" NAME1 NAME2}.
 
 Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}'s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
 
-Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed -or corrupted- by later definitions. (Pountain\footnote{Dick Fountain, "Object-oriented FORTH", Byte Magazine, 8/86; \textit{Object-oriented FORTH} (Academic Press, Inc., Orlando, 1987).} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
+Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed -or corrupted- by later definitions. (Pountain\sepfootnote{05_06} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
 
 Variables are essential for scientific programming. Since we must often have more than two variables, it is silly to repeat \bc{SCALAR}. A simple way to allow SCALAR to use a list is
 
@@ -137,13 +137,13 @@ Variables are essential for scientific programming. Since we must often have mor
 I find the use of \bc{SCALARS} with modifiers and lists more convenient and readable than many repetitions of \bc{SCALAR}. Its resemblance to FORTRAN (thereby helping me live with my FORTRAN-inspired habits) is pure coincidence. Although possible to use a terminator (",\eg) rather than a count (to define the variable list) I feel it is desirable for the programmer to know how many variable names he has supplied, hence the counted version.
 
 \subsection{Generic access}
-\TallC{A} major theme of FORTH is to replace decisions by calculation henever possible\footnote{Leo Brodie, \textit{Thinkning FORTH} (Prentice-Hall, Inc., Englewood Cliff, NJ, 1984), p. 118ff. See also J.V. Noble, "Avoid Decisions", \textit{Computers in Physics} 5,4 (1991) 386.}. This philosophy usually pays dividends in execution speed and brevity of code.
+\TallC{A} major theme of FORTH is to replace decisions by calculation henever possible\sepfootnote{05_07}. This philosophy usually pays dividends in execution speed and brevity of code.
 
 But there is an even more important reason to avoid \bc{IF ... THEN} decisions, especially when working with modern microprocessors. CPUs like 80x86 and MC680x0 achieve their speed in part by pre-fetching instructions and storing them in a queue in high speed on-chip cache memory. A conditional-branch machine instruction (the crux of \bc{IF ... THEN}) empties the queue whenever the branch is taken. Branches should be avoided because they slow execution far more than one might expect based on their clock-counts alone.
 
 To replace decisions, we use the standard FORTH technique of the execution array (analogous to the familiar assembly language jump table). This lets us compute from the type descriptor which fetch or store to use.
 
-\TallC{We} now define \bc{G@} and \bc{G!} as execution arrays using\footnote{HS/PORTH uses a word pair \bc{CASE: ... ;CASE} that performs the same task as \bc{G: .. ;} below. \bc{G:} was inspired by Michael Ham (\textit{Dr. Dobb's Journal}, October 1986).} anexecution-array-defining word \bc{G:}
+\TallC{We} now define \bc{G@} and \bc{G!} as execution arrays using\sepfootnote{05_08} anexecution-array-defining word \bc{G:}
 
 \begin{lstlisting}
     : G: CREATE ]
@@ -162,7 +162,7 @@ assembled from components of the FORTH compiler. That is, the ordinary colon \bc
 compile mode. \bc{DOES>} specifies the run-time action (recall any word created by \bc{CREATE} leaves its parameter field address
 \textbf{-pfa-} on the stack at run-time, \textit{prior} to the actions following \bc{DOES>}). In the case of \bc{:} the run-time action is to fetch the pfa of the new word and execute it. At run-time, words defined using \bc{G:} add twice the type descriptor to the pfa (to get the offset into the array) then fetch the desired address and \bc{EXECUTE} it.
 
-Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the "far" forms of addressing words\footnote{Consult, \eg, LJ. Scanlon, \textit{op. cit.}; or R. Lafore, \textit{op. cit.} HS/FORTH defines "far" access operators, \bc{@L} and \bc{IL} of all types, that expect a "long" address on the stack. For example, \bc{CODE R32®L DS POP. FWAIT. DS:[BX] DWORD-PTR. FLD. END-CODE}}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH's name for the portion of the dictionary containing the word headers)
+Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the "far" forms of addressing words\sepfootnote{05_09}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH's name for the portion of the dictionary containing the word headers)
 
 \begin{lstlisting}
     : SCALAR (type - -)
@@ -180,7 +180,7 @@ Microprocessors like the MC680x0 and 80386 that can address large, level memorie
 
 But the typed data have varying lengths, from 4 to 16 bytes. We can deal with this two different ways: either \bc{ALLOT} enough memory to hold a stack of the longest type, making each position on the ifstack 18 bytes wide (to hold datum plus type); or manage the ifstack as a modified heap, with the address of a given datum being computable from the ifstack-pointer and the data type.
 
-The 18-byte wide ifstack wastes memory, but is easy to program. (In retrospect, this is exactly the method I used to program adaptive numerical quadrature\footnote{J.V. Noble, "Scientific Computation in FORTH". \textit{Computers in Physics} 3 (1989) 31; and Ch 8.1.5 of this book.}.) After several false attempts I settled on the fixed-width ifstack. High level FORTH code for this variant is given below.
+The 18-byte wide ifstack wastes memory, but is easy to program. (In retrospect, this is exactly the method I used to program adaptive numerical quadrature\sepfootnote{05_10}.) After several false attempts I settled on the fixed-width ifstack. High level FORTH code for this variant is given below.
 
 \begin{lstlisting}
     \ TYPED DATA STACK MANAGER
@@ -427,11 +427,11 @@ The only instance where one might forego the overhead penalty paid for the conve
 \TallC{Numerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
 
 \section{Improved (FORTRAN-like) array notation}
-\TallC{Something} like V(15) --the 15'th element of V-- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} --but this is both hard to read and unintuitive\footnote{Other authors have noted this and proposed more readable matrix notations. See, \eg, Joe Bentham, "FORTH and the Fast Fourier Transform" \textit{Dr. Dobb‘s Journal}, September, 1984, p. 34. Also Dick Pountains's book \textit{Object-oriented FORTH (op cit.)} uses an array naming convention with brackets.}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
+\TallC{Something} like V(15) --the 15'th element of V-- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} --but this is both hard to read and unintuitive\sepfootnote{05_11}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
-FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\footnote{Recall that the standard FORTH delimiter is the ASCII blank (20h = 32d).}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.
+FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\sepfootnote{05_12}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.
 
-This leaves the second possibility, where "(" becomes part of the array name, \regc{V(}. To make \regc{V(dot15dot)} work,")" must become an operator --unless we want to leave postfix notation entirely, with all the complication that would entail\footnote{See, \eg,L. Brodie, \textit{Thinking FORTH (op. cit.)} p. 113ff.}. Since ")" is not a reserved word, nothing in principle prevents defining it as an operator. However, such usage would conflict with comments.
+This leaves the second possibility, where "(" becomes part of the array name, \regc{V(}. To make \regc{V(dot15dot)} work,")" must become an operator --unless we want to leave postfix notation entirely, with all the complication that would entail\sepfootnote{05_13}. Since ")" is not a reserved word, nothing in principle prevents defining it as an operator. However, such usage would conflict with comments.
 
 The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie forbidden. This leaves the curly braces { }, which are unused by FORTH.
 
@@ -459,7 +459,7 @@ should analogously place the address of the m,n'th element of a 2-dimensional ar
 \subsection{Large matrices}
 \TallC{The} defining word \bc{SCALAR} given in \S2 above allots space in the dictionary --for most FORTHs, code + data must fit here-- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
 
-A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, $2^{16}$) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\footnote{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by --say-- Gaussian elimination with partial pivoting is
+A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, $2^{16}$) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\sepfootnote{05_14}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by --say-- Gaussian elimination with partial pivoting is
 \[
 T = \frac{1}{3} mn^{3}
 \]
@@ -492,7 +492,7 @@ to 1 megabyte) in the following manner:
     \item Then tell both FORTH and DOS how much memory you want.
 \end{itemize} 
 
-As might be expected, HS/FORTH defines non-standard words (coded as DOS function calls) to use the various DOS service routines that allocate memory, \textit{etc}.\footnote{See, \eg, D.N. Jump, \textit{Programmer's guide to MS-DOS}, rev. ed. (Brady Books, New York, 1987).}
+As might be expected, HS/FORTH defines non-standard words (coded as DOS function calls) to use the various DOS service routines that allocate memory, \textit{etc}.\sepfootnote{05_15}
 
 \begin{lstlisting}
     MEMORY 4+ @ S->D
@@ -521,9 +521,9 @@ However, although the absolute address referenced by a segment and offset is uni
 
 the reverse translation, of an absolute address (in bytes) to the segment + offset notation expected by 80x86 processors is \textit{not} unique. This naturally poses a problem when the processor tries to prevent segments from overlapping (protected mode). In such cases, the only answer is a memory management scheme that computes segments and offsets (by brute force) in a non-overlapping fashion. For example, we might define large arrays such that each row has its own segment paragraph.
 
-The 80386 CPU has a third mode that permits direct 32-bit addressing of 4 gigabytes (albeit few computer users have quite this much fast memory available). A scheme for addressing large amounts of RAM in 80386 machines (without leaving MS-DOS) has been discussed in \textit{Dr Dobb's Journal}\footnote{See, \eg, Al Williams, "DOS + 386 = 4 Gigabytes", Dr. Dobb's Journal, July 1990, p. 62.}.
+The 80386 CPU has a third mode that permits direct 32-bit addressing of 4 gigabytes (albeit few computer users have quite this much fast memory available). A scheme for addressing large amounts of RAM in 80386 machines (without leaving MS-DOS) has been discussed in \textit{Dr Dobb's Journal}\sepfootnote{05_16}.
 
-For 8086 PC's and/or real-mode programming on 80286 + machines, we can merely ignore whether segments overlap. Oddly, standard assembly programming books\footnote{C. Morph and M. Waite, \textit{8086/8088 16-bit microprocessor primer} (Byte/McGraw-Hill, Peterborough, 1982); L. Scanlon, \textit{IBM PC \& XT assembly language: a guide for programmers} (Brady/Prentice-Hall, Bowie, Md., 1983); R. Lafore, \textit{Assembly language primer for the IBM PC \& XT} (Plume/Waite, New York, 1984).} omit this way of addressing segmented memory.
+For 8086 PC's and/or real-mode programming on 80286 + machines, we can merely ignore whether segments overlap. Oddly, standard assembly programming books\sepfootnote{05_17} omit this way of addressing segmented memory.
 
 The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to the segment + offset notation expected by the 80x86 processors in real mode. A word that performs this conversion is \bc{SEG.OFF}, defined as
 
@@ -709,11 +709,11 @@ us define \}\} in terms of \}.
 
 \section{Tuning for speed}
 
-Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH's\footnote{J.S. Callahan, \textit{Proc. 1988 Rochester FORTH Conference} (Inst. for Applied FORTH Research, Inc., 1988), p. 39.}.
+Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH's\sepfootnote{05_18}.
 
 Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
-\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\footnote{G. Shaw, "Forth Shifts Gears, I", \textit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \textit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
+\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\sepfootnote{05_19}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \textit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
 
 \leftbar[1\linewidth]
 FORTH data structures, especially as defined in this Chapter, do little- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.

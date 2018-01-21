@@ -102,72 +102,98 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 % **** Chapter  3 footnotes ****
 
-\sepfootnotecontent{03_01}{That is, the names in WS FORTH, PIS/FORTH, UniFORTH
-and PCFORTH are nearly the same and close to the proposed FORTH Vendors' Group
-(WG) standard - see, e.g., Ray Duncan's and Martin Tracy's article in Dr.
-Dobb's Journal, September 1984, p. 110. The new ANSII standard does not address
-floating point, hence it is likely the PVC standard will become pre-eminent by
-default.}
-\sepfootnotecontent{03_02}{F@ and F! stand for a suite of words for fetching
-and storing 16-, 32-, 64-, and 80-bit numbers from/to the fstack. In HS/FORTH
-they have names like I16@ I16! I32@ I32! R32@ R32!` R64@ R64! R80@ R80! and
-equivalents with suffices E or L, that transfer data from segments other than
-the data segment.}
-\sepfootnotecontent{03_03}{FnX (exchange ST(n) and ST(0) on fstack) and
-FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH's floating point
-lexicon.}
-\sepfootnotecontent{03_04}{J.F. Palmer and S.P.
-Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984).
-Hereinafter called 8087P. Basically the same principle holds for other
-coprocessors such as the Weitek 1167 or Transputer 800 that incorporate
-intrinsic fstacks. The Motorola 68881/2 have registers, hence we must
-synthesize an fstack in software for these chips.}
-\sepfootnotecontent{03_05}{See, e.g., SF. Lines trace program flow; a branch
-indicates a decision; at a loop $\otimes$ marks the beginning and $\bullet$ the
-branch back to the beginning, as in BEGIN...REPEAT or DO...LOOP.}
-\sepfootnotecontent{03_06}{We assume arrays have been
-defied using the intrinsically typed data structures and generic operators of
-Ch. 5.}
+\sepfootnotecontent{03_01}{That is, the names in WS FORTH, PIS/FORTH, UniFORTH and PCFORTH are nearly the same and close to the proposed FORTH Vendors' Group (WG) standard - see, e.g., Ray Duncan's and Martin Tracy's article in Dr. Dobb's Journal, September 1984, p. 110. The new ANSII standard does not address floating point, hence it is likely the PVC standard will become pre-eminent by default.}
+
+\sepfootnotecontent{03_02}{F@ and F! stand for a suite of words for fetching and storing 16-, 32-, 64-, and 80-bit numbers from/to the fstack. In HS/FORTH they have names like I16@ I16! I32@ I32! R32@ R32!` R64@ R64! R80@ R80! and equivalents with suffices E or L, that transfer data from segments other than the data segment.}
+
+\sepfootnotecontent{03_03}{FnX (exchange ST(n) and ST(0) on fstack) and FnR (roll ST(n) to ST(0) on fstack) are part of HS/FORTH's floating point lexicon.}
+
+\sepfootnotecontent{03_04}{J.F. Palmer and S.P. Morse, The 8087 Primer (John Wiley and Sons, Inc., New York. 1984). Hereinafter called 8087P. Basically the same principle holds for other coprocessors such as the Weitek 1167 or Transputer 800 that incorporate intrinsic fstacks. The Motorola 68881/2 have registers, hence we must synthesize an fstack in software for these chips.}
+
+\sepfootnotecontent{03_05}{See, e.g., SF. Lines trace program flow; a branch indicates a decision; at a loop $\otimes$ marks the beginning and $\bullet$ the branch back to the beginning, as in BEGIN...REPEAT or DO...LOOP.}
+
+\sepfootnotecontent{03_06}{We assume arrays have been defied using the intrinsically typed data structures and generic operators of Ch. 5.}
+
 \sepfootnotecontent{03_07}{The notation [x] means "the address of x".}
-\sepfootnotecontent{03_08} { An rompk is discussed in Chapter 9, where the
-innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen
-from the timings that little is to be gained by optimizing the next outer
-loop.}
-\sepfootnotecontent{03_09} {\texttt{XDUP} is called \texttt{CPDUP} in
-HS/FORTH's complex arithmetic lexicon.}
-\sepfootnotecontent{03_10}{Note the test (on; 21 inARGCOSH, to prevent an error in FSORT.}
+
+\sepfootnotecontent{03_08} { An rompk is discussed in Chapter 9, where the innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen from the timings that little is to be gained by optimizing the next outer loop.}
+
+\sepfootnotecontent{03_09} {\texttt{XDUP} is called \texttt{CPDUP} in HS/FORTH's complex arithmetic lexicon.}
+
+\sepfootnotecontent{03_10}{Note the test for $x^2 \gt 1$ in \bc{ARCCOSH}, to prevent an error in \bc{FSORT}.}
+
 \sepfootnotecontent{03_11}{D.E. Knuth, The Art of Computer Programming v.2: Seminumerical Algorithnu, 2nd ed.  (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.}
 \sepfootnotecontent{03_12}{R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
+
 \sepfootnotecontent{03_13}{P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).  }
+
 \sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 ~\S1~\S~\S11 }
-\sepfootnotecontent{03_15}{Of course, it would have been feasible to define, via \texttt{ CREATE }
-$\dots$ \texttt{ DOES > } , data types that place the data on the 87stack, e.g.
-\texttt{: FICONSTANT CREATE , DOES> I16@ ;} but such words can't be optimized;
-to optimize time-critical word(s) in assembler requires VARIABLEs.}
-\sepfootnotecontent{03_16}{The new words are \texttt{FINIT} (initialize 80x87 chip). \texttt{FTRUNC} (set
-roundoff mode to truncate floating point numbers toward zero): and \texttt{FRNDINT}
-(round flotaing point number to integer). The
-80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10
-and 11 (numbering from 0) of the 16-bit control word using \texttt{HEX 0C00 OR}. See \texttt{8087P} for
-details.}
-\sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space.
-space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this
-case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
+
+\sepfootnotecontent{03_15}{Of course, it would have been feasible to define, via \texttt{ CREATE } $\dots$ \texttt{ DOES > } , data types that place the data on the 87stack, e.g. \texttt{: FICONSTANT CREATE , DOES> I16@ ;} but such words can't be optimized; to optimize time-critical word(s) in assembler requires VARIABLEs.}
+
+\sepfootnotecontent{03_16}{The new words are \texttt{FINIT} (initialize 80x87 chip). \texttt{FTRUNC} (set roundoff mode to truncate floating point numbers toward zero): and \texttt{FRNDINT} (round flotaing point number to integer). The 80x87 idiosyncratically possesses several roundoff policies: A policy is selectd by setting bits 10 and 11 (numbering from 0) of the 16-bit control word using \texttt{HEX 0C00 OR}. See \texttt{8087P} for details.}
+
+\sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space. space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
+
 \sepfootnotecontent{03_18} { $N$ is assumed $\gg n$ }
-\sepfootnotecontent{03_19}{For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is
-$p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$
-is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
+
+\sepfootnotecontent{03_19}{For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is $p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
+
 \sepfootnotecontent{03_20}{Strongly recommended, given the fragility of PRNGs.}
+
 \sepfootnotecontent{03_21}{Using, e.g., the Fast Fourier Transform program from Chapter8.2.}
+
 \sepfootnotecontent{03_22}{That is, random numbers uniformty distributes from 0 to 1.}
+
 \sepfootnotecontent{03_23}{Except in ease of compularion, of course.}
+
 \sepfootnotecontent{03_24}{Here $\delta(x)$ is the so called Dirac $\delta$-function. See any standard text on distributon.}
+
+
 
 % **** Chapter  4 footnotes ****
 
 
 
 % **** Chapter  5 footnotes ****
+
+\sepfootnotecontent{05_01}{Much of the material in this chapter has appeared previously in J.V.Noble, \textit{J.FORTH Ap. and Res.} 6 (1990) 47.}
+
+\sepfootnotecontent{05_02}{Most languages classify data by type: in FORTRAN, \eg, we have INTEGER, INTEGER*4, REAL, REAL*8, COMPLEX, and COMPLEX*16, requiring 2, 4, 4, 8, 8, and 16 bytes of memory, respectively.}
+
+\sepfootnotecontent{05_03}{See J.V. Noble, \textit{J. FORTH Ap. and Res.} 6 (1990) 131. See also Chapter 11, where we describe a FORmula TRANslator}
+
+\sepfootnotecontent{05_04}{M.G. Kelly and N. Spies, \textit{Forth, a Text and Reference} (Prentice-Hall, New Jersey, 1986), p. 324 ff.}
+
+\sepfootnotecontent{05_05}{Harvard Softworkts, PO. Box 69, Springboro, Ohio 45066 Tel: (513) 748-0390.}
+
+\sepfootnotecontent{05_06}{Dick Fountain, "Object-oriented FORTH", Byte Magazine, 8/86; \textit{Object-oriented FORTH} (Academic Press, Inc., Orlando, 1987).}
+
+\sepfootnotecontent{05_07}{Leo Brodie, \textit{Thinkning FORTH} (Prentice-Hall, Inc., Englewood Cliff, NJ, 1984), p. 118ff. See also J.V. Noble, "Avoid Decisions", \textit{Computers in Physics} 5,4 (1991) 386.}
+
+\sepfootnotecontent{05_08}{HS/PORTH uses a word pair \bc{CASE: ... ;CASE} that performs the same task as \bc{G: .. ;} below. \bc{G:} was inspired by Michael Ham (\textit{Dr. Dobb's Journal}, October 1986).}
+
+\sepfootnotecontent{05_09}{Consult, \eg, LJ. Scanlon, \textit{op. cit.}; or R. Lafore, \textit{op. cit.} HS/FORTH defines "far" access operators, \bc{@L} and \bc{IL} of all types, that expect a "long" address on the stack. For example, \bc{CODE R32®L DS POP. FWAIT. DS:[BX] DWORD-PTR. FLD. END-CODE}}
+
+\sepfootnotecontent{05_10}{J.V. Noble, "Scientific Computation in FORTH". \textit{Computers in Physics} 3 (1989) 31; and Ch 8.1.5 of this book.}
+
+\sepfootnotecontent{05_11}{Other authors have noted this and proposed more readable matrix notations. See, \eg, Joe Bentham, "FORTH and the Fast Fourier Transform" \textit{Dr. Dobb‘s Journal}, September, 1984, p. 34. Also Dick Pountains's book \textit{Object-oriented FORTH (op cit.)} uses an array naming convention with brackets.}
+
+\sepfootnotecontent{05_12}{Recall that the standard FORTH delimiter is the ASCII blank (20h = 32d).}
+
+\sepfootnotecontent{05_13}{See, \eg,L. Brodie, \textit{Thinking FORTH (op. cit.)} p. 113ff.}
+
+\sepfootnotecontent{05_14}{See, \eg, Ray Duncan, "FORTH support for Intel/Lotus expanded memory", \textit{Dr. Dobb's Journal}, August 1986; also, John A. Lefor and Karen Lund, "Reaching into expanded memory", \textit{PC Tech Journal}, May 1987.}
+
+\sepfootnotecontent{05_15}{See, \eg, D.N. Jump, \textit{Programmer's guide to MS-DOS}, rev. ed. (Brady Books, New York, 1987).}
+
+\sepfootnotecontent{05_16}{See, \eg, Al Williams, "DOS + 386 = 4 Gigabytes", Dr. Dobb's Journal, July 1990, p. 62.}
+
+\sepfootnotecontent{05_17}{C. Morph and M. Waite, \textit{8086/8088 16-bit microprocessor primer} (Byte/McGraw-Hill, Peterborough, 1982); L. Scanlon, \textit{IBM PC \& XT assembly language: a guide for programmers} (Brady/Prentice-Hall, Bowie, Md., 1983); R. Lafore, \textit{Assembly language primer for the IBM PC \& XT} (Plume/Waite, New York, 1984).}
+
+\sepfootnotecontent{05_18}{J.S. Callahan, \textit{Proc. 1988 Rochester FORTH Conference} (Inst. for Applied FORTH Research, Inc., 1988), p. 39.}
+
+\sepfootnotecontent{05_19}{G. Shaw, "Forth Shifts Gears, I", \textit{Computer Langmge} (May 1988) p. 67; "Forth Shifts Gears, II", \textit{Computer Language} (June 1988) p. 61; \textit{Proc. 9th Asilomar FORML Conference} (JFAR 5 (1988) 347.)}
 
 
 
@@ -249,73 +275,55 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 
 % **** Chapter  9 footnotes ****
-\sepfootnotecontent{09_01}{ The determinant of an N'th-order square matix $A$
--- denoted by $\det(A)$ or $||A||$ -- is a number computed from the elements
-$A_{mn}$ by apptying rules famitiar from linear algebra. These rules define
-$||A||$ recursively in terms of determinants of matrices of square submatrices
-of $A$. See \S9\S\S2.1.}
+
+\sepfootnotecontent{09_01}{ The determinant of an N'th-order square matix $A$ -- denoted by $\det(A)$ or $||A||$ -- is a number computed from the elements $A_{mn}$ by apptying rules famitiar from linear algebra. These rules define $||A||$ recursively in terms of determinants of matrices of square submatrices of $A$. See \S9\S\S2.1.}
+
 \sepfootnotecontent{09_02}{buildings, cars, airplanes, bridges ...}
+
 \sepfootnotecontent{09_03}{This follows from the fundamental theorem of algebra: a polynomial equation, $p(z) = a_0 + a_1z + a_2z^2 + \dotsc + a_nz^n = 0$, of degree n (in a complex variable z) has exactly n solutions.}
 
-
 \sepfootnotecontent{09_04}{For clarity we now omit the vector "$\rightarrow$" and dyad "$\leftrightarrow$" symbol from vectors and matrices.}
+
 \sepfootnotecontent{09_05}{The only number equal to its negative is 0.} 
+
 \sepfootnotecontent{09_06}{Professors always say this, hee, hee! See R. Sedgewick, Algorithms. (Addison-Wesley Publishing Company, Reading, MA 1983).}
+
 \sepfootnotecontent{09_07}{$N!$ means $N \times (N-1) \times (N-2) \times \dotsc \times 2 \times 1$. The base of the "natural" fogarithms is \, $e = 2.7182818\dots$}
-\sepfootnotecontent{09_08}{A Computer stores a number with finite precision --
-say 6-7 decimal places with 32-bit floating-point numbers. This is enough for
-many purposes, especially in science and engineering, where the data are rarely
-measured to better than 1\% relative precision. Suppose, however, that two
-numbers, about $10^{-2}$ in magnitude, are multiplied. Their product is of
-order $10^{-4}$ and is known to six significant figures. Now add it to a third
-number of order unity. The result will be that third number $\pm10^{-4}$.
-Later, a fourth number -- also of order unity -- is subtracted from this sum. The
-result will be a number of order $10^{-4}$, but now known only to two
-significant figures. Matrix arithmetic is full of multiplications and
-additions. The lesson is clear -- to minimize the (inevitable) loss of
-precision associated with round-off, we must try to keep the magnitudes of
-products and sums as dose as possible.}
-\sepfootnotecontent{09_09}{The exception to this general rule, where more
-complete optimization would pay, would be an application that requires solving
-many sets of equations of relatively small order.}
-\sepfootnotecontent{09_10}{The word \textbf{TEXT} inputs a counted string, using the FORTH-79 standard word \textbf{WORD} and
-places it at \textbf{PAD}. This is why PAD appears in the definition of \textbf{GET-F\#}. A definition of \textbf{TEXT}
-might be \texttt{: TEXT ( delimiter --) WORD DUP C@ 1 + PAD SWAP CMOVE ;} Note that all
-words prefaced with C are byte operations by FORTH convention.}
-\sepfootnotecontent{09_11}{The HS/FORTH words \textbf{VAR} and \textbf{IS}
-define a data structure that can be changed, like a FORTH \textbf{VARIABLE: 0
-VAR X 3 IS X} but has the run-time behavior of a \textbf{CONSTANT: X . 3 ok}.}
-\sepfootnotecontent{09_12}{While Brodie (\textit{TF}, p.180) quotes Charles
-Moore. FORTH's inventor, as offering 1-line definitions as the goal in FORTH
-programming, sometimes this is just not possible.}
-\sepfootnotecontent{09_13}{The \textbf{condition} of a system of linear
-equations refers to how accurately they can be solved. Equations can be hard to
-solve precisely if the inverse matrix $A^{-1}$ has some large elements. Thus,
-the error vector for a calculated solution, $\delta=b-A \cdot X_{Calc}$ can be
-small, but the difference between the exact solution and the calculated
-solution can be large, since (see \S9\S3 below)
+
+\sepfootnotecontent{09_08}{A Computer stores a number with finite precision -- say 6-7 decimal places with 32-bit floating-point numbers. This is enough for many purposes, especially in science and engineering, where the data are rarely measured to better than 1\% relative precision. Suppose, however, that two numbers, about $10^{-2}$ in magnitude, are multiplied. Their product is of order $10^{-4}$ and is known to six significant figures. Now add it to a third number of order unity. The result will be that third number $\pm10^{-4}$. Later, a fourth number -- also of order unity -- is subtracted from this sum. The result will be a number of order $10^{-4}$, but now known only to two significant figures. Matrix arithmetic is full of multiplications and additions. The lesson is clear -- to minimize the (inevitable) loss of precision associated with round-off, we must try to keep the magnitudes of products and sums as dose as possible.}
+
+\sepfootnotecontent{09_09}{The exception to this general rule, where more complete optimization would pay, would be an application that requires solving many sets of equations of relatively small order.}
+
+\sepfootnotecontent{09_10}{The word \textbf{TEXT} inputs a counted string, using the FORTH-79 standard word \textbf{WORD} and places it at \textbf{PAD}. This is why PAD appears in the definition of \textbf{GET-F\#}. A definition of \textbf{TEXT} might be \texttt{: TEXT ( delimiter --) WORD DUP C@ 1 + PAD SWAP CMOVE ;} Note that all words prefaced with C are byte operations by FORTH convention.}
+
+\sepfootnotecontent{09_11}{The HS/FORTH words \textbf{VAR} and \textbf{IS} define a data structure that can be changed, like a FORTH \textbf{VARIABLE: 0 VAR X 3 IS X} but has the run-time behavior of a \textbf{CONSTANT: X . 3 ok}.}
+
+\sepfootnotecontent{09_12}{While Brodie (\textit{TF}, p.180) quotes Charles Moore. FORTH's inventor, as offering 1-line definitions as the goal in FORTH programming, sometimes this is just not possible.}
+
+\sepfootnotecontent{09_13}{The \textbf{condition} of a system of linear equations refers to how accurately they can be solved. Equations can be hard to solve precisely if the inverse matrix $A^{-1}$ has some large elements. Thus, the error vector for a calculated solution, $\delta=b-A \cdot X_{Calc}$ can be small, but the difference between the exact solution and the calculated solution can be large, since (see \S9\S3 below)
+
 \begin{equation*}
 	X_{Exact}-X_{Calc}=A^{-1}\cdot\delta\,.
 \end{equation*}
-A test for ill-condition is whether the determinant gets small compared with the precision of the
-arithmetic. See, \textit{e.g.}, A. Ralston,\textit{A First Course in Numerical Analysis} (McGraw-Hill Book Co.,
-New York, 1965).}
-\sepfootnotecontent{09_14}{We employ the standard notation that a vector u is a
-column and an adjoint vector $v^\dagger$ a row.  Their outer product,
-$uv^\dagger$, is a matrix. Given a column $v$, we construct its adjoint (row)
-$v^\dagger$ by taking the complex conjugate of each element and placing it in
-the corresponding position in a row-vector.}
-\sepfootnotecontent{09_15}{When I think that solving $100\times 100$ systems --
-key to my Ph.D.  research in 1966 -- took the better path of an hour on an IBM
-7094, these results seem incredible.}
+
+A test for ill-condition is whether the determinant gets small compared with the precision of the arithmetic. See, \textit{e.g.}, A. Ralston,\textit{A First Course in Numerical Analysis} (McGraw-Hill Book Co., New York, 1965).}
+
+\sepfootnotecontent{09_14}{We employ the standard notation that a vector u is a column and an adjoint vector $v^\dagger$ a row.  Their outer product, $uv^\dagger$, is a matrix. Given a column $v$, we construct its adjoint (row) $v^\dagger$ by taking the complex conjugate of each element and placing it in the corresponding position in a row-vector.}
+
+\sepfootnotecontent{09_15}{When I think that solving $100\times 100$ systems --key to my Ph.D.  research in 1966-- took the better path of an hour on an IBM 7094, these results seem incredible.}
+
 \sepfootnotecontent{09_16}{See 8087P.}
-\sepfootnotecontent{09_17}{MISSING FOOTNOTE.Ref. in page 244, something about commutative law...}
+
+\sepfootnotecontent{09_17}{It is possible to find \textit{special} matrices whose multiplication commutes --it just is not true for \textit{general} square matrices.}
+
 \sepfootnotecontent{09_18}{Note: if C is a right-inverse, AC = I, it is also a left-inverse, CA= I.}
-\sepfootnotecontent{09_19}{See, \textit{e.g.},William H. Press, Saul A.
-Teukolsky, William T. Vetterling and Brian P. Flannery. Numerical Recipes
-(Cambridge University Press, Cambridge, 1986), p. 31ff.}
+
+\sepfootnotecontent{09_19}{See, \textit{e.g.},William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery. Numerical Recipes (Cambridge University Press, Cambridge, 1986), p. 31ff.}
+
+
 
 % **** Chapter 10 footnotes ****
+
 \sepfootnotecontent{10_01}{Such as MS-DOS, OS/2, Pick, Unix, \etc}
 
 \sepfootnotecontent{10_02}{Voltaire once remarked that if Satan did not exist it would be necessary for God to create him. If your FORTH system lacks words with these functions, by all means, invent them. A MS-DOS programmer's manual (see below) is vital for this task.}
