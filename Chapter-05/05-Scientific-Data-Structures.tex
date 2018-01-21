@@ -317,7 +317,7 @@ GU: GNEGATE FNEGATE XNEGATE ;
 A few unary operators like \bc{XABS} (complex absolute value) return real values from complex arguments. If we want to use \bc{GU:} to define, say, \bc{GABS}, we must remember to redefine \bc{XABS} so it zeros the second bit of the type descriptor left on the stack, before returning its result to the ifstack. This is just a \bc{1 AND} so is fast.
 
 A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))}
-%flg. 5-2 
+% fig. 5-2 
 \begin{figure}
     \center
     \label{fig:05_02}
@@ -365,13 +365,35 @@ If we think of the indices and entries in Fig. 5-2 as numbers 0, 1, 2, 3 (so we 
 Since only logical operations are used. \bc{NEW.TYPE} is faster than table lookup or branching. Note that in programming this key word we have obeyed the central FORTH precept: "Keep it simple!" by choosing a data structure (the numeric type tokens 0-3) that is easily manipulated.
 
 We will also need a way to select the appropriate operator from a jump table of addresses. Given that the precision (internal) is irrelevant, again all that matters is whether the number is real or complex, \ie the second bits of the numbers. The first operation must then be to divide by 2 (right-shift by one bit). We then have the matrix of FYig. 5-3 below
-
-  0  1        0 1
-0 RR RX     0 0 1
-1 XR XX     1 2 3
-
-Fig. 5-3 \textit{Operator selection matrix}
-
+% Fig. 5-3 
+\begin{figure}
+    \center
+    \label{fig:05_03}
+    \begin{tabular}{|lll|}
+        \hline
+        && \\
+        && \\
+        \begin{tabular}{ccc}
+            & 0 & 1 \\
+            \cline{2-3}
+            \multicolumn{1}{c|}{0  }&  RR & RX \\
+            \multicolumn{1}{c|}{1  }&  XR & XX \\
+        \end{tabular}
+        %& $\rightarrow $ &
+        & $ \xrightarrow{\hspace*{1cm}} $ &
+        \begin{tabular}{ccc}
+            & 0 & 1 \\
+            \cline{2-3}
+            \multicolumn{1}{c|}{0  }&  0 & 1 \\
+            \multicolumn{1}{c|}{1  }&  2 & 3 \\
+        \end{tabular}
+        \\
+        &&\\
+        &&\\
+        \hline
+    \end{tabular}
+    \caption{\textit{Operator selection matrix}}
+\end{figure}
 where RR stands for real-real, \textit{etc.} The numerical elements are generated as \regc{2*J+I}. This leads to the word
 
 \begin{lstlisting}
