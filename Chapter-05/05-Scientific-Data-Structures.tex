@@ -67,15 +67,13 @@ $\mathbf{\big |}$ represents 2 bytes):
 \begin{figure}
     \center
     \begin{tikzpicture}
-        \newcounter{shiftx} \setcounter{shiftx}{0}
         \foreach \n in {0,...,3}
         {
-            \draw [xshift=1.2*\theshiftx cm,thick] (0,.4cm)--(0,-.0cm);
-            \draw [xshift=1.2*\theshiftx cm,fill, opacity=0.2] (+.1,0.4) rectangle (+.4,-.0) {};
-            \draw [xshift=1.2*\theshiftx cm,fill, opacity=0.2] (+.5,0.4) rectangle (+.8,-.0) {};
-            \draw [xshift=1.2*\theshiftx cm,thick] (.9,.4cm)--(0.9,-.0cm);
-            \coordinate (C\n) at (1.2*\theshiftx cm, .2);
-            \addtocounter{shiftx}{1}
+            \draw [xshift=1.2*\n cm,thick] (0,.4cm)--(0,-.0cm);
+            \draw [xshift=1.2*\n cm,fill, opacity=0.2] (+.1,0.4) rectangle (+.4,-.0) {};
+            \draw [xshift=1.2*\n cm,fill, opacity=0.2] (+.5,0.4) rectangle (+.8,-.0) {};
+            \draw [xshift=1.2*\n cm,thick] (.9,.4cm)--(0.9,-.0cm);
+            \coordinate (C\n) at (1.2*\n cm, .2);
         }
         \node[right=1.6cm of C3, anchor=north] (N0) {$\dots$};
         \node[right=2cm of C3] (N1) {$\rightarrow$};
@@ -552,19 +550,57 @@ Once again we begin with the user interface. We can opt for maximum generality o
 Now, before we work out the mechanics of \bc{1ARRAY}, we imagine that an array will be stored as in Fig. 5-4 below:
 
 The proposed data structure consists of an 8-byte header (the array descriptor) in the dictionary (\regc{LISTS} in HS/FORTH), with the body of the array stored elsewhere. The array descriptor points to the absolute address of the array data (body).
+% Fig. 5-4 
+\begin{figure}
+    \center
+    \begin{tikzpicture}
+        \draw (-3,-5) rectangle (12,3.0);
+        \node[align=left, anchor=west] at (-2,2.5) {LISTS portion: (V\{ puts adr on};
+        \node[align=left, anchor=west] at (-2.5,-1.8) {SUPERSEG portion};
+        \foreach \n in {0,...,3}
+        {
+            \draw [xshift=1.2*\n cm,thick] (0,.4cm)--(0,-.0cm);
+            \draw [xshift=1.2*\n cm,fill, opacity=0.2] (+.1,0.4) rectangle (+.4,-.0) {};
+            \draw [xshift=1.2*\n cm,fill, opacity=0.2] (+.5,0.4) rectangle (+.8,-.0) {};
+            \draw [xshift=1.2*\n cm,thick] (.9,.4cm)--(0.9,-.0cm);
+            \coordinate (C\n) at (1.2*\n cm, .2);
+            \coordinate (CB\n) at (1.2*\n cm, 0);
+            \coordinate (CT\n) at (1.2*\n cm, 0.4);
+            \coordinate (FT\n) at (1.2*\n +0.25, 0.5);
+            \coordinate (ST\n) at (1.2*\n +0.5, 0.5);
+        }
+        \node[right=1.5cm of C3, anchor=north] (N0) {$\dots$};
+        \node[right=2cm of C3] (N1) {$\xrightarrow{\hspace*{0.7cm}}$};
+        \node[right=0 of N1] (N2) {to higher memory in LISTS};
+        \node[draw, above= of C0.west,anchor=west] (N3) {type};
+        \node[draw, above= of ST2] at (1.7,-0.08) (N4) {length};
+        \node[draw, below= of C0.west] (N5) {adr};
+        \node[align=center, draw, text width=5cm] at (7.6,1.5) (N6) {VHERE + SUPERSEG*16\\(32-bit address)};
+        \draw[-latex] ($(N4)+(-0.25,-0.25)$) -- ++(0,-.5);
+        \draw[-latex] ($(N3.west)+(0.2,-0.25)$)  -- ++(0,-.5) ;
+        \draw[-latex] (N5.north)  -| (CB0) ;
+        \draw[-latex] (N6.west)  -| (FT3) ;
+        \draw[-latex] (N6.west)  -| (FT2) ;
 
-\begin{lstlisting}
-LISTS portion: (V{ puts adr on
-type length         VHERE + SUPERSEG*16
-                    (32-bit address)
---> to higher memory in LISTS 
-adr
-SUPERSEG portion      to higher memory in SUPERSEG
-
-start at data = VHERE (from beg. or SUPERSEG)
-\end{lstlisting}
-
-Fig. 5-4 \textit{Structure of a 1-dimenslonal array in \regc{SUPERSEG}}
+        \foreach \n in {0,...,6}
+        {
+            \draw [yshift=-2.9cm, xshift=1.2*\n cm,thick] (0,.4cm)--(0,-.0cm);
+            \draw [yshift=-2.9cm, xshift=1.2*\n cm,fill, opacity=0.2] (+.1,0.4) rectangle (+.4,-.0) {};
+            \draw [yshift=-2.9cm, xshift=1.2*\n cm,fill, opacity=0.2] (+.5,0.4) rectangle (+.8,-.0) {};
+            \draw [yshift=-2.9cm, xshift=1.2*\n cm,thick] (.9,.4cm)--(0.9,-.0cm);
+            \coordinate (C\n) at (1.2*\n, -2.9+0.2);
+            \coordinate (FB\n) at (1.2*\n +0.25, -2.9 -0.1);
+            \coordinate (st\n) at (1.2*\n +0.75, -2.9 +0.5);
+        }
+        \node[right=1.5cm of C6, anchor=north] (n0) {$\dots$};
+        \node[right=2cm of C6] (n1) {$\xrightarrow{\hspace*{0.7cm}}$};
+        \node[draw, below=0.7cm of C6] (n3) {start of data = VHERE (from beg. of SUPERSEG)};
+        \draw[->] (n3.west) -| (FB0);
+        \node[above=0.6cm of st4, anchor=west] (n2) {to higher memory in SUPERSEG};
+    \end{tikzpicture} 
+    \label{fig:05_04}
+    \caption{\textit{Structure of a 1-dimenslonal array in \regc{SUPERSEG}}}
+\end{figure}
 
 The array-defining word 1ARRAY must perform the following
 tasks:
