@@ -91,7 +91,10 @@
 
 % Create charts with tikz
 \usepackage{tikz}
-\usetikzlibrary{shapes,calc,arrows}
+\usetikzlibrary{arrows,shapes,positioning}
+\usetikzlibrary{calc,decorations.markings}
+
+
     \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
     \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
     \tikzstyle{arrow}   = [thick,->,>=stealth]
@@ -137,6 +140,9 @@
 % References
 \usepackage{hyperref}
 \usepackage{fancyvrb}
+%fancy tables
+\usepackage{array}
+\usepackage{makecell}
 
 \begin{document}
 \VerbatimFootnotes
@@ -147,7 +153,7 @@
     % \include{Chapter-01/01-Toward-Scientific-FORTH}
     % \include{Chapter-02/02-Programming-in-FORTH}
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
-	\include{Chapter-09/09-Linear-Algebra}
-    %\include{Chapter-04/04-The-80x87-Family}
+	%\include{Chapter-09/09-Linear-Algebra}
+    \include{Chapter-05/05-Scientific-Data-Structures}
     %\include{Chapter-10/10-Strings-and-IO-in-FORTH}
 \end{document}
