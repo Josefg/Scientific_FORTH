@@ -177,7 +177,6 @@ Actually the series Eq. 8 is slowly converging and therefore a poor way to compu
 
 % Fig. 6-2 
 \begin{figure}
-    %  Fig. 3-2 
     \begin{tikzpicture}[minimum size=0.5cm]
         \draw (-2, 0.5) rectangle (10,-7);
         \node (start) {};
@@ -187,7 +186,6 @@ Actually the series Eq. 8 is slowly converging and therefore a poor way to compu
         \node [left=of cond] (NO) {};
         \node [draw, fill, opacity=0.2, below= 1.5cm of NO, text width=1.2cm,xshift=.8cm]  (ext) {};
         \draw [->] (start.mid) -- (cross);
-        %\draw [->] (cross) -- (cond.mid);
         \draw [->] (cross) -- (cond.mid) -- ++(-.75, -0.75) -- (ext);
         \draw [->] (cond.mid) -| (dot1);
         \node [right=of dot1, align=left, xshift=-0.8cm, yshift=0.25cm] {REPEAT} ;
@@ -209,7 +207,6 @@ Actually the series Eq. 8 is slowly converging and therefore a poor way to compu
             term\\
             NEGATE  \hspace{2.0cm}  \textbackslash  \space flip sign of f
         };
-
     \end{tikzpicture}
     \caption{\textit{Computing $\pi/4$ by the infinite series for $\tan^{-1}(1)$}}
     \label{fig:06_02}
