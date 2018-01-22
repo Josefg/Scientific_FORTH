@@ -116,18 +116,19 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{03_07}{The notation [x] means "the address of x".}
 
-\sepfootnotecontent{03_08} { An rompk is discussed in Chapter 9, where the innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen from the timings that little is to be gained by optimizing the next outer loop.}
+\sepfootnotecontent{03_08}{ An rompk is discussed in Chapter 9, where the innermost loop of 3 nested loops is optimized (even hand-coded), and it is seen from the timings that little is to be gained by optimizing the next outer loop.}
 
-\sepfootnotecontent{03_09} {\texttt{XDUP} is called \texttt{CPDUP} in HS/FORTH's complex arithmetic lexicon.}
+\sepfootnotecontent{03_09}{\texttt{XDUP} is called \texttt{CPDUP} in HS/FORTH's complex arithmetic lexicon.}
 
 \sepfootnotecontent{03_10}{Note the test for $x^2 \gt 1$ in \bc{ARCCOSH}, to prevent an error in \bc{FSORT}.}
 
 \sepfootnotecontent{03_11}{D.E. Knuth, The Art of Computer Programming v.2: Seminumerical Algorithnu, 2nd ed.  (Addison-Wesley Publishing Company, Reading, MA, 1981), Ch. 3.}
+
 \sepfootnotecontent{03_12}{R. Sedgewick, Algorithm (Addison-Wesley Publishing Company, Reading, MA, 1983).}
 
-\sepfootnotecontent{03_13}{P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).  }
+\sepfootnotecontent{03_13}{P. Bratley, B.L. Fox and LE. Schrage,A Guide to Simulation (Springer-Verbg, Berlin, 1983).}
 
-\sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 ~\S1~\S~\S11 }
+\sepfootnotecontent{03_14}{We anticipate using the FORTH assembler - see Ch. 4 \S1\S\S11 }
 
 \sepfootnotecontent{03_15}{Of course, it would have been feasible to define, via \texttt{ CREATE } $\dots$ \texttt{ DOES > } , data types that place the data on the 87stack, e.g. \texttt{: FICONSTANT CREATE , DOES> I16@ ;} but such words can't be optimized; to optimize time-critical word(s) in assembler requires VARIABLEs.}
 
@@ -135,7 +136,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{03_17}{\texttt{BEHEAD"} is one of several HS/FORTH words thet remove dictionary entries and reclaim lost space. space. \texttt{BEHEAD'} beheads one word, \texttt{BEHEAD"} behads all words, inclusive, in a range: in this case, \texttt{BIGDIV, DIVIS. SEED, M1, M2} and \texttt{RAND}.}
 
-\sepfootnotecontent{03_18} { $N$ is assumed $\gg n$ }
+\sepfootnotecontent{03_18}{ $N$ is assumed $\gg n$ }
 
 \sepfootnotecontent{03_19}{For those interested in details, the probability a PRNG will produce the integer "s" $f$ times is $p_f=\lambda_fe^{-\lambda}/(f!)$. Thus the e ed value of $(f-\lambda)^2/\lambda$ is 1, and therefore the expected value of $\chi^2$ is $n$. The variance in the $\chi^2$ statistic should then be $n(2 +\lambda^{-1} )$.}
 
@@ -152,6 +153,53 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 
 % **** Chapter  4 footnotes ****
+
+\sepfootnotecontent{04_01}{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling VAX minicomputers.}
+
+\sepfootnotecontent{04_02}{J. Palmer and S. Morse, \textit{The 8087 Primer} (John Wiley \& Sons, NY (1984), hereafter referred to as \textbf{8087P}).}
+
+\sepfootnotecontent{04_03}{A treasure included with MS-DOS}
+
+\sepfootnotecontent{04_04}{see \textbf{8087P}, p. 93ff.}
+
+\sepfootnotecontent{04_05}{see \textbf{8087P}, p. 87ff.}
+
+\sepfootnotecontent{04_06}{Vocabularies are a method for subdividing the dictionary.}
+
+\sepfootnotecontent{04_07}{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
+
+% Inlined because in frame
+%\sepfootnotecontent{04_08}{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}
+
+\sepfootnotecontent{04_09}{see, \eg, R. Lafitte, \textit{Assembly Language: Primer for the IBM PC \& XT} (Plume/Waite-New American Library, New York, 1984). Complete operating systems often include a code debugger that permits assembly; disassembly; modifying the contents of selected memory locations; setting breakpoints; and running proyams under debuger control.}
+
+\sepfootnotecontent{04_10}{"Ten-byte pointer". Note HS/FORTH appends a period "." to most Intel mnemonics.}
+
+\sepfootnotecontent{04_11}{\bc{TEMP + []} is HS/FORTH's phrase to assemble a named memory address.}
+
+% Inline because of frame
+% \sepfootnotecontent{04_12}{See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Progumming the 80386} (Sybex, San Francisco, 1987).}
+
+\sepfootnotecontent{04_13}{Although it \textit{is} possible to force artificially 80x87 precision to 24 mantissa bits to simulate arithmetic performed on other machines (that is, to compare results while debugging), I see no virture in a mode that shows up calculations while \textit{diminishing} precision and refer the reader to refs. 2 or 8.}
+
+\sepfootnotecontent{04_14}{\Note: the 80387 includes a new instruction whereby the status control word can be moved \textit{directly} into the AX register of the 80386 CPU. The hex codes for FSTSW AX are DF E0.}
+
+\sepfootnotecontent{04_15}{see, \eg, Table 4.1}
+
+\sepfootnotecontent{04_16}{\Note the test worrds \bc{F<} and \bc{F>} are defined opposite to \bc{F0>} and \bc{F0<}. This reversal of directions is \textit{not} a typographical error: it is \textit{demanded} by the operation of \bc{FCONPP} -see \textbf{8087P}.}
+
+% Inline because frame
+% \sepfootnotecontent{04_17}{See below for a discussion of \bc{FSCALE}.}
+
+\sepfootnotecontent{04_18}{see \textbf{8087P}, p. 100ff}
+
+\sepfootnotecontent{04_19}{Somewhat less, $\approx$ 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}
+
+\sepfootnotecontent{04_20}{Note: FINIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s in all 8 87stack cells.}
+
+\sepfootnotecontent{04_21}{See Ch. 9 of this book for a fuller discussion of standard matrix algorithms.}
+
+\sepfootnotecontent{04_22}{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.}
 
 
 
@@ -198,6 +246,34 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 
 % **** Chapter  6 footnotes ****
+
+\sepfootnotecontent{06_01}{\textit{The Handbook of Mathematical Functions} ed. Milton Abramowitz and Irene Stegun (Dover Hlications, Inc, New York, 1965) --henceforth abbreviated \textbf{HMF}-- is a mine of useful information and references, on this as well as many other aspects of numerical analysis.}
+
+\sepfootnotecontent{06_02}{This is the examle of \textbf{Zeno's paradox} where you are at one end of a sofa and an attractive person of the opposite gender is at the other end. You move half the distance, then half the remainder. Clearly an an infinite number of moves is necessary to achieve the desired proximity. Thus, according to Zeno, you never get there. According to Eq. 6, however, you \textit{do} get there and in a \textbf{finite} time, to boot!}
+
+\sepfootnotecontent{06_03}{\textbf{HMF}, Ch. 3 \S6 ff.}
+
+\sepfootnotecontent{06_04}{\textbf{HMF}, Ch. 4 \S4.42}
+
+\sepfootnotecontent{06_05}{Since $\pi/4$ radians is $45^{\circ}$.}
+
+\sepfootnotecontent{06_06}{A better method would be to evaluate the series for $x = 1\/\sqrt{3}$ which is the tangent of $\pi/6$, or $x = \sqrt{2}-1$, the tangent of $\pi/8$}
+
+\sepfootnotecontent{06_07}{Note we have set up to display $\pi$ rather than $\pi/4$.}
+
+\sepfootnotecontent{06_08}{This theorem, due to Weierstrass, is found in all standard intermediate-level calculus texts.}
+
+\sepfootnotecontent{06_09}{See, \eg, J, Mathews and R.L. Walker, \textit{Mathematical Methods of Physics}, 2nd ed. (WA. Benjamin, Inc, New Jersey, 1970).}
+
+\sepfootnotecontent{06_10}{We specialize to transcendental equations because our root-finding methods will work also for polynomials, whereas the methods developed for polynomials will not work in the more general case.}
+
+\sepfootnotecontent{06_11}{See, e.g., \textbf{HMF} \S3.6.1.}
+
+\sepfootnotecontent{06_12}{\textbf{HMF}, \S25.5.6.}
+
+\sepfootnotecontent{06_13}{See, e.g., A. Ralston, \textit{A First Course in Numerical Analysis} (McGraw-Hill Book Company, New York, 1965) Ch. 5. Implicit methods increase the stability of numerical solution, compared with explicit methods. The formula below is exact for second-order polynomials. The error is of the same order as the explicit formula, but the coeffiient may be smaller.}
+
+\sepfootnotecontent{06_14}{\Note: "\bc{?(}" means "conditionally execute to next right parenthesis".}
 
 
 

@@ -22,9 +22,9 @@
 \usepackage{helvet}     % Julian called out Helvetica font for code
 \usepackage{pxfonts}    % Bold inline code
 \usepackage{listings}
-    \lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
-            basicstyle=\ttfamily %, mathescape
-            }
+    %\lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
+           % basicstyle=\ttfamily %, mathescape
+           %}
     \lstset{escapeinside={(*}{*)}
 }
 \newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
@@ -126,7 +126,7 @@
         {\S\S\thesubsection }{.5em}{}
     \titleformat{\subsubsection}
         {\normalfont\bfseries}
-        {\thesubsubsection }{.5em}{}
+        {-\thesubsubsection }{.5em}{}
 \usepackage{titletoc}
 
 % Thinking FORTH
@@ -161,7 +161,11 @@
     % \include{Chapter-02/02-Programming-in-FORTH}
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
     % \include{Chapter-04/04-The-80x87-Family}
-     \include{Chapter-05/05-Scientific-Data-Structures}
+%     \include{Chapter-05/05-Scientific-Data-Structures}
+     \include{Chapter-06/06-Programming-Examples}
+    % \include{Chapter-07/07-Complex-arithmetic-in-FORTH}
+    % \include{Chapter-08/08-More-Programming-Examples}
     % \include{Chapter-09/09-Linear-Algebra}
     % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
+    % \include{Chapter-11/11-Symbolic-Programming}
 \end{document}

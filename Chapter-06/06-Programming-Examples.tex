@@ -1,6 +1,4 @@
 \chapter{Programming Examples}
-\startcontents[chapters]
-\printcontents[chapters]{}{1}{}
 
 \TallC{This} chapter illustrates how we may apply the floating point extensions of FORTH, developed in preceding chapters, to some standard problems in numerical analysis.
 
@@ -12,7 +10,7 @@ Frequently we must evaluate a function defined by an infinite sum
     f(x) = sum_{n=0}^{\infty}c_{n}x^{n}
 \end{align}
 
-where $x$ is a real number and $c_n$ is an infinite sequence of coefficients. The extensive mathematical theory\footnote{\textit{The Handbook of Mathematical Functions} ed. Milton Abramowitz and Irene Stegun (Dover Hlications, Inc, New York, 1965) - henceforth abbreviated HMF- is a mine of useful information and references, on this as well as many other aspects of numerical analysis.} of such functions tions can be summarized as follows: the series of terms only have meaning if -for fixed $x$- the sequence of partial sums
+where $x$ is a real number and $c_n$ is an infinite sequence of coefficients. The extensive mathematical theory\sepfootnote{06_01} of such functions tions can be summarized as follows: the series of terms only have meaning if -for fixed $x$- the sequence of partial sums
 
 \begin{align}
     f_{N}(x) = sum_{n=0}^{N-1}c_{n}x^{x}
@@ -51,7 +49,7 @@ Yet a third case is the harmonic series
 It can be shown that for large $N$, $f_{N}$ is approximately $log_{e}(N)$, so the harmonic series \textit{diverges}.
 
 \subsubsection{A convergent example}
-Are there ever mes of infinite series that \textit{do} mean something? Obviously, or there could hardly be a theory of them! An example\footnote{This is the examle of Zeno's paradox where you are at one end of a sofa and an attractive person of the opposite gender is at the other end. You move half the distance, then half the remainder. Clearly an an infinite number of moves is necessary to achieve the desired proximity. Thus, according to Zeno, you never get there. According to Eq. 6, however, you \textit{do} get there and in a finite time, to boot!} is $c_{n}=1, x = \frac{1/2}$. Here the partial sums
+Are there ever mes of infinite series that \textit{do} mean something? Obviously, or there could hardly be a theory of them! An example\sepfootnote{06_02} is $c_{n}=1, x = \frac{1}{2}$. Here the partial sums
 
 \begin{align}
 f_{0} =& 1                               \\
@@ -64,7 +62,7 @@ f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 \textit{do} have a definite limit, so the series converges.
 
 \subsection{Numerical examples of convergent series}
-\TallC{How} do we tell whether a series has converged? As a practice matter, we keep adding terms to the partial sum until it no longer changes, within the desired precision. Sometimes this can involve a great many terms, even when the series converges. There exists an extensive mathematical literature on testing for the convergence of an infinite series. Mathematicians have also developed many tricks for accelerating the convergence of slow converging series\footnote{HMF, Ch. 3 6 ff.}. Consulting the literature in difficult cases I strongly recommended - it can save time galore!
+\TallC{How} do we tell whether a series has converged? As a practice matter, we keep adding terms to the partial sum until it no longer changes, within the desired precision. Sometimes this can involve a great many terms, even when the series converges. There exists an extensive mathematical literature on testing for the convergence of an infinite series. Mathematicians have also developed many tricks for accelerating the convergence of slow converging series\sepfootnote{06_03}. Consulting the literature in difficult cases I strongly recommended - it can save time galore!
 
 As an heuristic exercise, let us write some simple programs to evaluate partial sums and see how convergence works.
 
@@ -126,19 +124,18 @@ Another 10 terms? N ok
 
 The partial sums converge rapidly to 2 (which, as we saw in Ch. 1.1.2 above, is the exact sum).
 
-For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $\tan^{-1}(x)$(that is, arctan(x) ) has the infinite series representation\footnote{HMF, Ch. 4 4.42}
+For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $\tan^{-1}(x)$(that is, arctan(x) ) has the infinite series representation\sepfootnote{06_04}
 
 \begin{align}
     \tan{x}^{-1} = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} - \frac{x^{7}}{7} ...
 \end{align}
 
-Since a $45^\circ$ right triangle has equal height and base, the tangent of $45^\circ$ is 1 (side opposite over side adjacent). That is\footnote{Since $\pi/4$ radians is 45^{\circ}.},
-
+Since a 45$^{\circ}$ right triangle has equal height and base, the tangent of 45$^{\circ}$ is 1 (side opposite over side adjacent). That is\sepfootnote{06_05},
 \begin{align}
-    \frac{\pi}{4} \equiv \ta{1}^{-1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
+    \frac{\pi}{4} \equiv \tan{1}^{-1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
 \end{align}
 
-Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\footnote{A better method would be to evaluate the series for $x = 1/\sqrt{3}$ which is the tangent of $\pi/6$, or $x = \sqrt{Z-1}, the tangent of $\pi/8$}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
+Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
 
 \begin{lstlisting}
 SETUP: flag=1 n=1 sum=0 (--1n::--O)
@@ -154,10 +151,10 @@ BEGIN
     NEGATE          \ flip sign of f
 REPEAT
 \end{lstlisting}
-Fig. 6-2 \textit{ Computing $\pi/4$ by the infinite series for $\tan{1}^{-1}}
+Fig. 6-2 \textit{Computing $\pi/4$ by the infinite series for $\tan{1}^{-1}$}
 
 The corresponding program is
-\begin{align}
+\begin{lstlisting}
     15 #PIACES ! \ set F. to 15 digits
     : NEXT.TERM ( f 2n+1 -- f1 2n+3 :: sum -- sum1 )
         DUP S->F 1/F SWAP DUP FSIGN F+
@@ -174,7 +171,7 @@ The corresponding program is
         WHILE NEXT.TERM REPEAT ;
 \end{lstlisting}
 
-Now we run the program\footnote{Note we have set up to display $x$ rather than $x\4$.}:
+Now we run the program\sepfootnote{06_07}:
 
 \begin{lstlisting}
 FLOAD PIBY4 Loading PIBY4 ok
@@ -209,14 +206,13 @@ n = 47 4*num = Another term? Y
 
 The first thing we notice is that the numbers seem to be converging to \textit{something}; however, unlike the previous series, the differences between successive partial sums are fairly large.
 
-An infinite series of terms that alternate in sign and decrease in
-magnitude is guaranteed to converge\footnote{This theorem, due to Weierstrass, is found in all standard intermediate-level calculus texts.}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1} is not a very good way to calculate $\pi$ A better way uses \eg,
+An infinite series of terms that alternate in sign and decrease in magnitude is guaranteed to converge\sepfootnote{06_08}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1}$ is not a very good way to calculate $\pi$ A better way uses \eg,
 
 \begin{align}
     \pi = 16\tan{\frac{1}{5}}^{-1} - 4\tan{\frac{1}{239}}
 \end{align}
 
-, which converges much faster\footnote{See, \eg, J, Mathews and R.L. Walker, \textit{Mathematical Methods of Physics}, 2nd ed. (WA. Benjamin, Inc, New Jersey, 1970).}.
+, which converges much faster\sepfootnote{06_09}.
 
 \subsubsection{The infinite sum program}
 Evaluating a function from its infinite series representation Eq. 1 provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
@@ -249,7 +245,7 @@ we would define the word NEXT.TERM as
         FROT FUNDER F* F-ROT ;
 \end{lstlisting}
 
-\subsubsubsection{Function calls In FORTRAN}
+\subsubsection{Function calls In FORTRAN}
 However, FORTRAN (as well as languages that emulate it) achieves readability by passing arguments to functions in a list. In fact, function names can also be passed in the argument list. Thus, \eg, a general FORTRAN program to evaluate a function by summing an infinite series could be written
 
 \begin{lstlisting}
@@ -294,7 +290,7 @@ RETURN
 END
 \end{lstlisting}
 
-\subsubsubsection{A function protocol for FORTH}
+\subsubsection{A function protocol for FORTH}
 
 We would like to extend to FORTH FORTRAN’s ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
 
@@ -330,7 +326,7 @@ The words E, ENUF? and CLEANUP have straightforward definitions with obvious mea
 
 Manifestly, edr.c must place the execution address ("code-field address" -- cfa) on the stack for EXECUTE to find. There are several ways to accomplish this. Clearly, we want to keep the variable that holds the cfa local, so it will not get confused with another function's cfa. While it is straightforward to define a variable and then make it headerless --hence local-- (via BEHEAD", e.g.) we would prefer to avoid defining a variable at all. Here is a perfect opportunity to use the return stack (rstack).
 
-We imagine that SUM.POWERS expects the cfa of the function c_n on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be >R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R> DROP ; ).
+We imagine that SUM.POWERS expects the cfa of the function $c_n$ on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be >R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R> DROP ; ).
 
 The revised version of SUM.POWERS is then
 \begin{lstlisting}
@@ -351,8 +347,6 @@ The revised version of SUM.POWERS is then
 \end{lstlisting}
 
 The full program to evaluate the exponential by summing power series would then have the form shown below:
-
- 
 
 \ evaluate exponential by summing series
 REAL*4 SCALAR E
@@ -382,26 +376,25 @@ BEHEAD' c \ hide this variahie
             \ adr.c on stack
     SUMPOWERS ;
 
-Transcendental equations
+\section{Transcendental equations}
 
-A transcendental equation has the form
+\TallC{A transcendental} equation has the form
 
 f(x) = 0,
 
-where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials (rational function).
+where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials\sepfootnote{06_10} (\textbf{rational} function).
 
 There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. 10 (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
 
-1 Binary search
+\subsection{Binary search}
 
-Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, x_L \lteq x \lteq x_r, contains a root because f(x) changes sign when x goes from x_L -> x_R. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. 6-3 on page 128.
+Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. 6-3 on page 128.
 
-The method begins with upper and lower bounds on x that capture the root. Next we look at f(x_AV) halfway between x_L and x_R. If f=f(x_AV) has the same sign as f_L = f(x_L), the new left end of the interval becomes x_AV. If the signs are opposite, x_AV becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
+The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_AV)$ halfway between $x_L$ and $x_R$. If $f=f(x_AV)$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_AV$. If the signs are opposite, $x_AV$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
 Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. 6-3 is left as an exercise.
 
-10. We specialize to transcendental equations because our root-finding methods will work also for polynomials, whereas the methods developed for polynomials will not work in the more general case.
-
+\begin{lstlisting}
 INITIALIZE
 f_L = f(x_L) f_R= f(x_r)
 
@@ -416,20 +409,21 @@ ELSE x_R =x f_R=f
 THEN
 
 REPEAT
+\end{lstlisting}
 
 Fig. 6-3 Binary search algorinn for roots of f(x)
 
-2 Regula falsi
-Now we look at regula falsi, Latin for "rule of false approach" Here the basic premise is:
+\subsection{Regula falsi}
 
-\item Assume the root lies in the interval (x1, x3, and plot a straigli
-line between the points (XL, fl) and (XE, f . l
+\TallC{Now we} look at \textit{regula falsi}, Latin for "rule of false approach" Here the basic premise is:
 
-\item This line must intersect the_x-axis somewhere in the inte
-and we take that point, call It x’, as our next guess.
+\begin{itemize}
+    \item Assume the root lies in the interval (x1, x3, and plot a straight line between the points $(x_L, f_L)$ and $(x_R, f_R)$.
 
-\item If x’ is to the left of the root, ad'ust the interval accordingly, an
-the same if x’ is to the right 0 the root.
+    \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x’$, as our next guess.
+
+    \item If $x’$ is to the left of the root, adjust the interval accordingly, an the same if $x’$ is to the right of the root.
+\end{itemize}
 
 As Fig. 6-4 on page 129 shows, the straight line is supposed
 approximate the curve f(x). The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
@@ -442,24 +436,32 @@ y = ax + b
 
 where a and b are constants. The intercept of the straight line with the x-axis is gotten by setting y = 0 and solving for x:
 
+\begin{equation}
 x' = \frac{-b}{a}
+\end{equation}
 
 To determine a and b we use the two equations
 
+\begin{equation}
 f_L = ax_L + b
-
 f_R = ax_R + b
+\end{equation}
 
 giving
 
+\begin{equation}
 a = \frac{1}{2}[f_L + f_R - \frac{f_R - f_L}{x_L + x_R} (x_L + x_R)
+\end{equation}
 
 and thus
 
+\begin{equation}
 x' = \frac{f_Rx_L - f_Lx_R}{f_R - f_L}
+\end{equation}
 
 A FORTH flow diagram for this algorithm appears in Fig. 6-5.
 
+\begin{lstlisting}
 INITIALIZE
 f_L=f(x_L) f_R=f(x_R)
 x_old = X_L
@@ -476,6 +478,7 @@ ELSE x_R = x f_R = f
 THEN
 
 REPEAT
+\end{lstlisting}
 
 Fig. 6-5 Regula falsi algorithm for roots of f(x)
 
@@ -483,6 +486,7 @@ The corresponding program is shown on page 132.
 
 Here is an example of the program in action:
 
+\begin{lstlisting}
 FINIT 6 #PLACE ! ok \ set display to 6 digits
 \ Example: f(x) = exp(-x) - x
 : FNA FDUP FNEGATE FEXP FR- ;
@@ -497,6 +501,7 @@ USE( FNA % 0. % .3 % 1.E-6 )FALSI
 ?????? ?????? ?????? .567171 -.0000448740
 ?????? ?????? ?????? .567146 -.0000050002
 ?????? ?????? ?????? .567143 -.0000005544 ok
+\end{lstlisting}
 
 The display was generated by the word .FS --placed in the
 definition of APART? for debugging -- we show the top 5 of the eight 80x87 registers. The ?????? means the contents of that register are not a properly defined fp number, either because of a mistake or because nothing was stored in them after FINIT. Here, since the program is obviously working, the latter explanation is the correct one.
@@ -504,92 +509,99 @@ definition of APART? for debugging -- we show the top 5 of the eight 80x87 regis
 Ordinary differential equations
 We wish to solve the first-order general differential equation
 
+\begin{equation}
 x\dot = \frac{dx}{dt} = f(x,t)
+\end{equation}
 
-In general we can only solve Eq. 16 approximately, starting from the value of x -- call it x_0 -- at some initial time t_0, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
+In general we can only solve Eq. 16 approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
 
-For example, we could expand in Taylor’s series
+For example, we could expand in Taylor’s series\sepfootnote{06_11}
 
+\begin{equation}
 x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
+\end{equation}
 
- 
+\begin{lstlisting}
+    \ USE( Fname % a % b % err )FALSI
+    ( 87:--rooot )
+    \ Fname is the name of a FORTH function
 
-11. See, e.g., HMF 3.6.1.
+    \ function notation
+    : USE( [COMPILE] ' CFA LITERAL ;
+           IMMEDIATE
 
-\ USE( Fname % a % b % err )FALSI
-( 87:--rooot )
-\ Fname is the name of a FORTH function
+    6 REAL*4 SCALARS ERR XL XR YL YR OLDX
 
-\ function notation
-: USE( [COMPILE] ' CFA LITERAL ;
-       IMMEDIATE
+    0 VAR f1 \ a place to store cfa
+    : SAME.SIGN? (87:xy -- -- f)
+        F* F0> ;
 
-6 REAL*4 SCALARS ERR XL XR YL YR OLDX
+    :INITIALIZE ( cfa -- 87: a  be -- )
+        IS f1   \ stare cfa
+        XDUP    \ interval has root?
+        SAME.SIGN?
+        ABORT" Even number of roots!!!"
+        XR G! XL G!
+        XL G@ f1 EXECUTE YL G!
+        XR G@ f1 EXECUTE YR G!
+        F=0 OLDX G! ;
 
-0 VAR f1 \ a place to store cfa
-: SAME.SIGN? (87:xy -- -- f)
-    F* F0> ;
+    : X' XL G@ FR G@ ( 87: -- x')
+        FUNDER F*    ( 87: -- yR xL *yR)
+        XR G@ YL G@
+        FUNDER F* ( 87: -- yR xL*yR xL xR*yL )
+        FROT   F- ( 87: -- yR yL xR*yL -xL*yR)
+        F-ROT  F- F/ ;
 
-:INITIALIZE ( cfa -- 87: a  be -- )
-    IS f1   \ stare cfa
-    XDUP    \ interval has root?
-    SAME.SIGN?
-    ABORT" Even number of roots!!!"
-    XR G! XL G!
-    XL G@ f1 EXECUTE YL G!
-    XR G@ f1 EXECUTE YR G!
-    F=0 OLDX G! ;
+    : APART? ( 87: x' -- x' -- f )
+        FDUP OLDX G@ F-
+        .FS FABS ERR G@ F> ;
 
-: X' XL G@ FR G@ ( 87: -- x')
-    FUNDER F*    ( 87: -- yR xL *yR)
-    XR G@ YL G@
-    FUNDER F* ( 87: -- yR xL*yR xL xR*yL )
-    FROT   F- ( 87: -- yR yL xR*yL -xL*yR)
-    F-ROT  F- F/ ;
+    : REVISE ( 87: x' -- )
+        FDUP f1 EXECUTE ( 87: -- x' y')
+        FDUP YL G@
+        SAMESIGN? FOVER
+        ( --f 87: -- x'y' x')
+        IF      XL G! YL G!
+        ELSE    XR G! YR G! THEN
+        OLDX G! ; ( -- 87: -- )
 
-: APART? ( 87: x' -- x' -- f )
-    FDUP OLDX G@ F-
-    .FS FABS ERR G@ F> ;
-
-: REVISE ( 87: x' -- )
-    FDUP f1 EXECUTE ( 87: -- x' y')
-    FDUP YL G@
-    SAMESIGN? FOVER
-    ( --f 87: -- x'y' x')
-    IF      XL G! YL G!
-    ELSE    XR G! YR G! THEN
-    OLDX G! ; ( -- 87: -- )
-
-: )FALSI ( cfa-- 87: a b e -- root ) INITIALIZE ;
+    : )FALSI ( cfa-- 87: a b e -- root ) INITIALIZE ;
+\end{lstlisting}
 
 and keep only the lowest order terms:
 
+\begin{equation}
 x(t+h) \approx x(t) + hf(x(t), t).
+\end{equation}
 
 Runge-Kutta method
 
-One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms12. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be O(h^n). The second order Runge-Kutta algorithm is (x' \triple= x(t+h) , x \tripple= x(t) )
+One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms\sepfootnote{06_12}. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be $O(h^n)$. The second order Runge-Kutta algorithm is $(x' \equiv x(t+h) , x \equiv x(t) )$
 
-12. HMF, 25.5.6.
-
+\begin{equation}
 k = hf(x,t)
-
 x' = x + \frac{1}{2}(k + hf(x+k, t+h)) + O(h^3).
+\end{equation}
 
 How does this work? Clearly,
 
+\begin{equation}
 k + hf(x+k,t+h) \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x}
-
-\triple= 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+\equiv 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+\end{equation}
 
 Substituting 19 in 20 we now find
 
+\begin{equation}
 x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
+\end{equation}
 
-that is, the Runge-Kutta x' agrees with the Taylor's series expansion 17, to O(h^3).
+that is, the Runge-Kutta x' agrees with the Taylor's series expansion 17, to $O(h^3)$.
 
 The flow chart of second-order Runge-Kutta is shown in Fig. 6.6 below. We express the algorithm in FORTH as shown in Fig. 6-7 on page 134 below.
 
+\begin{lstlisting}
 )RUNGE
 INITIALIZE: get h, tf, t0, x0
 
@@ -598,67 +610,73 @@ BEGIN DISPLAY
 WHILE
     STEP
 REPEAT
+\begin{lstlisting}
 
 Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
 
-\ STRAIGHT 2ND ORDER RUNGE-KUTTA
-\ SOLUTION OF FIRST-ORDER DIFEQ
-\ dx/dt = f(x,t)
+\begin{lstlisting}
+    \ STRAIGHT 2ND ORDER RUNGE-KUTTA
+    \ SOLUTION OF FIRST-ORDER DIFEQ
+    \ dx/dt = f(x,t)
 
-\ See Abramowitz & Stegun, HMF 25.5.6
+    \ See Abramowitz & Stegun, HMF 25.5.6
 
-\ Usege:
-\ USE( FNB % x0 % t0 % tf % h )RUNGE
-\
-\ FNB (:[t]-- 87:x--f[x,t]) evaluates f(x.t)
-\ x0 = starting value of dep. variable
-\ t0 = initial time
-\ tf = end time
-\ h = step.size
-\
-\ k = hf(x,t), x' = x + (k +hf(x+k,t+h))/2
+    \ Usege:
+    \ USE( FNB % x0 % t0 % tf % h )RUNGE
+    \
+    \ FNB (:[t]-- 87:x--f[x,t]) evaluates f(x.t)
+    \ x0 = starting value of dep. variable
+    \ t0 = initial time
+    \ tf = end time
+    \ h = step.size
+    \
+    \ k = hf(x,t), x' = x + (k +hf(x+k,t+h))/2
 
-6 REAL*4 SCALARS T T' H X TMAX K
-0 VAR f1 \ to hold cfa
-: USE( [COMPILE]' CFA LITERAL;
-       IMMEDIATE
-: INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
-    IS f1 H G! TMAX G! T G! X G! ;
+    6 REAL*4 SCALARS T T' H X TMAX K
+    0 VAR f1 \ to hold cfa
+    : USE( [COMPILE]' CFA LITERAL;
+           IMMEDIATE
+    : INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
+        IS f1 H G! TMAX G! T G! X G! ;
 
-\ These words increment x & t.
-: inc.T     T G@ H G@ F+ T' G! ;
-: inc.X     X G@
-         T  f1 EXECUTE (87:--f[x,t])
-         H  G@ F*      (87:--k=hf[x,t])
-         FDUP K G!    \ save k
-         X  G@ F+      (87:-- x+k)
-         T' G@ T G!
-         T  f1 EXECUTE (87:--f[x+k,t+h])
-         H  G@ F*
-         K  G@ F+ F2/
-                       (87:--[k+i[x+k,t+h] ]/2)
-         X  G@ F+ X G! ;
+    \ These words increment x & t.
+    : inc.T     T G@ H G@ F+ T' G! ;
+    : inc.X     X G@
+             T  f1 EXECUTE (87:--f[x,t])
+             H  G@ F*      (87:--k=hf[x,t])
+             FDUP K G!    \ save k
+             X  G@ F+      (87:-- x+k)
+             T' G@ T G!
+             T  f1 EXECUTE (87:--f[x+k,t+h])
+             H  G@ F*
+             K  G@ F+ F2/
+                           (87:--[k+i[x+k,t+h] ]/2)
+             X  G@ F+ X G! ;
 
-: DONE? TG@ TMAXG@ F>) ; (:--f)
+    : DONE? TG@ TMAXG@ F>) ; (:--f)
 
-0 VAR exact            \ cfa
-: DISPLAY   exact EXECUTE
-    XG@  T  G@ CR F. F. F. ;
-\ emit "t x exact”
+    0 VAR exact            \ cfa
+    : DISPLAY   exact EXECUTE
+        XG@  T  G@ CR F. F. F. ;
+    \ emit "t x exact”
 
-: )RUNGE               (:cfa-- 87: x0 t0 tf h -- )
-        BEGIN DISPLAY
-                DONE? NOT
-
+    : )RUNGE               (:cfa-- 87: x0 t0 tf h -- )
+            BEGIN DISPLAY
+                    DONE? NOT
+\end{lstlisting}
 Fig. 6-7 Explicit 2nd-order Runge-Kutta solver
 
 As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
 
+\begin{equation}
 \dot{x} = t^2 e^-x
+\end{equation}
 
 with the initial condition x(t = 0) = 0 , whose exact solution is
 
+\begin{equation}
 x(t) =log_e(1 +\frac{1}{3}t^3).
+\end{equation}
 
 t x h. t x 1.
 Big List
@@ -667,26 +685,31 @@ Fig. 6-8 Second order Runge-Kutta - results
 
 Thus define
 
+\begin{lstlisting}
 : FNB (:[T]-- 87: x--f[x,t])
     FNEGATE FEXP G@ F**2 F*
 : EXACT T G@ FDUP FDUP F* F* (87:--t^3)
     3 S->F F/ F=1 F+ FLN ;
+\end{lstlisting}
 
 and say
 
+\begin{lstlisting}
 USE( EXACT IS exact ok
 USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
+\end{lstlisting}
 
 The resulting output is shown in fig. 6-8 above.
 
-2 An implicit Runge-Kutta formula
-A variation on straight Runge-Kutta is a so-called implicit algorithml3.For example, in the second-order formulae given above, suppose x + k were replaced by x’:
+\subsection{An implicit Runge-Kutta formula}
+\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose x + k were replaced by x’:
 
+\begin{equation}
 k = hf(x,t)
-
 x’ = x + \frac{1}{2}(k + hf(x',t+h)) + O(h^3)
+\end{equation}
 
-and the resulting (transcendental) equation solved for x’ by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it14 as shown in Fig. 6-10 on page 137 below.
+and the resulting (transcendental) equation solved for x’ by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
 
 )RUNGE
   INITIALIZE: get h, tf, t0, x0
@@ -699,10 +722,6 @@ and the resulting (transcendental) equation solved for x’ by --say-- regula fa
   REPEAT
 
 Fig. 6-9 2nd-order implicit Runge-Kutta for dx/dt = f(x,t)
-
-13. See, e.g., A. Ralston, A First Course in Numerical Analysis (McGraw-Hill Book Company, New York, 1965) Ch. 5. Implicit methods increase the stability of numerical solution, compared with explicit methods. The formula below is exact for second-order polynomials. The error is of the same order as the explicit formula, but the coeffiient may be smaller.
-
-14. Note: "?(" means "conditionally execute to next right parenthesis".
 
 Now we consider the same example as previously:
 
@@ -760,20 +779,24 @@ The resulting output is shown in Fig. 6-11 on page 138.
 
 Clearly the implicit form is more accurate; whether the putative gain in stability justifies solving a transcendental equation is unclear, however.
 
-t X X_ex t X X_ex
+$t X X_ex t X X_ex$
 Big List
 
 Fig. 6-11 Second order implicit Runge-Kutta - results
 
 Let us now compare the two algorithms for functions f(x,t) that lead to singular solutions. This time we consider the equation
 
+\begin{equation}
 \dot{x} = t^2e^x
+\end{equation}
 
 whose exact solution is
 
+\begin{equation}
 x(t) = -log_e(1-\frac{1}{3}t^3).
+\end{equation}
 
-Manifestly, 25 blows up at t = 3^\frac{1}{3}=1.442... We expect the behavior to become apparent in the numerical solution. So we say
+Manifestly, 25 blows up at $t = 3^\frac{1}{3}=1.442...$ We expect the behavior to become apparent in the numerical solution. So we say
 
 \begin{lstlisting}
 : FNB FEXP G@ F**2 F*;
@@ -793,9 +816,9 @@ The results of doing this with straight-, and then implicit Runge-Kutta are disp
 
 The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t +h)$, appears more accurate near the singularity, although both methods are acceptably accurate. Does this mean implicit Runge-Kutta is no good? No!
 
-The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method’s power, we must increase the precision beyond one part in 10^{6}. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
+The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method’s power, we must increase the precision beyond one part in $10^{6}$. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
 
-t X X_EX t X X_EX
+$t X X_EX t X X_EX$
 Big list
 
 Fig. 6-12 \textit{Straight Runge-Kutta for singular case}
