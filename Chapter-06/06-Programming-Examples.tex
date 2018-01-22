@@ -66,7 +66,7 @@ f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 
 As an heuristic exercise, let us write some simple programs to evaluate partial sums and see how convergence works.
 
-first we sum the terms $2^{-n}$ from Eq. 6. The flow diagram is shown in Fig. 6-1 below.
+first we sum the terms $2^{-n}$ from Eq. 6. The flow diagram is shown in Fig. \ref{fig:06_01} below.
 
 %\tikzstyle{line} = [draw, -latex']
 \tikzset{%
@@ -173,7 +173,7 @@ Since a 45$^{\circ}$ right triangle has equal height and base, the tangent of 45
     \frac{\pi}{4} \equiv \tan{1}^{-1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
 \end{align}
 
-Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
+Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. \ref{fig:06_02} below.
 
 % Fig. 6-2 
 \begin{figure}
@@ -452,26 +452,50 @@ Let us look first at binomial search, since its algorithm is euy to understand. 
 
 The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_AV)$ halfway between $x_L$ and $x_R$. If $f=f(x_AV)$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_AV$. If the signs are opposite, $x_AV$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
-Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. 6-3 is left as an exercise.
+Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. \ref{fig:06_03} is left as an exercise.
+%  Fig. 6-3 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2.8, 0.15) rectangle (9,-8.8);
+        \node (start) {};
+        \node [circle, draw, cross, below= of start] (cross) {};
+        \node [below=0.8 of cross] (cond) {};
+        \node [below=1.6cm of cond] (cond2) {};
+        \node [draw, below right=0.2cm of cond2, text width=1.5cm, align=center] (NO) {NO\\$x_R=x$\\$f_R=f$};
+        \node [draw, below left=0.2cm of cond2, text width=1.5cm, align=center] (YES) {YES\\$x_L=x$\\$f_L=f$};
+        \node [circle, draw, dot, below=2.8cm  of cond2] (dot1)  {};
+        \node [draw, fill, opacity=0.2, below left= of cond, text width=0.6cm, minimum height= 0.25cm, xshift=-0.4cm]  (ext) {};
+        \draw [->] (start.mid) -- (cross);
+        \draw [->] (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -| (ext);
+        \draw [->] (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (YES);
+        \draw [->] (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (NO);
+        \draw [->] (YES.south) -- ++(0,-0.5cm);
+        \draw [->] (YES.south) |- ++(0,-0.5cm) -| (dot1);
+        \draw [->] (NO.south) -- ++(0,-0.5cm);
+        \draw [->] (NO.south)  |- ++(0,-0.5cm) -| (dot1);
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west, align=left, text width=6.5cm] {
+            INITIALIZE\\
+            $\mathrm{f_L=f(x_L) \quad f_R=f(x_R)}$};
+        \node [below=0.5 of cyc.west, anchor=west, align=left, xshift= 0.5cm] (body) {$\mathrm{\left | x_L - x_R \right |} > error?$ };
+        \node [below= of cyc.west, anchor=west, align=left] (while) {WHILE};
+        \node [below= of while.west, anchor=west, align=left] (eq3) {$x=\frac{1}{2}\left (x_L + x_R \right )\,,\;f=f(x)$};
+        \node [below= of eq3.west, anchor=west, align=left] (eq3) {sign(f) = sign(fL)?};
+        \node [below=0.8cm of eq3.west, anchor=west, align=left, xshift= -0.2cm] (eq4) { IF   \hspace{1.2cm} $\mathrm{x_L=x \quad f_L=f}$};
+        \node [below=0.8cm of eq4.west, anchor=west, align=left] (eq5) { ELSE \hspace{0.6cm} $\mathrm{x_R=x \quad f_R=f}$};
+        \node [below=0.8cm of eq5.west, anchor=west, align=left] (eq6) { THEN };
+        \node [below=1.3cm of eq6.west, anchor=west, align=left] (eq7) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{Binary search algorithm for roots of f(x)}}
+    \label{fig:06_03}
+\end{figure}
 
-\begin{lstlisting}
-INITIALIZE
-f_L = f(x_L) f_R= f(x_r)
 
-BEGIN
 
-|x_L - x_R| > error ?
-WHILE
-x=1/2(x_L+x_R), f=f(x)
-sign(f) = sign(f_L) ?
-IF x_L =X f_L =f
-ELSE x_R =x f_R=f
-THEN
-
-REPEAT
-\end{lstlisting}
-
-Fig. 6-3 Binary search algorinn for roots of f(x)
 
 \subsection{Regula falsi}
 
