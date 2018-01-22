@@ -175,21 +175,46 @@ Since a 45$^{\circ}$ right triangle has equal height and base, the tangent of 45
 
 Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
 
-\begin{lstlisting}
-SETUP: flag=1 n=1 sum=0 (--1n::--O)
+% Fig. 6-2 
+\begin{figure}
+    %  Fig. 3-2 
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2, 0.5) rectangle (10,-7);
+        \node (start) {};
+        \node [circle, draw, cross, below=0.5cm of start] (cross) {};
+        \node [below=0.5cm of cross] (cond) {};
+        \node [circle, draw, dot, below right= 4.5cm and 2cm of cross] (dot1)  {};
+        \node [left=of cond] (NO) {};
+        \node [draw, fill, opacity=0.2, below= 1.5cm of NO, text width=1.2cm,xshift=.8cm]  (ext) {};
+        \draw [->] (start.mid) -- (cross);
+        %\draw [->] (cross) -- (cond.mid);
+        \draw [->] (cross) -- (cond.mid) -- ++(-.75, -0.75) -- (ext);
+        \draw [->] (cond.mid) -| (dot1);
+        \node [right=of dot1, align=left, xshift=-0.8cm, yshift=0.25cm] {REPEAT} ;
 
-BEGIN
-    EXHIBIT \ display n, sum
-    ?CONTINUE WHILE
-    
-    DUP S->F 1/F    ( -- fn :: -- sum 1/n )
-    SWAP FDUP FSIGN \ transfer sign
-    F+              \ sum = sum +
-    term
-    NEGATE          \ flip sign of f
-REPEAT
-\end{lstlisting}
-Fig. 6-2 \textit{Computing $\pi/4$ by the infinite series for $\tan{1}^{-1}$}
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west] {SETUP: flag=1 n=1 sum=0 ( -\phantom{}- 1 n ::-\phantom{}-0)};
+        \node [below=1.3cm of cyc.west, anchor=west, align=left, text width=6.5cm, xshift= 0.5cm] (blob) {
+            EXHIBIT \hspace{0.6cm} \textbackslash \space display n, sum \\
+            ?CONTINUE  \space \space \space WHILE \\
+                \leavevmode    \\
+            DUP S-\textgreater F  \space 1/F  \space   ( -\phantom{}- fn :: -\phantom{}- sum 1/n ) \\
+            SWAP FDUP FSIGN \textbackslash \space transfer sign\\
+        };
+        \node [below=1.7cm of blob.west, anchor=west, align=left, text width=7cm, xshift= -0.2cm] {
+            F+  
+            \hspace{3.2cm}
+            \textbackslash  \space sum = sum +\\ 
+            term\\
+            NEGATE  \hspace{2.0cm}  \textbackslash  \space flip sign of f
+        };
+
+    \end{tikzpicture}
+    \caption{\textit{Computing $\pi/4$ by the infinite series for $\tan^{-1}(1)$}}
+    \label{fig:06_02}
+\end{figure}
+
 
 The corresponding program is
 \begin{lstlisting}
