@@ -68,22 +68,60 @@ As an heuristic exercise, let us write some simple programs to evaluate partial 
 
 first we sum the terms $2^{-n}$ from Eq. 6. The flow diagram is shown in Fig. 6-1 below.
 
-\begin{lstlisting}
+%\tikzstyle{line} = [draw, -latex']
+\tikzset{%
+  do path picture/.style={%
+    path picture={%
+      \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+  },
+  cross/.style={do path picture={    
+    \draw [draw, -latex', cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+  }},
+  dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+  }}
+}
+\begin{figure}
+% Fig. 6-1 
+    \begin{tikzpicture}[minimum size=0.75cm]
+        \draw (8,0.5) -- (-4, 0.5) -| (-4,-10) |- (8,-10);
+        \node (start) {};
+        \node [circle, draw, cross, below=0.5cm of start] (cross) {};
+        \node [right=of cross, xshift=-0.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west] {SET UP: \space N=0 \space SUM=1};
+        \node [below=1.5cm of cyc.west, anchor=west, align=left, text width=6cm, xshift=-0.5cm] {?CONTINUE ( 10 or more terms? )\\WHILE} ;
+        \node [below= of cross] (cond) {};
+        \node [circle, draw, cross, below= of cond] (cross2) {};
+        \node [circle, draw, dot, below=1.6cm of cross2] (dot1)  {};
+        \node [circle, draw, dot, below= of dot1] (dot2)  {};
+        \node [left=of cond] (NO) {};
+        \node [draw, fill, opacity=0.2, below= of NO, text width=1.2cm]  (ext) {};
+        \draw [->] (start) -- (cross);
+        \draw [->] (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -- (cross2);
+        \draw [->] (cross2) -- (dot1);
+        \draw [->] (dot1) -- (dot2);
+        \draw [->] (cond.mid) -- (NO.mid);
+        \draw [->] (NO.mid) -- (ext);
+        \node [right=of dot1, align=left, xshift=-0.5cm] {LOOP} ;
+        \node [right=of dot2, align=left, xshift=-0.5cm] {REPEAT} ;
 
-SETUP: N=0 SUM=1
-BEGIN
-?CONTINUE ( 10 more terms?)
-WHILE
-NO YES
-10 0 DO
-Exit 2^{-n-1} = 2^{-n} / 2
-SUM = SUM + 2^{-n-1}
-n = n + 1
-LOOP
-REPEAT
-\end{lstlisting}
-
-Fig. 6-1 \textit{Computing 2 the hard way}
+        \node [right= of cross2, align=left, xshift=-0.5cm] (lp0) {10 \space 0 \space DO} ;
+        \node [below=.5cm of lp0.mid,anchor=west, align=left, xshift=-0.3cm] (lp1) {$2^{-n-1}=2^{-n}/2$} ;
+        \node [below=.5cm of lp1.west,anchor=west, align=left] (lp2) {SUM = SUM + $2^{-n-1}$} ;
+        \node [below=.5cm of lp2.west,anchor=west, align=left] (lp3) {n = n + 1} ;
+        \node [left=.1cm of cond.south, align=left] (TYES) {YES} ;
+        \node [left=.1cm of NO.south, align=left] (TNO) {NO} ;
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+    \end{tikzpicture}
+    \caption{\textit{Computing 2 the hard way}}
+    \label{fig:06_01}
+\end{figure}
 
 The corresponding program is
 
