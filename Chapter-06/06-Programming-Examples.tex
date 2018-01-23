@@ -866,17 +866,28 @@ The resulting output is shown in fig. 6-8 above.
 
 and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
 
-)RUNGE
-  INITIALIZE: get h, tf, t0, x0
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-1.5, 0.5) rectangle (9,-4.0);
+        \node (start) {};
+        \node [circle, draw, below= of start] (crc) {};
+        \node [circle, draw, dot, below=1.5cm of crc] (dot1)  {};
+        \draw [->] (start.mid) -- (crc);
+        \draw [->] (crc) -- (dot1);
+        \node [right=of start.west] (txtstart) {)RUNGE} ;
+        \node [below=0.25cm of txtstart, anchor=west, xshift=-0.5cm] (cyc) {INITIALIZE:\space get h, tf, t0, x0} ;
+        \node [right= of crc.west, anchor=west, align=left] (while) {BEGIN DISPLAY};
+        \node [below=0.40cm of while.west, anchor=west, align=left, xshift=0.25cm] (bdy) {DONE? NOT};
+        \node [below=0.8cm of while.west, anchor=west, align=left] (w2) {WHILE};
+        \node [below=1.2cm of while.west, anchor=west, align=left, xshift=0.25cm] (eq3) {k=hf(x,t)};
+        \node [below=0.40cm of eq3.west, anchor=west, align=left, xshift=0.15cm] (eq4) {SOLVE: \space x' = x + k/2 + hf(x',t+h)/2};
+        \node [right= of dot1.west, anchor=west, align=left] (rpt) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{2nd-order implicit Runge-Kutta for dx/dt = f(x,t)}}
+    \label{fig:06_09}
+\end{figure}
 
-  BEGIN DISPLAY
-   DONE? NOT
-  WHILE
-   k=hf(x,t)
-    SOLVE: x' = x + k/2 +hf(x',t+h)/2
-  REPEAT
-
-Fig. 6-9 2nd-order implicit Runge-Kutta for dx/dt = f(x,t)
+Fig. 6-9 
 
 Now we consider the same example as previously:
 
