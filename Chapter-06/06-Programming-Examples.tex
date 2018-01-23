@@ -751,18 +751,27 @@ that is, the Runge-Kutta x' agrees with the Taylor's series expansion \ref{eq:06
 
 The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} below. We express the algorithm in FORTH as shown in Fig.  \ref{fig:06_07} on page \pageref{fig:06_07} below.
 
-\begin{lstlisting}
-)RUNGE
-INITIALIZE: get h, tf, t0, x0
-
-BEGIN DISPLAY
-    DONE? NOT
-WHILE
-    STEP
-REPEAT
-\begin{lstlisting}
-
-Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
+% Fig. 6-6 
+\begin{figure}
+    \center
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-3.0, 0.5) rectangle (6.5,-4.0);
+        \node (start) {};
+        \node [circle, cross, draw, below=0.6cm of start] (crc) {};
+        \node [circle, draw, dot, below=1.5cm of crc] (dot1)  {};
+        \draw [->] (start.mid) -- (crc);
+        \draw [->] (crc) -- (dot1);
+        \node [right=of start.west] (txtstart) {)RUNGE} ;
+        \node [below=0.4cm of txtstart.west, anchor=west, xshift= 0.5cm] (cyc) {INITIALIZE:\space get h, tf, t0, x0} ;
+        \node [right= of crc.west, anchor=west, align=left] (while) {BEGIN DISPLAY};
+        \node [below=0.40cm of while.west, anchor=west, align=left, xshift=0.25cm] (bdy) {DONE? NOT};
+        \node [below=0.8cm of while.west, anchor=west, align=left] (w2) {WHILE};
+        \node [below=1.2cm of while.west, anchor=west, align=left, xshift=0.25cm] (eq3) {STEP};
+        \node [below=1.6cm of while.west, anchor=west, align=left] (rpt) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{2nd-order Runge-Kutta for dx/dt = f(x,t)}}
+    \label{fig:06_06}
+\end{figure}
 
 \begin{lstlisting}
     \ STRAIGHT 2ND ORDER RUNGE-KUTTA
@@ -866,6 +875,7 @@ The resulting output is shown in fig. 6-8 above.
 
 and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
 
+% Fig. 6-9 
 \begin{figure}
     \begin{tikzpicture}[minimum size=0.5cm]
         \draw (-1.5, 0.5) rectangle (9,-4.0);
@@ -886,8 +896,6 @@ and the resulting (transcendental) equation solved for x' by --say-- regula fals
     \caption{\textit{2nd-order implicit Runge-Kutta for dx/dt = f(x,t)}}
     \label{fig:06_09}
 \end{figure}
-
-Fig. 6-9 
 
 Now we consider the same example as previously:
 
