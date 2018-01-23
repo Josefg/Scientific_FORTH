@@ -661,7 +661,7 @@ In general we can only solve Eq.\ref{eq:06_16} approximately, starting from the 
 For example, we could expand in Taylor’s series\sepfootnote{06_11}
 
 \begin{equation}
-x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
+    x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
     \label{eq:06_17} 
 \end{equation}
 
@@ -720,7 +720,7 @@ x(t+h) \approx x(t) + hf(x(t), t).
     \label{eq:06_18} 
 \end{equation}
 
-Runge-Kutta method
+\subsection{Runge-Kutta method}
 
 One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms\sepfootnote{06_12}. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be $O(h^n)$. The second order Runge-Kutta algorithm is $(x' \equiv x(t+h) , x \equiv x(t) )$
 
@@ -728,25 +728,28 @@ One standard class of methods that had fallen into disfavor by now are popular a
 \begin{aligned}
     k &= hf(x,t) \\
     x' &= x + \frac{1}{2}\big(k + hf(x+k, t+h)\big) + O(h^3).
+    \label{eq:06_19} 
 \end{aligned}
 \end{equation}
 
 How does this work? Clearly,
 
 \begin{equation}
-k + hf(x+k,t+h) \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x}
-\equiv 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+\begin{aligned}
+    k + hf(x+k,t+h) & \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x} \\
+    & \equiv 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+    \label{eq:06_20} 
+\end{aligned}
 \end{equation}
 
-Substituting 19 in 20 we now find
+Substituting \ref{eq:06_19} in \ref{eq:06_20} we now find
 
-\begin{equation}
-x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
-\end{equation}
+\begin{equation*}
+    x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
+\end{equation*}
+that is, the Runge-Kutta x' agrees with the Taylor's series expansion \ref{eq:06_17}, to $O(h^3)$.
 
-that is, the Runge-Kutta x' agrees with the Taylor's series expansion 17, to $O(h^3)$.
-
-The flow chart of second-order Runge-Kutta is shown in Fig. 6.6 below. We express the algorithm in FORTH as shown in Fig. 6-7 on page 134 below.
+The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} below. We express the algorithm in FORTH as shown in Fig.  \ref{fig:06_07} on page \pageref{fig:06_07} below.
 
 \begin{lstlisting}
 )RUNGE
@@ -816,7 +819,8 @@ Fig. 6-7 Explicit 2nd-order Runge-Kutta solver
 As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
 
 \begin{equation}
-\dot{x} = t^2 e^-x
+    \dot{x} = t^2 e^{-x}
+    \label{eq:06_21} 
 \end{equation}
 
 with the initial condition x(t = 0) = 0 , whose exact solution is
