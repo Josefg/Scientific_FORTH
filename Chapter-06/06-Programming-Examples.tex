@@ -512,7 +512,59 @@ Binary search has the following virtues: the time it takes to achieve a given ac
 As Fig. 6-4 on page 129 shows, the straight line is supposed
 approximate the curve f(x). The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
 
-Fig. 6-4 Graphical Illustration of ragula falsi
+%  Fig. 6-4 
+\begin{figure}
+    \center
+    \begin{tikzpicture}
+        \draw (-3.4, -1.8) rectangle (7.2,6.5);
+        \coordinate (O) at (0,0);
+        \draw (-3,0) -- (6,0);
+        \draw (0,-1.3) -- (0,6.2);
+        \foreach \x in {-2.4,-0.4,0.6,1.6,2.6,3.6,4.6,5.6}
+            \draw (\x cm,2pt) -- (\x cm,-0pt) node[anchor=north] {$\x$};
+        \foreach \x in {-1.9,...,5.1}
+            \draw (\x cm,1pt) -- (\x cm,-0pt);
+        \foreach \y in {-1.25,-0.5,0.75,1.75,2.75,3.75,4.75,5.75}
+            \draw (2pt,\y cm) -- (0pt,\y cm);
+        \foreach \y in {-1.25,0.75,2.75,4.75}
+            \node[anchor=east] at (0pt,\y cm) {$\y$};
+
+        \draw (2.2,0) -- ++(0,0.5);
+        \node  at (2.1,0.75) {"binary" next};
+
+        %\path[name path=x] (0.3,0.5) -- (6.7,4.7);
+        %\path[name path=y] plot[smooth] coordinates {(-0.3,2) (2,1.5) (4,2.8) (6,5)};
+        \coordinate (A) at (-2.0, -0.9);
+        \coordinate (AB) at (-0.4,+0.4);
+        \coordinate (BB) at (-1.6,1.75);
+        \coordinate (B) at (-1.4,0);
+        \coordinate (C) at (0, 1.75);
+        \coordinate (F) at (6.1, 4.75);
+        \draw[thick] (A) .. controls (AB) and (BB) .. (F); 
+        \node at (1.5,3.5) {$y=f(x)$};
+        \draw [thick,dashed] (A) -- (F);
+        \coordinate (yaxis) at (0,6);
+        \coordinate (xaxis) at (6,0);
+        \draw [->] (F) -| (xaxis -| F) node[above, yshift=0.5cm] {$x_R$};
+        \draw [->] (A) -| (xaxis -| A) node[above, yshift=0.05cm] {$x_L$};
+        \node at (-1.5, 2.2) (fa) {"falsi" next guess};
+        \draw [->] ($(fa)+(-0.8,-0.25)$) -- ++(0,-.35cm) -- (-0.7,0);
+        \node at (4.7, -1.25) (xarr) {$x\quad \xrightarrow{\hspace*{0.4cm}}$};
+        % debug and helpers
+        \iffalse
+        \draw [blue, very thick] (A) circle (0.1);
+        \draw [green, very thick] (BB) circle (0.1) node[anchor=north] {BB};
+        \draw [green, very thick] (AB) circle (0.1) node[anchor=north] {AB};
+        \draw [blue, very thick] (B) circle (0.1);
+        \draw [blue, very thick] (C) circle (0.1);
+        \draw [blue, very thick] (F) circle (0.1);
+        \draw [red](-0.8,0) -- ++(0,0.5);
+        \draw [xshift= 0.1cm, step=0.25,blue, very thick, opacity=0.2] (-2.5,-1.5) grid (6.5,6.5);
+        \fi
+    \end{tikzpicture}
+    \caption{\textit{Graphical Illustration of ragula falsi}}
+    \label{fig:06_04}
+\end{figure}
 
 A straight line in the x-y plane has the analytic form
 
