@@ -354,7 +354,7 @@ END
 
 \subsubsection{A function protocol for FORTH}
 
-We would like to extend to FORTH FORTRAN’s ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
+We would like to extend to FORTH FORTRAN's ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
 
 We want our protocol to have several features:
 \begin{itemize}
@@ -507,9 +507,9 @@ Binary search has the following virtues: the time it takes to achieve a given ac
 \begin{itemize}
     \item Assume the root lies in the interval (x1, x3, and plot a straight line between the points $(x_L, f_L)$ and $(x_R, f_R)$.
 
-    \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x’$, as our next guess.
+    \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x'$, as our next guess.
 
-    \item If $x’$ is to the left of the root, adjust the interval accordingly, an the same if $x’$ is to the right of the root.
+    \item If $x'$ is to the left of the root, adjust the interval accordingly, an the same if $x'$ is to the right of the root.
 \end{itemize}
 
 As Fig. \ref{fig:06_04} on page \pageref{fig:06_04} shows, the straight line is supposed
@@ -607,7 +607,7 @@ A FORTH flow diagram for this algorithm appears in Fig. 6-5.
 INITIALIZE
 f_L=f(x_L) f_R=f(x_R)
 x_old = X_L
-BEGIN calculate x’
+BEGIN calculate x'
 |x' - x_old| > error
 ?
 WHILE
@@ -658,7 +658,7 @@ definition of APART? for debugging -- we show the top 5 of the eight 80x87 regis
 
 In general we can only solve Eq.\ref{eq:06_16} approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments $dt = h$, using the differential equation itself to give us $x(t+h)$ given $x(t)$.
 
-For example, we could expand in Taylor’s series\sepfootnote{06_11}
+For example, we could expand in Taylor's series\sepfootnote{06_11}
 
 \begin{equation}
     x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
@@ -827,6 +827,7 @@ with the initial condition x(t = 0) = 0 , whose exact solution is
 
 \begin{equation}
 x(t) =log_e(1 +\frac{1}{3}t^3).
+    \label{eq:06_22} 
 \end{equation}
 
 t x h. t x 1.
@@ -853,14 +854,17 @@ USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
 The resulting output is shown in fig. 6-8 above.
 
 \subsection{An implicit Runge-Kutta formula}
-\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose x + k were replaced by x’:
+\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose $x + k$ were replaced by $x'$:
 
 \begin{equation}
-k = hf(x,t)
-x’ = x + \frac{1}{2}(k + hf(x',t+h)) + O(h^3)
+\begin{aligned}
+    k &= hf(x,t)\\
+    x' &= x + \frac{1}{2}\big(k + hf(x',t+h)\big) + O(h^3)
+    \label{eq:06_23} 
+\end{aligned}
 \end{equation}
 
-and the resulting (transcendental) equation solved for x’ by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
+and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
 
 )RUNGE
   INITIALIZE: get h, tf, t0, x0
@@ -869,7 +873,7 @@ and the resulting (transcendental) equation solved for x’ by --say-- regula fa
    DONE? NOT
   WHILE
    k=hf(x,t)
-    SOLVE: x' = x + k/2 +hf(x’,t+h)/2
+    SOLVE: x' = x + k/2 +hf(x',t+h)/2
   REPEAT
 
 Fig. 6-9 2nd-order implicit Runge-Kutta for dx/dt = f(x,t)
@@ -901,7 +905,7 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
     T f1 EXECUTE   ( 87:--f[x,t])
     H G@ F* K G! ; ( 87:--k=hf(x,t)
 
-: X" ( 87:x'--g[x’])
+: X" ( 87:x'--g[x'])
     T f1 EXECUTE   ( 87:--f[x',t+h])
     H G@ F* K G! F+ F2/
      ( 87:--[k+f[x+k,t+h] ]/2)
@@ -913,7 +917,7 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 
 : X' USE( X" INTERVAL % 1.E-6
        )FALSI ;
-: inc.X k X’ X G! T' G@ T G! ;
+: inc.X k X' X G! T' G@ T G! ;
 : DONE? T G@ TMAX G@ F> ;
       (:--f)
 0 VAR exact         \ cfa
@@ -967,7 +971,7 @@ The results of doing this with straight-, and then implicit Runge-Kutta are disp
 
 The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t +h)$, appears more accurate near the singularity, although both methods are acceptably accurate. Does this mean implicit Runge-Kutta is no good? No!
 
-The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method’s power, we must increase the precision beyond one part in $10^{6}$. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
+The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method's power, we must increase the precision beyond one part in $10^{6}$. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
 
 $t X X_EX t X X_EX$
 Big list
