@@ -7,13 +7,14 @@
 Frequently we must evaluate a function defined by an infinite sum
 
 \begin{align}
-    f(x) = sum_{n=0}^{\infty}c_{n}x^{n}
+    f(x) = \sum_{n=0}^{\infty}c_{n}x^{n}
+    \label{eq:06_01}
 \end{align}
 
 where $x$ is a real number and $c_n$ is an infinite sequence of coefficients. The extensive mathematical theory\sepfootnote{06_01} of such functions tions can be summarized as follows: the series of terms only have meaning if -for fixed $x$- the sequence of partial sums
 
 \begin{align}
-    f_{N}(x) = sum_{n=0}^{N-1}c_{n}x^{x}
+    f_{N}(x) = \sum_{n=0}^{N-1}c_{n}x^{x}
 \end{align}
 
 has a definite limit.
@@ -22,7 +23,7 @@ has a definite limit.
 \TallC{Perhaps} the formal definitions will seem clearer after some concrete examples. We now examine some divergent an convergent series.
 
 \subsubsection{Divergent examples}
-What does it mean to say a series diverges? Consider the serices whose terms are all 1's (that is, $c_n = 1, x = 1$):
+What does it mean to say a series diverges? Consider the series whose terms are all 1's (that is, $c_n = 1, x = 1$):
 
 \begin{align}
     1 + 1 + 1 + 1 + ...
@@ -52,11 +53,12 @@ It can be shown that for large $N$, $f_{N}$ is approximately $log_{e}(N)$, so th
 Are there ever mes of infinite series that \textit{do} mean something? Obviously, or there could hardly be a theory of them! An example\sepfootnote{06_02} is $c_{n}=1, x = \frac{1}{2}$. Here the partial sums
 \begin{equation}
 \begin{aligned}
-f_{0} =& 1                               \\
-f_{1} =& 1 + \frac{1}{2}                 \\
-f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
-........&........                        \\
-\lim_{N\to\infty} f_{N} \equiv \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
+f_{0} &= 1                               \\
+f_{1} &= 1 + \frac{1}{2}                 \\
+f_{2} &= 1 + \frac{1}{2} + \frac{1}{4}   \\
+...&.....................                \\
+\lim_{N\to\infty} f_{N} &\equiv \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
+    \label{eq:06_06}
 \end{aligned}
 \end{equation}
 \textit{do} have a definite limit, so the series converges.
@@ -66,7 +68,7 @@ f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 
 As an heuristic exercise, let us write some simple programs to evaluate partial sums and see how convergence works.
 
-first we sum the terms $2^{-n}$ from Eq. 6. The flow diagram is shown in Fig. \ref{fig:06_01} below.
+first we sum the terms $2^{-n}$ from Eq. \ref{eq:06_06}. The flow diagram is shown in Fig. \ref{fig:06_01} below.
 
 %\tikzstyle{line} = [draw, -latex']
 \tikzset{%
@@ -166,14 +168,16 @@ For a second example, let us sum a standard infinite series representation for $
 
 \begin{align}
     \tan^{-1}(x) = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} - \frac{x^{7}}{7} ...
+    \label{eq:06_07}
 \end{align}
 
 Since a 45$^{\circ}$ right triangle has equal height and base, the tangent of 45$^{\circ}$ is 1 (side opposite over side adjacent). That is\sepfootnote{06_05},
 \begin{align}
     \frac{\pi}{4} \equiv \tan^{-1}(1) = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
+    \label{eq:06_08}
 \end{align}
 
-Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. \ref{fig:06_02} below.
+Actually the series Eq. \ref{eq:06_08} is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. \ref{fig:06_02} below.
 
 % Fig. 6-2 
 \begin{figure}
@@ -267,15 +271,13 @@ n = 47 4*num = Another term? Y
 The first thing we notice is that the numbers seem to be converging to \textit{something}; however, unlike the previous series, the differences between successive partial sums are fairly large.
 
 An infinite series of terms that alternate in sign and decrease in magnitude is guaranteed to converge\sepfootnote{06_08}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1}$ is not a very good way to calculate $\pi$ A better way uses \eg,
-
 \begin{align*}
     \pi = 16\tan^{-1}\left ( \frac{1}{5}\right ) - 4\tan^{-1}\left(\frac{1}{239}\right) ,
 \end{align*}
-
-, which converges much faster\sepfootnote{06_09}.
+which converges much faster\sepfootnote{06_09}.
 
 \subsubsection{The infinite sum program}
-Evaluating a function from its infinite series representation Eq. 1 provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
+Evaluating a function from its infinite series representation Eq. \ref{eq:06_01} provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
 
 \begin{lstlisting}
     BEGIN
@@ -439,12 +441,13 @@ BEHEAD' c \ hide this variahie
 \section{Transcendental equations}
 
 \TallC{A transcendental} equation has the form
-
+\begin{equation}
 f(x) = 0,
-
+    \label{eq:06_10}
+\end{equation}
 where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials\sepfootnote{06_10} (\textbf{rational} function).
 
-There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. 10 (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
+There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. \ref{eq:06_10} (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
 
 \subsection{Binary search}
 
@@ -574,20 +577,22 @@ A straight line in the x-y plane has the analytic form
 where a and b are constants. The intercept of the straight line with the x-axis is gotten by setting y = 0 and solving for x:
 
 \begin{equation}
-x' = \frac{-b}{a}
+x\,' = \frac{-b}{a}
 \end{equation}
 
 To determine a and b we use the two equations
 
 \begin{equation}
-f_L = ax_L + b
+\begin{aligned}
+f_L = ax_L + b\\
 f_R = ax_R + b
+\end{aligned}
 \end{equation}
 
 giving
 
 \begin{equation}
-a = \frac{1}{2}[f_L + f_R - \frac{f_R - f_L}{x_L + x_R} (x_L + x_R)
+    a = \frac{1}{2}\left [f_L + f_R - \frac{f_R - f_L}{x_R - x_L} \big (x_L + x_R \big )\right ]
 \end{equation}
 
 and thus
@@ -650,7 +655,7 @@ We wish to solve the first-order general differential equation
 x\dot = \frac{dx}{dt} = f(x,t)
 \end{equation}
 
-In general we can only solve Eq. 16 approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
+In general we can only solve Eq.\ref{eq:06_16} approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
 
 For example, we could expand in Taylor’s series\sepfootnote{06_11}
 
