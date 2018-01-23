@@ -268,9 +268,9 @@ The first thing we notice is that the numbers seem to be converging to \textit{s
 
 An infinite series of terms that alternate in sign and decrease in magnitude is guaranteed to converge\sepfootnote{06_08}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1}$ is not a very good way to calculate $\pi$ A better way uses \eg,
 
-\begin{align}
-    \pi = 16\tan{\frac{1}{5}}^{-1} - 4\tan{\frac{1}{239}}
-\end{align}
+\begin{align*}
+    \pi = 16\tan^{-1}\left ( \frac{1}{5}\right ) - 4\tan^{-1}\left(\frac{1}{239}\right) ,
+\end{align*}
 
 , which converges much faster\sepfootnote{06_09}.
 
@@ -567,9 +567,10 @@ approximate the curve f(x). The new guess may be much closer to the root than is
 \end{figure}
 
 A straight line in the x-y plane has the analytic form
-
-y = ax + b
-
+\begin{equation}
+    y = ax + b
+    \label{eq:06_11}
+\end{equation}
 where a and b are constants. The intercept of the straight line with the x-axis is gotten by setting y = 0 and solving for x:
 
 \begin{equation}
