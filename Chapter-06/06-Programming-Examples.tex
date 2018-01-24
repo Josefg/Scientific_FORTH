@@ -601,28 +601,51 @@ and thus
 x' = \frac{f_Rx_L - f_Lx_R}{f_R - f_L}
 \end{equation}
 
-A FORTH flow diagram for this algorithm appears in Fig. 6-5.
+A FORTH flow diagram for this algorithm appears in Fig.\ref{fig:06_05}
+%  Fig. 6-5 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2.8, 0.20) rectangle (8,-8.8);
+        \node (start) {};
+        \node [circle, draw, cross, below= of start] (cross) {};
+        \node [below=0.8 of cross] (cond) {};
+        \node [below=0.8cm of cond] (cond2) {};
+        \node [draw, below right=0.2cm of cond2, text width=1.5cm, align=center] (NO) {NO\\ $\mathrm{x_R=x'}$\\ $\mathrm{f_R=f}$\\ };
+        \node [draw, below left=0.2cm of cond2, text width=1.5cm, align=center] (YES) {YES\\ $\mathrm{x_L=x'}$\\ $\mathrm{f_L=f}$\\ };
+        \node [draw, below=2.5cm  of cond2] (equ1)  {$\mathrm{x_{old}=x'}$};
+        \node [circle, draw, dot, below=0.5cm  of equ1] (dot1)  {};
+        \node [below left=0.5cm of cond, minimum height= 0.25cm, xshift=-0.4cm, fill=gray!20]  (ext) {\textbf{DONE}};
+        \draw  (start.mid) -- (cross);
+        \draw  (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -| (ext);
+        \draw  (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (YES);
+        \draw [->] (cond2.mid) -| (NO);
+        \draw [->] (YES.south) -- ++(0,-0.5cm);
+        \draw [->] (YES.south) |- ++(0,-0.5cm) -| (equ1);
+        \draw [->] (NO.south) -- ++(0,-0.5cm);
+        \draw [->] (NO.south)  |- ++(0,-0.5cm) -| (equ1);
+        \draw [->] (equ1) -- (dot1);
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN calculate $x'$} ;
+        \node [above =0.9cm of cyc.west,anchor=west, align=left, text width=6.5cm] {
+            INITIALIZE\\
+            $\mathrm{f_L=f(x_L) \quad f_R=f(x_R)}$\\
+            $\mathrm{x_{old}=x_L}$};
+        \node [below=0.6 of cyc.west, anchor=west, align=left, xshift= 0.5cm] (body) {$\mathrm{\left | {x}' - x_{old} \right |} > error$};
+        \node [below=0.1cm of body, anchor=west, align=left, xshift=-2.0cm] {?};
+        \node [below=1.4cm of cyc.west, anchor=west, align=left] (while) {WHILE};
+        \node [below=0.5cm of while.west, anchor=west, align=left] (eq2) {$\widehat{f}=f({x}')$};
+        \node [below=0.5cm of eq2.west, anchor=west, align=left] (eq3) {$sign(\widehat{f}\;) = sign(f_L)$ ?};
+        \node [below=0.8cm of eq3.west, anchor=west, align=left, xshift= -0.2cm, yshift=0.25cm] (eq4) { IF   \hspace{1.2cm} $\mathrm{x_L=x \quad f_L=f}$};
+        \node [below=0.8cm of eq4.west, anchor=west, align=left] (eq5) { ELSE \hspace{0.5cm} $\mathrm{x_R=x \quad f_R=f}$};
+        \node [below=0.8cm of eq5.west, anchor=west, align=left] (eq6) { THEN };
+        \node [right=2.0cm of dot1] (eq7) { REPEAT };
 
-\begin{lstlisting}
-INITIALIZE
-f_L=f(x_L) f_R=f(x_R)
-x_old = X_L
-BEGIN calculate x'
-|x' - x_old| > error
-?
-WHILE
-f\hat = f(x')
-sgn(f\hat) = sgn(f_L) ?
-IF x_L = x f_L = f
+    \end{tikzpicture}
+    \caption{\textit{Regula falsi algorithm for roots of f(x)}}
+    \label{fig:06_05}
+\end{figure}
 
-ELSE x_R = x f_R = f
-
-THEN
-
-REPEAT
-\end{lstlisting}
-
-Fig. 6-5 Regula falsi algorithm for roots of f(x)
 
 The corresponding program is shown on page 132.
 
