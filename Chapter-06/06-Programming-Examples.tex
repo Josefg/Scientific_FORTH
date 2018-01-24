@@ -796,7 +796,11 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
     \label{fig:06_06}
 \end{figure}
 
-\begin{lstlisting}
+\begin{figure}
+    \tiny
+\begin{tcolorbox}[sidebyside]
+    % first column
+    \begin{lstlisting}
     \ STRAIGHT 2ND ORDER RUNGE-KUTTA
     \ SOLUTION OF FIRST-ORDER DIFEQ
     \ dx/dt = f(x,t)
@@ -820,7 +824,10 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
            IMMEDIATE
     : INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
         IS f1 H G! TMAX G! T G! X G! ;
-
+    \end{lstlisting}
+\tcblower
+    %second column
+    \begin{lstlisting}
     \ These words increment x & t.
     : inc.T     T G@ H G@ F+ T' G! ;
     : inc.X     X G@
@@ -842,11 +849,14 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
         XG@  T  G@ CR F. F. F. ;
     \ emit "t x exact”
 
-    : )RUNGE               (:cfa-- 87: x0 t0 tf h -- )
+    : )RUNGE      (:cfa-- 87: x0 t0 tf h -- )
             BEGIN DISPLAY
                     DONE? NOT
-\end{lstlisting}
-Fig. 6-7 Explicit 2nd-order Runge-Kutta solver
+    \end{lstlisting}
+\end{tcolorbox}
+    \caption{textit{Explicit 2nd-order Runge-Kutta solver}}
+\label{fig:06_07}
+\end{figure}
 
 As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
 
