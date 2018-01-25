@@ -388,7 +388,7 @@ The words E, ENUF? and CLEANUP have straightforward definitions with obvious mea
 
 Manifestly, edr.c must place the execution address ("code-field address" -- cfa) on the stack for EXECUTE to find. There are several ways to accomplish this. Clearly, we want to keep the variable that holds the cfa local, so it will not get confused with another function's cfa. While it is straightforward to define a variable and then make it headerless --hence local-- (via BEHEAD", e.g.) we would prefer to avoid defining a variable at all. Here is a perfect opportunity to use the return stack (rstack).
 
-We imagine that SUM.POWERS expects the cfa of the function $c_n$ on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be >R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R> DROP ; ).
+We imagine that SUM.POWERS expects the cfa of the function $c_n$ on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be $>$R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R$>$ DROP ; ).
 
 The revised version of SUM.POWERS is then
 \begin{lstlisting}
