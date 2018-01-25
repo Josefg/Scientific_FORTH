@@ -795,6 +795,8 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
     \caption{\textit{2nd-order Runge-Kutta for dx/dt = f(x,t)}}
     \label{fig:06_06}
 \end{figure}
+
+% Fig. 6-7.
 \begin{figure}
     \tiny
     \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
@@ -852,9 +854,9 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
             BEGIN DISPLAY
                     DONE? NOT
     \end{lstlisting}
-\end{tcolorbox}
+    \end{tcolorbox}
     \caption{textit{Explicit 2nd-order Runge-Kutta solver}}
-\label{fig:06_07}
+    \label{fig:06_07}
 \end{figure}
 
 As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
@@ -867,14 +869,78 @@ As an example of second-order Runge-Kutta in action, let us solve numerically th
 with the initial condition x(t = 0) = 0 , whose exact solution is
 
 \begin{equation}
-x(t) =log_e(1 +\frac{1}{3}t^3).
+    x(t) =log_e(1 +\frac{1}{3}t^3).
     \label{eq:06_22} 
 \end{equation}
 
-t x h. t x 1.
-Big List
-
-Fig. 6-8 Second order Runge-Kutta - results
+% Fig. 6-8 
+\begin{figure}
+    \centering
+    \begin{tabular}{l|l}
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+                .0000  & .0000  & .0000   \\
+                .10000 & .00060 & .00033  \\
+                .20000 & .00300 & .00286  \\
+                .30000 & .00946 & .00896  \\
+                .40000 & .02177 & .02111  \\
+                .50000 & .04164 & .04082  \\
+                .60000 & .07049 & .06053  \\
+                .70000 & .10934 & .10825  \\
+                .80000 & .15875 & .15757  \\
+                .90000 & .21877 & .21752  \\
+                1.0000 & .28896 & .28768  \\
+                1.1000 & .36846 & .36718  \\
+                1.2000 & .45612 & .45489  \\
+                1.3000 & .55063 & .54946  \\
+                1.4000 & .65061 & .64954  \\
+                1.5000 & .75473 & .75377  \\
+                1.6000 & .86175 & .86091  \\
+                1.7000 & .97061 & .90989  \\
+                1.8000 & 1.0803 & 1.0797  \\
+                1.9000 & 1.1902 & 1.1897  \\
+                2.0000 & 1.2906 & 1.2992  \\
+                2.1000 & 1.4080 & 1.4078  \\
+                2.2000 & 1.5151 & 1.5149  \\
+                2.2999 & 1.6206 & 1.6205  \\
+                2.3999 & 1.7242 & 1.7241  \\
+                2.4999 & 1.8258 & 1.8258  \\
+            \end{tabular}
+&
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            2.5910 & 1.9254 & 1.9256 \\ 
+            2.6999 & 2.0228 & 2.0230 \\ 
+            2.7999 & 2.1181 & 2.1183 \\ 
+            2.8999 & 2.2113 & 2.2115 \\ 
+            2.9999 & 2.3023 & 2.3025 \\ 
+            3.0999 & 2.3912 & 2.3915 \\ 
+            3.1999 & 2.4781 & 2.4784 \\ 
+            3.2999 & 2.3630 & 2.5633 \\ 
+            3.3999 & 2.6459 & 2.6462 \\ 
+            3.4999 & 2.7270 & 2.7273 \\ 
+            3.5999 & 2.8061 & 2.8086 \\ 
+            3.6999 & 2.8836 & 2.8639 \\ 
+            3.7999 & 2.9502 & 2.9596 \\ 
+            3.8999 & 3.0333 & 3.0336 \\ 
+            3.9999 & 3.1057 & 3.1080 \\ 
+            4.0999 & 3.1766 & 3.1709 \\ 
+            4.1999 & 3.2460 & 3.2463 \\ 
+            4.2999 & 3.3139 & 3.3142 \\ 
+            4.3999 & 3.3804 & 3.3808 \\ 
+            4.4999 & 3.4456 & 3.44e0 \\ 
+            4.5999 & 3.5095 & 3.5099 \\ 
+            4.6999 & 3.5722 & 3.5725 \\ 
+            4.7999 & 3.6336 & 3.6339 \\ 
+            4.8999 & 3.6939 & 3.6942 \\ 
+            4.9999 & 3.7531 & 3.7534 \\ 
+            5.0999 & 3.8111 & 3.8114 \\ 
+        \end{tabular}
+        \\
+\end{tabular}
+    \caption{textit{Second order Runge-Kutta - results}}
+    \label{fig:06_08}
+\end{figure}
 
 Thus define
 
@@ -939,8 +1005,12 @@ Now we consider the same example as previously:
 \end{lstlisting}
 
 and say
-
-\begin{lstlisting}
+% Fig. 6-10.
+\begin{figure}
+    \tiny
+    \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
+    % first column
+    \begin{lstlisting}
 USE( EXACT IS exact ok
 USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
 
@@ -960,6 +1030,10 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
     T f1 EXECUTE   ( 87:--f[x',t+h])
     H G@ F* K G! F+ F2/
      ( 87:--[k+f[x+k,t+h] ]/2)
+    \end{lstlisting}
+\tcblower
+    %second column
+    \begin{lstlisting}
     X G@ F+ ;
 
 % 3. FCONSTANT F=3
@@ -977,9 +1051,11 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 \ emit "t x exact"
 : )RUNGE (:cfa--87:x0 t0 tf h -- )
     BEGIN DISPLAY
-\end{lstlisting}
-
-Fig. 6-10 Implicit 2nd-order Runge-Kutta program
+    \end{lstlisting}
+    \end{tcolorbox}
+    \caption{textit{Implicit 2nd-order Runge-Kutta program}}
+    \label{fig:06_07}
+\end{figure}
 
 The resulting output is shown in Fig. 6-11 on page 138.
 
