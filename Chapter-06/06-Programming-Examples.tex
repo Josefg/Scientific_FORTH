@@ -451,7 +451,7 @@ There are several standard methods for finding a (or possibly, the) value of x t
 
 \subsection{Binary search}
 
-Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. 6-3 on page 128.
+Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. \ref{fig:06_03} on page \pageref{fig:06_03}.
 
 The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_AV)$ halfway between $x_L$ and $x_R$. If $f=f(x_AV)$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_AV$. If the signs are opposite, $x_AV$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
@@ -971,7 +971,7 @@ The resulting output is shown in fig. 6-8 above.
 \end{aligned}
 \end{equation}
 
-and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
+and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. \ref{fig:06_09} below. We program it\sepfootnote{06_14} as shown in Fig. \ref{fig:06_10} on page \pageref{fig:06_10} below.
 
 % Fig. 6-9 
 \begin{figure}
@@ -1057,7 +1057,7 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
     \label{fig:06_07}
 \end{figure}
 
-The resulting output is shown in Fig. 6-11 on page 138.
+The resulting output is shown in Fig. \ref{fig:06_11} on page \pageref{fig:06_11}.
 
 Clearly the implicit form is more accurate; whether the putative gain in stability justifies solving a transcendental equation is unclear, however.
 
@@ -1159,7 +1159,10 @@ USE( EXACT IS exact ok
 USE( FNB % 0. %0 % 5. % 0.1 )RUNGE ok
 \end{lstlisting}
 
-The results of doing this with straight-, and then implicit Runge-Kutta are displayed in Fig. 6-12 (p. 140) and 6-13 (p. 141), respectively. We only show the second half of the interval (near the singular point) in either case.
+The results of doing this with straight-, and then implicit Runge-Kutta are
+displayed in Fig. \ref{fig:06_12} (p. \pageref{fig:06_12}) and \ref{fig:06_13}
+(p. \pageref{fig:06_13}), respectively. We only show the second half of the
+interval (near the singular point) in either case.
 
 The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t +h)$, appears more accurate near the singularity, although both methods are acceptably accurate. Does this mean implicit Runge-Kutta is no good? No!
 
