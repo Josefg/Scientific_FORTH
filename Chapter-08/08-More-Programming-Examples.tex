@@ -1,6 +1,5 @@
+% Chapter 8
 \chapter{More Programming Examples}
-\startcontents[chapters]
-\printcontents[chapters]{}{1}{}
 
 \TallC{In} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a definite interval; determining the function of a given form that most closely fits a set of data.
 
@@ -16,35 +15,33 @@ We estimate the integral by breaking up the area into narrow
 rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
 
 \begin{equation}
-\begin{align}
-w \sum_{n=0}^{(b-a/w)} &min[f(a+nw),f(a+nw+w)] \\
-
-&\leq \int_{a}^{b}f(x) dx \\
-
-&\leq w \sum_{n=0}^{(b-a)/w} max[f(a+nw),f(a+nw+w)]
-\end{align}
+    \begin{split}
+    w \sum_{n=0}^{(b-a/w)} & min[f(a+nw),f(a+nw+w)] \\
+    & \leq \int_{a}^{b}f(x) dx \\
+    & \leq w \sum_{n=0}^{(b-a)/w} max[f(a+nw),f(a+nw+w)]
+    \end{split}
 \end{equation}
 
 It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert]$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert]$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
 
-\begin{align}
-\frac{1}{2}w(b-a) max_{a\leq x \leq b} $\lvert f'(x)\rvert]$.
-\end{align}
+\begin{equation*}
+\frac{1}{2}w(b-a) max_{a\leq x \leq b} \lvert f'(x)\rvert.
+\end{equation*}
 
 Similarly, the lower bound will be low by about the same amount. This means that if we halve $w$ (by taking twice as many points), the accuracy of the approximation will double. The mathematical definition of $\int_{a}^{b} f(x) dx$ is the number we get by taking the limit as the width $w$ of the rectangles becomes arbitrarily small. We know that such a limit exists because the actual area has been captured between lower and upper bounds that shrink together as we take more points.
 
 \subsection{The fundamental theorem of calculus}
-\TallC{Suppose} we think of $\int_{a}^{b}f(x) dx$ as a function --Call it $F(b)$-- of the upper limit, $b$. What would happen if we compared the area $F(b)$ with the area $F(b + \Delta b)$: We see that the difference between the two is (for small $\Delta b$)
+\TallC{Suppose} we think of $\int_{a}^{b}f(x) dx$ as a function --call it $F(b)$-- of the upper limit, $b$. What would happen if we compared the area $F(b)$ with the area $F(b + \Delta b)$: We see that the difference between the two is (for small $\Delta b$)
 
-\begin{align}
+\begin{equation}
 \Delta F(b) = F(b+\Delta b) - F(b) \approx f(b)\Delta b + O((\Delta b)^2) 
-\end{align}
+\end{equation}
 
 so that
 
-\begin{align}
+\begin{equation}
 F'(b) = lim_{\Delta b \to 0} \frac{1}{\Delta b} (\int_{a}^{b+\Delta b} dx - \int_{a}^{b}f(x) dx )
-\end{align}
+\end{equation}
 
 Equation 3 is a fancy way to say that integration and differentiation are \textbf{inverse operations} in the same sense as multiplication and division, or addition and subtraction.
 
@@ -52,15 +49,15 @@ This fact lets us calculate a definite integral using the differential equation 
 
 Solve the differential equation
 
-\begin{align}
+\begin{equation}
 \frac{dF}{dx} = f(x)
-\end{align}
+\end{equation}
 
 from $x = a$ to $x = b$, subject to the initial condition
 
-\begin{align}
+\begin{equation*}
 F(a) = 0.
-\end{align}
+\end{equation*}
 
 The desired integral is $F(b)$.
 
@@ -69,49 +66,51 @@ The chief disadvantage of using a differential equation solver to evaluate a def
 \subsection{Monte-Carlo method}
 \TallC{The} area under $f(x)$ is exactly equal to the average height $\bar{f}$ of $f(x)$ on the interval $[a, b]$, times the length, $b-a$, of the interval\sepfootnote{08_04}. How can we estimate $\bar{f}$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator. Then
 
-\begin{align}
+\begin{equation}
 \bar{f} \approx \frac{1}{N} \sum_{n=1}^{N} f(x_n)
-\end{align}
+\end{equation}
 
 and
-\begin{align}
+\begin{equation}
 \int_{a}^{b} f(x) dx \approx (b-a)\bar{f}
-\end{align}
+\end{equation}
 
 This random-sampling method is called the \textbf{Monte-Carlo} method (because of the element of chance).
 
 \subsubsection{Uncertainty of the Monte-Carlo method}
 The statistical notion of \textbf{variance} lets us estimate the accuracy of the Monte-Carlo method: The variance in $f(x)$ is
 
-\begin{align}
-Var(f) &= \int_{-\inf}^{+\inf} \rho(f) (f- \bar{f})^2 df \\
-&\approx \frac{1}{N} \sum_{n=1}^{N} (f(x_n) - \bar{f})^2
+\begin{equation}
+    \begin{split}
+    Var(f) &= \int_{-\inf}^{+\inf} \rho(f) (f- \bar{f})^2 df \\
+    & \approx \frac{1}{N} \sum_{n=1}^{N} (f(x_n) - \bar{f})^2
+    \end{split}
 \end{align}
 
 (here $\rho(f)df$ is the probability of measuring a value of $f$ between $f$ and $f + df$).
 
 Statistical theory says the variance in estimating \bar{f} by random sampling is
 
-\begin{align}
+\begin{equation}
 Var(\bar{f}) = \frac{1}{N} Var(f)
-\end{align}
+\end{equation}
 
 \ie, the more points we take, the better estimate of $\bar{f}$ we obtain. Hence the uncertainty in the integral will be of order
 
-\begin{align}
+\begin{equation}
 \Delta \left(int_{a}^{b}f(x)dx\right) \approx \frac{(b-a)\sqrt{Var(f)}}{\sqrt{N}}
-\end{align}
+\end{equation}
 
 and is therefore guaranteed to decrease as $\frac{1}{\sqrt{N}$}.
 
 It is easy to see that the Monte-Carlo method converges slowly.
 
-Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a rule as adding up rectangles (as in \S\ 1 \S\ \S\ 1) has an error term that decreases as $1/N$, what is Monte-Carlo good for?
+Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a rule as adding up rectangles (as in \S1\S\S1) has an error term that decreases as $1/N$, what is Monte-Carlo good for?
 
 Monte-Carlo methods come into their own for multidimensional integrals, where they are much faster than multiple one-dimensional integration subroutines based on deterministic rules.
 
 \subsubsection{A slmple Monte-Carlo program}
-Following the function protocol and naming convention developed in Ch. 6 \S\ 1 \S\ \S\ 3.2, we invoke the integration routine \textit{via}
+Following the function protocol and naming convention developed in Ch. 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
 
 \begin{lstlisting}
     USE( F.name \% L.lim \% U.lim \% err )MONTE
@@ -150,15 +149,15 @@ Fig. 8-2 \textit{Flow diagram of Monte Carlo Integration}
 
 From the flow diagram we see we have to recompute $\bar{f} and $Var(\bar{f})$ at each step. From Eq. 5 we see that
 
-\begin{align}
+\begin{equation}
 \bar{f}_{N+1} = \bar{f}_N + \frac{f(x_{N+1} - \bar{f}_{N}}{N + 1}
-\end{align}
+\end{equation}
 
 and
 
-\begin{align}
+\begin{equation}
 Var_{N+1} = Var_{N} + \frac{(f_{N+1}-\bar{f}_{N})(f_{N+1} - \bar{f}_{N+1})-Var_{N}}{N+1}
-\end{align}
+\end{equation}
 
 Writing the program is almost automatic:
 
@@ -244,10 +243,10 @@ Since there is no way to know \textit{a priori} how many times a program will ca
 
 \TallC{We} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid\sepfootnote{08_08} devised a rapid algorithm for finding the gcd\sepfootnote{08_09} which can be expressed symbolically as
 
-\begin{align}
+\begin{equation}
     gcd(u,v) = u, v= 0
-    gcd(v, u mod v) else
-\end{align}
+    gcd(u,v) (v, u mod v) else
+\end{equation}
     
 That is, the problem of finding the gcd of $u$ and $v$ can be replaced by the problem of finding the gcd of two much smaller numbers. A FORTH word that does this is\sepfootnote{08_10}
 
@@ -1048,7 +1047,13 @@ P_N(x) = \sum_{n=0}^N \gamma_n x^n
 (of order N) that I can use to fit some set of M pairs of data points,
 
 \begin{equation}
-, k=0,1, ... , M-1
+    \left \{
+      \begin{tabular}{c}
+      x_{k} \\
+      f_{k}
+      \end{tabular}
+    \right \}
+    , k=0,1, ... , M-1
 \end{equation}
 
 (with M > N) where f(x) is measured at M distinct values of the independent variable x ?
@@ -1087,46 +1092,60 @@ H_{nm} = \frac{const.}{n+m+1} ,
 
 a particularly virulent example of an exponentially \textbf{ill-conditioned matrix}. That is, the round off error in solving 36 grows exponentially with $N$, and is generally unacceptable We can avoid roundolf problems by expanding in polynomials rather than monomials:
 
-\begin{equation}
+\begin{equation}\label{eq:08_38}
+\chi^{2} = \sum_{k=0}^{M-1} (f_{k} - \sum_{n=0}^{N} \gamma_{n}p_{n}(x_{k}) )^2 \frac{1}{\sigma_{k}^{2}} .
 \end{equation}
 
 The matrix then becomes
 
-\begin{equation}
-\end{equation}
-
+\begin{subequations}
+    \begin{equation}\label{eq:08_39a}
+    A_{nm} = \sum_{k=0}^{M-1} p_{n}(x_{k})p_{m}(x_{k}) \frac{1}{\sigma_{k}^{2}}
+    \end{equation}
 and the inhomogeneous term is now
+    \begin{equation}
+    \Beta_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k} \frac{1}{\sigma_{k}^{2}}
+    \end{equation}
+\end{subequations}
 
-\begin{equation}
-\end{equation}
+\TallC{Is} there any choice of the polynomials $p_{n}(x)$ that will eliminate roundoff? The best kinds of linear equations are those with nearly diagonal matrices. We note the sum in Eq. \ref{eq:08_39a} is nearly an integral, if M is large. If we choose the polynomials so they are \textbf{orthogonal} with respect to the weight function
 
-\TallC{Is} there any choice of the polynomials $p_{n}(x)$ that will eliminate roundoff? The best kinds of linear equations are those with nearly diagonal matrices. We note the sum in Eq. 39a is nearly an integral, if M is large. If we choose the polynomials so they are \textbf{orthogonal} with respect to the weight function
-
-\begin{equation}
-\end{equation}
+\begin{equation*}
+w(x) = \frac{1}{\sigma_{k}^{2}} \theta(x_{k} - x ) \theta(x - x_{k-1}),
+\end{equation*}
 
 where
 
-\begin{equation}
-\end{equation}
+\begin{equation*}
+\theta(x) =
+    \begin{cases}
+        0, x \lt 0 \\
+        1, x \geq 0
+    \end{cases}
+\end{equation*}
 
 then $A_{nm}$, will be nearly diagonal, and well-conditioned.
 
 \TallC{Orthogonal} polynomials play an important role in numerical analysis and applied mathematics. They satisfy \textbf{orthogonality relations}\sepfootnote{08_23} of the form
 
-\begin{equation}
+\begin{equation}\label{eq:08_40}
+\int_{A}^{B} dx w(x)p_{n}(x)p_{m}(x) = \delta_{nm} \equiv 
+    \begin{cases}
+        1, m   = n \\
+        0, m \ne n 
+    \end{cases}
 \end{equation}
 
 where the \textbf{weight function} $w(x)$ is positive.
 
 For a given $w(x)$ and interval $[A,B]$, we can construct orthogonal polynomials using the \textbf{Gram-Schmidt orthogonalization} process.
 
-Denote the integral in Eq. 40 by $(p_{n}, p_[m})$ to save having to writing it many times. We start with
+Denote the integral in Eq. \ref{eq:08_40} by $(p_{n}, p_[m})$ to save having to writing it many times. We start with
 
-\begin{equation}
-p_{-1} = 0,
-p_{0}(x) = (\int_{A}^{B}dx w(x))^{-1/2} = const. ,
-\end{equation}
+\begin{align*}
+p_{-1} &= 0, \\
+p_{0}(x) &= (\int_{A}^{B}dx w(x))^{-1/2} = \text{const.} ,
+\end{align*}
 
 and assume the polynomials satisfy the 2-term upward recursion relation
 
@@ -1134,69 +1153,87 @@ and assume the polynomials satisfy the 2-term upward recursion relation
 p_{n+1}(x) = (a_{n} + xb_{n} ) p_{n}(x) + c_{n}p_{n-1}
 \end{equation}
 
-Now apply Eq. 41: assume we have calculated $p_{n}$ and p_{n-1} and want to calculate $p_{n+1}. Clearly, the orthogonality property gives
+Now apply Eq. 41: assume we have calculated $p_{n}$ and $p_{n-1}$ and want to calculate $p_{n+1}$. Clearly, the orthogonality property gives
 
 \begin{equation}
-(p_{n+1},p_{n}) = (p_{n+1},p_{n-1}) = (p_{n},p_{n-1}) = 0
+(p_{n+1},p_{n}) = (p_{n+1},p_{n-1}) = (p_{n},p_{n-1}) = 0,
 \end{equation}
 
 and the assumed normalization gives
-
-(p_{n},p_{n}) = 1
+\begin{equation}
+(p_{n},p_{n}) = 1.
+\end{equation}
 
 These relations yields two equations for the three unknowns, $a_{n}$, $b_{n}$, and $c_{n}$:
 
-\begin{equation}
-\end{equation}
+\begin{align*}
+a_{n} + b_{n} (p_n, xp_{n})   & = 0 \\
+c_{n} + b_{n} (p_n, xp_{n-1}) & = 0
+\end{align}
 
 We express $a_{n}$ and $c_{n}$, in terms of $b_{n}$, to get
 
 \begin{equation}
+p_{n+1}(x) = b_{n} \left[ (x - (p_{n}, xp_{n})) p_{n}(x) - (p_{n} , x p_{n-1})p_{n-1}(x) \right]
 \end{equation}
 
 We determine the remaining parameter $b_{n}$ by again using the normalization condition:
 
-\begin{equation}
-\end{equation}
+\begin{equation*}
+(p_{n+1} , p_{n+1}) = 1
+\end{equation*}
 
 In practice, we pretend $b_{n}=1$ and evaluate Eq. 42; then we calculate
 
 \begin{equation}
+b_{n} = ( \bar{p}_{n+1}, \bar{p}_{n})^{-1/2},
 \end{equation}
 
 multiply the (un-normalized) \bar{p}_{n+1} by $b_{n}$, and continue.
 
 The process of successive orthogonalization guarantees that $p_{n} is orthogonal to all polynomials of lesser degree in the set. Why is this so? By construction, $p_{n+1} \perp p_{n}$ and $p_{n+1}$. Is it $\perp $p_{n-2}$? We need to ask whether
 
-\begin{equation}
-\end{equation}
+\begin{equation*}
+(p_{n}, (x-a_{n})p_{n-2}) = 0.
+\end{equation*}
 
 But we know that any polynomial of degree N-l can be expressed as a linear combination of independent polynomials of degrees $0, 1, ... , N-1. Thus
 
-\begin{equation}
+\begin{equation}\label{eq:08_44}
+(x-a_{n})p_{n-2} \eqiv \sum_{k=0}^{n-1} \mu_{k}p_{k}(x)
 \end{equation}
 
-and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. 44. hence it follows (by mathematical induction) that
+and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. \ref{eq:08_44}, hence it follows (by mathematical induction) that
 
 \begin{equation}
+p_{n+1} \perp \{ p_{n-2} , p_{n-3} , ... \}.
 \end{equation}
 
 Let us illustrate the process for Legendre polynomials, defined by weight $w(x) = 1$, interval $[-1,1]:
 
-\begin{equation}
-\end{equation}
+\begin{align*}
+p_{0} & = (\frac{1}{2})^{1/2} , \\
+p_{1} & = (\frac{3}{2})^{1/2} x , \\
+p_{2} & = (\frac{5}{2})^{1/2} (\frac{3}{2}x^{2} - \frac{1}{2}) ,
+\end{align*}
 
 These are in fact the first three (normalized) Legendre polynomials, as any standard reference will confirm.
 
 \TallC{Now} we can discuss Gram polynomials. While orthogonal polynomials are usually defined with respect to an \textbf{integral} as in Eq. 40, we might also define orthogonality in terms of a \textbf{sum}, as in Eq. 39a. That is, suppose we define the polynomials such that
 
 \begin{equation}
+\sum_{k=0}^{M-1}p_{n}(x_{k})p_{m}(x_{k})\frac{1}{\delta_{k}^{2}} \equiv \delta_{nm} =
+    \begin{cases}
+        1, m   = n \\
+        0, m \ne n 
+    \end{cases}
 \end{equation}
 
 Then we can construct the Gram polynomials, calculating the
 coefficients by the algebraic steps of the Gram-Schmidt process, except now we evaluate sums rather than integrals. Since $p_{n}(x) satisfies 45 by construction, the coefficients $\gamma_{n}$, in our fitting polynomial are simply
 
 \begin{equation}
+\gamma_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k}\frac{1}{\delta_{k}^{2}} ;
 \end{equation}
 
 they can be evaluated without solving any coupled linear equations, ill-conditioned or otherwise. Roundoff error thus becomes irrelevant.
@@ -1225,74 +1262,48 @@ LOOP
 
 Fig. 8-5 \textit{Construction of Gram polynomials}
 
-The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \eqiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is 7M^{2}, which is much less than the time to
-solve M linear equations.
+The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \eqiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is $7M^{2}$, which is much less than the time to solve M linear equations.
 
 In practice, we would never wish to fit a polynomial of order comparable to the number of data, since this would include the noise as well as the significant information.
 
-We therefore calculate a statistic called zz/(degrce of freedom)“:
-With M data points and an N’th order polynomial, there are
-M-N-l degrees of freedom. That is, we evaluate Eq. 38 for fixed
-N, and divide by M-N-l. We then increase N by l and do it again
-The value of N to stop at is the one where
+We therefore calculate a statistic called $\chi^{2}$/(textit{degrce of freedom})\sepfootnote{08_24} With M data points and an N'th order polynomial, there are M-N-l degrees of freedom. That is, we evaluate Eq. \ref{08_38} for fixed N, and divide by M-N-l. We then increase N by l and do it again The value of N to stop at is the one where
 
-\begin{equation}
-\end{equation}
+\begin{equation*}
+\delta_{M,N}^{2} = \frac{\chi_{M,N}^{2}}{M-N-1}
+\end{equation*}
 
 stops decreasing (with N) and begins to increase.
-The best thing about the xfiN statistic is we can increase N without
-having to do any extra work:
 
-\begin{equation}
+The best thing about the $\chi_{M,N}^{2}$ statistic is we can increase N without having to do any extra work:
+
+\begin{equation}\label{eq:08_47}
+    \begin{split}
+        \chi_{M,N}^{2} &= \sum_{k=0}^{M-1} (f_{k} - \sum_{n} \gamma_{n}p_{n}(x_{k}))^2 w_{k} \\
+        &\equiv \sum_{k=0}^{M-1} (f_{k})^{2} - \sum_{n-0}^{N} (\gamma_{n})^2
+    \end{split}
 \end{equation}
 
-The first term after E in Eq. 47 is independent of N, and the
-second term is computed as we go. Thus we could turn the outel
-loop (over N) into a BEGIN WHILE REPEAT loop, in
+The first term after $\equiv$ E in Eq. \ref{eq:08_47} is independent of N, and the second term is computed as we go. Thus we could turn the outer loop (over N) into a \bc{BEGIN ... WHILE ... REPEAT} loop, in which N is incremented as long as $\sigma_{M,N}^{2}$ is larger than $\sigma_{M,N+1}^{2}$. (Incidentally, Eq. \ref{eq:08_47} guarantees that as we increase N the fitted curve deviates less and less, on the average, from the measured points. When $N = M-1$, in fact, the curve goes through the points. But as explained above, this is a meaningless fit, since all data contain measurement errors. A fitted curve that passes closer than $\sigma_{k}$ to more than about $\frac{1}{3}$ of the points is suspect.)
 
-which N is incremented as long as of”; is larger than 02”“ .
-(Incidentally, Eq. 47 guarantees that as we increase N the fitted
-curve deviates less and less, on the average, from the measured
-points. When N = M-l, in fact, the curve goes through the points
-But as explained above, this is a meaningless fit, since all data
-contain measurement errors. A fitted curve that passes closer
-than 0., to more than about 1/3 of the points is suspect.)
-
-The code for Gram polynomials is relatively easy to write using
-the techniques developed in Ch. 5. The program is displayed in
-full in Appendix 8.4.
-
- 
-
-24. That is, “chi-squared per degree of freedom".
+The code for Gram polynomials is relatively easy to write using the techniques developed in Ch. 5. The program is displayed in full in Appendix 8.4.
 
 \subsubsection
-\TallC{Sometimes} we must fit data by a function that depends on
-parameters in a nonlinear manner. An example is
+\TallC{Sometimes} we must fit data by a function that depends on parameters in a \textbf{nonlinear} manner. An example is
+
+\begin{equation}\label{eq:08_48}
+f_{k} \approx \frac{F}{1+e^{a(x_{k}-X)}}
+\end{equation}
+
+Although the dependence on the parameter F is linear, that on the parameters a and X is decidedly nonlinear.
+
+One way to handle a problem like fitting Eq. \ref{eq:08_48} might be to transform the data, to make the dependence on the parameters linear. In some cases this is possible, but in \ref{eq:08_48} no transformation will render linear the dependence on all three parameters at once.
+
+\TallC{Thus} we are frequently confronted with having to minimize numerically a complicated function of several parameters. Let us denote these by $\theta_{0}, \theta_{1}, ... , \theta{N-1}, and denote their possible range of variation by \textbf{R}. Then we want to find those values of $\{ \theta \} \subset$ \textbf{R} that minimize a positive function:
 
 \begin{equation}
 \end{equation}
 
-Although the dependence on the parameter F is linear, that on
-the parameters a and X is decidedly nonlinear.
-
-One way to handle a problem like fitting Eq. 48 might be to
-transform the data, to make the dependence on the parameters
-linear. In some cases this is possible, but in 48 no transformation
-will render linear the dependence on all three parameters at once.
-
-Thus we are frequently confronted with having to minimize
-
-numerically a complicated function of several parameters. Let
-us denote these by 00, 01 , , BN4 , and denote their possible
-range of variation by R. Then we want to find those values of
-{ 0}C R that minimize a positive function:
-
-\begin{equation}
-\end{equation}
-
-One way to accomplish the minimization is via calculus, using a
-method known as steepest descents. The idea is to differentiate
+One way to accomplish the minimization is via calculus, using a method known as \textbf{steepest descents}. The idea is to differentiate
 the function 12 with respect to each 0,, and to set the resulting N
 equations equal to zero, solving for the N 0’s. This is generally a
 pretty tall order, hence various approximate, iterative techniques
@@ -1305,11 +1316,7 @@ Aside fromthe labor of computing -V12, steepest descents has
 two main drawbacks: first, it only guarantees to find a minimum,
 not necessarily (In minimum -- if a function has several local
 
- 
 
-I
-
-I
 rninima, steepest descents will not necessarily find the smallest.
 Worse, consider a function that has a minimum in the form of a
 steep-sided gulley that winds slowly downhill to a declivity --
@@ -1367,11 +1374,6 @@ Fleshing out the details is a -by now-- familiar process, so we
 leave the program perse to Appendix 85. We also include there
 a FORTRAN subroutine for the simplex algorithm, taken from
 
- 
-
- 
-
- 
 
 INHIALIZE \ choose simplex? is am of param. space
 BEGIN
@@ -1399,14 +1401,10 @@ Store r' SHRINK
 
 REPEAT
 
- 
-
- 
-
-Fig. 0-3 Flow dlagram of the slmplex algorithm
+Fig. 8-8 \textit{Flow dlagram of the slmplex algorithm}
 
 
-Numerical Recipes 26, as an example of just how indecipherable
+\textit{Numerical Recipes}\sepfootnote{08_26}, as an example of just how indecipherable
 traditional languages can be.
 
 \section{Appendices}
@@ -1446,15 +1444,8 @@ integral.
 For given N Gaussian formulae can be more accurate than equally-
 spaced rules, as they have twice as many parameters to play with.
 
- 
-
-26.
 
 Some FORTH words for 5-point Gauss-Legendre integration:
-
- 
-
- 
 
 N swarm WANT ﬂ
 1. ossamroreasss FCONSTANT x1 :mm (arse--0
@@ -1467,7 +1458,7 @@ FOVERF—leFtNDERF+; Mia“ F(X)\~2F' F$+
 :reeede (a7:abx--a+b"x) F'F+; XDUP )eFNEGATEreaede
 ':F3R+(e7:abcx--a+xbc)F3RF+ F-ROT; Pot) waF' F3R+
 “2 The trapezoidal rule
-ecall (Ch. 8, §1.1) how we approximated the area under a curve
+ecall (Ch. 8, \S1.1) how we approximated the area under a curve
 Rby capturing it between rectangles consistently higher- and
 lower than the curve; and calculating the areas of the two sets of
 rectangles. In practice we use a better approximation: we average
@@ -1483,15 +1474,10 @@ Now the error is much smaller28 - of order w2 -- so if we double
 the number of points, we ecrease the error four-fold. Yet this
 so-called trapezoidal rule requires no more effort (in terms of
 the number of function evaluations) than the rectangle rule.
-27. See, eg, Abramowitz and Stegm, HMF, p.885.
-‘28. we) istheaecondderivative ofﬂx),l.e. the first derivative are).
-29. Calledaobecausetheeuwejkfisapptofimatedbystraight lineaepnentsbetweensuecessive
 
-printer": +w.‘l‘husweevaluatetheareasoftrapemidsratherthanrectangles.
 
-“3 Richardson
-In the program )INTEGRAL in Ch.8 §1§§5.3 the word INTER.
-PO LATE performs Richardson extrapolation for the trapezoid»
+\subsection{Richardson extrapolation}
+\TallC{In the program} \bc{)INTEGRAL} in Ch.8 \S1\S\S5.3 the word \bc{INTERPOLATE} performs Richardson extrapolation for the trapezoid»
 a1 "rule. The idea' is this. If we use a given rule, accurate to order
 w’I ,to calculate the integral on an interval [a,b], then presumably
 the error of using the formula on each half of the interval and
@@ -1504,7 +1490,7 @@ Thus, we can write (10 = I: , I'o = I£a+by2 , I, = ﬂaw/2 )
 \begin{equation}
 \end{equation}
 
-Equation 52b is only an approximation because the R that ap-
+Equation \ref{eq:08_52b} is only an approximation because the R that ap-
 pears in it is not exactly the same as R in Eq. 52a. We will pretend
 the two R’s are equal, however, and eliminate R from the two
 equations (8.52a,b) ending with an expression for I...“ :
@@ -1512,12 +1498,12 @@ equations (8.52a,b) ending with an expression for I...“ :
 \begin{equation}
 \end{equation}
 
-Equation 53 is exactly what appears in INTERPOLATE.
+Equation 53 is exactly what appears in \bc{INTERPOLATE}.
 
 
-us MW: Orampolynomtata
-: Here is a FORTH program for implementing the algorithm
-I derived in \S\ 2 \S\ \S\ 2 above.
+\subsection{Linear least-squares: Gram polynomials}
+Here is a FORTH program for implementing the algorithm
+I derived in \S2\S\S2 above.
 
 \begin{lstlisting}
 \         CODEed words to simplify fstack management
