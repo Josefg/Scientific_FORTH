@@ -7,13 +7,14 @@
 Frequently we must evaluate a function defined by an infinite sum
 
 \begin{align}
-    f(x) = sum_{n=0}^{\infty}c_{n}x^{n}
+    f(x) = \sum_{n=0}^{\infty}c_{n}x^{n}
+    \label{eq:06_01}
 \end{align}
 
 where $x$ is a real number and $c_n$ is an infinite sequence of coefficients. The extensive mathematical theory\sepfootnote{06_01} of such functions tions can be summarized as follows: the series of terms only have meaning if -for fixed $x$- the sequence of partial sums
 
 \begin{align}
-    f_{N}(x) = sum_{n=0}^{N-1}c_{n}x^{x}
+    f_{N}(x) = \sum_{n=0}^{N-1}c_{n}x^{x}
 \end{align}
 
 has a definite limit.
@@ -22,7 +23,7 @@ has a definite limit.
 \TallC{Perhaps} the formal definitions will seem clearer after some concrete examples. We now examine some divergent an convergent series.
 
 \subsubsection{Divergent examples}
-What does it mean to say a series diverges? Consider the serices whose terms are all 1's (that is, $c_n = 1, x = 1$):
+What does it mean to say a series diverges? Consider the series whose terms are all 1's (that is, $c_n = 1, x = 1$):
 
 \begin{align}
     1 + 1 + 1 + 1 + ...
@@ -50,15 +51,16 @@ It can be shown that for large $N$, $f_{N}$ is approximately $log_{e}(N)$, so th
 
 \subsubsection{A convergent example}
 Are there ever mes of infinite series that \textit{do} mean something? Obviously, or there could hardly be a theory of them! An example\sepfootnote{06_02} is $c_{n}=1, x = \frac{1}{2}$. Here the partial sums
-
-\begin{align}
-f_{0} =& 1                               \\
-f_{1} =& 1 + \frac{1}{2}                 \\
-f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
-........&........                        \\
-\lim_{N\to\infty} f_{N} \equiv \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
-\end{align}
-
+\begin{equation}
+\begin{aligned}
+f_{0} &= 1                               \\
+f_{1} &= 1 + \frac{1}{2}                 \\
+f_{2} &= 1 + \frac{1}{2} + \frac{1}{4}   \\
+...&.....................                \\
+\lim_{N\to\infty} f_{N} &\equiv \lim_{N\to\infty} \frac{1-(\frac{1}{2})^{N}}{1-\frac{1}{2}} = 2
+    \label{eq:06_06}
+\end{aligned}
+\end{equation}
 \textit{do} have a definite limit, so the series converges.
 
 \subsection{Numerical examples of convergent series}
@@ -66,24 +68,62 @@ f_{2} =& 1 + \frac{1}{2} + \frac{1}{4}   \\
 
 As an heuristic exercise, let us write some simple programs to evaluate partial sums and see how convergence works.
 
-first we sum the terms $2^{-n}$ from Eq. 6. The flow diagram is shown in Fig. 6-1 below.
+first we sum the terms $2^{-n}$ from Eq. \ref{eq:06_06}. The flow diagram is shown in Fig. \ref{fig:06_01} below.
 
-\begin{lstlisting}
+%\tikzstyle{line} = [draw, -latex']
+\tikzset{%
+  do path picture/.style={%
+    path picture={%
+      \pgfpointdiff{\pgfpointanchor{path picture bounding box}{south west}}%
+        {\pgfpointanchor{path picture bounding box}{north east}}%
+      \pgfgetlastxy\x\y%
+      \tikzset{x=\x/2,y=\y/2}%
+      #1
+    }
+  },
+  cross/.style={do path picture={    
+    \draw [draw, -latex', cap=round] (-1,-1) -- (1,1) (-1,1) -- (1,-1);
+  }},
+  dot/.style={do path picture={    
+    \draw [fill]  circle [radius=1]; 
+  }}
+}
+\begin{figure}
+% Fig. 6-1 
+    \begin{tikzpicture}[minimum size=0.75cm]
+        \draw (8,0.5) -- (-4, 0.5) -| (-4,-10) |- (8,-10);
+        \node (start) {};
+        \node [circle, draw, cross, below=0.5cm of start] (cross) {};
+        \node [right=of cross, xshift=-0.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west] {SET UP: \space N=0 \space SUM=1};
+        \node [below=1.5cm of cyc.west, anchor=west, align=left, text width=6cm, xshift=-0.5cm] {?CONTINUE ( 10 or more terms? )\\WHILE} ;
+        \node [below= of cross] (cond) {};
+        \node [circle, draw, cross, below= of cond] (cross2) {};
+        \node [circle, draw, dot, below=1.6cm of cross2] (dot1)  {};
+        \node [circle, draw, dot, below= of dot1] (dot2)  {};
+        \node [left=of cond] (NO) {};
+        \node [draw, fill, opacity=0.2, below= of NO, text width=1.2cm]  (ext) {};
+        \draw [->] (start) -- (cross);
+        \draw [->] (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -- (cross2);
+        \draw [->] (cross2) -- (dot1);
+        \draw [->] (dot1) -- (dot2);
+        \draw [->] (cond.mid) -- (NO.mid);
+        \draw [->] (NO.mid) -- (ext);
+        \node [right=of dot1, align=left, xshift=-0.5cm] {LOOP} ;
+        \node [right=of dot2, align=left, xshift=-0.5cm] {REPEAT} ;
 
-SETUP: N=0 SUM=1
-BEGIN
-?CONTINUE ( 10 more terms?)
-WHILE
-NO YES
-10 0 DO
-Exit 2^{-n-1} = 2^{-n} / 2
-SUM = SUM + 2^{-n-1}
-n = n + 1
-LOOP
-REPEAT
-\end{lstlisting}
-
-Fig. 6-1 \textit{Computing 2 the hard way}
+        \node [right= of cross2, align=left, xshift=-0.5cm] (lp0) {10 \space 0 \space DO} ;
+        \node [below=.5cm of lp0.mid,anchor=west, align=left, xshift=-0.3cm] (lp1) {$2^{-n-1}=2^{-n}/2$} ;
+        \node [below=.5cm of lp1.west,anchor=west, align=left] (lp2) {SUM = SUM + $2^{-n-1}$} ;
+        \node [below=.5cm of lp2.west,anchor=west, align=left] (lp3) {n = n + 1} ;
+        \node [left=.1cm of cond.south, align=left] (TYES) {YES} ;
+        \node [left=.1cm of NO.south, align=left] (TNO) {NO} ;
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+    \end{tikzpicture}
+    \caption{\textit{Computing 2 the hard way}}
+    \label{fig:06_01}
+\end{figure}
 
 The corresponding program is
 
@@ -127,31 +167,55 @@ The partial sums converge rapidly to 2 (which, as we saw in Ch. 1.1.2 above, is 
 For a second example, let us sum a standard infinite series representation for $\pi/4$: We note that the function $\tan^{-1}(x)$(that is, arctan(x) ) has the infinite series representation\sepfootnote{06_04}
 
 \begin{align}
-    \tan{x}^{-1} = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} - \frac{x^{7}}{7} ...
+    \tan^{-1}(x) = x - \frac{x^{3}}{3} + \frac{x^{5}}{5} - \frac{x^{7}}{7} ...
+    \label{eq:06_07}
 \end{align}
 
 Since a 45$^{\circ}$ right triangle has equal height and base, the tangent of 45$^{\circ}$ is 1 (side opposite over side adjacent). That is\sepfootnote{06_05},
 \begin{align}
-    \frac{\pi}{4} \equiv \tan{1}^{-1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
+    \frac{\pi}{4} \equiv \tan^{-1}(1) = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}...
+    \label{eq:06_08}
 \end{align}
 
-Actually the series Eq. 8 is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. 6-2 below.
+Actually the series Eq. \ref{eq:06_08} is slowly converging and therefore a poor way to compute $\pi$\sepfootnote{06_06}. But anyway, let us proceed. The flow diagram is now that of Fig. \ref{fig:06_02} below.
 
-\begin{lstlisting}
-SETUP: flag=1 n=1 sum=0 (--1n::--O)
+% Fig. 6-2 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2, 0.5) rectangle (10,-7);
+        \node (start) {};
+        \node [circle, draw, cross, below=0.5cm of start] (cross) {};
+        \node [below=0.5cm of cross] (cond) {};
+        \node [circle, draw, dot, below right= 4.5cm and 2cm of cross] (dot1)  {};
+        \node [left=of cond] (NO) {};
+        \node [draw, fill, opacity=0.2, below= 1.5cm of NO, text width=1.2cm,xshift=.8cm]  (ext) {};
+        \draw [->] (start.mid) -- (cross);
+        \draw [->] (cross) -- (cond.mid) -- ++(-.75, -0.75) -- (ext);
+        \draw [->] (cond.mid) -| (dot1);
+        \node [right=of dot1, align=left, xshift=-0.8cm, yshift=0.25cm] {REPEAT} ;
 
-BEGIN
-    EXHIBIT \ display n, sum
-    ?CONTINUE WHILE
-    
-    DUP S->F 1/F    ( -- fn :: -- sum 1/n )
-    SWAP FDUP FSIGN \ transfer sign
-    F+              \ sum = sum +
-    term
-    NEGATE          \ flip sign of f
-REPEAT
-\end{lstlisting}
-Fig. 6-2 \textit{Computing $\pi/4$ by the infinite series for $\tan{1}^{-1}$}
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west] {SETUP: flag=1 n=1 sum=0 ( -\phantom{}- 1 n ::-\phantom{}-0)};
+        \node [below=1.3cm of cyc.west, anchor=west, align=left, text width=6.5cm, xshift= 0.5cm] (blob) {
+            EXHIBIT \hspace{0.6cm} \textbackslash \space display n, sum \\
+            ?CONTINUE  \space \space \space WHILE \\
+                \leavevmode    \\
+            DUP S-\textgreater F  \space 1/F  \space   ( -\phantom{}- fn :: -\phantom{}- sum 1/n ) \\
+            SWAP FDUP FSIGN \textbackslash \space transfer sign\\
+        };
+        \node [below=1.7cm of blob.west, anchor=west, align=left, text width=7cm, xshift= -0.2cm] {
+            F+  
+            \hspace{3.2cm}
+            \textbackslash  \space sum = sum +\\ 
+            term\\
+            NEGATE  \hspace{2.0cm}  \textbackslash  \space flip sign of f
+        };
+    \end{tikzpicture}
+    \caption{\textit{Computing $\pi/4$ by the infinite series for $\tan^{-1}(1)$}}
+    \label{fig:06_02}
+\end{figure}
+
 
 The corresponding program is
 \begin{lstlisting}
@@ -207,15 +271,13 @@ n = 47 4*num = Another term? Y
 The first thing we notice is that the numbers seem to be converging to \textit{something}; however, unlike the previous series, the differences between successive partial sums are fairly large.
 
 An infinite series of terms that alternate in sign and decrease in magnitude is guaranteed to converge\sepfootnote{06_08}. The error (that is, the difference between a partial sum and the limit) is of the order of the first neglected term and has the same sign. We see that for this case, the error in computing $\pi$ is of order $2/n$, where $n$ is the number of terms in the sum. To get $\pi$ to 3 significant figures, therefore, we need about 1000 terms! This is why the series representation for $4\tan{1}^{-1}$ is not a very good way to calculate $\pi$ A better way uses \eg,
-
-\begin{align}
-    \pi = 16\tan{\frac{1}{5}}^{-1} - 4\tan{\frac{1}{239}}
-\end{align}
-
-, which converges much faster\sepfootnote{06_09}.
+\begin{align*}
+    \pi = 16\tan^{-1}\left ( \frac{1}{5}\right ) - 4\tan^{-1}\left(\frac{1}{239}\right) ,
+\end{align*}
+which converges much faster\sepfootnote{06_09}.
 
 \subsubsection{The infinite sum program}
-Evaluating a function from its infinite series representation Eq. 1 provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
+Evaluating a function from its infinite series representation Eq. \ref{eq:06_01} provides an illustration both of indefinite loops and of tests of floating point numbers. We anticipate a program structure something like this:
 
 \begin{lstlisting}
     BEGIN
@@ -292,7 +354,7 @@ END
 
 \subsubsection{A function protocol for FORTH}
 
-We would like to extend to FORTH FORTRAN’s ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
+We would like to extend to FORTH FORTRAN's ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming - a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
 
 We want our protocol to have several features:
 \begin{itemize}
@@ -326,7 +388,7 @@ The words E, ENUF? and CLEANUP have straightforward definitions with obvious mea
 
 Manifestly, edr.c must place the execution address ("code-field address" -- cfa) on the stack for EXECUTE to find. There are several ways to accomplish this. Clearly, we want to keep the variable that holds the cfa local, so it will not get confused with another function's cfa. While it is straightforward to define a variable and then make it headerless --hence local-- (via BEHEAD", e.g.) we would prefer to avoid defining a variable at all. Here is a perfect opportunity to use the return stack (rstack).
 
-We imagine that SUM.POWERS expects the cfa of the function $c_n$ on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be >R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R> DROP ; ).
+We imagine that SUM.POWERS expects the cfa of the function $c_n$ on the stack. Then the first thing SUM.POWERS must do is stash the cfa somewhere convenient but local. One such place is the stack itself. Even easier, since SUM.POWERS does not use the rstack explicitly (e.g. in a DO ... LOOP), is to let the first step in SUM.POWERS be $>$R. Then the code for adr.c would be merely R@. The final word, after invoking CLEAN.UP (that drops unwanted items from the various stacks), then must be RDROP (for systems without it, : RDROP R$>$ DROP ; ).
 
 The revised version of SUM.POWERS is then
 \begin{lstlisting}
@@ -379,39 +441,64 @@ BEHEAD' c \ hide this variahie
 \section{Transcendental equations}
 
 \TallC{A transcendental} equation has the form
-
+\begin{equation}
 f(x) = 0,
-
+    \label{eq:06_10}
+\end{equation}
 where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials\sepfootnote{06_10} (\textbf{rational} function).
 
-There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. 10 (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
+There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. \ref{eq:06_10} (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
 
 \subsection{Binary search}
 
-Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. 6-3 on page 128.
+Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. \ref{fig:06_03} on page \pageref{fig:06_03}.
 
 The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_AV)$ halfway between $x_L$ and $x_R$. If $f=f(x_AV)$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_AV$. If the signs are opposite, $x_AV$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
-Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. 6-3 is left as an exercise.
+Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. \ref{fig:06_03} is left as an exercise.
+%  Fig. 6-3 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2.8, 0.15) rectangle (9,-8.8);
+        \node (start) {};
+        \node [circle, draw, cross, below= of start] (cross) {};
+        \node [below=0.8 of cross] (cond) {};
+        \node [below=1.6cm of cond] (cond2) {};
+        \node [draw, below right=0.2cm of cond2, text width=1.5cm, align=center] (NO) {NO\\$x_R=x$\\$f_R=f$};
+        \node [draw, below left=0.2cm of cond2, text width=1.5cm, align=center] (YES) {YES\\$x_L=x$\\$f_L=f$};
+        \node [circle, draw, dot, below=2.8cm  of cond2] (dot1)  {};
+        \node [draw, fill, opacity=0.2, below left= of cond, text width=0.6cm, minimum height= 0.25cm, xshift=-0.4cm]  (ext) {};
+        \draw [->] (start.mid) -- (cross);
+        \draw [->] (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -| (ext);
+        \draw [->] (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (YES);
+        \draw [->] (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (NO);
+        \draw [->] (YES.south) -- ++(0,-0.5cm);
+        \draw [->] (YES.south) |- ++(0,-0.5cm) -| (dot1);
+        \draw [->] (NO.south) -- ++(0,-0.5cm);
+        \draw [->] (NO.south)  |- ++(0,-0.5cm) -| (dot1);
+        \node [below=-0.1cm of ext.south, align=left] (TEXIT) {Exit} ;
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN} ;
+        \node [above =1.0cm of cyc.west,anchor=west, align=left, text width=6.5cm] {
+            INITIALIZE\\
+            $\mathrm{f_L=f(x_L) \quad f_R=f(x_R)}$};
+        \node [below=0.5 of cyc.west, anchor=west, align=left, xshift= 0.5cm] (body) {$\mathrm{\left | x_L - x_R \right |} > error?$ };
+        \node [below= of cyc.west, anchor=west, align=left] (while) {WHILE};
+        \node [below= of while.west, anchor=west, align=left] (eq3) {$x=\frac{1}{2}\left (x_L + x_R \right )\,,\;f=f(x)$};
+        \node [below= of eq3.west, anchor=west, align=left] (eq3) {sign(f) = sign(fL)?};
+        \node [below=0.8cm of eq3.west, anchor=west, align=left, xshift= -0.2cm] (eq4) { IF   \hspace{1.2cm} $\mathrm{x_L=x \quad f_L=f}$};
+        \node [below=0.8cm of eq4.west, anchor=west, align=left] (eq5) { ELSE \hspace{0.6cm} $\mathrm{x_R=x \quad f_R=f}$};
+        \node [below=0.8cm of eq5.west, anchor=west, align=left] (eq6) { THEN };
+        \node [below=1.3cm of eq6.west, anchor=west, align=left] (eq7) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{Binary search algorithm for roots of f(x)}}
+    \label{fig:06_03}
+\end{figure}
 
-\begin{lstlisting}
-INITIALIZE
-f_L = f(x_L) f_R= f(x_r)
 
-BEGIN
 
-|x_L - x_R| > error ?
-WHILE
-x=1/2(x_L+x_R), f=f(x)
-sign(f) = sign(f_L) ?
-IF x_L =X f_L =f
-ELSE x_R =x f_R=f
-THEN
-
-REPEAT
-\end{lstlisting}
-
-Fig. 6-3 Binary search algorinn for roots of f(x)
 
 \subsection{Regula falsi}
 
@@ -420,37 +507,92 @@ Fig. 6-3 Binary search algorinn for roots of f(x)
 \begin{itemize}
     \item Assume the root lies in the interval (x1, x3, and plot a straight line between the points $(x_L, f_L)$ and $(x_R, f_R)$.
 
-    \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x’$, as our next guess.
+    \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x'$, as our next guess.
 
-    \item If $x’$ is to the left of the root, adjust the interval accordingly, an the same if $x’$ is to the right of the root.
+    \item If $x'$ is to the left of the root, adjust the interval accordingly, an the same if $x'$ is to the right of the root.
 \end{itemize}
 
-As Fig. 6-4 on page 129 shows, the straight line is supposed
+As Fig. \ref{fig:06_04} on page \pageref{fig:06_04} shows, the straight line is supposed
 approximate the curve f(x). The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
 
-Fig. 6-4 Graphical Illustration of ragula falsi
+%  Fig. 6-4 
+\begin{figure}
+    \center
+    \begin{tikzpicture}
+        \draw (-3.4, -1.8) rectangle (7.2,6.5);
+        \coordinate (O) at (0,0);
+        \draw (-3,0) -- (6,0);
+        \draw (0,-1.3) -- (0,6.2);
+        \foreach \x in {-2.4,-0.4,0.6,1.6,2.6,3.6,4.6,5.6}
+            \draw (\x cm,2pt) -- (\x cm,-0pt) node[anchor=north] {$\x$};
+        \foreach \x in {-1.9,...,5.1}
+            \draw (\x cm,1pt) -- (\x cm,-0pt);
+        \foreach \y in {-1.25,-0.5,0.75,1.75,2.75,3.75,4.75,5.75}
+            \draw (2pt,\y cm) -- (0pt,\y cm);
+        \foreach \y in {-1.25,0.75,2.75,4.75}
+            \node[anchor=east] at (0pt,\y cm) {$\y$};
+
+        \draw (2.2,0) -- ++(0,0.5);
+        \node  at (2.1,0.75) {"binary" next};
+
+        %\path[name path=x] (0.3,0.5) -- (6.7,4.7);
+        %\path[name path=y] plot[smooth] coordinates {(-0.3,2) (2,1.5) (4,2.8) (6,5)};
+        \coordinate (A) at (-2.0, -0.9);
+        \coordinate (AB) at (-0.4,+0.4);
+        \coordinate (BB) at (-1.6,1.75);
+        \coordinate (B) at (-1.4,0);
+        \coordinate (C) at (0, 1.75);
+        \coordinate (F) at (6.1, 4.75);
+        \draw[thick] (A) .. controls (AB) and (BB) .. (F); 
+        \node at (1.5,3.5) {$y=f(x)$};
+        \draw [thick,dashed] (A) -- (F);
+        \coordinate (yaxis) at (0,6);
+        \coordinate (xaxis) at (6,0);
+        \draw [->] (F) -| (xaxis -| F) node[above, yshift=0.5cm] {$x_R$};
+        \draw [->] (A) -| (xaxis -| A) node[above, yshift=0.05cm] {$x_L$};
+        \node at (-1.5, 2.2) (fa) {"falsi" next guess};
+        \draw [->] ($(fa)+(-0.8,-0.25)$) -- ++(0,-.35cm) -- (-0.7,0);
+        \node at (4.7, -1.25) (xarr) {$x\quad \xrightarrow{\hspace*{0.4cm}}$};
+        % debug and helpers
+        \iffalse
+        \draw [blue, very thick] (A) circle (0.1);
+        \draw [green, very thick] (BB) circle (0.1) node[anchor=north] {BB};
+        \draw [green, very thick] (AB) circle (0.1) node[anchor=north] {AB};
+        \draw [blue, very thick] (B) circle (0.1);
+        \draw [blue, very thick] (C) circle (0.1);
+        \draw [blue, very thick] (F) circle (0.1);
+        \draw [red](-0.8,0) -- ++(0,0.5);
+        \draw [xshift= 0.1cm, step=0.25,blue, very thick, opacity=0.2] (-2.5,-1.5) grid (6.5,6.5);
+        \fi
+    \end{tikzpicture}
+    \caption{\textit{Graphical Illustration of regula falsi}}
+    \label{fig:06_04}
+\end{figure}
 
 A straight line in the x-y plane has the analytic form
-
-y = ax + b
-
+\begin{equation}
+    y = ax + b
+    \label{eq:06_11}
+\end{equation}
 where a and b are constants. The intercept of the straight line with the x-axis is gotten by setting y = 0 and solving for x:
 
 \begin{equation}
-x' = \frac{-b}{a}
+x\,' = \frac{-b}{a}
 \end{equation}
 
 To determine a and b we use the two equations
 
 \begin{equation}
-f_L = ax_L + b
+\begin{aligned}
+f_L = ax_L + b\\
 f_R = ax_R + b
+\end{aligned}
 \end{equation}
 
 giving
 
 \begin{equation}
-a = \frac{1}{2}[f_L + f_R - \frac{f_R - f_L}{x_L + x_R} (x_L + x_R)
+    a = \frac{1}{2}\left [f_L + f_R - \frac{f_R - f_L}{x_R - x_L} \big (x_L + x_R \big )\right ]
 \end{equation}
 
 and thus
@@ -459,28 +601,51 @@ and thus
 x' = \frac{f_Rx_L - f_Lx_R}{f_R - f_L}
 \end{equation}
 
-A FORTH flow diagram for this algorithm appears in Fig. 6-5.
+A FORTH flow diagram for this algorithm appears in Fig.\ref{fig:06_05}
+%  Fig. 6-5 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-2.8, 0.20) rectangle (8,-8.8);
+        \node (start) {};
+        \node [circle, draw, cross, below= of start] (cross) {};
+        \node [below=0.8 of cross] (cond) {};
+        \node [below=0.8cm of cond] (cond2) {};
+        \node [draw, below right=0.2cm of cond2, text width=1.5cm, align=center] (NO) {NO\\ $\mathrm{x_R=x'}$\\ $\mathrm{f_R=f}$\\ };
+        \node [draw, below left=0.2cm of cond2, text width=1.5cm, align=center] (YES) {YES\\ $\mathrm{x_L=x'}$\\ $\mathrm{f_L=f}$\\ };
+        \node [draw, below=2.5cm  of cond2] (equ1)  {$\mathrm{x_{old}=x'}$};
+        \node [circle, draw, dot, below=0.5cm  of equ1] (dot1)  {};
+        \node [below left=0.5cm of cond, minimum height= 0.25cm, xshift=-0.4cm, fill=gray!20]  (ext) {\textbf{DONE}};
+        \draw  (start.mid) -- (cross);
+        \draw  (cross) -- (cond.mid);
+        \draw [->] (cond.mid) -| (ext);
+        \draw  (cond.mid) -| (cond2.mid);
+        \draw [->] (cond2.mid) -| (YES);
+        \draw [->] (cond2.mid) -| (NO);
+        \draw [->] (YES.south) -- ++(0,-0.5cm);
+        \draw [->] (YES.south) |- ++(0,-0.5cm) -| (equ1);
+        \draw [->] (NO.south) -- ++(0,-0.5cm);
+        \draw [->] (NO.south)  |- ++(0,-0.5cm) -| (equ1);
+        \draw [->] (equ1) -- (dot1);
+        \node [right=of cross, xshift= 1.5cm] (cyc) {BEGIN calculate $x'$} ;
+        \node [above =0.9cm of cyc.west,anchor=west, align=left, text width=6.5cm] {
+            INITIALIZE\\
+            $\mathrm{f_L=f(x_L) \quad f_R=f(x_R)}$\\
+            $\mathrm{x_{old}=x_L}$};
+        \node [below=0.6 of cyc.west, anchor=west, align=left, xshift= 0.5cm] (body) {$\mathrm{\left | {x}' - x_{old} \right |} > error$};
+        \node [below=0.1cm of body, anchor=west, align=left, xshift=-2.0cm] {?};
+        \node [below=1.4cm of cyc.west, anchor=west, align=left] (while) {WHILE};
+        \node [below=0.5cm of while.west, anchor=west, align=left] (eq2) {$\widehat{f}=f({x}')$};
+        \node [below=0.5cm of eq2.west, anchor=west, align=left] (eq3) {$sign(\widehat{f}\;) = sign(f_L)$ ?};
+        \node [below=0.8cm of eq3.west, anchor=west, align=left, xshift= -0.2cm, yshift=0.25cm] (eq4) { IF   \hspace{1.2cm} $\mathrm{x_L=x \quad f_L=f}$};
+        \node [below=0.8cm of eq4.west, anchor=west, align=left] (eq5) { ELSE \hspace{0.5cm} $\mathrm{x_R=x \quad f_R=f}$};
+        \node [below=0.8cm of eq5.west, anchor=west, align=left] (eq6) { THEN };
+        \node [right=2.0cm of dot1] (eq7) { REPEAT };
 
-\begin{lstlisting}
-INITIALIZE
-f_L=f(x_L) f_R=f(x_R)
-x_old = X_L
-BEGIN calculate x’
-|x' - x_old| > error
-?
-WHILE
-f\hat = f(x')
-sgn(f\hat) = sgn(f_L) ?
-IF x_L = x f_L = f
+    \end{tikzpicture}
+    \caption{\textit{Regula falsi algorithm for roots of f(x)}}
+    \label{fig:06_05}
+\end{figure}
 
-ELSE x_R = x f_R = f
-
-THEN
-
-REPEAT
-\end{lstlisting}
-
-Fig. 6-5 Regula falsi algorithm for roots of f(x)
 
 The corresponding program is shown on page 132.
 
@@ -506,19 +671,21 @@ USE( FNA % 0. % .3 % 1.E-6 )FALSI
 The display was generated by the word .FS --placed in the
 definition of APART? for debugging -- we show the top 5 of the eight 80x87 registers. The ?????? means the contents of that register are not a properly defined fp number, either because of a mistake or because nothing was stored in them after FINIT. Here, since the program is obviously working, the latter explanation is the correct one.
 
-Ordinary differential equations
-We wish to solve the first-order general differential equation
+\section{Ordinary differential equations}
+\TallC{We} wish to solve the first-order general differential equation
 
 \begin{equation}
-x\dot = \frac{dx}{dt} = f(x,t)
+    \dot{x} = \frac{dx}{dt} = f(x,t)
+    \label{eq:06_16} 
 \end{equation}
 
-In general we can only solve Eq. 16 approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments dt = h, using the differential equation itself to give us x(t+h) given x(t).
+In general we can only solve Eq.\ref{eq:06_16} approximately, starting from the value of x -- call it $x_0$ -- at some initial time $t_0$, then advancing the time by small increments $dt = h$, using the differential equation itself to give us $x(t+h)$ given $x(t)$.
 
-For example, we could expand in Taylor’s series\sepfootnote{06_11}
+For example, we could expand in Taylor's series\sepfootnote{06_11}
 
 \begin{equation}
-x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
+    x(t+h) = x(t) + h\dot{x}(t) + \frac{h^2}{2}\ddot{x}(t) + ...
+    \label{eq:06_17} 
 \end{equation}
 
 \begin{lstlisting}
@@ -573,48 +740,68 @@ and keep only the lowest order terms:
 
 \begin{equation}
 x(t+h) \approx x(t) + hf(x(t), t).
+    \label{eq:06_18} 
 \end{equation}
 
-Runge-Kutta method
+\subsection{Runge-Kutta method}
 
 One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms\sepfootnote{06_12}. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be $O(h^n)$. The second order Runge-Kutta algorithm is $(x' \equiv x(t+h) , x \equiv x(t) )$
 
 \begin{equation}
-k = hf(x,t)
-x' = x + \frac{1}{2}(k + hf(x+k, t+h)) + O(h^3).
+\begin{aligned}
+    k &= hf(x,t) \\
+    x' &= x + \frac{1}{2}\big(k + hf(x+k, t+h)\big) + O(h^3).
+    \label{eq:06_19} 
+\end{aligned}
 \end{equation}
 
 How does this work? Clearly,
 
 \begin{equation}
-k + hf(x+k,t+h) \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x}
-\equiv 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+\begin{aligned}
+    k + hf(x+k,t+h) & \approx hf(x,t) + hf(x,t) + h^2\frac{\partial f}{\partial t} + hk \frac{\partial f}{\partial x} \\
+    & \equiv 2h\dot{x}(t) + h^2\ddot{x}(t) + O(h^3)
+    \label{eq:06_20} 
+\end{aligned}
 \end{equation}
 
-Substituting 19 in 20 we now find
+Substituting \ref{eq:06_19} in \ref{eq:06_20} we now find
 
-\begin{equation}
-x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
-\end{equation}
+\begin{equation*}
+    x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
+\end{equation*}
+that is, the Runge-Kutta x' agrees with the Taylor's series expansion \ref{eq:06_17}, to $O(h^3)$.
 
-that is, the Runge-Kutta x' agrees with the Taylor's series expansion 17, to $O(h^3)$.
+The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} below. We express the algorithm in FORTH as shown in Fig.  \ref{fig:06_07} on page \pageref{fig:06_07} below.
 
-The flow chart of second-order Runge-Kutta is shown in Fig. 6.6 below. We express the algorithm in FORTH as shown in Fig. 6-7 on page 134 below.
+% Fig. 6-6 
+\begin{figure}
+    \center
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-3.0, 0.5) rectangle (6.5,-4.0);
+        \node (start) {};
+        \node [circle, cross, draw, below=0.6cm of start] (crc) {};
+        \node [circle, draw, dot, below=1.5cm of crc] (dot1)  {};
+        \draw [->] (start.mid) -- (crc);
+        \draw [->] (crc) -- (dot1);
+        \node [right=of start.west] (txtstart) {)RUNGE} ;
+        \node [below=0.4cm of txtstart.west, anchor=west, xshift= 0.5cm] (cyc) {INITIALIZE:\space get h, tf, t0, x0} ;
+        \node [right= of crc.west, anchor=west, align=left] (while) {BEGIN DISPLAY};
+        \node [below=0.40cm of while.west, anchor=west, align=left, xshift=0.25cm] (bdy) {DONE? NOT};
+        \node [below=0.8cm of while.west, anchor=west, align=left] (w2) {WHILE};
+        \node [below=1.2cm of while.west, anchor=west, align=left, xshift=0.25cm] (eq3) {STEP};
+        \node [below=1.6cm of while.west, anchor=west, align=left] (rpt) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{2nd-order Runge-Kutta for dx/dt = f(x,t)}}
+    \label{fig:06_06}
+\end{figure}
 
-\begin{lstlisting}
-)RUNGE
-INITIALIZE: get h, tf, t0, x0
-
-BEGIN DISPLAY
-    DONE? NOT
-WHILE
-    STEP
-REPEAT
-\begin{lstlisting}
-
-Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
-
-\begin{lstlisting}
+% Fig. 6-7.
+\begin{figure}
+    \tiny
+    \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
+    % first column
+    \begin{lstlisting}
     \ STRAIGHT 2ND ORDER RUNGE-KUTTA
     \ SOLUTION OF FIRST-ORDER DIFEQ
     \ dx/dt = f(x,t)
@@ -638,7 +825,10 @@ Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
            IMMEDIATE
     : INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
         IS f1 H G! TMAX G! T G! X G! ;
-
+    \end{lstlisting}
+\tcblower
+    %second column
+    \begin{lstlisting}
     \ These words increment x & t.
     : inc.T     T G@ H G@ F+ T' G! ;
     : inc.X     X G@
@@ -660,28 +850,97 @@ Fig. 6-6 2nd-order Runge-Kutta for dx/dt = f(x,t)
         XG@  T  G@ CR F. F. F. ;
     \ emit "t x exact”
 
-    : )RUNGE               (:cfa-- 87: x0 t0 tf h -- )
+    : )RUNGE      (:cfa-- 87: x0 t0 tf h -- )
             BEGIN DISPLAY
                     DONE? NOT
-\end{lstlisting}
-Fig. 6-7 Explicit 2nd-order Runge-Kutta solver
+    \end{lstlisting}
+    \end{tcolorbox}
+    \caption{textit{Explicit 2nd-order Runge-Kutta solver}}
+    \label{fig:06_07}
+\end{figure}
 
 As an example of second-order Runge-Kutta in action, let us solve numerically the equation ,
 
 \begin{equation}
-\dot{x} = t^2 e^-x
+    \dot{x} = t^2 e^{-x}
+    \label{eq:06_21} 
 \end{equation}
 
 with the initial condition x(t = 0) = 0 , whose exact solution is
 
 \begin{equation}
-x(t) =log_e(1 +\frac{1}{3}t^3).
+    x(t) =log_e(1 +\frac{1}{3}t^3).
+    \label{eq:06_22} 
 \end{equation}
 
-t x h. t x 1.
-Big List
-
-Fig. 6-8 Second order Runge-Kutta - results
+% Fig. 6-8 
+\begin{figure}
+    \centering
+    \begin{tabular}{l|l}
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+                .0000  & .0000  & .0000   \\
+                .10000 & .00060 & .00033  \\
+                .20000 & .00300 & .00286  \\
+                .30000 & .00946 & .00896  \\
+                .40000 & .02177 & .02111  \\
+                .50000 & .04164 & .04082  \\
+                .60000 & .07049 & .06053  \\
+                .70000 & .10934 & .10825  \\
+                .80000 & .15875 & .15757  \\
+                .90000 & .21877 & .21752  \\
+                1.0000 & .28896 & .28768  \\
+                1.1000 & .36846 & .36718  \\
+                1.2000 & .45612 & .45489  \\
+                1.3000 & .55063 & .54946  \\
+                1.4000 & .65061 & .64954  \\
+                1.5000 & .75473 & .75377  \\
+                1.6000 & .86175 & .86091  \\
+                1.7000 & .97061 & .90989  \\
+                1.8000 & 1.0803 & 1.0797  \\
+                1.9000 & 1.1902 & 1.1897  \\
+                2.0000 & 1.2906 & 1.2992  \\
+                2.1000 & 1.4080 & 1.4078  \\
+                2.2000 & 1.5151 & 1.5149  \\
+                2.2999 & 1.6206 & 1.6205  \\
+                2.3999 & 1.7242 & 1.7241  \\
+                2.4999 & 1.8258 & 1.8258  \\
+            \end{tabular}
+&
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            2.5910 & 1.9254 & 1.9256 \\ 
+            2.6999 & 2.0228 & 2.0230 \\ 
+            2.7999 & 2.1181 & 2.1183 \\ 
+            2.8999 & 2.2113 & 2.2115 \\ 
+            2.9999 & 2.3023 & 2.3025 \\ 
+            3.0999 & 2.3912 & 2.3915 \\ 
+            3.1999 & 2.4781 & 2.4784 \\ 
+            3.2999 & 2.3630 & 2.5633 \\ 
+            3.3999 & 2.6459 & 2.6462 \\ 
+            3.4999 & 2.7270 & 2.7273 \\ 
+            3.5999 & 2.8061 & 2.8086 \\ 
+            3.6999 & 2.8836 & 2.8639 \\ 
+            3.7999 & 2.9502 & 2.9596 \\ 
+            3.8999 & 3.0333 & 3.0336 \\ 
+            3.9999 & 3.1057 & 3.1080 \\ 
+            4.0999 & 3.1766 & 3.1709 \\ 
+            4.1999 & 3.2460 & 3.2463 \\ 
+            4.2999 & 3.3139 & 3.3142 \\ 
+            4.3999 & 3.3804 & 3.3808 \\ 
+            4.4999 & 3.4456 & 3.44e0 \\ 
+            4.5999 & 3.5095 & 3.5099 \\ 
+            4.6999 & 3.5722 & 3.5725 \\ 
+            4.7999 & 3.6336 & 3.6339 \\ 
+            4.8999 & 3.6939 & 3.6942 \\ 
+            4.9999 & 3.7531 & 3.7534 \\ 
+            5.0999 & 3.8111 & 3.8114 \\ 
+        \end{tabular}
+        \\
+\end{tabular}
+    \caption{textit{Second order Runge-Kutta - results}}
+    \label{fig:06_08}
+\end{figure}
 
 Thus define
 
@@ -702,26 +961,39 @@ USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
 The resulting output is shown in fig. 6-8 above.
 
 \subsection{An implicit Runge-Kutta formula}
-\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose x + k were replaced by x’:
+\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose $x + k$ were replaced by $x'$:
 
 \begin{equation}
-k = hf(x,t)
-x’ = x + \frac{1}{2}(k + hf(x',t+h)) + O(h^3)
+\begin{aligned}
+    k &= hf(x,t)\\
+    x' &= x + \frac{1}{2}\big(k + hf(x',t+h)\big) + O(h^3)
+    \label{eq:06_23} 
+\end{aligned}
 \end{equation}
 
-and the resulting (transcendental) equation solved for x’ by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. 6-9 below. We program it\sepfootnote{06_14} as shown in Fig. 6-10 on page 137 below.
+and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. \ref{fig:06_09} below. We program it\sepfootnote{06_14} as shown in Fig. \ref{fig:06_10} on page \pageref{fig:06_10} below.
 
-)RUNGE
-  INITIALIZE: get h, tf, t0, x0
-
-  BEGIN DISPLAY
-   DONE? NOT
-  WHILE
-   k=hf(x,t)
-    SOLVE: x' = x + k/2 +hf(x’,t+h)/2
-  REPEAT
-
-Fig. 6-9 2nd-order implicit Runge-Kutta for dx/dt = f(x,t)
+% Fig. 6-9 
+\begin{figure}
+    \begin{tikzpicture}[minimum size=0.5cm]
+        \draw (-1.5, 0.5) rectangle (9,-4.0);
+        \node (start) {};
+        \node [circle, draw, below= of start] (crc) {};
+        \node [circle, draw, dot, below=1.5cm of crc] (dot1)  {};
+        \draw [->] (start.mid) -- (crc);
+        \draw [->] (crc) -- (dot1);
+        \node [right=of start.west] (txtstart) {)RUNGE} ;
+        \node [below=0.25cm of txtstart, anchor=west, xshift=-0.5cm] (cyc) {INITIALIZE:\space get h, tf, t0, x0} ;
+        \node [right= of crc.west, anchor=west, align=left] (while) {BEGIN DISPLAY};
+        \node [below=0.40cm of while.west, anchor=west, align=left, xshift=0.25cm] (bdy) {DONE? NOT};
+        \node [below=0.8cm of while.west, anchor=west, align=left] (w2) {WHILE};
+        \node [below=1.2cm of while.west, anchor=west, align=left, xshift=0.25cm] (eq3) {k=hf(x,t)};
+        \node [below=0.40cm of eq3.west, anchor=west, align=left, xshift=0.15cm] (eq4) {SOLVE: \space x' = x + k/2 + hf(x',t+h)/2};
+        \node [right= of dot1.west, anchor=west, align=left] (rpt) { REPEAT };
+    \end{tikzpicture}
+    \caption{\textit{2nd-order implicit Runge-Kutta for dx/dt = f(x,t)}}
+    \label{fig:06_09}
+\end{figure}
 
 Now we consider the same example as previously:
 
@@ -733,8 +1005,12 @@ Now we consider the same example as previously:
 \end{lstlisting}
 
 and say
-
-\begin{lstlisting}
+% Fig. 6-10.
+\begin{figure}
+    \tiny
+    \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
+    % first column
+    \begin{lstlisting}
 USE( EXACT IS exact ok
 USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
 
@@ -750,10 +1026,14 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
     T f1 EXECUTE   ( 87:--f[x,t])
     H G@ F* K G! ; ( 87:--k=hf(x,t)
 
-: X" ( 87:x'--g[x’])
+: X" ( 87:x'--g[x'])
     T f1 EXECUTE   ( 87:--f[x',t+h])
     H G@ F* K G! F+ F2/
      ( 87:--[k+f[x+k,t+h] ]/2)
+    \end{lstlisting}
+\tcblower
+    %second column
+    \begin{lstlisting}
     X G@ F+ ;
 
 % 3. FCONSTANT F=3
@@ -762,7 +1042,7 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 
 : X' USE( X" INTERVAL % 1.E-6
        )FALSI ;
-: inc.X k X’ X G! T' G@ T G! ;
+: inc.X k X' X G! T' G@ T G! ;
 : DONE? T G@ TMAX G@ F> ;
       (:--f)
 0 VAR exact         \ cfa
@@ -771,18 +1051,85 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 \ emit "t x exact"
 : )RUNGE (:cfa--87:x0 t0 tf h -- )
     BEGIN DISPLAY
-\end{lstlisting}
+    \end{lstlisting}
+    \end{tcolorbox}
+    \caption{textit{Implicit 2nd-order Runge-Kutta program}}
+    \label{fig:06_07}
+\end{figure}
 
-Fig. 6-10 Implicit 2nd-order Runge-Kutta program
-
-The resulting output is shown in Fig. 6-11 on page 138.
+The resulting output is shown in Fig. \ref{fig:06_11} on page \pageref{fig:06_11}.
 
 Clearly the implicit form is more accurate; whether the putative gain in stability justifies solving a transcendental equation is unclear, however.
 
-$t X X_ex t X X_ex$
-Big List
-
-Fig. 6-11 Second order implicit Runge-Kutta - results
+% Fig. 6-11 
+\begin{figure}
+    %\tiny
+    \centering
+    \begin{tabular}{l|l}
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            .00000 & .00000 & .00000 \\
+            .10000 & .00050 & .00033 \\
+            .20000 & .00299 & .00266 \\
+            .30000 & .00945 & .00896 \\
+            .40000 & .02173 & .02111 \\
+            .50000 & .04155 & .04082 \\
+            .60000 & .07032 & .06953 \\
+            .70000 & .10906 & .10825 \\
+            .80000 & .15834 & .15757 \\
+            .90000 & .21822 & .21752 \\
+            1.0000 & .28825 & .28768 \\
+            1.1000 & .36762 & .36718 \\
+            1.2000 & .45518 & .45489 \\
+            1.3000 & .54962 & .54946 \\
+            1.4000 & .64958 & .64954 \\
+            1.5000 & .75370 & .75377 \\
+            1.6000 & .86077 & .86091 \\
+            1.7000 & .96969 & .96989 \\
+            1.8000 & 1.0795 & 1.0797 \\
+            1.9000 & 1.1895 & 1.1897 \\
+            2.0000 & 1.2990 & 1.2992 \\
+            2.1000 & 1.4075 & 1.4078 \\
+            2.2000 & 1.5147 & 1.5149 \\
+            2.2999 & 1.6202 & 1.6205 \\
+            2.3999 & 1.7239 & 1.7241 \\
+            2.4999 & 1.8256 & 1.8258 \\
+        \end{tabular}
+        &
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            2.5999 & 1.9253 & 1.9255 \\
+            2.0999 & 2.0228 & 2.0230 \\
+            2.7999 & 2.1181 & 2.1183 \\
+            2.8099 & 2.2113 & 2.2115 \\
+            2.9999 & 2.3024 & 2.3025 \\
+            3.0999 & 2.3914 & 2.3915 \\
+            3.1999 & 2.4783 & 2.4784 \\
+            3.2999 & 2.5632 & 2.5633 \\
+            3.3999 & 2.6461 & 2.6462 \\
+            3.4999 & 2.7272 & 2.7273 \\
+            3.5999 & 2.8064 & 2.8065 \\
+            3.6999 & 2.8838 & 2.8839 \\
+            3.7999 & 2.9595 & 2.9596 \\
+            3.8999 & 3.0336 & 3.0336 \\
+            3.9999 & 3.1060 & 3.1060 \\
+            4.0999 & 3.1769 & 3.1769 \\
+            4.1999 & 3.2463 & 3.2463 \\
+            4.2999 & 3.3142 & 3.3142 \\
+            4.3999 & 3.3808 & 3.3808 \\
+            4.4999 & 3.4460 & 3.4460 \\
+            4.5999 & 3.5099 & 3.5099 \\
+            4.6999 & 3.5725 & 3.5725 \\
+            4.7999 & 3.6340 & 3.6339 \\
+            4.8999 & 3.6942 & 3.6942 \\
+            4.9999 & 3.7534 & 3.7534 \\
+            5.0999 & 3.8114 & 3.8114 \\
+        \end{tabular}
+        \\
+    \end{tabular}
+    \caption{\textit{Second order implicitflunge-Kutta - resultst}}
+    \label{fig:06_11}
+\end{figure}
 
 Let us now compare the two algorithms for functions f(x,t) that lead to singular solutions. This time we consider the equation
 
@@ -812,15 +1159,194 @@ USE( EXACT IS exact ok
 USE( FNB % 0. %0 % 5. % 0.1 )RUNGE ok
 \end{lstlisting}
 
-The results of doing this with straight-, and then implicit Runge-Kutta are displayed in Fig. 6-12 (p. 140) and 6-13 (p. 141), respectively. We only show the second half of the interval (near the singular point) in either case.
+The results of doing this with straight-, and then implicit Runge-Kutta are
+displayed in Fig. \ref{fig:06_12} (p. \pageref{fig:06_12}) and \ref{fig:06_13}
+(p. \pageref{fig:06_13}), respectively. We only show the second half of the
+interval (near the singular point) in either case.
 
 The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t +h)$, appears more accurate near the singularity, although both methods are acceptably accurate. Does this mean implicit Runge-Kutta is no good? No!
 
-The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method’s power, we must increase the precision beyond one part in $10^{6}$. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
+The implicit scheme lost accuracy through roundoff: the arithmetic was insufficiently precise. To take advantage of the method's power, we must increase the precision beyond one part in $10^{6}$. This requires changing all scalars to 64-bit precision (\regc{REAL*8}) rather than 32-bit as we have done here. The generic fetch/store techniques developed in Chapter 5 and used here, permit this change with a minimum of fuss. We leave this as an exercise.
 
-$t X X_EX t X X_EX$
-Big list
+% Fig. 6-12 
+\begin{figure}
+    %\tiny
+    \centering
+    \begin{tabular}{l|l}
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            .71999 & .13287 & .13286 \\  
+            .72999 & .13899 & .13888 \\  
+            .73999 & .14512 & .14511 \\  
+            .74999 & .15156 & .15154 \\  
+            .75999 & .15821 & .15820 \\  
+            .76999 & .16509 & .16508 \\  
+            .77999 & .17220 & .17219 \\  
+            .78999 & .17955 & .17964 \\  
+            .79999 & .18714 & .18713 \\  
+            .93999 & .19499 & .19497 \\  
+            .81999 & .20309 & .20308 \\  
+            .82999 & .21147 & .21145 \\  
+            .83999 & .22012 & .22010 \\  
+            .84999 & .22906 & .22904 \\  
+            .85999 & .23829 & .23828 \\  
+            .86939 & .24783 & .24782 \\  
+            .87999 & .25769 & .25767 \\  
+            .88999 & .26788 & .26786 \\  
+            .89999 & .27841 & .27839 \\  
+            .90999 & .28928 & .28926 \\  
+            .91999 & .30053 & .30051 \\  
+            .92999 & .31215 & .31213 \\  
+            .93999 & .32417 & .32415 \\  
+            .94999 & .33660 & .33657 \\  
+            .95999 & .34945 & .34943 \\  
+            .96999 & .36274 & .36272 \\  
+            .97999 & .37650 & .37648 \\  
+            .98999 & .39074 & .39072 \\  
+            .99999 & .40548 & .40546 \\  
+            1.0099 & .42075 & .42073 \\  
+            1.0199 & .43656 & .43654 \\  
+            1.0299 & .45295 & .45293 \\  
+            1.0399 & .46995 & .46993 \\  
+            1.0499 & .48757 & .48755 \\  
+            1.0599 & .50586 & .50584 \\  
+            1.0699 & .52485 & .52483 \\  
+            1.0799 & .54458 & .54456 \\ 
+        \end{tabular}
+        &
+        \begin{tabular}{ccc}
+            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            1.0899 & .56508 & .56506 \\
+            1.0999 & .58640 & .50938 \\
+            1.1099 & .60880 & .60857 \\
+            1.1199 & .63171 & .63189 \\
+            1.1299 & .65580 & .66578 \\
+            1.1399 & .69093 & .68091 \\
+            1.1499 & .70718 & .70715 \\
+            1.1599 & .73461 & .73458 \\
+            1.1699 & .76331 & .76329 \\
+            1.1799 & .79337 & .79335 \\
+            1.1899 & .82491 & .82489 \\
+            1.1999 & .85803 & .85801 \\
+            1.2099 & .83287 & .89296 \\
+            1.2199 & .92959 & .92958 \\
+            1.2299 & .96834 & .96834 \\
+            1.2393 & 1.0093 & 1.0093 \\
+            1.2499 & 1.0527 & 1.0527 \\
+            1.2599 & 1.0989 & 1.0989 \\
+            1.2699 & 1.1481 & 1.1482 \\
+            1.2799 & 1.2007 & 1.2008 \\
+            1.2899 & 1.2571 & 1.2572 \\
+            1.2999 & 1.3179 & 1.3180 \\
+            1.3099 & 1.3836 & 1.3837 \\
+            1.3199 & 1.4550 & 1.4552 \\
+            1.3299 & 1.5332 & 1.5334 \\
+            1.3399 & 1.6193 & 1.6196 \\
+            1.3499 & 1.7151 & 1.7154 \\
+            1.3599 & 1.8226 & 1.8231 \\
+            1.3699 & 1.9449 & 1.9457 \\
+            1.3799 & 2.0865 & 2.0876 \\
+            1.3899 & 2.2539 & 2.2557 \\
+            1.3999 & 2.4581 & 2.4611 \\
+            1.4099 & 2.7187 & 2.7242 \\
+            1.4199 & 3.0760 & 3.0884 \\
+            1.4299 & 3.1076 & 3.6782 \\
+            1.4399 & 4.8831 & 5.3657 \\
+            & & \\
+        \end{tabular}
+        \\
+    \end{tabular}
+    \caption{\textit{Straight Runge-Kulta for singular case}}
+    \label{fig:06_12}
+\end{figure}
 
-Fig. 6-12 \textit{Straight Runge-Kutta for singular case}
+% Fig. 6-13 
+\begin{figure}
+    %\tiny
+    \centering
+    \begin{tabular}{l|l}
+        \begin{tabular}{ccc}
+            t &  x  & $x_{ex}$ \\
+            .71999 & .13268 & .13268 \\
+            .72999 & .13800 & .13888 \\
+            .73999 & .14613 & .14611 \\
+            .74999 & .15158 & .15154 \\
+            .75999 & .15822 & .15820 \\
+            .76999 & .10510 & .16506 \\
+            .77999 & .17221 & .17219 \\
+            .78999 & .17956 & .17954 \\
+            .79999 & .18715 & .18713 \\
+            .80099 & .19500 & .19407 \\
+            .81000 & .20310 & .20308 \\
+            .82909 & .21148 & .21146 \\
+            .83999 & .22013 & .22010 \\
+            .84999 & .22907 & .22904 \\
+            .85999 & .23831 & .23828 \\
+            .86999 & .24785 & .24782 \\
+            .87999 & .25771 & .25767 \\
+            .88999 & .26789 & .26786 \\
+            .89999 & .27842 & .27839 \\
+            .90999 & .28933 & .28926 \\
+            .91999 & .30055 & .30051 \\
+            .92999 & .31217 & .31213 \\
+            .93999 & .32419 & .32415 \\
+            .94999 & .33662 & .33667 \\
+            .95909 & .34947 & .34943 \\
+            .96999 & .36277 & .36272 \\
+            .97999 & .37663 & .37648 \\
+            .98999 & .39077 & .39072 \\
+            .99999 & .40551 & .40546 \\
+            1.0099 & .42078 & .42073 \\
+            1.0199 & .43660 & .43654 \\
+            1.0299 & .45300 & .45293 \\
+            1.0399 & .46999 & .46993 \\
+            1.0499 & .48762 & .48755 \\
+            1.0599 & .50592 & .50584 \\
+            1.0609 & .52491 & .52483 \\
+        \end{tabular}
+        &
+        \begin{tabular}{ccc}
+            t &  x  & $x_{ex}$ \\
+            1.0799 & .54464 & .54458 \\
+            1.0899 & .58615 & .56508 \\
+            1.0999 & .58848 & .58038 \\
+            1.1099 & .60808 & .60867 \\
+            1.1199 & .63180 & .63169 \\
+            1.1299 & .65590 & .66578 \\
+            1.1399 & .68104 & .68091 \\
+            1.1409 & .70729 & .70715 \\
+            1.1599 & .73473 & .73458 \\
+            1.1699 & .76346 & .76329 \\
+            1.1799 & .79353 & .79336 \\
+            1.1899 & .82508 & .82489 \\
+            1.1999 & .85822 & .85831 \\
+            1.2099 & .89309 & .89288 \\
+            1.2199 & .92983 & .92968 \\
+            1.2299 & .96861 & .96834 \\
+            1.2399 & 1.0098 & 1.0093 \\
+            1.2499 & 1.0531 & 1.0627 \\
+            1.2599 & 1.0993 & 1.0989 \\
+            1.2699 & 1.1486 & 1.1482 \\
+            1.2799 & 1.2013 & 1.2C08 \\
+            1.2899 & 1.2578 & 1.2572 \\
+            1.2999 & 1.3186 & 1.3180 \\
+            1.3099 & 1.3845 & 1.3837 \\
+            1.3199 & 1.4561 & 1.4552 \\
+            1.3299 & 1.5345 & 1.5334 \\
+            1.3399 & 1.6209 & 1.6196 \\
+            1.3499 & 1.7171 & 1.7154 \\
+            1.3599 & 1.8252 & 1.8231 \\
+            1.3699 & 1.9485 & 1.9457 \\
+            1.3799 & 2.0914 & 2.0876 \\
+            1.3899 & 2.2612 & 2.2557 \\
+            1.3999 & 2.4698 & 2.4611 \\
+            1.4099 & 2.7395 & 2.7242 \\
+            1.4199 & 3.1222 & 3.0884 \\
+            1.4299 & 3.8149 & 3.6782 \\
+        \end{tabular}
+        \\
+    \end{tabular}
+    \caption{\textit{Implicit Runge-Kutta for singular case }}
+    \label{fig:06_13}
+\end{figure}
 
-Fig. 6-13 \textit{Implicit Range-Kym for singular case}
