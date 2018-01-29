@@ -309,13 +309,18 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{08_13}{For generality we do not specify the integration rule for sub-intervals, but factor it into its own word. If we want to change the rule, we then need redeﬁne but one component (actually two, since the Richardson extrapolation --see Appendix 8.C-- needs to be changed also).}
 
-\sepfootnotecontent{08_14}{We may deﬁne \bc{RECURSE} (in reverse order) as
+% 08_14 footnote code box
+\begin{lrbox}{\LstBox}
 \begin{lstlisting}
     : RECURSE ?COMP LAST-CFA , ;
-    : ?COMP STATE @ 0= ABORT" Compile only!" ;
+    : ?COMP STATE  0= ABORT" Compile only!" ;
     : LAST-CFA LATEST PFA CFA ; IMMEDIATE
     \ These defintions are appropriate for HS/FORTH
 \end{lstlisting}
+\end{lrbox}
+
+\sepfootnotecontent{08_14}{We may deﬁne \bc{RECURSE} (in reverse order) as
+\usebox{\LstBox}
 Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}

@@ -25,8 +25,11 @@
     %\lstset{escapeinside={(*@}{@*)} , % allow footnote in listing
            % basicstyle=\ttfamily %, mathescape
            %}
-    \lstset{escapeinside={(*}{*)}
-}
+    \lstset{escapeinside={(*}{*)} }
+
+% Create box for code in footnote 08_14
+\newsavebox{\LstBox}
+    
 \newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
 \newcommand{\regc}[1]{\lstinline{#1}}
 % For code in paragraphs use \lstinline$word$
@@ -163,9 +166,9 @@
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
     % \include{Chapter-04/04-The-80x87-Family}
 %     \include{Chapter-05/05-Scientific-Data-Structures}
-     \include{Chapter-06/06-Programming-Examples}
+     % \include{Chapter-06/06-Programming-Examples}
     % \include{Chapter-07/07-Complex-arithmetic-in-FORTH}
-    % \include{Chapter-08/08-More-Programming-Examples}
+     \include{Chapter-08/08-More-Programming-Examples}
     % \include{Chapter-09/09-Linear-Algebra}
     % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
     % \include{Chapter-11/11-Symbolic-Programming}

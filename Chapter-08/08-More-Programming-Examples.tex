@@ -85,11 +85,11 @@ The statistical notion of \textbf{variance} lets us estimate the accuracy of the
     Var(f) &= \int_{-\inf}^{+\inf} \rho(f) (f- \bar{f})^2 df \\
     & \approx \frac{1}{N} \sum_{n=1}^{N} (f(x_n) - \bar{f})^2
     \end{split}
-\end{align}
+\end{equation}
 
 (here $\rho(f)df$ is the probability of measuring a value of $f$ between $f$ and $f + df$).
 
-Statistical theory says the variance in estimating \bar{f} by random sampling is
+Statistical theory says the variance in estimating $\bar{f}$ by random sampling is
 
 \begin{equation}
 Var(\bar{f}) = \frac{1}{N} Var(f)
@@ -101,7 +101,7 @@ Var(\bar{f}) = \frac{1}{N} Var(f)
 \Delta \left(int_{a}^{b}f(x)dx\right) \approx \frac{(b-a)\sqrt{Var(f)}}{\sqrt{N}}
 \end{equation}
 
-and is therefore guaranteed to decrease as $\frac{1}{\sqrt{N}$}.
+and is therefore guaranteed to decrease as $\frac{1}{\sqrt{N}}$.
 
 It is easy to see that the Monte-Carlo method converges slowly.
 
@@ -147,7 +147,7 @@ Diagram yo:
 
 Fig. 8-2 \textit{Flow diagram of Monte Carlo Integration}
 
-From the flow diagram we see we have to recompute $\bar{f} and $Var(\bar{f})$ at each step. From Eq. 5 we see that
+From the flow diagram we see we have to recompute $\bar{f}$ and $Var(\bar{f})$ at each step. From Eq. 5 we see that
 
 \begin{equation}
 \bar{f}_{N+1} = \bar{f}_N + \frac{f(x_{N+1} - \bar{f}_{N}}{N + 1}
@@ -290,9 +290,9 @@ Recursion can get into difficulties by exhausting the stack or rstack. Since the
 
 Nevertheless, not all algorithms should be formulated recursively. A disastrous example is the Fibonacci sequence
 
-\begin{align}
+\begin{equation}
 F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n-2}
-\end{align}
+\end{equation}
 
 expressed recursively in FORTH as
 \begin{lstlisting}
@@ -316,17 +316,17 @@ This program is vastly slower than the nonrecursive version below, that uses an 
         IF DROP PLUCK EXIT THEN
         1 DO UNDER + LOOP PLUCK ;
 \end{lstlisting}
-Why was recursion so bad for Fibonacci numbers? Suppose the running time for $F_n$ is $T_n; then we have
+Why was recursion so bad for Fibonacci numbers? Suppose the running time for $F_n$ is $T_n$; then we have
 
-\begin{align}
+\begin{equation}
 T_{n} \approx T_{n-1} + T_{n-2} + \tau
-\end{align}
+\end{equation}
 
 where $\tau$ is the integer addition time. The solution of Eq. 12 is
 
-\begin{align}
-T_{n} = \tau\left[(\frac{1+\sqrt{5}}}{2})^n - 1\right]
-\end{align}
+\begin{equation}
+T_{n} = \tau\left[(\frac{1+\sqrt{5}}{2})^n - 1\right]
+\end{equation}
 
 That is, the execution time increases \textbf{exponentially} with the size of the problem. The reason for this is simple: recursion managed to replace the original problem by two of nearly the same size, \ie recursion nearly \textbf{doubled} the work at each step!
 
@@ -343,15 +343,15 @@ That is, the execution time increases \textbf{exponentially} with the size of th
 
 In such cases the running time is
 
-\begin{align}
+\begin{equation}
 T_{n} \approx T_{n/2} + T_{n/2} + n = 2T_{n/2} + n
-\end{align}
+\end{equation}
 
 for which the solution is
 
-\begin{align}
+\begin{equation}
 T_{n} \approx n log_2 (n)
-\end{align}
+\end{equation}
 
 (In fact, the running time for \textit{mergesort} is comparable with the fastest sorting algorithms.) Algorithms that subdivide problems in this way are said to be of \textbf{divide and conquer} type.
 
@@ -431,7 +431,7 @@ Note that in going from the pseudocode to FORTH we replaced \bc{)INTEGRAL} by \b
         THEN DROP ;
 \end{lstlisting}
 
-\subsubsectiot{Disadvantages of recursion in adaptive integration}
+\subsubsection{Disadvantages of recursion in adaptive integration}
 \TallC{The} main advantage of the recursive adaptive integration algorithm is its ease of programming. As we shall see, the recursive program is much shorter than the non-recursive one. For any reasonable integrand, the fstack (or ifstack) depth grows only as the square of the logarithm of the finest subdivision, hence never gets too large.
 
 However, recursion has several disadvantages when applied to numerical quadrature:
@@ -481,7 +481,7 @@ Step3: N=N+1=3
 
 Step 4: N=N+1=4
 
-Now suppose the last two sub-integrals $(I_3 + I'_2) in Step 4 agreed with their predecessor $(I_2); we then accumulate the part computed so far, and begin again with the (leftward) remainder of the interval, as in Step 5:
+Now suppose the last two sub-integrals $(I_3 + I'_2)$ in Step 4 agreed with their predecessor $(I_2)$; we then accumulate the part computed so far, and begin again with the (leftward) remainder of the interval, as in Step 5:
 Step 5:
 
 The flow diagram of the algorithm now looks like Fig. 8-4 below:
@@ -689,9 +689,9 @@ old.I = 2.9284E-01  final.I = 6.6067E+00
 old.I = 2.6475E-01  final.I = 9.5392E+00
 1.2189E+00
 
-\begin{align}
+\begin{equation}
 \int_{1}^{2}dx\sqrt{x} = \frac{2}{3} \left( 2^{3/2} - 1 \right)
-\end{align}
+\end{equation}
 
 Notice that, although $\sqrt{x}$ is perfectly finite at $x = 0$, its first derivative is not. This is not a problem in the above case, because the lower limit is 1.0.
 
@@ -700,31 +700,31 @@ It is an instructive exercise to run the above example with the limits (0.0, 1.0
 \subsection{Adaptive Integration in the Argand plane}
 \TallC{We} often want to evaluate the complex integral
 
-\begin{align}
-I = \oint_{\Gamma}f(z}dz
-\end{align}
+\begin{equation}
+I = \oint_{\Gamma}f(z)dz
+\end{equation}
 
-where \Gamma is a \textbf{contour} (simple, closed, piecewise tinuous curve) in the complex $z$-plane, and $f(z)$ is an \textbf{analytic}\sepfootnote{08_17} function of $z$.
+where $\Gamma$ is a \textbf{contour} (simple, closed, piecewise tinuous curve) in the complex $z$-plane, and $f(z)$ is an \textbf{analytic}\sepfootnote{08_17} function of $z$.
 
-The easiest way to evaluate 16 is to parameterize $z$ as a function of a real variable $t$; as $t$ runs from A to B, $z(t) traces out the contour. For example, the parameterization
+The easiest way to evaluate 16 is to parameterize $z$ as a function of a real variable $t$; as $t$ runs from A to B, $z(t)$ traces out the contour. For example, the parameterization
 
-\begin{align}
+\begin{equation}
 z(t) = z_0 + R cos(t) + iR sin(t) , 0 \leq t \leq 2\pi
-\end{align}
+\end{equation}
 
 traces out a (closed) circle of radius R centered at $z = z_0$.
 
-We assume that the derivative $\dot{z}(t)\equiv \frac{dz}{dt} can be defined; then the integral 16 can be re-written as one over a real interval, with a complex integrand:
+We assume that the derivative $\dot{z}(t)\equiv \frac{dz}{dt}$ can be defined; then the integral 16 can be re-written as one over a real interval, with a complex integrand:
 
-\begin{align}
-I = int_{A}^{B} \dot{z}(t)f\left( z(t) \right) dt
-\end{align}
+\begin{equation}
+I = \int_{A}^{B} \dot{z}(t)f\left( z(t) \right) dt
+\end{equation}
 
 Now our previously defined adaptive function \bc{)INTEGRAL} can be applied directly, with \bc{F.name} the name of a \textit{complex} funcan
 
-\begin{align}
+\begin{equation}
 g(t) = \dot{z}(t)f\left( z(t) \right),
-\end{align}
+\end{equation}
 
 of the \textit{real} variable $t$.
 
@@ -732,16 +732,15 @@ Here is an example of complex integration: we integrate the function $f(z) = e^{
 
 The calculus of residues (Cauchy's theorem) gives
 
-\begin{align}
-\oint_{\abs{z}=1}dz e^{1/z} = 2\pi i
-\end{align}
+\begin{equation}
+\oint_{ \vert z \vert =1} dz e^{1/z} = 2\pi i
+\end{equation}
 
-We parameterize the unit circle as $z(t) = cos(2\pi t) + i sin(2\pi t)$, hence $\dot{z}(t) = 2\pi iz(t), and we might as well evaluate
+We parameterize the unit circle as $z(t) = cos(2\pi t) + i sin(2\pi t)$, hence $\dot{z}(t) = 2\pi iz(t)$, and we might as well evaluate
 
-\begin{align}
+\begin{equation}
 int_{0}^{1} dt z(t) e^{1/z(t)} \equiv 1.
-\end{align}
-
+\end{equation}
 
 For reasons of space, we exhibit only the first and last few iterationst
 
@@ -768,44 +767,43 @@ Note:
 \section{Fitting functions to data}
 \TallC{One} of the, most important applications of numerical analysis is the representation of numerical data in functional form. This includes fitting, smoothing, filtering, interpolating, \etc
 
-A typical example is the problem of table lookup: a program re-
-quires values of some mathematical function --$sin(x)$, say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
+A typical example is the problem of table lookup: a program requires values of some mathematical function --$sin(x)$, say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
 
 There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent $sin(x)$ by a simple polynomial\sepfootnote{08_18}
 
-\begin{align}
+\begin{equation}
 sin(x) \approx x \left( 0.994108 - 0.147207x\right),
-\end{align}
+\end{equation}
 
 accurate to better than 1\% over the range $-\frac{\pi}{2}\leq x \leq \frac{\pi}{2}$, that requires but 3 multiplications and an addition to evaluate. This would be twice as fast as calculating $sin(x)$ on the 80x87 chip\sepfootnote{08_19}.
 
 \TallC{To} achieve substantially greater speed requires table look-up. To locate data in an ordered table, we might employ binary search: that is, look at the $x$-value halfway down the table and see if the desired value is greater or less than that. On the average,$log_{2}(N)$ comparisons are required, where $N$ is the length of the table. For a table with 1\% precision, we might need 128 entries, \ie seven comparisons.
 
-Binary search is unacceptably slow --is there a faster method? In fact, assuming an ordered table of equally-spaced abscissae the fastest way to locate the desired $x$-value is \textbf{hashing}, a method for \textit{computing} the address rather than finding it using comparisons. Suppose, as before, we need 1\% accuracy, \ie a 128-point table with $x$ in the range $[0,\pi/2]. To look up a value, we multiply $x$ by $256/\pi \backcong 81.5$, truncate to an integer and quadruple it to get a (4-byte) floating point address. These operations --including fetch to the 87stack-- take about 1.5-2 fp multiply times, hence the speedup is 4-fold.
+Binary search is unacceptably slow --is there a faster method? In fact, assuming an ordered table of equally-spaced abscissae the fastest way to locate the desired $x$-value is \textbf{hashing}, a method for \textit{computing} the address rather than finding it using comparisons. Suppose, as before, we need 1\% accuracy, \ie a 128-point table with $x$ in the range $[0,\pi/2]$. To look up a value, we multiply $x$ by $256/\pi \cong 81.5$, truncate to an integer and quadruple it to get a (4-byte) floating point address. These operations --including fetch to the 87stack-- take about 1.5-2 fp multiply times, hence the speedup is 4-fold.
 
 The speedup factor does not seem like much, especially for a
 function such as $sin(x)$ that is built into the fast co-processor. However, if we were speaking of a function that is considerably slower to evaluate (for example one requiring evaluation of an integral or solution of a differential equation) hashed table lookup with interpolation can be several orders of magnitude faster than direct evaluation.
 
-\Tall{We} now consider how to represent data by mathematical functions. This can be useful in several contexts:
+\TallC{We} now consider how to represent data by mathematical functions. This can be useful in several contexts:
 
 \begin{itemize}
     \item The theoretical form of the function, but with unknown parameters, may be known. One might like to \textit{determine} the parameters from the data. For example, one mi t have a lot of data on pendulums: their periods, masses, imensions, \etc The period of a pendulum is given, theoretically, by
     
-    \begin{align}
-    \tau = \frac{2\pi L}{g}^{1/2} f\left( \frac{L}{r},\frac{m_{bob}}{m_string},\mathellipsis}\right)
-    \end{align}
+    \begin{equation}
+    \tau = \frac{2\pi L}{g}^{1/2} f\left( \frac{L}{r},\frac{m_{\text{bob}}}{m_{\text{string}},\mathellipsis}\right)
+    \end{equation}
     where L is the length of the string, g the acceleration of gravity, and $f$ is some function of ratios of typical lengths, masses, and other factors in the problem. In order to determine g accurately, one generally fits a function of all the measured factors, and tries to minirmze its deviation from the measured periods. That is, one might try
     
-    \begin{align}
+    \begin{equation}
     \tau_{n} = \left(frac{2\pi L_{n}}{g}^{1/2}\right) \left[ 1 + \alpha frac{r_{n}}{L_{n}} + \beta\left(\frac{m_{bob}}{m_string}\right)_{n} + \mathellipsis\right]
-    \end{lstlisting}
+    \end{equation}
     for the n'th set of observations, with g, $\alpha$, $\beta$, $\mathellipsis$ the unknown parameters to be determined.
     
     \item Sometimes one knows that a phenomenon is basically smoothly varying; so that the wiggles and deviations in observations are noise or otherwise umnteresting. How can we filter out the noise without losing the significant part of the data? Several methods have been developed for this purpose, based on the same principle: the data are represente as a sum of functions from a \textbf{complete} set of functions, with unknown coefficients. That is, if $\varphi_{m}(x)$ are the functions, we say ($y_n$ are the data)
 
-    \begin{align}
+    \begin{equation}
     y_n = \sum_{m=0}^{\inf}c_{m}\varphi_{m}(x_{n})
-    \end{align}
+    \end{equation}
 
     Such representations are theoretically possible under general conditions. Then to filter we keep on] a finite sum, retaining the first N (usually simplest and smoothest) functions from the set. An example of a complete set is \textbf{monomials}, $\varphi_{m}(x) = x^{m}$. Another is \textbf{sinusoidal (trigonometric) functions},
         $\sin(2\pi mx), \cos(2\pi mx), 0 \leq x \leq 1$,
@@ -818,35 +816,35 @@ function such as $sin(x)$ that is built into the fast co-processor. However, if 
 We are now going to write programs to fit both linear and non-linear functions to data. The first and conceptually simplest of these is the \textbf{Fourier transform}, namely representing a function as a sum of sines and cosines.
 
 \subsection{Fast Fourier transform}
-\TallC{What} is a Fourier transform? Suppose we have a function that is \textbf{periodic} on the interval $0 \leq x \leq 2\pi}:
+\TallC{What} is a Fourier transform? Suppose we have a function that is \textbf{periodic} on the interval $0 \leq x \leq 2\pi$:
 
-\begin{align}
+\begin{equation}
 f(x + 2\pi) = f(x) ;
-\end{align}
+\end{equation}
 
 Then under fairly general conditions the function can be expressed in the form
 
-\begin{align}
+\begin{equation}
 f(x) = a_{0} + \sum_{n=1}^{\inf} (a_{n} \cos(nx) + b_{n} \sin(nx))
-\end{align}
+\end{equation}
 
 Another way to write Eq. 26 is
 
-\begin{align}
+\begin{equation}
 f(x) = \sum_{-\inf}^{+\inf} c_{n}e^{inx}.
-\end{align}
+\end{equation}
 
 In either way of writing, the $c_{n}$ are called \textbf{Fourier coefficients} of the function $f(x)$. Looking, \eg at Eq. 27, we see that the \textbf{orthogonality} of the sinusoidal functions leads to the expression
 
-\begin{align}
+\begin{equation}
 c_{n} = \frac{1}{2\pi}\int_{0}^{2\pi}f(x)e^{-inx}dx
-\end{align}
+\end{equation}
 
 Evaluating Eq. 28 numerically requires --for given n-- at least 2n pomts\sepfootnote{08_20} Naively, for each $n = 0$ to N-1 we have to do a sum
 
-\begin{align}
+\begin{equation}
 c_{n} \approx \sum_{k=1}^{2N}f_{k}e^{-2\pi inx}dx .
-\end{align}
+\end{equation}
 
 which means carrying out $2N^2$ complex multiplications.
 
@@ -854,56 +852,60 @@ The \textbf{fast Fourier transform (FFT)} was discovered by Runge and K\"{o}nig,
 
 \begin{itemize}
     \item Discretize the interval, \ie evaluate $f(x)$ only for
-    \begin{align}
+    \begin{equation}
         x_{k} = 2\pi \frac{k}{N} , 0 \leq x \leq N-1.
-    \end{align}
+    \end{equation}
     Call $f(x_k) \equiv f_k$.
     \item   Express the Fourier coefficients as
-    \begin{align}
+    \begin{equation}
         c_{n} \approx \sum_{k=0}^{N-1}f_{k}e^{-2\pi inx/N} .
-    \end{align}
+    \end{equation}
     \item With $w_{n} = e^{-2\pi inx/N}$, Eq. 29 is an $N-1$’st degree polynomial in $w_{n}$. We evaluate the polynomial using a fast algorithm.
 \end{itemize}
 
 To evaluate rapidly the polynomial
 
-\begin{align}
-    c_{n} = P_{n}(w_{n}) \equiv \sum_{k=0}^{N-1}f_{k}(w_{n})^k
-\end{align}
+\begin{equation}
+c_{n} = P_{n}(w_{n}) \equiv \sum_{k=0}^{N-1}f_{k}(w_{n})^k
+\end{equation}
 
 we divide it into two polynomials of order N/Z, dividing each of those in two, \etc This procedure is efficient only for $N=2^v$, with $v$ an integer, so this is the case we attack.
 
 How does dividing a polynomial in two help us? If we segregate the odd from the even powers, we have, symbolically,
 
-\begin{align}
+\begin{equation}
 P_{N}(w) = E_{N/2}(w^{2}) + w O_{N/2}(w^2).
-\end{align}
+\end{equation}
 
 Suppose the time to evaluate $P_N(w)$ is $T_{N}$. Then clearly,
 
-where \lambda is the time to segregate the coefficients into odd and even, plus the time for 2 multiplications and a division. The solution of Eq. 31 is $\lambda(N-1)$. That is, it takes $O(N)$ time to evaluate a polynomial.
+\begin{equation}\label{eq:08_31}
+T_{N} = \lambda + 2T_{N/2}
+\end{equation}
 
-However, the discreteness of the Fourier transform helps us here. The reason is this: to evaluate the transform, we have to evaluate $P_{N}(w_{n}) for $N$ values of $w_{n}$. But $w_{n}^{2}$ takes on only $N/2$ values as n takes on N values. Thus to evaluate the Fourier transform for all N values of n, we can evaluate the two polynomials of order $N/2$ for half as many points.
+where $\lambda$ is the time to segregate the coefficients into odd and even, plus the time for 2 multiplications and a division. The solution of Eq. \ref{eq:08_31} is $\lambda(N-1)$. That is, it takes $O(N)$ time to evaluate a polynomial.
+
+However, the discreteness of the Fourier transform helps us here. The reason is this: to evaluate the transform, we have to evaluate $P_{N}(w_{n})$ for $N$ values of $w_{n}$. But $w_{n}^{2}$ takes on only $N/2$ values as n takes on N values. Thus to evaluate the Fourier transform for all N values of n, we can evaluate the two polynomials of order $N/2$ for half as many points.
 
 Suppose we evaluated the polynomials the old-fashioned way: it would take $2(N/2)\equiv N$ multiplications to do both, but we need do this only $N/2$ times, and $N$ more (to combine them) so we have $N^{2}/2+N$ rather than $N^{2}$. We have gained a factor 2. Obviously it pays to repeat the procedure, dividing each of the sub-polynomials in two again, until only monomials are left.
 
 Symbolically, the number of multiplications needed to evaluate, a polynomial for N (discrete) values of $w$ is
 
-\begin{align}
+\begin{equation}
 \tau_{N} = N\lambda + 2\tau_{N/2}
-\end{align}
+\end{equation}
 
 whose solution is
 
-\begin{align}
+\begin{equation}
 \tau_{N} = \lambda N \log_{2}(N) + 2\tau_{N/2}
-\end{align}
+\end{equation}
 
 Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
 
 Table 8-1 Bit-reversal for re-ordering discrete data
 
-Start   Step 1  Step 2  Step 3    Bin_0 Bin_3
+Start   Step 1  Step 2  Step 3    $Bin_0 Bin_3$
 0       0       0       0         0000  0000
 1       2       4       8         0001  1000
 2       4       8       4         0010  0100
@@ -921,7 +923,7 @@ Start   Step 1  Step 2  Step 3    Bin_0 Bin_3
 14      13      11      7         1110  0111
 15      15      15      15        1111  1111
 
-The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns Bin_0 and Bin_3, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
+The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns $Bin_0$ and $Bin_3$, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
 
 \TallC{A} standard FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
 
@@ -1049,8 +1051,8 @@ P_N(x) = \sum_{n=0}^N \gamma_n x^n
 \begin{equation}
     \left \{
       \begin{tabular}{c}
-      x_{k} \\
-      f_{k}
+      $x_{k}$ \\
+      $f_{k}$
       \end{tabular}
     \right \}
     , k=0,1, ... , M-1
@@ -1066,7 +1068,7 @@ The usual answer, found by Gauss, is to minimize the \textbf{squares} of the \te
 
 with repect to the $N + 1$ parameters $\gamma_{n}$.
 
-From the differential calculus we know that a function's first derivative vanishes at a minimum, hence we differentiate $\chi^{2} with respect to each $\gamma_{n}$ independently, and set the results equal to zero. This yields $N + 1$ linear equations in N + 1 unknowns:
+From the differential calculus we know that a function's first derivative vanishes at a minimum, hence we differentiate $\chi^{2}$ with respect to each $\gamma_{n}$ independently, and set the results equal to zero. This yields $N + 1$ linear equations in N + 1 unknowns:
 
 \begin{equation}
 \sum_{m} A_{nm} \gamma_{m} = \beta_{n}, n = 0, 1, ... , N
@@ -1081,10 +1083,10 @@ A_{nm} \triangleq \sum{k=0}^{M-1}(x_{k})^{n+m} \frac{1}{\sigma_{k}^{2}}
 and
 
 \begin{equation}
-\beta_{nm} \triangleq \sum{k=0}^{M-1}x_{k}^{n}f_{k}\frac{1}{\sigma_{k}^{2}}
+\beta_{nm} \triangleq \sum_{k=0}^{M-1}x_{k}^{n}f_{k}\frac{1}{\sigma_{k}^{2}}
 \end{equation}
 
-In Chapter 9 we develop methods for solving linear equations. Unfortunately, they cannot be applied to Eq. 36 for $N \gt 9$ cause the matrix $A_{nm} approximates a Hilbert matrix,
+In Chapter 9 we develop methods for solving linear equations. Unfortunately, they cannot be applied to Eq. 36 for $N \geq 9$ cause the matrix $A_{nm}$ approximates a Hilbert matrix,
 
 \begin{equation}
 H_{nm} = \frac{const.}{n+m+1} ,
@@ -1104,7 +1106,7 @@ The matrix then becomes
     \end{equation}
 and the inhomogeneous term is now
     \begin{equation}
-    \Beta_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k} \frac{1}{\sigma_{k}^{2}}
+    \beta_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k} \frac{1}{\sigma_{k}^{2}}
     \end{equation}
 \end{subequations}
 
@@ -1119,7 +1121,7 @@ where
 \begin{equation*}
 \theta(x) =
     \begin{cases}
-        0, x \lt 0 \\
+        0, x < 0 \\
         1, x \geq 0
     \end{cases}
 \end{equation*}
@@ -1140,12 +1142,13 @@ where the \textbf{weight function} $w(x)$ is positive.
 
 For a given $w(x)$ and interval $[A,B]$, we can construct orthogonal polynomials using the \textbf{Gram-Schmidt orthogonalization} process.
 
-Denote the integral in Eq. \ref{eq:08_40} by $(p_{n}, p_[m})$ to save having to writing it many times. We start with
+Denote the integral in Eq. \ref{eq:08_40} by $(p_{n}, p_{m})$ to save having to writing it many times. We start with
 
-\begin{align*}
-p_{-1} &= 0, \\
-p_{0}(x) &= (\int_{A}^{B}dx w(x))^{-1/2} = \text{const.} ,
-\end{align*}
+
+  \begin{align*}
+p_{-1} & = 0, \\
+p_{0}(x) & = (\int_{A}^{B}dx w(x))^{-1/2} = \text{const.} ,
+  \end{align*}
 
 and assume the polynomials satisfy the 2-term upward recursion relation
 
@@ -1169,7 +1172,7 @@ These relations yields two equations for the three unknowns, $a_{n}$, $b_{n}$, a
 \begin{align*}
 a_{n} + b_{n} (p_n, xp_{n})   & = 0 \\
 c_{n} + b_{n} (p_n, xp_{n-1}) & = 0
-\end{align}
+\end{align*}
 
 We express $a_{n}$ and $c_{n}$, in terms of $b_{n}$, to get
 
@@ -1189,18 +1192,18 @@ In practice, we pretend $b_{n}=1$ and evaluate Eq. 42; then we calculate
 b_{n} = ( \bar{p}_{n+1}, \bar{p}_{n})^{-1/2},
 \end{equation}
 
-multiply the (un-normalized) \bar{p}_{n+1} by $b_{n}$, and continue.
+multiply the (un-normalized) $\bar{p}_{n+1}$ by $b_{n}$, and continue.
 
-The process of successive orthogonalization guarantees that $p_{n} is orthogonal to all polynomials of lesser degree in the set. Why is this so? By construction, $p_{n+1} \perp p_{n}$ and $p_{n+1}$. Is it $\perp $p_{n-2}$? We need to ask whether
+The process of successive orthogonalization guarantees that $p_{n}$ is orthogonal to all polynomials of lesser degree in the set. Why is this so? By construction, $p_{n+1} \perp p_{n}$ and $p_{n+1}$. Is it $\perp p_{n-2}$? We need to ask whether
 
 \begin{equation*}
 (p_{n}, (x-a_{n})p_{n-2}) = 0.
 \end{equation*}
 
-But we know that any polynomial of degree N-l can be expressed as a linear combination of independent polynomials of degrees $0, 1, ... , N-1. Thus
+But we know that any polynomial of degree N-l can be expressed as a linear combination of independent polynomials of degrees $0, 1, ... , N-1$. Thus
 
 \begin{equation}\label{eq:08_44}
-(x-a_{n})p_{n-2} \eqiv \sum_{k=0}^{n-1} \mu_{k}p_{k}(x)
+(x - a_{n}) p_{n-2} \equiv \sum_{k=0}^{n-1} \mu_{k} p_{k}(x)
 \end{equation}
 
 and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. \ref{eq:08_44}, hence it follows (by mathematical induction) that
@@ -1209,7 +1212,7 @@ and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. \ref{eq:08_44}, h
 p_{n+1} \perp \{ p_{n-2} , p_{n-3} , ... \}.
 \end{equation}
 
-Let us illustrate the process for Legendre polynomials, defined by weight $w(x) = 1$, interval $[-1,1]:
+Let us illustrate the process for Legendre polynomials, defined by weight $w(x) = 1$, interval $[-1,1]$:
 
 \begin{align*}
 p_{0} & = (\frac{1}{2})^{1/2} , \\
@@ -1221,7 +1224,7 @@ These are in fact the first three (normalized) Legendre polynomials, as any stan
 
 \TallC{Now} we can discuss Gram polynomials. While orthogonal polynomials are usually defined with respect to an \textbf{integral} as in Eq. 40, we might also define orthogonality in terms of a \textbf{sum}, as in Eq. 39a. That is, suppose we define the polynomials such that
 
-\begin{equation}
+\begin{equation}\label{eq:08_45}
 \sum_{k=0}^{M-1}p_{n}(x_{k})p_{m}(x_{k})\frac{1}{\delta_{k}^{2}} \equiv \delta_{nm} =
     \begin{cases}
         1, m   = n \\
@@ -1230,7 +1233,7 @@ These are in fact the first three (normalized) Legendre polynomials, as any stan
 \end{equation}
 
 Then we can construct the Gram polynomials, calculating the
-coefficients by the algebraic steps of the Gram-Schmidt process, except now we evaluate sums rather than integrals. Since $p_{n}(x) satisfies 45 by construction, the coefficients $\gamma_{n}$, in our fitting polynomial are simply
+coefficients by the algebraic steps of the Gram-Schmidt process, except now we evaluate sums rather than integrals. Since $p_{n}(x)$ satisfies \ref{eq:08_45} by construction, the coefficients $\gamma_{n}$, in our fitting polynomial are simply
 
 \begin{equation}
 \gamma_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k}\frac{1}{\delta_{k}^{2}} ;
@@ -1262,7 +1265,7 @@ LOOP
 
 Fig. 8-5 \textit{Construction of Gram polynomials}
 
-The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \eqiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is $7M^{2}$, which is much less than the time to solve M linear equations.
+The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \equiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is $7M^{2}$, which is much less than the time to solve M linear equations.
 
 In practice, we would never wish to fit a polynomial of order comparable to the number of data, since this would include the noise as well as the significant information.
 
@@ -1287,7 +1290,7 @@ The first term after $\equiv$ E in Eq. \ref{eq:08_47} is independent of N, and t
 
 The code for Gram polynomials is relatively easy to write using the techniques developed in Ch. 5. The program is displayed in full in Appendix 8.4.
 
-\subsubsection
+\subsubsection{Simplex algorithm}
 \TallC{Sometimes} we must fit data by a function that depends on parameters in a \textbf{nonlinear} manner. An example is
 
 \begin{equation}\label{eq:08_48}
@@ -1298,83 +1301,47 @@ Although the dependence on the parameter F is linear, that on the parameters a a
 
 One way to handle a problem like fitting Eq. \ref{eq:08_48} might be to transform the data, to make the dependence on the parameters linear. In some cases this is possible, but in \ref{eq:08_48} no transformation will render linear the dependence on all three parameters at once.
 
-\TallC{Thus} we are frequently confronted with having to minimize numerically a complicated function of several parameters. Let us denote these by $\theta_{0}, \theta_{1}, ... , \theta{N-1}, and denote their possible range of variation by \textbf{R}. Then we want to find those values of $\{ \theta \} \subset$ \textbf{R} that minimize a positive function:
+\TallC{Thus} we are frequently confronted with having to minimize numerically a complicated function of several parameters. Let us denote these by $\theta_{0}, \theta_{1}, ... , \theta{N-1}$, and denote their possible range of variation by \textbf{R}. Then we want to find those values of $\{ \theta \} \subset$ \textbf{R} that minimize a positive function:
 
 \begin{equation}
+\chi^{2} (\bar{\theta}_{0}, \bar{\theta}_{1}, ... , \bar{\theta}{N-1}) = min_{\{ \theta \} \subset R} \chi^{2} (\theta_{0}, \theta_{1}, ... , \theta{N-1})
 \end{equation}
 
-One way to accomplish the minimization is via calculus, using a method known as \textbf{steepest descents}. The idea is to differentiate
-the function 12 with respect to each 0,, and to set the resulting N
-equations equal to zero, solving for the N 0’s. This is generally a
-pretty tall order, hence various approximate, iterative techniques
-have been developed. The simplest just steps along in 0-space,
-along the direction of the local downhill gradient -sz, until a
-minimum is foun . Then a new gradient is computed, and a new
-minimum sought .
+One way to accomplish the minimization is via calculus, using a method known as \textbf{steepest descents}. The idea is to differentiate the function $\chi^{2}$ with respect to each $\theta_{k}$ and to set the resulting N equations equal to zero, solving for the N $\theta$'s. This is generally a pretty tall order, hence various approximate, iterative techniques have been developed. The simplest just steps along in $\theta$-space, along the direction of the local downhill gradient $-\nabla\chi^{2}$, until a minimum is found. Then a new gradient is computed, and a new minimum sought\sepfootnote{08_25}.
 
-Aside fromthe labor of computing -V12, steepest descents has
-two main drawbacks: first, it only guarantees to find a minimum,
-not necessarily (In minimum -- if a function has several local
+Aside fromthe labor of computing $-\nabla\chi^{2}$, steepest descents has two main drawbacks: first, it only guarantees to find \underline{\textit{a}} minimum, not necessarily \underline{\textit{the}} minimum -- if a function has several local minima, steepest descents will not necessarily find the smallest. Worse, consider a function that has a minimum in the form of a steep-sided gulley that winds slowly downhill to a declivity -- somewhat like a meandering river's channel. Steepest descents will then spend all its time bouncing up and down the banks of the gulley, rather than proceeding along its bottom, since the steepest gradient is always nearly perpendicular to the line of the channel.
 
+Sometimes the function $\chi_{2}$ is so complex that its gradient is too expensive to compute. Can we find a minimum \textit{without} evaluating partial derivatives? A standard way to do this is called the \textbf{simplex method}. The idea is to construct a \textbf{simplex} -- a set of N + 1 distinct and \textbf{non-degenerate} vertices in the N-dimensional $\theta$-space ("non-degenerate" means the geometrical object, formed by connecting the N + 1 vertices with straight lines, has non-zero N-dimensional volume; for example, if N=2, the simplex is a triangle.)
 
-rninima, steepest descents will not necessarily find the smallest.
-Worse, consider a function that has a minimum in the form of a
-steep-sided gulley that winds slowly downhill to a declivity --
-somewhat like a meandering river's channel. Steepest descents
-will then spend all its time bouncing up and down the banks of
-the gulley, rather than proceeding along its bottom, since thel
-steepest gradient is always nearly perpendicular to the line of thei
-channel. 1‘
-Sometimes the function 12 is so complex that its gradient is tooI
-expensive to compute. Can we find a minimum without evaluating}
-partial derivatives? A standard way to do this is called the sins?
-plex method. The idea is to construct a simplex -- a set of N +1
-distinct and non-degenerate vertices in the N-dimensional 0-
-space (“non-degenerate" means the geometrical object, formed
-by connecting the N + 1 vertices with straight lines, ha non-zero
-N-dimensional volume; for example, if N=2, the simplex is a
-triangle.)
+We evaluate the function to be minimized at each of the vertices, and sort the table of vertices by the size of $\chi^{2}$ at each vertex, the best (smallest $\chi^{2}$) on top, the worst at the bottom. The simplex algorithm then chooses a new point in $\theta$-space by the a strategy, expressed as the ﬂow diagram, Fig. 8-8 on page 203 below, that in action somewhat resembles the behavior of an amoeba seeking its food. The key word \bc{)MINIMIZE} that implements the complex decision tree in Fig. 8-8 (given here in pseudocode) is
 
-We evaluate the function to be minimized at each of the vertices,
-and sort the table of vertices by the size of 12 at each vertex, the
-best (smallest x2 ) on top, the worst at the bottom. The simplex
-algorithm then chooses a new point in 0-space by the a strategy,
-expressed as the ﬂow diagram, Fig. 8-8 on page 203 below, thd
-in action somewhat resembles the behavior of an amoeba seeking
-its food. The key word )MINIMIZE that implements the complex
-decision tree in Fig. 8-8 (given here in pseudocode) is
+\begin{lstlisting}
+: )MINIMIZE (n.iter -- 87: rel.error -- )
+    INITIALIZE
+    BEGIN done? NOT N N.max < AND .
+    WHILE
+        REFLECT r> =best?
+        IF r> =2worst?
+            IF r<worst? IF STORE.X THEN
+                HALVE r<worst?
+                IF STORE.X ELSE SHRINK THEN
+            ELSE STOREX THEN
+        ELSE DOUBLE r> =best?
+        IF STOREXP ELSE STORE.X THEN
+        THEN
+        N 1+ IS N SORT
+    REPEAT ;
+\end{lstlisting}
 
-: )MINIMIZE (n.'rter - - 87: rel.error - -)
+used in the format
 
-INITIALIZE
-BEGIN done? NOT NN.max < AND
-WHILE
+\begin{lstlisting}
+    USE( tnarne 20 96 1.6-4 )MINIMIZE
+\end{lstlisting}
 
-REFLECT r> =best?
+Fleshing out the details is a --by now-- familiar process, so we leave the program \textit{per se} to Appendix 8.5. We also include there a FORTRAN subroutine for the simplex algorithm, taken from
 
-IF r> =2worst?
-
-IF r<worst? IF STORE.X THEN
-HALVE r<worst?
-IF STORE.X ELSE SHRINK THEN
-ELSE STOREX THEN
-ELSE DOUBLE r> =best?
-IF STOREXP ELSE STORE.X THEN
-THEN
-N 1 + IS N SORT
-REPEAT ;
-
-summer-M Wat-MW!” 203
-
-usedintheformat
-
-USE( tnarne 20 96 1.6-4 )MINIMIZE
-
-Fleshing out the details is a -by now-- familiar process, so we
-leave the program perse to Appendix 85. We also include there
-a FORTRAN subroutine for the simplex algorithm, taken from
-
-
+\begin{lstlisting}
 INHIALIZE \ choose simplex? is am of param. space
 BEGIN
 Converged? NOT N N.rnax s
@@ -1402,51 +1369,32 @@ Store r' SHRINK
 REPEAT
 
 Fig. 8-8 \textit{Flow dlagram of the slmplex algorithm}
+\end{lstlisting}
 
-
-\textit{Numerical Recipes}\sepfootnote{08_26}, as an example of just how indecipherable
-traditional languages can be.
+\textit{Numerical Recipes}\sepfootnote{08_26}, as an example of just how indecipherable traditional languages can be.
 
 \section{Appendices}
 
 \subsection{Gaussian quadrature}
 
-\TallC{Gaussian} quadrature formulae are based on the following idea:
+\TallC{Gaussian} quadrature formulae are based on the following idea: if we let the points $\xi_{n}$ and weights $w_{n}$ be 2N free parameters ($n$ runs from 1 to N), what values of them most accurately represent an integral by the formula
 
-if we let the points 6,, and weights wll be 2N free parameters
-(n runs from 1 to N), what values of them most accurately repre-
-sent an integral by the formula
-
-\begin{equation}
+\begin{equation}\label{eq:08_50}
+I = \int_{A}^{B} dx \sigma(x)f(x) \approx \sum_{n=1}^{N} w_{n}f(\xi_{n} ?
 \end{equation})
 
-In Eq. 50 0(x) is a (known) positive function and f(x) is the
-function we want to integrate. This problem can actually be
-solved, and leads to tables of points 5,, and weight coefficients
-w,, specific to a particular interval [A,B] and weight function a(x).
-Gauss-Legendre integration pertains to [-1,+1] and o(x)= 1.
-(Note any interval can be transformed into [-1, + 1].)
+In Eq. \ref{eq:08_50} $\sigma(x)$ is a (known) positive function and $f(x)$ is the function we want to integrate. This problem can actually be solved, and leads to tables of points $\xi_n$ and weight coefficients $w_{n}$ specific to a particular interval [A,B] and weight function $\sigma(x)$. \textbf{Gauss-Legendre} integration pertains to [-1,+1] and $\sigma(x) = 1$. (Note any interval can be transformed into [-1, + 1].)
 
-The interval [0,00) and 0(x) = e"r leads to Gauss-Laguerre for-
+The interval $[0, \inf)$ and $\sigma(x) = e^{x}$ leads to \textbf{Gauss-Laguerre} formulae, whereas the interval $(-\inf, +\inf)$ and $\sigma(x) = e^{-x^{2}}$ leads to \textbf{Gauss-Hermite} formulae.
 
-2
-mulae, whereas the interval (— oo,+ 00) and 0(x) = e”Jr leads to
-Gauss-Hermite formulae.
+Finally, we note that the more common integration formulae such as Simpson’s rule or the trapezoidal rule can be derived on the same basis as the Gauss methods, except that the points are specified in advance to be equally spaced and to include the end-points of the interval. Only the weights $w_{n}$ can be determined as free fitting parameters that give the best approximation to the integral.
 
-Finally, we note that the more common integration formulae such
-as Simpson’s rule or the trapezoidal rule can be derived on the
-same basis as the Gauss methods, except that the points are spe-
-cified in advance to be equally spaced and to include the end-
-points of the interval. Only the weights w, can be determined as
-free fitting parameters that give the best approximation to the”
-integral.
-
-For given N Gaussian formulae can be more accurate than equally-
-spaced rules, as they have twice as many parameters to play with.
+For given N Gaussian formulae can be more accurate than equally-spaced rules, as they have twice as many parameters to play with.
 
 
 Some FORTH words for 5-point Gauss-Legendre integration:
 
+\begin{lstlisting}
 N swarm WANT ﬂ
 1. ossamroreasss FCONSTANT x1 :mm (arse--0
 it ow Pomsrmr wo soda (arse-[mew [sat/2)
@@ -1457,48 +1405,44 @@ XDIP x1 FPEGATE rude
 FOVERF—leFtNDERF+; Mia“ F(X)\~2F' F$+
 :reeede (a7:abx--a+b"x) F'F+; XDUP )eFNEGATEreaede
 ':F3R+(e7:abcx--a+xbc)F3RF+ F-ROT; Pot) waF' F3R+
-“2 The trapezoidal rule
-ecall (Ch. 8, \S1.1) how we approximated the area under a curve
-Rby capturing it between rectangles consistently higher- and
-lower than the curve; and calculating the areas of the two sets of
-rectangles. In practice we use a better approximation: we average
-the rectangular upper and lower bounds. The errors tend to
-cancel, resulting m
-B- A w
-w ( 2y (f(A +nw) + f(A +nw+w))
-n-O
-(51)
--ff 2drf(x)+é(¥) w3max lf”(x)|
-A<r<B
-Now the error is much smaller28 - of order w2 -- so if we double
-the number of points, we ecrease the error four-fold. Yet this
-so-called trapezoidal rule requires no more effort (in terms of
-the number of function evaluations) than the rectangle rule.
+\end{lstlisting}
+
+\subsection{The trapezoidal rule}
+
+\TallC{Recall} (Ch. 8, \S1.1) how we approximated the area under a curve by capturing it between rectangles consistently higher-- and lower than the curve; and calculating the areas of the two sets of rectangles. In practice we use a better approximation: we average the rectangular upper and lower bounds. The errors tend to
+cancel, resulting in\sepfootnote{08_27}
+
+\begin{equation}
+  \begin{split}
+    \frac{w}{2} \sum_{n=0}^{(B-A)/w} \left( f(A+nw) + f(A+nw+w)\right) \\
+    & \approx \int_{A}^{B} dx f(x) + \frac{1}{12} \left( \frac{(B-A)}{w} \right) w^{3} \text{max}_{A<x<B} \vert f''(x) \vert
+  \end{split}
+\end{equation}
+
+Now the error is much smaller\sepfootnote{08_28} --of order $w^{2}$-- so if we double the number of points, we ecrease the error four-fold. Yet this so-called \textbf{trapezoidal rule} requires no more effort (in terms of the number of function evaluations) than the rectangle rule.
 
 
 \subsection{Richardson extrapolation}
-\TallC{In the program} \bc{)INTEGRAL} in Ch.8 \S1\S\S5.3 the word \bc{INTERPOLATE} performs Richardson extrapolation for the trapezoid»
-a1 "rule. The idea' is this. If we use a given rule, accurate to order
-w’I ,to calculate the integral on an interval [a,b], then presumably
-the error of using the formula on each half of the interval and
-adding the results, will be smaller by 2'". For the trapezoidal rule,
-n =2, hence we expect the error from summing two half-inter-
-vals to be 4x smaller than that from the whole interval.
+\TallC{In the program} \bc{)INTEGRAL} in Ch.8 \S1\S\S5.3 the word \bc{INTERPOLATE} performs Richardson extrapolation for the trapezoidal rule. The idea is this. If we use a given rule, accurate to order $w^{n}$, to calculate the integral on an interval [a,b], then presumably the error of using the formula on each half of the interval and adding the results, will be smaller by $2^{-n}$. For the trapezoidal rule, $n = 2$, hence we expect the error from summing two half-intervals to be $4\times$ smaller than that from the whole interval.
 
-Thus, we can write (10 = I: , I'o = I£a+by2 , I, = ﬂaw/2 )
+Thus, we can write $(I_{0} = \int_{a}^{b} , I_{0}' = \int_{a}^{(a+b)/2}, I_{1} = \int_{(a+b)/2}^{b})$
 
-\begin{equation}
+\begin{subequations}
+    \begin{equation}\label{eq:08_52a}
+        I_{0} = I_{\text{exact}} + R
+    \end{equation}
+    \begin{equation}\label{eq:08_52b}
+        I_{0}' + I_{1} = I_{\text{exact}} + \frac{R}{4}
+    \end{equation}
+\end{subequations}
+
+Equation \ref{eq:08_52b} is only an approximation because the R that appears in it is not exactly the same as R in Eq. \ref{eq:08_52a}. We will pretend the two R’s are equal, however, and eliminate R from the two equations (8.52a,b) ending with an expression for $I_{\text{exact}}$:
+
+\begin{equation}\label{eq:08_53}
+    I_{\text{exact}} \approx \frac{4}{3}(I_{0}' + I_{1} - I_{0})
 \end{equation}
 
-Equation \ref{eq:08_52b} is only an approximation because the R that ap-
-pears in it is not exactly the same as R in Eq. 52a. We will pretend
-the two R’s are equal, however, and eliminate R from the two
-equations (8.52a,b) ending with an expression for I...“ :
-
-\begin{equation}
-\end{equation}
-
-Equation 53 is exactly what appears in \bc{INTERPOLATE}.
+Equation \ref{eq:08_53} is exactly what appears in \bc{INTERPOLATE}.
 
 
 \subsection{Linear least-squares: Gram polynomials}
@@ -1616,7 +1560,7 @@ CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
 \end{lstlisting}
 
 \subsubsection{Non-linear least squares: simplex method}
-\TallC{A} FORTRAN program for the simplex method is given belton page 209. The FORTH version, as discussed in \S\ 2 \S\ \S\ 3 given on pages 210 and 211.
+\TallC{A FORTRAN} program for the simplex method is given belton page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
 
 \begin{lstlisting}
 \ FUNCTION MINIMIZATION BY THE SIMPLEX METHOD
