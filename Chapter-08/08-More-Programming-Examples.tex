@@ -3,7 +3,7 @@
 
 \TallC{In} this chapter we apply some of the FORTH tools we have been developing (complex arithmetic, typed data) to two standard problems in numerical analysis: numerical integration of a function over a definite interval; determining the function of a given form that most closely fits a set of data.
 
-\section{Numerlcal Integration}
+\section{Numerical Integration}
 We begin by defining the definite integral of a function $f(x)$. Then we discuss some methods for (numerically) approximating the integral. This process is called \textbf{numerical integration} or \textbf{numerical quadrature}. Finally, we write some FORTH programs based on the various methods we describe.
 
 \subsection{The Integral of a function}
@@ -11,21 +11,20 @@ The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the
 
 Fig. 8-1 \textit{The integral of a function is the area under the curve.}
 
-We estimate the integral by breaking up the area into narrow
-rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
+We estimate the integral by breaking up the area into narrow rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
 
 \begin{equation}
     \begin{split}
-    w \sum_{n=0}^{(b-a/w)} & min[f(a+nw),f(a+nw+w)] \\
+    w \sum_{n=0}^{(b-a/w)} & \min[f(a+nw),f(a+nw+w)] \\
     & \leq \int_{a}^{b}f(x) dx \\
-    & \leq w \sum_{n=0}^{(b-a)/w} max[f(a+nw),f(a+nw+w)]
+    & \leq w \sum_{n=0}^{(b-a)/w} \max[f(a+nw),f(a+nw+w)]
     \end{split}
 \end{equation}
 
-It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert]$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert]$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
+It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
 
 \begin{equation*}
-\frac{1}{2}w(b-a) max_{a\leq x \leq b} \lvert f'(x)\rvert.
+\frac{1}{2}w(b-a) \max_{a\leq x \leq b} \lvert f'(x)\rvert.
 \end{equation*}
 
 Similarly, the lower bound will be low by about the same amount. This means that if we halve $w$ (by taking twice as many points), the accuracy of the approximation will double. The mathematical definition of $\int_{a}^{b} f(x) dx$ is the number we get by taking the limit as the width $w$ of the rectangles becomes arbitrarily small. We know that such a limit exists because the actual area has been captured between lower and upper bounds that shrink together as we take more points.
@@ -39,11 +38,11 @@ Similarly, the lower bound will be low by about the same amount. This means that
 
 so that
 
-\begin{equation}
-F'(b) = lim_{\Delta b \to 0} \frac{1}{\Delta b} (\int_{a}^{b+\Delta b} dx - \int_{a}^{b}f(x) dx )
+\begin{equation}\label{eq:08_03}
+F'(b) = \lim_{\Delta b \to 0} \frac{1}{\Delta b} \left(\int_{a}^{b+\Delta b} dx - \int_{a}^{b}f(x) dx \right)
 \end{equation}
 
-Equation 3 is a fancy way to say that integration and differentiation are \textbf{inverse operations} in the same sense as multiplication and division, or addition and subtraction.
+Equation \ref{eq:08_03} is a fancy way to say that integration and differentiation are \textbf{inverse operations} in the same sense as multiplication and division, or addition and subtraction.
 
 This fact lets us calculate a definite integral using the differential equation routine developed in Chapter 6. We can express the problem in the following form:
 
@@ -82,8 +81,8 @@ The statistical notion of \textbf{variance} lets us estimate the accuracy of the
 
 \begin{equation}
     \begin{split}
-    Var(f) &= \int_{-\inf}^{+\inf} \rho(f) (f- \bar{f})^2 df \\
-    & \approx \frac{1}{N} \sum_{n=1}^{N} (f(x_n) - \bar{f})^2
+    \text{Var}(f) &= \int_{-\infty}^{+\infty} \rho(f) \left(f- \bar{f}\right)^2 df \\
+    & \approx \frac{1}{N} \sum_{n=1}^{N} \left(f(x_n) - \bar{f}\right)^2
     \end{split}
 \end{equation}
 
@@ -92,13 +91,13 @@ The statistical notion of \textbf{variance} lets us estimate the accuracy of the
 Statistical theory says the variance in estimating $\bar{f}$ by random sampling is
 
 \begin{equation}
-Var(\bar{f}) = \frac{1}{N} Var(f)
+\text{Var}(\bar{f}) = \frac{1}{N} \text{Var}(f)
 \end{equation}
 
 \ie, the more points we take, the better estimate of $\bar{f}$ we obtain. Hence the uncertainty in the integral will be of order
 
 \begin{equation}
-\Delta \left(int_{a}^{b}f(x)dx\right) \approx \frac{(b-a)\sqrt{Var(f)}}{\sqrt{N}}
+\Delta \left(\int_{a}^{b}f(x)dx\right) \approx \frac{(b-a)\sqrt{\text{Var}(f)}}{\sqrt{N}}
 \end{equation}
 
 and is therefore guaranteed to decrease as $\frac{1}{\sqrt{N}}$.
@@ -802,7 +801,7 @@ function such as $sin(x)$ that is built into the fast co-processor. However, if 
     \item Sometimes one knows that a phenomenon is basically smoothly varying; so that the wiggles and deviations in observations are noise or otherwise umnteresting. How can we filter out the noise without losing the significant part of the data? Several methods have been developed for this purpose, based on the same principle: the data are represente as a sum of functions from a \textbf{complete} set of functions, with unknown coefficients. That is, if $\varphi_{m}(x)$ are the functions, we say ($y_n$ are the data)
 
     \begin{equation}
-    y_n = \sum_{m=0}^{\inf}c_{m}\varphi_{m}(x_{n})
+    y_n = \sum_{m=0}^{\infty}c_{m}\varphi_{m}(x_{n})
     \end{equation}
 
     Such representations are theoretically possible under general conditions. Then to filter we keep on] a finite sum, retaining the first N (usually simplest and smoothest) functions from the set. An example of a complete set is \textbf{monomials}, $\varphi_{m}(x) = x^{m}$. Another is \textbf{sinusoidal (trigonometric) functions},
@@ -825,13 +824,13 @@ f(x + 2\pi) = f(x) ;
 Then under fairly general conditions the function can be expressed in the form
 
 \begin{equation}
-f(x) = a_{0} + \sum_{n=1}^{\inf} (a_{n} \cos(nx) + b_{n} \sin(nx))
+f(x) = a_{0} + \sum_{n=1}^{\infty} (a_{n} \cos(nx) + b_{n} \sin(nx))
 \end{equation}
 
 Another way to write Eq. 26 is
 
 \begin{equation}
-f(x) = \sum_{-\inf}^{+\inf} c_{n}e^{inx}.
+f(x) = \sum_{-\infty}^{+\infty} c_{n}e^{inx}.
 \end{equation}
 
 In either way of writing, the $c_{n}$ are called \textbf{Fourier coefficients} of the function $f(x)$. Looking, \eg at Eq. 27, we see that the \textbf{orthogonality} of the sinusoidal functions leads to the expression
@@ -1385,7 +1384,7 @@ I = \int_{A}^{B} dx \sigma(x)f(x) \approx \sum_{n=1}^{N} w_{n}f(\xi_{n} ?
 
 In Eq. \ref{eq:08_50} $\sigma(x)$ is a (known) positive function and $f(x)$ is the function we want to integrate. This problem can actually be solved, and leads to tables of points $\xi_n$ and weight coefficients $w_{n}$ specific to a particular interval [A,B] and weight function $\sigma(x)$. \textbf{Gauss-Legendre} integration pertains to [-1,+1] and $\sigma(x) = 1$. (Note any interval can be transformed into [-1, + 1].)
 
-The interval $[0, \inf)$ and $\sigma(x) = e^{x}$ leads to \textbf{Gauss-Laguerre} formulae, whereas the interval $(-\inf, +\inf)$ and $\sigma(x) = e^{-x^{2}}$ leads to \textbf{Gauss-Hermite} formulae.
+The interval $[0, \infty)$ and $\sigma(x) = e^{x}$ leads to \textbf{Gauss-Laguerre} formulae, whereas the interval $(-\infty, +\infty)$ and $\sigma(x) = e^{-x^{2}}$ leads to \textbf{Gauss-Hermite} formulae.
 
 Finally, we note that the more common integration formulae such as Simpson’s rule or the trapezoidal rule can be derived on the same basis as the Gauss methods, except that the points are specified in advance to be equally spaced and to include the end-points of the interval. Only the weights $w_{n}$ can be determined as free fitting parameters that give the best approximation to the integral.
 
