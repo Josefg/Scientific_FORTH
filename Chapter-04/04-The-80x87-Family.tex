@@ -119,10 +119,10 @@ DEBUG program or a reference manual for the chip (\eg \textbf{8087P})to determin
 
 \section{Memory usage (storage and retrieval)}
 
-\TallC{The} 80x87 instruction set includes codes for loading \regc{ST (0)} from memory and storing \regc{ST(0)} to memory. The former involeves a "push" and the latter may or may not involve a "pop", from
+\TallC{The} 80x87 instruction set includes codes for loading ST(0) from memory and storing ST(0) to memory. The former involeves a "push" and the latter may or may not involve a "pop", from
 the 87stack.
 
-For the moment we need words to retrieve and store 16-bit integers, short reals (32 bit) and temporary reals (80 bit). These have mnemonics \regc{FILD} ("load integer to \regc{ST (0)}"), \regc{FISTP}("store integer and pop \regc{ST(1)} into \regc{ST(0)")}; \regc{FLD}, \regc{FSTP} respectively. Typical (HS/)FORTH assembler definitions are
+For the moment we need words to retrieve and store 16-bit integers, short reals (32 bit) and temporary reals (80 bit). These have mnemonics FILD ("load integer to ST(0)"), FISTP("store integer and pop ST(1) into ST(0)"); FLD, FSTP respectively. Typical (HS/)FORTH assembler definitions are
 
 \begin{lstlisting}
     CODE I16@

@@ -1,27 +1,12 @@
-\chapter{Symbolic Programming}
+% Chapter 11 -- Symbolic Programming
 
-Contents
-- Rules 260
-- Tools 262
---1 Pattern recognizers 262
---2 Finite state machines 265
---3 FSMs in FORTH 268
---4 Automatic conversion tables 271
-53 Computer algebra 273
-591 Stating the problem 273
-552 The rules 275
-553 The program 276
-54 FORmula TRANslator 284
-551 Rules of FORTRAN 285
-552 Details of the Problem 286
---3 Parsing 289
---4 Coding the FORmula TRANslator 296
+\chapter{Symbolic Programming}
 
 All symbolic programming is based on rules --- a set of generalized instructions that tells the computer how to transform one set of tokens into another. An assembler, \textit{e.g.}, inputs a series of machine instructions in mnemonic form and outputs a series of numbers that represent the actual machine instructions in executable form. A FORTH compiler translates a definition into a series of addresses of previously defined objects. Even higher on the scale of complexity, a FORTRAN compiler inputs high-level language constructs formed according to a certain grammar and outputs an executable program in another language such as assembler, machine code or C.
 
 What do rules have to do with scientific problem-solving? The crucial element in the rule-based style of programming is the ability to specify general patterns or even classes of patterns so the computer can recognize them in the input and take appropriate action.
 
-For example, in a modern high-energy physics experiment the rate at which events (data) impinge on detectors might be $10^{7}$ discrete events per second. Since each event might be represented by 5-10 numbers, the storage requirements for recording the results of a search for some rare process, lasting 3-6 months of running time, might be $10^16$ bytes, or $10^7$ high-capacity disk drives! Clearly, so much storage is out of the question and most of the incoming data must be discarded. That is, such experiments demand extremely fast filtering methods that can determine - in 10-20$\mu$sec — whether a given event is interesting. The criteria for "interesting" may be quite general and may need to be changed during the running of the experiment. In a word, they must be specified by some form of pattern recognition program rather than hard-wired.
+For example, in a modern high-energy physics experiment the rate at which events (data) impinge on detectors might be $10^{7}$ discrete events per second. Since each event might be represented by 5-10 numbers, the storage requirements for recording the results of a search for some rare process, lasting 3-6 months of running time, might be $10^16$ bytes, or $10^7$ high-capacity disk drives! Clearly, so much storage is out of the question and most of the incoming data must be discarded. That is, such experiments demand extremely fast filtering methods that can determine - in 10-20$\mu$sec - whether a given event is interesting. The criteria for "interesting" may be quite general and may need to be changed during the running of the experiment. In a word, they must be specified by some form of pattern recognition program rather than hard-wired.
 
 Another area where pattern recognition helps the scientist is computer algebra. Closely related is the ability to translate mathematical formulae into machine code. So far we have stressed a FORTH programming style natural to that language, namely postfix notation, augmenting it primarily for readability or abstracting power. It cannot be denied, however, that sometimes it is useful simply to be able to write down a mathematical formula and have it translated automatically into executable form. This chapter develops the tools for symbolic programming and illustrates their use with a typical algebra program and a simple FORmula TRANslator.
 
