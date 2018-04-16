@@ -4,27 +4,26 @@
 
 \TallC{When} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and HT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
 
-We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\sepfootnote{04_01}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\sepfootnote{04_02}} The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
+We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\sepfootnote{04_01}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\sepfootnote{04_02}}) The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
 
-Instructions for the 80x87 are always appended to a code called “escape” (ESC, D8h) that alerts the coprocessor and diverts control to it. The MS-DOS assembler MASM and debugger DEBUG will automatically assemble this code with 80x87 instructions, so the user does not need to worry about including ESC except to be aware that it is happening. (Of course, a FORTH system that lacks 80x87 assembler extensions will need to include ESC explicitly to generate 80x87 codes.)
+Instructions for the 80x87 are always appended to a code called "escape" (ESC, D8h) that alerts the coprocessor and diverts control to it. The MS-DOS assembler MASM and debugger DEBUG will automatically assemble this code with 80x87 instructions, so the user does not need to worry about including ESC except to be aware that it is happening. (Of course, a FORTH system that lacks 80x87 assembler extensions will need to include ESC explicitly to generate 80x87 codes.)
 
 We shall see in Ch. 4 \S1.1 how to use the FORTH assembler, and in Ch. 4 \S1.2 how to use DEBUG\sepfootnote{04_03}, to extend a FORTH system for 80x87 operations if they are not already included as a floating point lexicon.
 
-The 80x87 machine code instruction set includes instructions for moving numbers to the registers from memory and vice-versa, as well as from one 80x87 register to another. The internal moves are of course much faster than those to or from external memory.
+The 80x87 machine code instruction set includes instructions for moving numbers to the registers from memory and \textit{vice-versa}, as well as from one 80x87 register to another. The internal moves are of course much faster than those to or from external memory.
 
 Advanced programming methods -- such a recursive algorithms -- require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\sepfootnote{04_04} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 \S7.
 
 \section{Internal 80x87 and manipulation}
+\TallC{The} 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\sepfootnote{04_05}.
 
-The 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\sepfootnote{04_05}.
-
-We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER} .
+We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER}.
 
 How are we to define them in terms of machine code primitives?
 
 \subsection{The FORTH assembler}
 
-\TallC{Every} FORTH worthy of the name includes an assembler, usually set up as an alternate vocabulary\sepfootnote{04_06} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\sepfootnote{04_07}
+\TallC{Every} FORTH worthy of the name includes an assembler, usually set up as an alternate \textbf{vocabulary}\sepfootnote{04_06} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\sepfootnote{04_07}
 
 \begin{lstlisting}
     CODE @ BX [BX] MOV. END-CODE
@@ -36,7 +35,7 @@ Here is what happened in the \bc{CODE} version of \regc{@} above:
 
 \begin{itemize}
     \item The defining word \bc{CODE} set up a dictionary entry with the name \bc{@}, with an appropriate pointer and JUMP instructions to make the newly defined word run the code sequence comprising the definition.
-    \item The word \bc{END-CODE} cleans up the loose ends by adding the obligatory RET instruction sequence and turning off the compiler. (That is, \bc{END-CODE} installs “\bc{NEXT}".)
+    \item The word \bc{END-CODE} cleans up the loose ends by adding the obligatory RET instruction sequence and turning off the compiler. (That is, \bc{END-CODE} installs "\bc{NEXT}".)
     \item \bc{END-CODE} is thus the analog of \bc{;} as \bc{CODE} is of \bc{:}.
 \end{itemize}
 
@@ -61,11 +60,11 @@ In HS/FORTH assembler, the definition becomes
 \leftbar[1\linewidth]
 \Note: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete results\footnotemark.
 \endleftbar
-\footnotetext{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}
+\footnotetext{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \bc{FWAIT.} as a null word.}
 
 \subsection{Using MS-DOS DEBUG}
 
-\TallC{The} FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes - hex numbers - directly into the code field of a word. HS/FORTH, \eg, uses the words \regc{<\%} and \regc{\%>} to enclose the hex codes being inserted.
+\TallC{The}FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes --hex numbers-- directly into the code field of a word. HS/FORTH, \eg, uses the words \bc{<\%} and \bc{\%>} to enclose the hex codes being inserted.
 
 The problem is, how do we find out what these hex codes are?
 
@@ -73,7 +72,7 @@ The simplest way is to use DEBUG\sepfootnote{04_09} to generate (HEX) code seque
 
 \begin{lstlisting}
     C > DEBUG               starts DEBUG
-    -A100                   Assemble from 100h
+    -A100                   (*\underline{A}*)ssemble from 100h
     3B01:0100 FWAIT         enter asembler
     3B01:0101 FXCH ST(1)    mnemonlcs
     3B01:0103 FWAIT
@@ -82,7 +81,7 @@ The simplest way is to use DEBUG\sepfootnote{04_09} to generate (HEX) code seque
     3B01:0104 FXCH ST(2)
     3B01:0106       no more, <cr>stops assembly
     
-    -U 100 105              Unassemble to check
+    -U 100 105              (*\underline{U}*)nassemble to check
     3B01:0100 9B    WAIT    Hold CPU
     3B01:0101 D9C9  FXCH    ST(1)
                             (87: a b c -- a c b )
@@ -90,9 +89,9 @@ The simplest way is to use DEBUG\sepfootnote{04_09} to generate (HEX) code seque
     3B01:0104 D9CA  FXCH    ST(2)
                             (87: a c b -- b c a)
 
-    -D 100 105              Dump to get hex codes
+    -D 100 105              (*\underline{D}*)ump to get hex codes
     3B01:0100 9B D9 C9 9B D9 CA
-    -Q                      Quit session
+    -Q                      (*\underline{Q}*)uit session
 \end{lstlisting}
 
 From the \underline{D}ump (or \underline{U}nsassembly) we find code bytes 9B D9 F7 D9 C9 F6 D9 C9 which can be inserted directly into the definition of \bc{FROT}:
@@ -178,14 +177,9 @@ These definitions will satisfy our present needs for storing and retrieving from
 
 \TallC{FPU} (80x87) arithmetic is generally performed with the maximum precision allowed by the (80-bit) size of the registers\sepfootnote{04_13}.
 
-As noted in \S4.2, the 80x87 allows 3 floating point representations
-for storage and retrieval in external memory: 32 hit (single precision),
-64 bit (double precision) and 80 bit ("temporary real").
+As noted in \S4.2, the 80x87 allows 3 floating point representations for storage and retrieval in external memory: 32 hit (single precision), 64 bit (double precision) and 80 bit ("temporary real").
 
-To conserve memory we generally use 32 bit floating point num-
-bers (REAL'4 in the old FORTRAN parlance)unless the nature
-of the calculation demands retention of more significant figures
-to prevent roundoff errors.
+To conserve memory we generally use 32 bit floating point numbers (REAL'4 in the old FORTRAN parlance)unless the nature of the calculation demands retention of more significant figures to prevent roundoff errors.
 
 The FORTH arithmetic words we shall need are
 \begin{lstlisting}

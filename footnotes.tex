@@ -154,7 +154,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 % **** Chapter  4 footnotes ****
 
-\sepfootnotecontent{04_01}{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling VAX minicomputers.}
+\sepfootnotecontent{04_01}{Although we confine ourselves to the 80x87 chip, the Motorola 68881/2 coprocessors can be programmed in  the same general manner to achieve floating point capabilities rivialling $\text{VAX}^{\textregistered}$ minicomputers.}
 
 \sepfootnotecontent{04_02}{J. Palmer and S. Morse, \textit{The 8087 Primer} (John Wiley \& Sons, NY (1984), hereafter referred to as \textbf{8087P}).}
 
@@ -166,7 +166,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{04_06}{Vocabularies are a method for subdividing the dictionary.}
 
-\sepfootnotecontent{04_07}{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \textit{e.g.} MOV, . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
+\sepfootnotecontent{04_07}{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \eg\space\bc{ MOV.} . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
 
 % Inlined because in frame
 %\sepfootnotecontent{04_08}{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}
@@ -186,7 +186,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{04_15}{see, \eg, Table 4.1}
 
-\sepfootnotecontent{04_16}{\Note the test worrds \bc{F<} and \bc{F>} are defined opposite to \bc{F0>} and \bc{F0<}. This reversal of directions is \textit{not} a typographical error: it is \textit{demanded} by the operation of \bc{FCONPP} -see \textbf{8087P}.}
+\sepfootnotecontent{04_16}{\Note: the test worrds \bc{F<} and \bc{F>} are defined opposite to \bc{F0>} and \bc{F0<}. This reversal of directions is \textit{not} a typographical error: it is \textit{demanded} by the operation of \bc{FCONPP} -see \textbf{8087P}.}
 
 % Inline because frame
 % \sepfootnotecontent{04_17}{See below for a discussion of \bc{FSCALE}.}
@@ -195,11 +195,11 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{04_19}{Somewhat less, $\approx$ 100 clocks, if a 32-bit bus is utilized with the '386/'387 pair. See, \eg, John H. Crawford and Patrick F. Gelsinger, \textit{Programming the 80386} (Sybex, San Francisco, 1987).}
 
-\sepfootnotecontent{04_20}{Note: FINIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN‘s in all 8 87stack cells.}
+\sepfootnotecontent{04_20}{Note: FINIT operates difierently on IIT’s coprocessors than on Intel’s. It does not place NAN's in all 8 87stack cells.}
 
 \sepfootnotecontent{04_21}{See Ch. 9 of this book for a fuller discussion of standard matrix algorithms.}
 
-\sepfootnotecontent{04_22}{V. Strassen, \textit{Numer. Math.} 13 (1969) 184. See also V. Pan, \textit{SIAM Review} 26 (1984) 393.}
+\sepfootnotecontent{04_22}{V. Strassen, \textit{Numer. Math.} \textbf{13} (1969) 184. See also V. Pan, \textit{SIAM Review} \textbf{26} (1984) 393.}
 
 
 
