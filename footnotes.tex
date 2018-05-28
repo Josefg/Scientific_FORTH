@@ -166,7 +166,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 \sepfootnotecontent{04_06}{Vocabularies are a method for subdividing the dictionary.}
 
-\sepfootnotecontent{04_07}{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \eg\space\bc{ MOV.} . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
+\sepfootnotecontent{04_07}{BX is a CPU register, and [BX] means "the memory location wose address is in BX". HS/FORTH uses a naming convention in which assembler mnemonics end with a period, \eg\space\bc{MOV.} . Also, HS/FORTH makes the TOS the BX register, to reduce the number of pushes and pops needed to execute simple words.}
 
 % Inlined because in frame
 %\sepfootnotecontent{04_08}{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \textit{e.g.}, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \regc{FWAIT.} as a null word.}

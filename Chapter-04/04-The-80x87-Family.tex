@@ -2,7 +2,7 @@
 
 \chapter{The 80x87 Family}
 
-\TallC{When} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and HT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
+\TallC{When} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and IIT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
 
 We now describe some features of the 80x87 floating point co-processors (FPUs) that affect scientific programming on IBM-PC compatible machines\sepfootnote{04_01}. The 8087 chip complements the Intel 8088/8086 CPU family, the 80287 works with the 80286 series, the 80387 with the 80386, and the 80486 includes an on-chip FPU. The 8087 chip is connected pin-for-pin to the 8088/8086. (The details are given in \textit{The 8087 Primer\sepfootnote{04_02}}) The interface and instruction set automatically take care of bus arbitration (that is, which chip has access to the memory) and interrupts, in order to be sure that the CPU and 80x87 do not perform conflicting operations.
 
@@ -12,10 +12,10 @@ We shall see in Ch. 4 \S1.1 how to use the FORTH assembler, and in Ch. 4 \S1.2 h
 
 The 80x87 machine code instruction set includes instructions for moving numbers to the registers from memory and \textit{vice-versa}, as well as from one 80x87 register to another. The internal moves are of course much faster than those to or from external memory.
 
-Advanced programming methods -- such a recursive algorithms -- require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\sepfootnote{04_04} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 \S7.
+Advanced programming methods --such a recursive algorithms-- require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\sepfootnote{04_04} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 \S7.
 
 \section{Internal 80x87 and manipulation}
-\TallC{The} 80x87 is organized around a stack of 8 80-bit registers (the87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\sepfootnote{04_05}.
+\TallC{The} 80x87 is organized around a stack of 8 80-bit registers (the 87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\sepfootnote{04_05}.
 
 We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER}.
 
@@ -26,10 +26,10 @@ How are we to define them in terms of machine code primitives?
 \TallC{Every} FORTH worthy of the name includes an assembler, usually set up as an alternate \textbf{vocabulary}\sepfootnote{04_06} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\sepfootnote{04_07}
 
 \begin{lstlisting}
-    CODE @ BX [BX] MOV. END-CODE
+    CODE  @  BX [BX] MOV. END-CODE
 \end{lstlisting}
 
-A \bc{CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (REI‘) instructions in the machine code representation of the calling program.
+A \bc{CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (RET) instructions in the machine code representation of the calling program.
 
 Here is what happened in the \bc{CODE} version of \regc{@} above:
 
@@ -60,11 +60,11 @@ In HS/FORTH assembler, the definition becomes
 \leftbar[1\linewidth]
 \Note: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete results\footnotemark.
 \endleftbar
-\footnotetext{The design of the 80286, 80386, and 80486 eliminates this problem. consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \bc{FWAIT.} as a null word.}
+\footnotetext{The design of the 80286, 80386, and 80486 eliminates this problem, consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \bc{FWAIT.} as a null word.}
 
 \subsection{Using MS-DOS DEBUG}
 
-\TallC{The}FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH system, in addition to an assembler, provide a way to insert machine codes --hex numbers-- directly into the code field of a word. HS/FORTH, \eg, uses the words \bc{<\%} and \bc{\%>} to enclose the hex codes being inserted.
+\TallC{The}FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH systems, in addition to an assembler, provide a way to insert machine codes --hex numbers-- directly into the code field of a word. HS/FORTH, \eg, uses the words \bc{<\%} and \bc{\%>} to enclose the hex codes being inserted.
 
 The problem is, how do we find out what these hex codes are?
 
@@ -115,7 +115,7 @@ whose assembler definitions are:
 \end{lstlisting}
 
 can be defined similarly in 8086/8087 machine code using the
-DEBUG program or a reference manual for the chip (\eg \textbf{8087P})to determine the hex codes.
+DEBUG program or a reference manual for the chip (\eg\space\textbf{8087P}) to determine the hex codes.
 
 \section{Memory usage (storage and retrieval)}
 
@@ -130,16 +130,16 @@ For the moment we need words to retrieve and store 16-bit integers, short reals 
         [BX] POP.
         FWAIT.
     END-CODE
-    CODE |16|
+    CODE I16!
         FWAIT. [BX] WORD-PTR FISTP.
         [BX] POP.
         FWAIT.
     END-CODE
 \end{lstlisting}
 
-Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} --assuming these are needed-- replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64-, and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64@}, \bc{R80@}, and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\sepfootnote{04_10} as appropriate.
+Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} --assuming these are needed-- replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64- and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64!}, \bc{R80@} and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\sepfootnote{04_10} as appropriate.
 
-\TallC{We} also need words to load the 87stack from the stack and textit{vice versa}. In HS/FORTH, the top of the parameter stack is actually the BX register on the CPU. There is no machine instruction for loading the 87stack directly from a CPU register. Thus, we must first transfer the contents of BX to memory and thence to the 87stack. The inverse operation also must proceed through a memory location. The data-transfer words are named in an obvious way \bc{S->F} and \bc{F->S}. HS/FORTH defines them directly in machine code, manipulating the CPU register BP that points to the top of the CPU stack. That is, HS/FORTH uses two bytes immediately below NOS as the intermediate memory cell.
+\TallC{We} also need words to load the 87stack from the stack and \textit{vice versa}. In HS/FORTH, the top of the parameter stack is actually the BX register on the CPU. There is no machine instruction for loading the 87stack directly from a CPU register. Thus, we must first transfer the contents of BX to memory and thence to the 87stack. The inverse operation also must proceed through a memory location. The data-transfer words are named in an obvious way \bc{S->F} and \bc{F->S}. HS/FORTH defines them directly in machine code, manipulating the CPU register BP that points to the top of the CPU stack. That is, HS/FORTH uses two bytes immediately below NOS as the intermediate memory cell.
 
 Here we define \bc{S->F} and \bc{F->S} directly in high-level FORTH by wasting a little memory for a (hidden) temporary variable:
 
@@ -158,7 +158,7 @@ Faster machine code versions of \bc{S->F} and \bc{F->S} are\sepfootnote{04_11}
 
 \begin{lstlisting}
     CODE S->F TEMP +[] BX MOV. BX POP.
-        FWAIT. TEMP +[] I16 fiLD. END-CODE
+        FWAIT. TEMP +[] I16 FILD. END-CODE
 
     CODE F->S BX PUSH. TEMP +[] FISTP.
         BX TEMP +[] MOV. END-CODE
