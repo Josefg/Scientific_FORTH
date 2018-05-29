@@ -177,9 +177,9 @@ These definitions will satisfy our present needs for storing and retrieving from
 
 \TallC{FPU} (80x87) arithmetic is generally performed with the maximum precision allowed by the (80-bit) size of the registers\sepfootnote{04_13}.
 
-As noted in \S4.2, the 80x87 allows 3 floating point representations for storage and retrieval in external memory: 32 hit (single precision), 64 bit (double precision) and 80 bit ("temporary real").
+As noted in \S4.2, the 80x87 allows 3 floating point representations for storage and retrieval in external memory: 32 bit (single precision), 64 bit (double precision) and 80 bit ("temporary real").
 
-To conserve memory we generally use 32 bit floating point numbers (REAL'4 in the old FORTRAN parlance)unless the nature of the calculation demands retention of more significant figures to prevent roundoff errors.
+To conserve memory we generally use 32 bit floating point numbers (REAL*4 in the old FORTRAN parlance)unless the nature of the calculation demands retention of more significant figures to prevent roundoff errors.
 
 The FORTH arithmetic words we shall need are
 \begin{lstlisting}
@@ -200,49 +200,59 @@ whose definitions are (CODE and END-CODE are assumed)
     FNEGATE FWAIT.  FCHS.   (87: a -- -a )
     FABS   FWAIT.   FABS.   (87: a -- |a|)
 
-    : FSGN      (n-- 87:x -- |x|*sgn[n])
+    : FSGN      (n -- 87:x -- |x|*sgn[n])
        FABS 0< IF FNEGATE THEN ;
 \end{lstlisting}
 
 \section{Special constants}
 
-\TallC{For} convenience the designers of the 8087 chip have arranged fast loading of certain constants into \bc{ST(0)} of the fstack (TOS). The words that place these constants on the fstack, and the corresponding assembler mnemonics and (hex) codes are shown in Table 4-1 below.
+\TallC{For} convenience the designers of the 8087 chip have arranged fast loading of certain constants into ST(0) of the fstack (TOS). The words that place these constants on the fstack, and the corresponding assembler mnemonics and (hex) codes are shown in Table \ref{tbl:04_01} below.
 
-Table 4-1 Speclal Constants
-\begin{center}
-    \begin{tabular}{|c c c c|}
-        \hline
-        word      & const.      & mnemonic & codes     \\
-        F=0       & 0           & FLDZ     & 9B D9 E5  \\
-        F=1       & 1           & FLD1     & 9B D9 E8  \\
-        F=PI      & pi=3.14...  & FLDPI    & 9B 09 E5  \\
-        F=L2(10)  & $log_{2}10$ & FLDL2T   & 9B D9 E9  \\ 
-        F=L2(E)   & $log_{2}e$  & FLDL2E   & 9B 09 EA  \\
-        F=L10(2)  & $log_{10}2$ & FLDLG2   & 9B 09 EC  \\
-        F=LN(2)   & $log_{e}$   & FLDLN2   & 9B 09 ED  \\
-        \hline
-    \end{tabular}
-\end{center}
+% Table 4-1 Special Constants
+\begin{table}
+    \caption{\textit{Special Constants}}
+    \label{tbl:04_01}
+    \begin{center}
+        \begin{tabular}{|l l l l|}
+            \hline
+            \textbf{word}      & const.      & mnemonic & \textbf{codes}  \\
+                               &             &          &                 \\
+            \lgray F=0       & 0           & FLDZ     & \Aggray 9B D9 E5  \\
+            \lgray F=1       & 1           & FLD1     & \Aggray 9B D9 E8  \\
+            \lgray F=PI      & pi=3.14...  & FLDPI    & \Aggray 9B 09 E5  \\
+            \lgray F=L2(10)  & $log_{2}10$ & FLDL2T   & \Aggray 9B D9 E9  \\ 
+            \lgray F=L2(E)   & $log_{2}e$  & FLDL2E   & \Aggray 9B 09 EA  \\
+            \lgray F=L10(2)  & $log_{10}2$ & FLDLG2   & \Aggray 9B 09 EC  \\
+            \lgray F=LN(2)   & $log_{e}2$  & FLDLN2   & \Aggray 9B 09 ED  \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
 \section{Test words}
 
 \TallC{We} need to be able to determine the algebraic sign of a floating point number, as well as whether one is larger than another.
-The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are shown below in Table 4-2.
+The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are shown below in Table \ref{tbl:04_02}.
 
-Table 4-2 \textit{Machine language floating point tests}
-\begin{center}
-    \begin{tabular}{|c c c|}
-        \hline
-        mnemonic    &   comparison      &   pop?        \\
-        FTST        &   ST(0) to 0      &   no          \\
-        FCOM        &   ST(1) to ST(0)  &   no          \\
-        FCOMP       &   ST(1) to ST(0)  &   pop once    \\
-        FCOMPP      &   ST(1) to ST(0)  &   pop twice   \\
-        \hline
-    \end{tabular}
-\end{center}
+% Table 4-2 Machine language floating point tests
+\begin{table}
+    \caption{\textit{Machine language floating point tests}}
+    \label{tbl:04_02}
+    \begin{center}
+        \begin{tabular}{|l l l|}
+            \hline
+            \textbf{mnemonic}    &   comparison      & \textbf{pop?} \\
+                                 &                   &               \\
+            \lgray FTST   &   ST(0) to 0      &   no          \\
+            \lgray FCOM   &   ST(1) to ST(0)  &   no          \\
+            \lgray FCOMP  &   ST(1) to ST(0)  &   pop once    \\
+            \lgray FCOMPP &   ST(1) to ST(0)  &   pop twice   \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
-The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques the STATUS register must be moved to the parameter stack\sepfootnote{04_14}. This is done with the the 80x87 instruction \regc{FSTSW} \textit{via} the assembler sequence
+The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques, the STATUS register must be moved to the parameter stack\sepfootnote{04_14}. This is done with the the 80x87 instruction \regc{FSTSW} \textit{via} the assembler sequence
 
 \begin{lstlisting}
     VARIABLE F.STATUS
@@ -253,31 +263,38 @@ The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 1
     BEHEAD' F.STATUS
 \end{lstlisting}
 
-Now we have to consider how to bit-mask the status integer left on the stack by FSTSW. We use the logical AND with 400011 og 0100h (\underline{Exercise}: Why?) to pick out C3 and C0. Now from \textbf{8087P}\sepfootnote{04_15} we have the truth table 4-3 below:
+Now we have to consider how to bit-mask the status integer left on the stack by \bc{FSTSW}. We use the logical \bc{AND} with 4000h og 0100h (\underline{Exercise}: Why?) to pick out C3 and C0. Now from \textbf{8087P}\sepfootnote{04_15} we have the truth table \ref{tbl:04_03} below:
 
-\begin{center}
-    \begin{tabular}{|c c c|}
-        \hline
-        \textbf{Conamon}    &   \textbf{C3} & \textbf{C0} \\
-        ST(0) $>$ x           &   0           & 0         \\
-        ST(0) $=$ x           &   1           & 0         \\
-        ST(0) $<$ x           &   0           & 1         \\
-        \hline
-    \end{tabular}
-\end{center}
+% Table 04-03 Truth table of test ...
+\begin{table}
+    \caption{\textit{Truth table of test status bits (x is the operand - 0 or ST(1))}}
+    \label{tbl:04_03}
+    \begin{center}
+        \begin{tabular}{|c c c|}
+            \hline
+            \textbf{Condition} &   \textbf{C3} & \textbf{C0} \\
+                             &               &             \\
+            ST(0) $>$ x      &   0           & 0           \\
+            ST(0) $=$ x      &   1           & 0           \\
+            ST(0) $<$ x      &   0           & 1           \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
 Now we are in a position to define the test words \bc{F0>}, \bc{F0=},
 \bc{F0<}, as well as \bc{F>}, \bc{F=}, \bc{F<}. We have\sepfootnote{04_16}
 
 \begin{lstlisting}
-    CODE FTST FWAIT. FTST. 0 FSTP END-CODE
-    CODE FCOMPP FWAIT. FCOMPP. END-CODE
+    CODE FTST   FWAIT. FTST. 0 FSTP END-CODE
+    CODE FCOMPP FWAIT. FCOMPP.      END-CODE
 
     HEX
     : FTSTP FTST FSTSW ;
     : F0> FTSTP 4100 AND NOT 0> ;
     : F0= FTSTP 4000 AND     0> ;
     : F0< FTSTP 0100 AND     0> ;
+    
     : F< FCOMPP FSTSW 4100 AND NOT 0> ;
     : F= FCOMPP FSTSW 4000 AND     0> ;
     : F> FCOMPP FSTSW 0100 AND     0> ;
@@ -286,21 +303,28 @@ Now we are in a position to define the test words \bc{F0>}, \bc{F0=},
 
 \section{Mathematical functions}
 
-\TallC{We} now proceed to develop a suite of special functions for the 801187 FPU. These will include the usual trigonometric functions, logarithms, and exponentials. We retain initial Fs' 1n the names to remind us the FPUis being used. The functions are given in Table 4-4 below:
+\TallC{We} now proceed to develop a suite of special functions for the 80x87 FPU. These will include the usual trigonometric functions, logarithms, and exponentials. We retain initial \bc{F}s in the names to remind us the FPU is being used. The functions are given in Table \ref{tbl:04_04} below:
 
-Table 4-4 Mathematical function primitives
-
-\begin{center}
-    \begin{tabular}{|c c c c|}
-        \hline
-        \textbf{name}   &   \textbf{action}               & \textbf{code(s)}  & \textbf{mnemonic} \\
-        FSQRT           &   (87:   x -- $\sqrt{x}$)       & 9B D9 FA          & FWAIT FSQRT       \\
-        FY*LG2X         &   (87: y x -- $y*log_{2}$[x])   & 9B D9 F1          & FWAIT FYL2X       \\
-        FY*LG2XP1       &   (87: y x -- $y*log_{2}$[x+1]) & 9B D9 F0          & FWAIT FYL2XP1     \\
-        F2XM1           &   (87:   x -- $2^{x}$-1)        & 9B D9 F0          & FWAIT F2XM1       \\
-        \hline
-    \end{tabular}
-\end{center}
+% Table 4-4 Mathematical function primitives
+\begin{table}
+    \caption{\textit{Mathematical function primitives}}
+    \label{tbl:04_04}
+    \begin{center}
+        \begin{tabular}{|l l l l|}
+            \hline
+            \textbf{name}     &   \textbf{action}               & \textbf{code(s)}  & \textbf{mnemonic} \\
+                              &                                 &                   &                   \\
+            \lgray FSQRT      &   (87:   x - - $\sqrt{x}$)       & 9B D9 FA   & FWAIT FSQRT       \\
+            \lgray            &                                 &                   &                   \\
+            \lgray FY*LG2X    &   (87: y x - - $y*log_{2}$[x])   & 9B D9 F1   & FWAIT FYL2X       \\
+            \lgray            &                                 &                   &                   \\
+            \lgray FY*LG2XP1  &   (87: y x - - $y*log_{2}$[x+1]) & 9B D9 F9   & FWAIT FYL2XP1     \\
+            \lgray            &                                 &                   &                   \\
+            \lgray F2XM1      &   (87:   x - - $2^{x}$-1)        & 9B D9 F0   & FWAIT F2XM1       \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
 These primitive functions allow us to define the logarithms and exponentials. To get $log_{2}(x)$, for example, we need to decide whether $x$ lies between 0 and 2: this can best be accomplished with
 the sequence (we assume $x$ is already on the 87stack)

@@ -382,13 +382,9 @@ BEGIN DUP C@ (- - adr char)
 WHILE (exponent) REPEAT ;
 \end{verbatim}
 
-at a cost of 128 bytes of dictionary space. If dictionary space
-becomes tight, it would be perfeme simple to export the lookup
+at a cost of 128 bytes of dictionary space. If dictionary space becomes tight, it would be perfeme simple to export the lookup
 
-macaw Mil-WW 273
-
-tables to their own segment. in the same way we did with generic
-arrays in Chapter 5.
+tables to their own segment. in the same way we did with generic arrays in Chapter 5.
 
 53 Computer algebra
 
@@ -400,9 +396,7 @@ manipulations that might take hours or years by hand, in the
 process reducing the likelihood of error". The study of symbolic
 manipulation has led to rich new areas of pure mathematics .
 Here we illustrate our new tool (for compiling ﬁnite state
-automata) with a rule-based recursive program to solve a prob-
-lem that does not need much formal mathematical background.
-The resulting program executes far more rapidly on a PC than
+automata) with a rule-based recursive program to solve a problem that does not need much formal mathematical background. The resulting program executes far more rapidly on a PC than
 
 REDUCE. e.g.. on a large mainframe.
 
@@ -417,9 +411,6 @@ O I 0 O 0
 ”“51 O—l o o (2)
 2 0 O-l O
 3 O 0 O-I
-
-
-emumrm-me.
 
 274
 
@@ -468,9 +459,6 @@ We include Eq. 7 for testing purposes. The factors of 4 in Eq. 5:
 and 7 do nothing useful, so we might as well suppress them in the,
 interest of a simpler program. -
 
- 
-
-WPOMH Mtt-BMPW 275
 
 “2 Thou.
 We apply f1 rules analogous to those used in parsing a
@@ -552,13 +540,7 @@ This can be done with the wordI
 
 :gets ASCII) TEXT PAst 51;
 
-Since the rules are inherently recursive, we push the input string
-
-onto a stack before operations commence. What stack? Clear-
-ly we need a stack that can hold strings of “arbitrary” length. The
-strings cannot be too long because the number of terms of output,
-hence the operating time, grows with the number of factors N, in
-fact. like (gr: )1 .
+Since the rules are inherently recursive, we push the input string onto a stack before operations commence. What stack? Clearly we need a stack that can hold strings of “arbitrary” length. The strings cannot be too long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact. like (gr: )1 .
 
 The pseudocode for the last word of the deﬁnition is clearly
 something like
