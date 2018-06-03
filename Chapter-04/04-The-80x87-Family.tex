@@ -312,28 +312,27 @@ Now we are in a position to define the test words \bc{F0>}, \bc{F0=},
     \begin{center}
         \begin{tabular}{|l l l l|}
             \hline
-            \textbf{name}     &   \textbf{action}               & \textbf{code(s)}  & \textbf{mnemonic} \\
-                              &                                 &                   &                   \\
-            \lgray FSQRT      &   (87:   x - - $\sqrt{x}$)       & 9B D9 FA   & FWAIT FSQRT       \\
-            \lgray            &                                 &                   &                   \\
-            \lgray FY*LG2X    &   (87: y x - - $y*log_{2}$[x])   & 9B D9 F1   & FWAIT FYL2X       \\
-            \lgray            &                                 &                   &                   \\
-            \lgray FY*LG2XP1  &   (87: y x - - $y*log_{2}$[x+1]) & 9B D9 F9   & FWAIT FYL2XP1     \\
-            \lgray            &                                 &                   &                   \\
-            \lgray F2XM1      &   (87:   x - - $2^{x}$-1)        & 9B D9 F0   & FWAIT F2XM1       \\
+            \textbf{name}     &   \textbf{action}                & \textbf{code(s)}  & \textbf{mnemonic} \\
+                              &                                  &                   &                   \\
+            \lgray FSQRT      &   (87:   x - - $\sqrt{x}$)       & 9B D9 FA          & FWAIT FSQRT       \\
+            \lgray            &                                  &                   &                   \\
+            \lgray FY*LG2X    &   (87: y x - - $y*log_{2}$[x])   & 9B D9 F1          & FWAIT FYL2X       \\
+            \lgray            &                                  &                   &                   \\
+            \lgray FY*LG2XP1  &   (87: y x - - $y*log_{2}$[x+1]) & 9B D9 F9          & FWAIT FYL2XP1     \\
+            \lgray            &                                  &                   &                   \\
+            \lgray F2XM1      &   (87:   x - - $2^{x}$-1)        & 9B D9 F0          & FWAIT F2XM1       \\
             \hline
         \end{tabular}
     \end{center}
 \end{table}
 
-These primitive functions allow us to define the logarithms and exponentials. To get $log_{2}(x)$, for example, we need to decide whether $x$ lies between 0 and 2: this can best be accomplished with
-the sequence (we assume $x$ is already on the 87stack)
+These primitive functions allow us to define the logarithms and exponentials. To get $log_{2}(x)$, for example, we need to decide whether $x$ lies between 0 and 2: this can best be accomplished with the sequence (we assume $x$ is already on the 87stack)
 
 \begin{lstlisting}
     : F=2 F=1 FDUP FSCALE FPLUCK ; (87:--2) (* \footnotemark *)
 
     : LOG.TST FDUP F0> NOT
-       ABORT" Can't take log(-|x|) 11" ;
+       ABORT" Can't take log(-|x|) !!" ;
 
     : FLG (87: y x -- y*lg[x])
         LOG.TST  FDUP F=2 F<
@@ -363,8 +362,8 @@ Now we can use the fundamental definition of exponentiation to define both the o
 Also, for simplicity, we define FORTH functions for degree/radian conversions and conversely:
 
 \begin{lstlisting}
-    : FINIT     F=PI    180 S->F F/    (87:-- p/180)
-    : FCONSTANT PI/180                \ make constant
+    FINIT     F=PI    180 S->F F/   (87:-- p/180)
+    FCONSTANT PI/180                \ make constant
     : DEG->RAD  PI/180 F* ;
     : RAD->DEG  PI/180 F/ ;
 \end{lstlisting}
@@ -392,7 +391,8 @@ Now, according to \textbf{8087P}, we may evaluate trigonometric and inverse-trig
 
 The 8087 and 80287 implement an \textit{unnormalized} tangent function, whose effect is \regc{(87: z -- y x)}, with $tan(z)=y/x$. Let us define
 
-\begin{align} 
+\begin{align}
+    \label{eq:04_01}
     \frac{y}{x} =& tan(\frac{z}{2})
 \end{align}
 
@@ -418,25 +418,24 @@ A further problem created by the 8087/80287 instruction set is that the argument
 Here is how we code the tangent in high-level FORTH:
 
 \begin{lstlisting}
-    (*@
-    \textbf\underline{Pseudocode version}:
+    (* \textbf{\underline{Pseudocode version}}: *)
+    
     x=0 is an exception - set tan =0 and exit.
     x < 0 ? Save sign as a flag on stack.
-    reduce by multiples of $\pi$
-    x in 1st quadrant ( $\pi/2 < x < \pi$ ) ? Flag, reduce by $\pi/2$
-    x in 1st octant   ( $\pi/2 < x < \pi$ ) ? Flag, reduce by $\pi/4$
-    @*)
+    reduce by multiples of (*$\pi$*)
+    x in 1st quadrant (*( $\pi/2 < x < \pi$ )*) ? Flag, reduce by (*$\pi/2$*)
+    x in 1st octant   (*( $\pi/2 < x < \pi$ )*) ? Flag, reduce by (*$\pi/4$*)
 
-\ HIGH LEVEL FORTH VERSION
+    \ HIGH LEVEL FORTH VERSION
     : REDUCE ( :87: x k -- x mod k -- f)
        XDUP F> DUP IF F- ELSE FDROP THEN ;
     : FTAN   ( 87: x -- tan[x] ) FDUP F0=:
        IF EXIT THEN             \ tan=0
         FDUP F0< FABS           ( -- fsgn 87: -- |x| )
-        F=PI FNORM              \ 0 < x < (*@$\pi$@*)
+        F=PI FNORM              \ 0 < x < (*$\pi$*)
         F=PI F2/     REDUCE     ( -- fsgn f1q )
         F=PI F2/ F2/ REDUCE     ( -- fsgn f1q f1o )
-        FPTAN fl (87:|x|--tan[x] )
+        FPTAN F/                (87:|x|--tan[x] )
         IF F=1 XDUP F+ F-ROT F- F/ THEN
                         \ adjust for octant
         IF 1/F FNEGATE THEN     \ adjust for quadrant
@@ -453,10 +452,7 @@ The remaining trigonometric functions (sine, cosine, scant, co-secant) can easil
 \end{lstlisting}
 
 \leftbar[1\linewidth]
-\Note: The 80387 improves on the 8087/80287 by eliminating the
-need to adjust the argument in software. Further, the tangent
-produced by the 80387 is normalized (that is, $x = 1.0$ in Eq. 4.1
-above). finally, the 80387 has instructions \regc{FSIN}, \regc{FCOS}, and \regc{FSINCOS} built in, so all the software emulation is unnecessary.
+\Note: The 80387 improves on the 8087/80287 by eliminating the need to adjust the argument in software. Further, the tangent produced by the 80387 is normalized (that is, $x = 1.0$ in Eq. \ref{eq:04_01} above). Finally, the 80387 has instructions \regc{FSIN}, \regc{FCOS}, and \regc{FSINCOS} built in, so all the software emulation is unnecessary.
 \endleftbar
 
 \TallC{We} define inverse-trigonometric functions using \bc{FPATAN} defined previously, whose action is \regc{( 87: y x -- arctan[y/x] )}. The 80387 has no additional instructions for inverse trig functions, relative to the 8087/80287, so the same code fits all.
@@ -469,32 +465,30 @@ To calculate the inverse functions, we make use of standard identities (the form
 \end{align}
 
 \begin{lstlisting}
-    : FATAN F-1 FPATAN ;
+    : FATAN F=1 FPATAN ;
     : FASIN FDUP FABS F=1 F>
-        ABORT' argu'nentotarcsh > 1'
+        ABORT" argument of arcsin > 1"
         F=1 FOVER FDUP F* F- FSQRT
         F/ FPATAN ;
 
     : FACOS FDUP FABS F=1 F>
-        ABORT" argument of arcsin > 1"
+        ABORT" argument of arccos > 1"
         FDUP F=1 FR- FSWAP F=1 F+ F/
-        FSORT FPATAN ;
+        FSQRT FPATAN ;
 \end{lstlisting}
 
 \leftbar[1\linewidth]
-\Note: the argument of arcsin($x$) or arccos($x$) must be smaller than
-1 in absolute value - hence we include a bounds check to avoid taking the square root of a negative number.
+\Note: the argument of arcsin($x$) or arccos($x$) must be smaller than 1 in absolute value - hence we include a bounds check to avoid taking the square root of a negative number.
 \endleftbar
 
 \section{Extending the intrinsic 80x87 stack}
-\TallC{As} promised' in the beginning of the chapter, we now design
-a fstack manager in software that allows more than 8 cells. First we examine the structure of the 80x87 stack (\textbf{87stack}).
+\TallC{As} promised in the beginning of the chapter, we now design a fstack manager in software that allows more than 8 cells. First we examine the structure of the 80x87 stack (\textbf{87stack}).
 
-From \textbf{8087P} we see that the 8 registers in the 87stack are organized as a circular stack. A 3-bit pointer, \regc{ST}, records which physical register is actually TOS. The instruction set allows \regc{ST} to be incremented (\regc{FINCSTP}) or decremented (\regc{FDECSTP} modulo 8. The 87stack is shown below in Fig. 4-1 on page 81.
+From \textbf{8087P} we see that the 8 registers in the 87stack are organized as a circular stack. A 3-bit pointer, \regc{ST}, records which physical register is actually TOS. The instruction set allows \regc{ST} to be incremented (\regc{FINCSTP}) or decremented (\regc{FDECSTP}) modulo 8. The 87stack is shown below in Fig. \ref{fig:04_01} on page 81.
 
 A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \regc{FSTP} instruction increments \regc{ST}. To build our software fstack we need to do the following things:
 \begin{itemize}
-    \item When the 87stack gets full, put \regc{ST(7)} on the memory extensions and textit{vice-versa}.
+    \item When the 87stack gets full, put \regc{ST(7)} on the memory extensions and \textit{vice-versa}.
     \item Keep track of how many numbers are on the 87stack.
     \item Keep track of where we have stored the last number removed from the 87stack.
 \end{itemize}
@@ -514,22 +508,22 @@ A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \
         \path(A.east) -- (N3.west)  coordinate[pos=0.4](mid);
         \draw[-latex] (A.east) -| (mid) |- ($(0,0.3)+(N3.west)$);
     \end{tikzpicture}    
-    \caption{The 80x87 stack, from 8087P}
+    \caption{\textit{The 80x87 stack, from} \textbf{8087P}}
     \label{fig:04_01}
 \end{figure}
 
 The algorithm has the following expression in pseudo-FORTH
 
 \begin{lstlisting}
-    Redefine operations that put \#5 on 87stack:
-    increment stack _pointer
-    it 87steck full put st(7) on fstack
-    push onto st(O)
+    Redefine operations that put \#s on 87stack:
+        increment stack_pointer
+        if 87stack full put st(7) on fstack
+        push onto st(O)
 
     Redefine operations that take \#5 off 87stack:
-    popst(0) _
-    decrement stack _pornter
-    iffstack notempty. puttofs onto st(7)
+        pop st(0)
+        decrement stack_pornter
+        if fstack notempty, put tofs onto st(7)
 \end{lstlisting}
 
 We begin by defining the data structure (the fstack proper) where we will stash and retrieve the numbers coming off the 87stack.
