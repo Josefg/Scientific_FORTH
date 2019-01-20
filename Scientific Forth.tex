@@ -1,4 +1,5 @@
 \documentclass{book}
+\usepackage[total={148mm, 205mm}]{geometry}
 \setlength\parindent{0pt}
 \usepackage{errata} 
 % begin errata for math mode
@@ -18,6 +19,7 @@
 % math formatting
 \usepackage{amssymb, amsmath}
 \usepackage{multicol}
+    \setlength{\columnseprule}{1pt}
 % Code formatting
 \usepackage{pxfonts}    % Bold inline code
 \usepackage{fancyvrb}
@@ -156,7 +158,6 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,xparse}
 \begin{document}
-\VerbatimFootnotes
 \tableofcontents
     \input{footnotes}
     % must include footnotes for all Chapters
@@ -164,12 +165,13 @@
     % \include{Chapter-01/01-Toward-Scientific-FORTH}
     % \include{Chapter-02/02-Programming-in-FORTH}
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
-     \include{Chapter-04/04-The-80x87-Family}
-    % \include{Chapter-05/05-Scientific-Data-Structures}
+    % \include{Chapter-04/04-The-80x87-Family}
+     \include{Chapter-05/05-Scientific-Data-Structures}
     % \include{Chapter-06/06-Programming-Examples}
     % \include{Chapter-07/07-Complex-arithmetic-in-FORTH}
     % \include{Chapter-08/08-More-Programming-Examples}
     % \include{Chapter-09/09-Linear-Algebra}
     % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
     % \include{Chapter-11/11-Symbolic-Programming}
+\VerbatimFootnotes
 \end{document}

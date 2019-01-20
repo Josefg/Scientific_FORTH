@@ -5,8 +5,8 @@
 \TallC{Data} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
 
 \begin{itemize}
-    \item The re-defined structures are what most users need to solve stan ard problems, so meet 80-90\% of the cases in practice. That 15, they are not terribly restrictive.
-    \item Because the most-needed structures are predefined and have a standard format, they do not have to be invented each time a prggram is written. Standardization facilitates the exchange an portability of programs.
+    \item The re-defined structures are what most users need to solve standard problems, so meet 80-90\% of the cases in practice. That is, they are not terribly restrictive.
+    \item Because the most-needed structures are predefined and have a standard format, they do not have to be invented each time a program is written. Standardization facilitates the exchange an portability of programs.
     \item Standardized data structures aid program development in discrete modules, permitting sections written by different persons or teams to interface properly with minimal tuning.
 \end{itemize}
 
@@ -16,21 +16,19 @@ This chapter\sepfootnote{05_01} suggests protocols for arrays and typed data\sep
 
 \section{Typed data structures}
 
-One of the virtues of FORTRAN or BASlC is that the programmer does not have to keep track of what type of data he is fetching and storing from memory. In fact the user does not even program such operations explicitly - the compiler takes care of everything induding the bookkeeping. Mixed-arithmetic expressions like
+One of the virtues of FORTRAN or BASlC is that the programmer does not have to keep track of what type of data he is fetching and storing from memory. In fact the user does not even program such operations explicitly -- the compiler takes care of everything induding the bookkeeping. Mixed-arithmetic expressions like
 
 \begin{lstlisting}
-Z = -37.2E-17*CEXP(CMPLX((R**2,W)/32)/DSIN(W)
+Z = -37.2E-17*CEXP(CMPLX(R**2,W)/32)/DSIN(W)
 \end{lstlisting}
 
-place great demands on a compiler. The compiler first tabulates the types of the variables and literals in the expression, and then decide which run-time routines to insert. With two types of integers and four types of floating-point numbers (REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16) a typical binary operator such as exponentiation (** offers 36 possibilities. No wonder FORTRAN compilers are slow. 
+place great demands on a compiler. The compiler first tabulates the types of the variables and literals in the expression, and then decide which run-time routines to insert. With two types of integers and four types of floating-point numbers (REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16) a typical binary operator such as exponentiation (**) offers 36 possibilities. No wonder FORTRAN compilers are slow. 
 
-\TallC{FORTH} sacrifices automation opting for a small, fast, flexible compiler. The traditional FORTH style gives each type of data its own operators. However, if a program demands all the standard REAL*4, REAL*S, COMPLEX*8 and COMPLEX*16 data types (not to mention INTEGER*2 and *4), having to remember them all and use them appropriately is a chore. This problem has
+\TallC{FORTH} sacrifices automation opting for a small, fast, flexible compiler. The traditional FORTH style gives each type of data its own operators. However, if a program demands all the standard REAL*4, REAL*S, COMPLEX*8 and COMPLEX*16 data types (not to mention INTEGER*2 and *4), having to remember them all and use them appropriately is a chore. This problem has led me to experiment with generic access operators, \bc{G@} and \bc{G!}. These let FORTH keep track of which words to use in fetching and storing the "scientific" data types to the fstack (which may partly reside on a co-processor like the 80x87 or MC68881 chips). Corresponding generic unary and binary floating point operators \bc{GDUP}, \bc{G*}, \textit{etc}. allow programs themselves to be generic.
 
-led me to experiment with generic access operators, \bc{G@} and \bc{G!}. These let FORTH keep track of which words to use in fetching and storing the "scientific" data types to the fstack (which may partly reside on a co-processor like the 80x87 or MC68881 chips). Corresponding generic unary and binary floating point operators \bc{GDUP}, \bc{G*}, \textit{etc}. allow programs themselves to be generic.
+\TallC{I }have lately further modified the scheme to permit more complete automation. The kernel of the method is an "intelligent" fstack, or ifstack, that recordns the type of each number on it. The generic arithmetic operators and library functions decide from the information on the ifstack how to treat their operands.
 
-\TallC{I} have lately further modified the scheme to permit more complete automation. The kernel of the method is an "intelligent" fstack, or ifstack, that recordns the type of each number on it. The generic arithmetic operators and library functions decide from the information on the ifstack how to treac their operands.
-
-An ifstack-base protocol for floating point and complex arithmetic has drawbacks and advantages. A major drawback is the run-time overhead in maintaining the ifstack and in choosing the appropriate operator for a given situation. In other words we trade convenience for a non-negligible execution speed penalty. To some extent this can be mitigated by \textit{computing} decisions and by vectoring rather than branching (\textit{i.e.} no Eaker \bc{CASE} statements or \bc{IF ... ELSE ... THEN}s). Moreover, although the definitions are coded in high-level FORTH for portability, the key words should be hand-assembled for the target machine. Finally, my high-level ifstack manager has plenty of error checking that could be dispensed ith when speed is an issue.
+An ifstack-base protocol for floating point and complex arithmetic has drawbacks and advantages. A major drawback is the run-time overhead in maintaining the ifstack and in choosing the appropriate operator for a given situation. In other words we trade convenience for a non-negligible execution speed penalty. To some extent this can be mitigated by \textit{computing} decisions and by vectoring rather than branching (\textit{i.e.} no Eaker \bc{CASE} statements or \bc{IF ... ELSE ... THEN}s). Moreover, although the definitions are coded in high-level FORTH for portability, the key words should be hand-assembled for the target machine. Finally, my high-level ifstack manager has plenty of error checking that could be dispensed with when speed is an issue.
 
 The chief advantages of the ifstack are:
 \begin{itemize}
@@ -45,14 +43,14 @@ The chief advantages of the ifstack are:
 Here is how we label types:
 \begin{lstlisting}
     \ Data type identifiers
-    0 CONSTANT REALM \ 4 bytes long
-    1 CONSTANT REAL‘8 \ 8 bytes long
-    2 CONSTANT COMPLEX \ 8 bytes long
+    0 CONSTANT REAL*4   \  4 bytes long
+    1 CONSTANT REAL*8   \  8 bytes long
+    2 CONSTANT COMPLEX  \  8 bytes long
     3 CONSTANT DCOMPLEX \ 16 bytes long
 
     \ a simple version of #BYTES
     CREATE #bytes 4 C, 8 C, 8 C, 16 C,
-    : #BYTES (type - #bytes) #bytes + C@ ;
+    : #BYTES (type -- #bytes) #bytes + C@ ;
 \end{lstlisting}
 
 \subsection{Typed scalars}
@@ -91,7 +89,7 @@ $\mathbf{\big |}$ represents 2 bytes):
 We implement a scalar through the defining word
 
 \begin{lstlisting}
-    : SCALAR ( type--)
+    : SCALAR ( type -- )
        CREATE DUP , #BYTES ALLOT
        DOES> DUP@ SWAP 2+ SWAP ; ( -- adr t )
 \end{lstlisting}
@@ -122,9 +120,9 @@ HS/FORTH\sepfootnote{05_05} provides beheading in a particularly simple form: \b
 
 Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}'s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
 
-Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed -or corrupted- by later definitions. (Pountain\sepfootnote{05_06} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
+Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed --or corrupted-- by later definitions. (Pountain\sepfootnote{05_06} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
 
-Variables are essential for scientific programming. Since we must often have more than two variables, it is silly to repeat \bc{SCALAR}. A simple way to allow SCALAR to use a list is
+Variables are essential for scientific programming. Since we must often have more than two variables, it is silly to repeat \bc{SCALAR}. A simple way to allow \bc{SCALAR} to use a list is
 
 \begin{lstlisting}
     :SCALARS ( n -- )
@@ -162,69 +160,70 @@ assembled from components of the FORTH compiler. That is, the ordinary colon \bc
 compile mode. \bc{DOES>} specifies the run-time action (recall any word created by \bc{CREATE} leaves its parameter field address
 \textbf{-pfa-} on the stack at run-time, \textit{prior} to the actions following \bc{DOES>}). In the case of \bc{:} the run-time action is to fetch the pfa of the new word and execute it. At run-time, words defined using \bc{G:} add twice the type descriptor to the pfa (to get the offset into the array) then fetch the desired address and \bc{EXECUTE} it.
 
-Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the "far" forms of addressing words\sepfootnote{05_09}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstande - it is HS/FORTH's name for the portion of the dictionary containing the word headers)
+Microprocessors like the MC680x0 and 80386 that can address large, level memories require no further elaboration for \bc{G@} and \bc{G!}. However, if large arrays are to be addressed within the segmented memory addressing protocol of the 8086/80286 chips, we would have to define \bc{G@} and \bc{G!} to use the "far" forms of addressing words\sepfootnote{05_09}. For example, in HS/FORTH such words as \bc{R32@L} expect a segment paragraph number and offset (32 bits total) as the complete address of the variable being fetched to the 87stack. In that case we modify the definition of \bc{SCALAR} to include the segment paragraph number (seg) in the definition (\bc{LISTS} is nonstandard - it is HS/FORTH's name for the portion of the dictionary containing the word headers)
 
 \begin{lstlisting}
-    : SCALAR (type - -)
-    CREATE DUP , \make header ,type
-    #BYTES ALLOT \reserve space
-    DOES > > R
-    [ LISTS @] LITERAL (- - sag)
-    R@ 2 + (- - seg off)
-    R> @ - (--segofltype)
-    \ Ex: BEAU-4' SCALAR x
+    : SCALAR ( type -- )
+    CREATE DUP ,        \ make header ,type
+    #BYTES ALLOT        \ reserve space
+    DOES>  >R
+    [ LISTS @ ] LITERAL ( -- seg)
+    R@ 2+               ( -- seg off)
+    R> @ ;              ( -- seg off type)
+    \ Ex: REAL*4 SCALAR X
 \end{lstlisting}
 
 \subsection{The intelligent floating point stack (ifstack)}
-\TallC{The} \textbf{ifstach} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
+\TallC{The} \textbf{ifstack} is a more complex data structure than either a simple fstack or the parameter/retum stacks. When a typed datum is placed on the ifstack its type must be placed there also.
 
 But the typed data have varying lengths, from 4 to 16 bytes. We can deal with this two different ways: either \bc{ALLOT} enough memory to hold a stack of the longest type, making each position on the ifstack 18 bytes wide (to hold datum plus type); or manage the ifstack as a modified heap, with the address of a given datum being computable from the ifstack-pointer and the data type.
 
 The 18-byte wide ifstack wastes memory, but is easy to program. (In retrospect, this is exactly the method I used to program adaptive numerical quadrature\sepfootnote{05_10}.) After several false attempts I settled on the fixed-width ifstack. High level FORTH code for this variant is given below.
+\begin{multicols}{2}
+\begin{lstlisting}[basicstyle=\small,]
+\ TYPED DATA STACK MANAGER
+TASK FSTACKS
+FIND CP@ 0=
+?( FLOAD COMPLEX.FTH )
 
-\begin{lstlisting}
-    \ TYPED DATA STACK MANAGER
-    TASK FSTACKS
-    FIND CP@ 0=
-    ?( FLOAD COMPLEX.FTH )
+\ define data-type tokens
+0 CONSTANT REAL*4
+1 CONSTANT REAL*8
+2 CONSTANT COMPLEX
+3 CONSTANT DCOMPLEX
 
-    \ define data-type tokens
-    0 CONSTANT REAL*4
-    1 CONSTANT REAL*8
-    2 CONSTANT COMPLEX
-    3 CONSTANT DCOMPLEX
+CREATE #bytes 4 C, 8 C, 16 C,
+: #BYTES #bytes + C@ ; 
+( type -- length in bytes )
 
-    CREATE #bytes 4 C, 8 C, 16 C,
-    : #BYTES #bytes + C@ ; 
-    ( type -- length in bytes )
+\define scalar and scalars
+: SCALAR        ( type -- ) 
+    CREATE DUP , #BYTES ALLOT 
+    DOES> DUP@ SWAP 2+ SWAP ;
 
-    \define scalar and scalars
-    : SCALAR        ( type -- ) 
-        CREATE DUP , #BYTES ALLOT 
-        DOES> DUP@ SWAP 2+ SWAP ;
+( -- seg off type )
+\ say: REAL*4 SCALAR X
+: SCALARS ( n type -- )
+    SWAP 0 DO DUP SCALAR LOOP
+    DROP ;
+\ say: 4 DCOMPLEX SCALARS XA XB XC XD
 
-    ( -- seg off type )
-    \ say: REAL*4 SCALAR X
-    : SCALARS ( n type -- )
-        SWAP 0 DO DUP SCALAR LOOP
-        DROP ;
-    \ say: 4 DCOMPLEX SCALARS XA XB XC XD
+\ definitions for the parallel stack
+\ of types and data 
+\ Brodle, TF (Brady, NY, 1984) p. 207.
 
-    \ definitions for the parallel stack of types and data 
-    \ Brodle, TF (Brady, NY, 1984) p. 207.
-
-    CREATE FSTACK 2018' 2+ ALLOT
-    \ 2 tos-pointer, 20 18-byte cells
-    : FS.INT FSTACK 0! ;
-    : EMPTY         ( -- seg off )
-        [ LISTS @ ] LITERAL
-        FSTACK DUP@ 18 * 2+ + ;
-    : >FS ( seg off type -- ) \ say: X >FS
-        >R >EMPTY ( -- seg off seg' off )
-        R@ OVER ! \ store type on ifstack
+CREATE FSTACK 20 18 * 2+ ALLOT
+\ 2 tos-pointer, 20 18-byte cells
+: FS.INT FSTACK 0! ;
+: EMPTY         ( -- seg off )
+    [ LISTS @ ] LITERAL
+    FSTACK DUP@ 18 * 2+ + ;
+: >FS ( seg off type -- ) \ say: X >FS
+    >R >EMPTY ( -- seg off seg' off )
+    R@ OVER ! \ store type on ifstack
 
 FS> ( seg off type -- ) \ say: X FS>
-FSTACK 1-I              \ dec ifstack ptr
+FSTACK 1-!              \ dec ifstack ptr
 >R >EMPTY               ( -- seg off seg' off' )
 DUP@ R@ =               \ srce.type = dest.type ? 
 IF 2+ DSWAP             ( -- seg' off' sef off )
@@ -246,7 +245,7 @@ G: G@ R32@L R64@L X@L DX@L ;
 G: G! R32!L R64!L X!L DX!L ;
 \ move data from ifstack to/from FPU
 : FS>F ( -- t 87: -- x )
-    FSTACK 1- !  \ dec ifstack ptr
+    FSTACK 1-!  \ dec ifstack ptr
     >EMPTY      ( -- seg off )
     DUP@ >R 2+
     R@ ( sef off' type )
@@ -255,11 +254,11 @@ G: G! R32!L R64!L X!L DX!L ;
 
 :F>FS (t-- 87:x--)
     >R >EMPTY   ( -- sef off )
-    R@ OVER!
+    R@ OVER !
     2+ R> ;     ( -- sef off' type)
 \end{lstlisting}
+\end{multicols}
  
-
 The stack comments and comments should make the preceding code self-explanatory.
 
 \subsection{Unary and binary generic operators}
@@ -426,7 +425,7 @@ The only instance where one might forego the overhead penalty paid for the conve
 
 \TallC{Numerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
 
-\section{Improved (FORTRAN-like) array notation}
+\subsection{Improved (FORTRAN-like) array notation}
 \TallC{Something} like V(15) --the 15'th element of V-- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} --but this is both hard to read and unintuitive\sepfootnote{05_11}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
 FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\sepfootnote{05_12}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.

@@ -482,6 +482,7 @@ To calculate the inverse functions, we make use of standard identities (the form
 \endleftbar
 
 \section{Extending the intrinsic 80x87 stack}
+\label{sec:Extending}
 \TallC{As} promised in the beginning of the chapter, we now design a fstack manager in software that allows more than 8 cells. First we examine the structure of the 80x87 stack (\textbf{87stack}).
 
 From \textbf{8087P} we see that the 8 registers in the 87stack are organized as a circular stack. A 3-bit pointer, \regc{ST}, records which physical register is actually TOS. The instruction set allows \regc{ST} to be incremented (\regc{FINCSTP}) or decremented (\regc{FDECSTP}) modulo 8. The 87stack is shown below in Fig. \ref{fig:04_01} on page 81.
@@ -518,11 +519,11 @@ The algorithm has the following expression in pseudo-FORTH
     Redefine operations that put \#s on 87stack:
         increment stack_pointer
         if 87stack full put st(7) on fstack
-        push onto st(O)
+        push onto st(0)
 
-    Redefine operations that take \#5 off 87stack:
+    Redefine operations that take \#s off 87stack:
         pop st(0)
-        decrement stack_pornter
+        decrement stack_pointer
         if fstack notempty, put tofs onto st(7)
 \end{lstlisting}
 
@@ -536,9 +537,9 @@ We begin by defining the data structure (the fstack proper) where we will stash 
     \item Finally, what do we do if the memory we set aside gets full? The solution chosen below makes the extension circular using modulo arithmetic to compute the addresses within it.
 \end{itemize}
 
-We now exhibit the fstack manager program in fig. 4-2 on page 83 below. By now the reader should be familiar enough with FORTH style to understand the program logic with only moderate commenting and explanation. Remember- the program reads from the bottom up!
+We now exhibit the fstack manager program in Fig. 4-2 on page 83 below. By now the reader should be familiar enough with FORTH style to understand the program logic with only moderate commenting and explanation. Remember- the program reads from the bottom up!
 
-The key words are \bc{FPUSH} and \bc{FPOP}- they do the work. Every word that changes the 87stack has to be redefined to include either \bc{FPUSH} or \bc{FPOP} as appropriate.
+The key words are \bc{FPUSH} and \bc{FPOP}-- they do the work. Every word that changes the 87stack has to be redefined to include either \bc{FPUSH} or \bc{FPOP} as appropriate.
 
 As the test results in Table 4-5 below make clear, the high-level stack extension is too slow. Some optimization is necessary.
 
@@ -549,8 +550,9 @@ Table 4-5 fstack manager timings
     \begin{tabular}{|c c c|}
     \hline
         \textbf{High-level} & \textbf{Optimized} & \textbf{Hand-coded} \\
-        \\
-        29 sec              & 6 sec              & 4 sec \\
+                            &                    &                     \\
+        29 sec              & 6 sec              & 4 sec               \\
+                            &                    &                     \\
     \hline
     \end{tabular}
 \end{center}
@@ -607,7 +609,7 @@ The results of the tests, presented in Table 4-5 on page 82 above,
 are interesting:
 \begin{itemize}
     \item the optimizer does nearly as well as hand-tuned machine code.
-    \item An \regc{FPUSH} or an \regc{FPOP} takes about 50 ysec on the average, when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
+    \item An \regc{FPUSH} or an \regc{FPOP} takes about 50 $\mu$sec on the average, when coded by hand, @ 4.77 MHz, or about 240 clock cycles.
     \item The irreducible minimum on an 8086/80286 --since \regc{TREAL} storage from, or retrieval to the 87stack' rs demanded-- cannot possibly be less than 170 clock cycles: 1 fetch and 1 store\sepfootnote{04_19}. (The main place to save some time would be in moves to or from memory; the depth of the fstack and the pointer must be kept as variables, but \bc{FS-SIZE} and \bc{FLGTH} do not change and could be compiled as literals, thereby saving 30 cycles in \bc{FPUSH} and 10 in \bc{FPOP}.)
     \item Substantially greater efficiency (at best another 1.5x improvement over the code version discussed above) would require a different algorithm -based, perhaps, on the 87stack overflow or underflow interrupt. But because other error conditions can initiate this interrupt, the testing and decision-making needed to use this method seemed to me likely to produce equivalent overhead to the method employed here.
 \end{itemize}
@@ -615,9 +617,9 @@ are interesting:
 
 \TallC{Several} companies have produced non-infringing clones of the Intel 80x87 family of chips. American Micro Devices is a second source for 80287 and 80387 chips. Cyrix Corporation has produced 80287 and 80387 equivalents with significantly faster transcendental functions and moderately faster arithmetic than , the Intel originals.
 
-And finally, Integrated Information Technology, Inc. (founded by the designers of the Weitek chips) has produced the most interesting of the clones: the 80c287/80c387 not only perform arithmetic significantly faster than the Intel originals, they possess 24 additional 80-bit on-chip registers. Unfortunately these cannot be combined directly with the eight original registers to make a 32-deep stack, since this would have required increasing the 80x87 stack-pointer (see 7 above) from 3 bits to 5. Since there was no place to find the 2 extra bits, one cannot really fault IIT's designers.
+And finally, Integrated Information Technology, Inc. (founded by the designers of the Weitek chips) has produced the most interesting of the clones: the 80c287/80c387 not only perform arithmetic significantly faster than the Intel originals, they possess 24 additional 80-bit on-chip registers. Unfortunately these cannot be combined directly with the eight original registers to make a 32-deep stack, since this would have required increasing the 80x87 stack-pointer (see \S\ref{sec:Extending} above) from 3 bits to 5. Since there was no place to find the 2 extra bits, one cannot really fault IIT's designers.
 
-But if they cannot be used to extend the 87stack, what are the 24 extra registers good for? Eight (bank 3) are not even accessible, being used to speed up on-chip arithmetic. However, banks 0-2 -24 registers- \textit{can} be accessed (\eg for on-chip cache memory). Moreover, IIT has provided an on-chip linear transformation: a 4x4 matrix multiplies a 4-dimensional column vector in place. (The original vector is overwritten, but the matrix is unchanged.) It works like this\sepfootnote{04_20}:
+But if they cannot be used to extend the 87stack, what are the 24 extra registers good for? Eight (bank 3) are not even accessible, being used to speed up on-chip arithmetic. However, banks 0-2 --24 registers-- \textit{can} be accessed (\eg for on-chip cache memory). Moreover, IIT has provided an on-chip linear transformation: a 4x4 matrix multiplies a 4-dimensional column vector in place. (The original vector is overwritten, but the matrix is unchanged.) It works like this\sepfootnote{04_20}:
 
 First we define the instructions
 
@@ -628,13 +630,12 @@ First we define the instructions
     CODE F4x4  <% DB F1 %> END-CODE
 \end{lstlisting}
 
-Then we load the 4x4 matrix into banks 1 and 2, the vector into bank 0, and multiply:
+Then we load the 4$\times$4 matrix into banks 1 and 2, the vector into bank 0, and multiply:
 
 \begin{lstlisting}
-    0 VAR a{{
-    0 VAR v{
+    0 VAR a{{    0 VAR v{
     : VEC->c87 ( adr -- )    \ load vector into 80c387
-       IS v{                 \ ! vector address to V{
+       IS v{                 \ ! vector address to v{
        FINIT FSBP0           \ reset ST, select bank 0
        3 0 DO v{ I } G@ LOOP ;
     : MAT->c87 ( adr -- )    \ load matrix into 80c387
@@ -648,22 +649,22 @@ Then we load the 4x4 matrix into banks 1 and 2, the vector into bank 0, and mult
          3 0 DO a{{ I J }} G@ LOOP
        LOOP ;
        
-    : 087- >VEC (adr - - )   \ I from 800387 to vector
+    : c87- >VEC (adr - - )   \ ! from 80c387 to vector
        IS v{                 \ ! vector address to v{
-       FSBP0                 \ select bank 0 %
+       FSBP0                 \ select bank 0
        3 0 DO v{ I } G! LOOP ;
     \ example: ANS = A*V
-    A{{ MAT-87 V{ VEC->87 F4x4 ANS{ c87->VEC
+    A{{ MAT->87 V{ VEC->87 F4x4 ANS{ c87->VEC
 \end{lstlisting}
  
 
-\TallC{The} on-chip 4x4 matrix multiply was intended to accelerate 3-dimensional graphics (rotation and translation can be expressed as a single 4-dimensional transformation). However, most scientific programmers spend little time on 3-D graphics. The matrix instructions are more interesting for their potential to accelerate general matrix operations\sepfootnote{04_21}. For example, suppose we need to transform a vector by multiplying with an arbitrary matrix. Normally we would write
+\TallC{The} on-chip 4$\times$4 matrix multiply was intended to accelerate 3-dimensional graphics (rotation and translation can be expressed as a single 4-dimensional transformation). However, most scientific programmers spend little time on 3-D graphics. The matrix instructions are more interesting for their potential to accelerate general matrix operations\sepfootnote{04_21}. For example, suppose we need to transform a vector by multiplying with an arbitrary matrix. Normally we would write
 
 \begin{align}
     y_{i} = \sum_{j=1}^{n} A_{ij}x_{j}
 \end{align}
 
-But consider, \eg, an 8x8 matrix operating on an 8-dimensional column vector: we \textbf{partition} the matrix and vector into 4-dimensional sub-matrices $a_{11}$ , \textit{etc}. and sub-vectors $x_{1}$ , \textit{etc}.:
+But consider, \eg, an 8$\times$8 matrix operating on an 8-dimensional column vector: we \textbf{partition} the matrix and vector into 4-dimensional sub-matrices $a_{11}$ , \textit{etc}. and sub-vectors $x_{1}$ , \textit{etc}.:
 
 \begin{align}
     \begin{bmatrix}A\end{bmatrix} [x] \equiv 
@@ -679,22 +680,25 @@ But consider, \eg, an 8x8 matrix operating on an 8-dimensional column vector: we
     \end{bmatrix}
 \end{align}
 
-From timings on assembly-coded demonstration programs that multiply vectors by constant 4x4 matrices, we estimate an overall speedup of 6-7 -fold on an 80c387 system. The timings for this process are as shown in Table 4-6 below (assume 32-bit \regc{REAL*4} matrices). The execution time for a 4-dimensional linear transformation using conventional operations is approximately 1744 clock cycles. The time using the vector operation is some 250-300 clocks, based on measured performance. Since 256 clocks are needed to load and store a 4-dimensional vector, we therefore estimate the vector operation \bc{F4x4} takes only about 50 clocks, \textit{i.e.} about 1 floating point multiplication time. We can now estimate the time to multiply two 4x4 matrices as about 1200 clocks \textit{vs.} about 7000 for the scalar process, \textit{i.e.} the same speedup factor
+From timings on assembly-coded demonstration programs that multiply vectors by constant 4$\times$4 matrices, we estimate an overall speedup of 6-7 -fold on an 80c387 system. The timings for this process are as shown in Table 4-6 below (assume 32-bit \regc{REAL*4} matrices). The execution time for a 4-dimensional linear transformation using conventional operations is approximately 1744 clock cycles. The time using the vector operation is some 250-300 clocks, based on measured performance. Since 256 clocks are needed to load and store a 4-dimensional vector, we therefore estimate the vector operation \bc{F4x4} takes only about 50 clocks, \textit{i.e.} about 1 floating point multiplication time. We can now estimate the time to multiply two 4$\times$4 matrices as about 1200 clocks \textit{vs.} about 7000 for the scalar process, \textit{i.e.} the same speedup factor
 
-Table 4-6 \textit{Timings for 4x4 matrix - vector}
+Table 4-6 \textit{Timings for 4$\times$4 matrix - vector}
 \begin{center}
     \begin{tabular}{|c c c c c|}
         \hline
         \textbf{\underline{Operation}} & x & + & @ & ! \\
-        \textbf{\underline{No}}. x \textbf{\underline{Clocks}}: & 16*52 & 12*28 & 20*20 & 4*44 \\
+                                       &   &   &   &   \\
+        \textbf{\underline{No}}. $\times$ \textbf{\underline{Clocks}}: & 16*52 & 12*28 & 20*20 & 4*44 \\
+                                       &   &   &   &   \\
         \textbf{\underline{Total clocks}}: & 832 & 336 & 400 & 176 \\
+                                       &   &   &   &   \\
         \hline
     \end{tabular}
 \end{center}
 
-as for \textit{bmatrix vector}. If one must load the 4x4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
+as for \textit{matrix$\cdot$vector}. If one must load the 4$\times$4 matrix each time, the speedup factor is less: about 3.5-fold because of the 16 additional fetches.
 
-The conventionally programmed 8x8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain -except being able to employ the built-in vector instruction \bc{F4x4} -from partitioning the 8x8 system into 4X4 sub-units. However, Strassen\sepfootnote{04_22} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time-consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
+The conventionally programmed 8$\times$8 matrix-vector multiply should also be some 3-5 times faster than the scalar operations, \textit{i.e.} there is no obvious speed gain --except being able to employ the built-in vector instruction \bc{F4x4}-- from partitioning the 8$\times$8 system into 4$\times$4 sub-units. However, Strassen\sepfootnote{04_22} has pointed out that if one can evaluate matrix products recursively, partitioning can substantially speed the most time-consuming matrix operations, multiplication, and inversion. For example, it appears as though the product of two partitioned matrices,
 
 \begin{align}
 \begin{split}
@@ -767,13 +771,13 @@ where $m$ and $a$ are the elementary multiplication and addition times. Substitu
 Applying the same idea to Strassen’s method we obtain
 
 \begin{align}
-    \hat{M}_{2n} = 7\hat{M}_{n} + 18an^{2}
+    \widehat{M}_{2n} = 7\widehat{M}_{n} + 18an^{2}
 \end{align}
 
 or
 
 \begin{align}
-    \hat{M}_{n} \approx mn^{lg\ 7} - 6an^{2}
+    \widehat{M}_{n} \approx mn^{lg\ 7} - 6an^{2} ,
 \end{align}
 
 where
@@ -825,9 +829,9 @@ we may express the inverse of $A$ as
     \end{bmatrix}
 \end{align}
 
-which leads to the recursion for $I_{a}$, the time to invert an nxn matrix:
+which leads to the recursion for $I_{a}$, the time to invert an n$\times$n matrix:
 \begin{align}
-l_{2n} \cong&\ 2l_{n} + 5M_{n}
+I_{2n} \cong&\ 2I_{n} + 5M_{n}
 \end{align} 
 
 whose solution is
@@ -837,7 +841,7 @@ l_{n} =&\ mn^{lg\ 7} + O(n)
 
 \textit{i.e.}, the time needed to invert is comparable with that needed to multiply.
 
-\TallC{Suppose} we merely wish to solve a linear system without inverting the matrix: can we gain some speed that way? From 17 we
+\TallC{Suppose} we merely wish to solve a linear system \textit{without} inverting the matrix: can we gain some speed that way? From 17 we
 see that the problem
 
 \begin{align*}
@@ -848,9 +852,9 @@ reduces to three sub-problems:
 
 \begin{subequations}
 \begin{align}
-   & a_{11}u_{1} = y_{1}                 \\
-   & zx_{2} = y_{2} - a_{21}{u}_1   \\
-   & a_{11}x_{1} = y_{1} - a_{12}x_{2};
+   & a_{11}u_{1} = y_{1}                    \\
+   & zx_{2} = y_{2} - a_{21}{u}_1           \\
+   & a_{11}x_{1} = y_{1} - a_{12}x_{2}  ;   
 \end{align}
 \end{subequations}
 
@@ -865,4 +869,4 @@ whose solution is dominated by
 S_{n} =& m\bigg(\frac{1}{4}n^{lg\ 7} + 2n^{2}\bigg) + O(n^{lg\ 3})
 \end{align}
 
-Linear equation solution via recursion thus has the same asymptotic running time as matrix multiplication, except that 4 x fewer operations are required than for inversion. That is, it should be about 5 x faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the ITT 80c387 chip, together with Strassen's algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.
+Linear equation solution \textit{via} recursion thus has the same asymptotic running time as matrix multiplication, except that 4$\times$ fewer operations are required than for inversion. That is, it should be about 5$\times$ faster to solve a dense system of 1000 linear equations by recursive partitioning than by ordinary Gaussian elimination even on a scalar processor. The vector instruction on the ITT 80c387 chip, together with Strassen's algorithm, offers the possibility of solving very large systems in practical times, on desktop computers.
