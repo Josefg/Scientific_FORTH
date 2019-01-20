@@ -54,13 +54,9 @@ Here is how we label types:
 \end{lstlisting}
 
 \subsection{Typed scalars}
+\label{sec:Typed_scalars}
 
-\TallC{We} want the machine to remember for us the data-specific fetches and
-stores to the co-processor. To accomplish this, the typed variable has to place
-its address and type on the stack. Thus we need a data structure that we might
-visualize diagramatically in Fig. \ref{fig:05_01} below (a cell $\mathbf{\big |}$
-{\colorbox{gray}{\color{gray}X}} \space {\colorbox{gray}{\color{gray}X}}
-$\mathbf{\big |}$ represents 2 bytes): 
+\TallC{We} want the machine to remember for us the data-specific fetches and stores to the co-processor. To accomplish this, the typed variable has to place its address and type on the stack. Thus we need a data structure that we might visualize diagramatically in Fig. \ref{fig:05_01} below (a cell $\mathbf{\big |}$ {\colorbox{gray}{\color{gray}X}} \space {\colorbox{gray}{\color{gray}X}} $\mathbf{\big |}$ represents 2 bytes): 
 % Fig. 5-1 Memory structure a! a typed scalar
 \begin{figure}
     \center
@@ -85,7 +81,6 @@ $\mathbf{\big |}$ represents 2 bytes):
     \label{fig:05_01}
 \end{figure}
  
-
 We implement a scalar through the defining word
 
 \begin{lstlisting}
@@ -263,18 +258,12 @@ The stack comments and comments should make the preceding code self-explanatory.
 
 \subsection{Unary and binary generic operators}
 
-\TallC{We} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table 5-1 on page 101, in binary notation.
-
-Real and complex can then be distinguished via the code fragment
-
-2 AND ( type -- 0 = real| 2 = complex )
-
 % Table 5-1
 \begin{table}
     \centering
     \caption{\textit{Bit-patterns of data type descriptors}}
         \bigskip
-    \label{tbl:09_01} 
+    \label{tbl:05_01}
     \setlength{\tabcolsep}{30pt}
         \begin{tabular}{|lll|}
             \hline
@@ -288,13 +277,18 @@ Real and complex can then be distinguished via the code fragment
             COMPLEX    &  00000000 & 00000010 \\
             & &\\
             DCOMPLEX   &  00000000 & 00000011 \\
-            &&\\
+            & &\\
             \hline 
         \end{tabular}
 \end{table}
 
+\TallC{We} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table \ref{tbl:05_01} on page \pageref{tbl:05_01}, in binary notation.
 
-Since most unary operators produce results of the same type as their argument, we write a defining word for generic unary operators:
+Real and complex can then be distinguished \textit{via} the code fragment
+
+\quad 2 AND ( type - - 0 = real$\mid$ 2 = complex )
+
+Since most unary operators produce results of the same type as their argument, we write a defining word for \textit{generic} unary operators:
 
 \begin{lstlisting}
 : GU: CREATE ] DOES>    ( -- pfa )
@@ -306,42 +300,41 @@ Since most unary operators produce results of the same type as their argument, w
 
 When we use \bc{GU:} in the form
 \begin{lstlisting}
-GU: GNEGATE FNEGATE XNEGATE ;
+    GU: GNEGATE FNEGATE XNEGATE ;
 \end{lstlisting}
 
 \bc{CREATE} produces a dictionary entry for \bc{GNEGATE; ]} turns on the compiler so the previously defined words \bc{FNEGATE} and \bc{XNEGATE} have their addresses compiled into \bc{GNEGATE}'s parameter field; and \bc{DOES>} attaches the run-time code. The run-time code converts the real/complex bit into an offset, 0 or 2 which is added to the address of the daughter word to get the address where the pointer to the actual code is stored. This pointer is fetched and \bc{EXECUTE}d.
 
 A few unary operators like \bc{XABS} (complex absolute value) return real values from complex arguments. If we want to use \bc{GU:} to define, say, \bc{GABS}, we must remember to redefine \bc{XABS} so it zeros the second bit of the type descriptor left on the stack, before returning its result to the ifstack. This is just a \bc{1 AND} so is fast.
 
-A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in fig. 5-2 as a matrix \regc{TYPE(arga, argb))}
 % fig. 5-2 
 \begin{figure}
     \center
-    \label{fig:05_02}
     \newcolumntype{x}[1]{>{\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
     \setlength{\extrarowheight}{0.1cm}
     \begin{tabular}{|llm{7cm}|}
         \hline
-        &&\\
-        TYPE\textsubscript{ab} && \\
-        &&
+        TYPE\textsubscript{ab} & & \\
+        & &
         \begin{tabular}{ x{0.8cm}x{0.8cm} x{0.8cm} x{0.8cm} x{0.8cm} }
             \textsubscript{\space \space b}&&&&\\
             %\textsuperscript{b}&&&&\\
-             
-            \diaghead(-3,2){\hskip \hsize} a & R & D & X & DX \\
+            \diaghead(-3,2){\hskip \hsize} a & R & D & X & DX  \\
             \cline{2-5}
-            \multicolumn{1}{ x{0.8cm}|}{R  }&  R & R & X & X \\
-            \multicolumn{1}{ x{0.8cm}|}{D  }&  R & D & X & DX \\
-            \multicolumn{1}{ x{0.8cm}|}{X  }&  X & X & X & X \\
+            \multicolumn{1}{ x{0.8cm}|}{R  }&  R & R  & X & X  \\
+            \multicolumn{1}{ x{0.8cm}|}{D  }&  R & D  & X & DX \\
+            \multicolumn{1}{ x{0.8cm}|}{X  }&  X & X  & X & X  \\
             \multicolumn{1}{ x{0.8cm}|}{DX }&  X & DX & X & DX 
         \end{tabular}
         \\
-        &&\\
+        & & \\
         \hline
     \end{tabular}
     \caption{\textit{Types resulting from 2-argument operators}}
+    \label{fig:F05_02}
 \end{figure}
+
+A binary operator (one that takes two arguments) expects its arguments \textit{and} their types on the ifstack. There is no distinction between single- and double-precision arithmetic on most numeric coprocessors. However, the result must leave the proper type-label on the stack. Here is what we want to happen, illustrated in Fig. \ref{fig:F05_02} as a matrix \regc{TYPE(arga, argb))}
 
 \leftbar[1\linewidth]
 Note: this protocol avoids misleading precision for the results of computations. It seems more scientific than FORTRAN's "convert intermediate results to the precision of the highest-precision operand" protocol.
@@ -359,13 +352,12 @@ If we think of the indices and entries in Fig. 5-2 as numbers 0, 1, 2, 3 (so we 
     + ;         ( -- a2 + b2 + a1b1 )
 \end{lstlisting}
 
-Since only logical operations are used. \bc{NEW.TYPE} is faster than table lookup or branching. Note that in programming this key word we have obeyed the central FORTH precept: "Keep it simple!" by choosing a data structure (the numeric type tokens 0-3) that is easily manipulated.
+Since only logical operations are used, \bc{NEW.TYPE} is faster than table lookup or branching. Note that in programming this key word we have obeyed the central FORTH precept: "Keep it simple!" by choosing a data structure (the numeric type tokens 0-3) that is easily manipulated.
 
-We will also need a way to select the appropriate operator from a jump table of addresses. Given that the precision (internal) is irrelevant, again all that matters is whether the number is real or complex, \ie the second bits of the numbers. The first operation must then be to divide by 2 (right-shift by one bit). We then have the matrix of FYig. 5-3 below
+We will also need a way to select the appropriate operator from a jump table of addresses. Given that the precision (internal) is irrelevant, again all that matters is whether the number is real or complex, \ie \,the second bits of the numbers. The first operation must then be to divide by 2 (right-shift by one bit). We then have the matrix of Fig. \ref{fig:05_03} below
 % Fig. 5-3 
-\begin{figure}
+\begin{figure}[H]
     \center
-    \label{fig:05_03}
     \begin{tabular}{|lll|}
         \hline
         && \\
@@ -390,6 +382,7 @@ We will also need a way to select the appropriate operator from a jump table of 
         \hline
     \end{tabular}
     \caption{\textit{Operator selection matrix}}
+    \label{fig:05_03}
 \end{figure}
 where RR stands for real-real, \textit{etc.} The numerical elements are generated as \regc{2*J+I}. This leads to the word
 
@@ -414,9 +407,9 @@ The generic multiply \bc{G*}, \eg, picks out, at run-time, which of four routine
 The only instance where one might forego the overhead penalty paid for the convenience of generic coding would be in nested inner loops, such as occur in matrix operations. Here it might pay to code four inner loops, one for each type, and then access them generically, \eg
 
 \begin{lstlisting}
-    : RLOOP      ... real     words ... ;
-    : DRLOOP     ... dreal    words ... ;
-    : XLOOP      ... complex  words ... ;
+    : RLOOP      ... real words ...     ;
+    : DRLOOP     ... dreal words ...    ;
+    : XLOOP      ... complex words ...  ;
     : DXLOOP     ... dcomplex words ... ;
     G: GLOOP  RLOOP DRLOOP XLOOP DXLOOP ;
 \end{lstlisting}
@@ -428,18 +421,13 @@ The only instance where one might forego the overhead penalty paid for the conve
 \subsection{Improved (FORTRAN-like) array notation}
 \TallC{Something} like V(15) --the 15'th element of V-- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} --but this is both hard to read and unintuitive\sepfootnote{05_11}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
-FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\sepfootnote{05_12}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to Vdot(dot15) or V(dot15dot), where dot stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.
+FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\sepfootnote{05_12}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to $\mathbf V\;\bullet(\;\bullet15)$ or $\mathbf V(\;\bullet15\;\bullet)$, where $\mathbf\bullet$ stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.
 
-This leaves the second possibility, where "(" becomes part of the array name, \regc{V(}. To make \regc{V(dot15dot)} work,")" must become an operator --unless we want to leave postfix notation entirely, with all the complication that would entail\sepfootnote{05_13}. Since ")" is not a reserved word, nothing in principle prevents defining it as an operator. However, such usage would conflict with comments.
+\TallC{This} leaves the second possibility, where "(" becomes part of the array name, \bc{V(}. To make $\mathbf V(\;\bullet15\;\bullet)$ work,")" must become an operator --unless we want to leave postfix notation entirely, with all the complication \textit{that} would entail\sepfootnote{05_13}. Since ")" is not a reserved word, nothing in principle prevents defining it as an operator. However, such usage would conflict with comments.
 
-The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie forbidden. This leaves the curly braces { }, which are unused by FORTH.
+The square braces, [ ], are commonly used in matrix notation; however both are reserved FORTH words, \ie\; forbidden. This leaves the curly braces \{ \}, which are unused by FORTH.
 
-Of the two possible forms, Vdot{dot15} or V{dot15dot}, the latter has the
-advantage that the opening brace, \regc{\{}, is only part of the name, but
-reminds us that the name \regc{V\{} is an array, exactly as names ending with
-\bc{\$} are strings, \textit{etc}. The notation suggests a further mnemonic
-refinement, namely to place \bc{\{\{} and \bc{\}\}} at the ends of
-2-dimensional arrays, as in $\mathbf{M\{\{\bullet \;3 \bullet 5 \;\bullet \}\}}$.
+Of the two possible forms, $\mathbf V\;\bullet\{\;\bullet15\}$ or $\mathbf V\{\;\bullet15\;\bullet\}$, the latter has the advantage that the opening brace, \bc{\{}, is only part of the name, but reminds us that the name \bc{V\{} \textit{is} an array, exactly as names ending with \bc{\$} are strings, \etc The notation suggests a further mnemonic refinement, namely to place \bc{\{\{} and \bc{\}\}} at the ends of 2-dimensional arrays, as in $\mathbf{M\{\{\bullet \;3 \bullet 5 \;\bullet \}\}}$.
 
 How will this notation operate? Clearly, to place the (generalized) address of the n'th element (of a 1-dimensional array) on the stack we would say
 
@@ -456,7 +444,7 @@ whereas
 should analogously place the address of the m,n'th element of a 2-dimensional array on the stack.
 
 \subsection{Large matrices}
-\TallC{The} defining word \bc{SCALAR} given in \S2 above allots space in the dictionary --for most FORTHs, code + data must fit here-- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
+\TallC{The} defining word \bc{SCALAR} given in \S\ref{sec:Typed_scalars} above allots space in the dictionary --for most FORTHs, code + data must fit here-- or in the LISTS segment of HS/FORTH (part of the dictionary). This is OK for variables, but not for arrays, since even a modest matrix would exhaust the ( $\leq$64 Kbyte) LISTS segment.
 
 A \bc{REAL*4} matrix uses 4 bytes per ellement. The largest such array that can be stored in a 65,536 (\ie, $2^{16}$) -byte segment is 128x128. This is the largest array that can be addressed with unsigned 16-bit numbers. On the other hand, a filled IBM PC/XT clone has 64 Kbytes of memory under MS-DOS. Even a generous F0RTH kernel (plus DOS) takes up less than 150 K; hence 450 K is available to hold large arrays. Up to 8 Mbytes can be added as EMS storage, assuming a suitable memory management scheme\sepfootnote{05_14}. That is, in principle one could tackle matrix problem of order 350x350. What about speed? The dominant term is solving linear equations by --say-- Gaussian elimination with partial pivoting is
 \[
@@ -464,13 +452,13 @@ T = \frac{1}{3} mn^{3}
 \]
 where m is the time for 1 multiply and 1 add, and n is the order of the matrix. We should also include the fetch + store time, since the bus bandwidth is as much a limiting factor as the FPU arithmetic speed. For the 8086/8087 the time $m$ is of order 400 clock cycles. Thus the asymptotic execution time on a 10 MHz machine should be of order 10 minutes for n = 350.
 
-On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\approx$ 1 hour) on such machines, even without special equipment such as the IIT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4 \S8), to tackle $10^{3} x 10^{3}$ dense matrix problems.
+On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\cong$ 1 hour) on such machines, even without special equipment such as the IIT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4 \S8), to tackle $10^{3} \times 10^{3}$ dense matrix problems.
 
-The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines - 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
+The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines -- 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
 
 The chips contain 4 segment registers: SS (stack segment), CS (code segment), DS (data segment) and ES (extra segment). Five registers, BP, SP, SI, DI, and BX, can be used for offsets, although they are not entirely interchangeable (some have specific functions in some of the more complex machine instructions, such as string operations). Manifestly, since the 8086 can address
 
-$2^{20} = 1,048,576 \textrm{ bytes ("1 megabyte")}$,
+\quad$2^{20} = 1,048,576 \textrm{ bytes ("1 megabyte")}$,
 
 the largest segment number is $2^{14}-1 = 16,383$.
 
