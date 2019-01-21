@@ -497,13 +497,13 @@ As might be expected, HS/FORTH defines non-standard words (coded as DOS function
 Having allocated the memory, how can we address it efficiently? We would like the simplicity of double-length integer arithmetic for computing an (absolute) array address, as in
 
 \begin{lstlisting}
-    abs.adr(Aij) = abs.adr(Ainf) + (row.length*I+J) *#BYTES
+    abs.adr(A_{ij}) = abs.adr(A_{00}) + (row.length*I+J) *#BYTES
 \end{lstlisting}
 
 However, although the absolute address referenced by a segment and offset is unique, \ie the absolute address in bytes is
 
 \begin{lstlisting}
-    abaadr -18'segment + offset,
+    aba.adr = 16*segment + offset ,
 \end{lstlisting}
 
 the reverse translation, of an absolute address (in bytes) to the segment + offset notation expected by 80x86 processors is \textit{not} unique. This naturally poses a problem when the processor tries to prevent segments from overlapping (protected mode). In such cases, the only answer is a memory management scheme that computes segments and offsets (by brute force) in a non-overlapping fashion. For example, we might define large arrays such that each row has its own segment paragraph.
@@ -521,22 +521,22 @@ The 8086 permits 32-bit addressing as long as we translate 32-bit addresses to t
         SWAP ;
 \end{lstlisting}
 
-The 32-bit address is placed on the stack as a double-length integer, with the low-order (\ie offset part) above the segment part. The phrase \bc{OVER 15 AND} saves bits 0-3 (of the 32-bit address); \bc{-ROT D/16 DROP} then shifts the (32-bit) address right 4 bits and drops the least-significant part, to produce the offset. This conversion method produces offsets in the range 00-0F (hex), that clearly have nothing to do with the original offsets (that led to the 32-bit absolute address \textit{via} 16*seg + off ).
+The 32-bit address is placed on the stack as a double-length integer, with the low-order (\ie\ offset part) above the segment part. The phrase \bc{OVER 15 AND} saves bits 0-3 (of the 32-bit address); \bc{-ROT D/16 DROP} then shifts the (32-bit) address right 4 bits and drops the least-significant part, to produce the offset. This conversion method produces offsets in the range 00-0F (hex), that clearly have nothing to do with the original offsets (that led to the 32-bit absolute address \textit{via} 16*seg + off ).
 
 \subsection{A general typed-array definition}
-\TallC{For} the new syntax to work the word \bc{\}} must compute the addresses of the n'th element of \bc{V\{} from the information on the stack, and \bc{\}\}} must do the same for \bc{M\{\{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V\{ n \}}and \bc{M\{\{ m n \}\}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture ( -- seg off type), exactly as with \bc{SCALARS}.
+\TallC{For} the new syntax to work the word \bc{\}} must compute the addresses of the n'th element of \bc{V\{} from the information on the stack, and \bc{\}\}} must do the same for \bc{M\{\{}. In order to encompass matrices of typed data we specify that the results of the phrases \bc{V\{ n \}}and \bc{M\{\{ m n \}\}} be to leave the generalized address on the parameter stack, \ie to leave the stack picture \regc{( -- seg off type)}, exactly as with \bc{SCALAR}s.
 
-Before we can define \bc{\}}, however, we must specify the data: structure it operates on, \ie the array header.
+Before we can define \bc{\}}, however, we must specify the data: structure it operates on, \ie\ the array header.
 
-Once again we begin with the user interface. We can opt for maximum generality or maximum simplicity. My first attempt fell into the first category, permitting the user to define a named segment of given length and to define an array in that segment. Lately I realized this generality accomplishes little, so have abandoned it. All arrays will be defined in the heap, named SUPERSEG as above. To define a length-50 \bc{1ARRAY} of 4-byte number we will say
+Once again we begin with the user interface. We can opt for maximum generality or maximum simplicity. My first attempt fell into the first category, permitting the user to define a named segment of given length and to define an array in that segment. Lately I realized this generality accomplishes little, so have abandoned it. All arrays will be defined in the heap, named \bc{SUPERSEG} as above. To define a length-50 \bc{1ARRAY} of 4-byte number we will say
 
 \begin{lstlisting}
     50 LONG REAL*4 1ARRAY V{
 \end{lstlisting}
 
-Now, before we work out the mechanics of \bc{1ARRAY}, we imagine that an array will be stored as in Fig. 5-4 below:
+Now, before we work out the mechanics of \bc{1ARRAY}, we imagine that an array will be stored as in Fig. \ref{fig:05_04} below:
 
-The proposed data structure consists of an 8-byte header (the array descriptor) in the dictionary (\regc{LISTS} in HS/FORTH), with the body of the array stored elsewhere. The array descriptor points to the absolute address of the array data (body).
+The proposed data structure consists of an 8-byte header (the \textbf{array descriptor}) in the dictionary (\regc{LISTS} in HS/FORTH), with the \textbf{body} of the array stored elsewhere. The array descriptor points to the absolute address of the array data (body).
 % Fig. 5-4 
 \begin{figure}
     \center
@@ -589,12 +589,12 @@ The proposed data structure consists of an 8-byte header (the array descriptor) 
     \caption{\textit{Structure of a 1-dimenslonal array in \regc{SUPERSEG}}}
 \end{figure}
 
-The array-defining word 1ARRAY must perform the following
+The array-defining word \bc{1ARRAY} must perform the following
 tasks:
 
 \begin{itemize}
-    \item place the length and type of the data in the first two cells 4 bytes) of the array descriptor.
-    \item place the 32-bit address (start of data) in the next two cells 4 bytes) of the array descriptor.
+    \item place the length and type of the data in the first two cells (4 bytes) of the array descriptor.
+    \item place the 32-bit address (start of data) in the next two cells (4 bytes) of the array descriptor.
     \item allot the necessary storage in \bc{SUPERSEG}.
     \item at run-time, place the generalized address, length and type on the parameter stack.
 \end{itemize}
@@ -640,18 +640,18 @@ We first define some auxiliary words:
     : LONG DUP ;
     FIND D, 0= ?( :D, SWAP , , ; )
         \ conditionally compile D,
-    :1ARRAY ( || t -- )
-        CREATE UNDER D,  \ t,| into 1st 4 bytes { -- |t )
+    :1ARRAY ( I I t -- )
+        CREATE UNDER D,  \ t,I into 1st 4 bytes { -- I t )
         SUPERSEG @ 16 M* \ start of SUPERSEG
         VHERE D+ D,      \ abs. address -> next 4 bytes
-        #BYTES M*        ( | t -- #bytes to allot)
+        #BYTES M*        ( I t -- #bytes to allot)
         VALLOT ;         \ allot space in the segment
     \ run-time action: ( -- adr )
 \end{lstlisting}
 
 We also need some words to go with \bc{1ARRAY}:
 \begin{lstlisting}
-    :}  (adr n -- seg.off[n] t )
+    : } (adr n -- seg.off[n] t )
         SWAP DUP@ R > \ type -> rstack
         4+  D@
         ROT R@ #BYTES M*
@@ -683,7 +683,7 @@ This leads to the definitions
     : 2ARRAY   (I*w t -- ) 1ARRAY ;
 \end{lstlisting}
 
-Now let us define \}\} to fetch the double-indexed address:
+Now let us define \bc{\}\}} to fetch the double-indexed address:
 
 \begin{lstlisting}
     : }} ( adr m n -- a[m*I+n] t)
@@ -696,14 +696,14 @@ us define \}\} in terms of \}.
 
 \section{Tuning for speed}
 
-Some of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner via selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH's\sepfootnote{05_18}.
+\TallC{Some} of the words in our typed-data/matrix lexicons should be optimized or redefined in machine code. Accessing matrix elements imposes a non-trivial overhead on matrix operations. We can reduce the execution time with inline code, either in the traditional FORTH manner \textit{via} selected assembler definitions, or with a recursive-descent optimizer such as HS/FORTH's\sepfootnote{05_18}.
 
 Experience teaches that optimization is most fruitful (most bang for the buck) applied to entire inner loops and other selected areas of code, rather than to access words \textit{per se}. By hand-coding the innermost loop in matrix inversion and FFT routines, one achieves programs that run in (asymptotically) minimum time on the 8086/8087 chip set.
 
-\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\sepfootnote{05_19}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would - as with FORTRAN - be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \textit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
-
+\TallC{Significant} speed increases in data access could perhaps be obtained with multiple code field (MCF) words, as described by Shaw\sepfootnote{05_19}, and as implemented by HS/FORTH in the words \bc{VAR}, \bc{AT}, \bc{IS}, and variants thereof. The disadvantage of MCF style is that compile-time binding, while faster in execution, loses the flexibility of run-time binding. That is, data types would --as with FORTRAN-- be specified at compile-time, and lexicons would be recompiled to run with specific types. Run-time binding as described in this Chapter produces \textit{generic} words that can handle all four standard scientific data types, a major advantage over MCF.
+\\
 \leftbar[1\linewidth]
-FORTH data structures, especially as defined in this Chapter, do little- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.
+FORTH data structures, especially as defined in this Chapter, do little-- or no bounds checking, hence do not prevent accidentally overwriting key parts of the operating system.
 
 The new fetch and store words were defined in high-level FORTH for safety. Adding bounds-checking to arrays, at least during the debug cycle, is \underline{strongly recommended} to avoid crashing, or even damaging, the system.
 \endleftbar
