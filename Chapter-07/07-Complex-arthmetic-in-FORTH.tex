@@ -2,121 +2,175 @@
 
 \chapter{Complex arithmetic in FORTH}
 
-\TallC{One} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this featurel. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal via subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)2 . The same problem would afflict C and the new structured BASICs.
+\TallC{One} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this feature\sepfootnote{07_01}. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal \textit{via} subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)\sepfootnote{07_02} . The same problem would afflict C and the new structured BASICs.
 
-Recently, a mechanism for adding complex arithmetic to Pascal by defining a stack and using postfix notation has been proposed3. Does this sound at all familiar?
+Recently, a mechanism for adding complex arithmetic to Pascal by defining a stack and using postfix notation has been proposed\sepfootnote{07_03}. Does this sound at all familiar?
 
 This chapter deals with complex arithmetic and its implementation in FORTH. We do not consider complex numbers whose real and imaginary parts are integers, since these are virtually useless in scientific computing. Therefore we perform complex arithmetic solely in single- or double-precision floating point format. We begin with a brief review of the complex number system.
-
- 
-
-1. APL gracefully admits complex numbers and functions, but is an interpreted language.
-
-2. D.D. Clark, "Simple Calallations with Complex Numbers ,Dr. Dobb's: Journal, October 1984. p. 30.
-
-3. D. Gedeon, "Complex Math in Pascal", Byte Magazine, July 1987, p.121.
 
 \section{The complex number system}
 \TallC{The} algebraic equation
 
-x^2 - 1 = 0
+\begin{equation}
+  x^2 - 1 = 0
+\end{equation}
 
-has 2 roots, +-1, in the standard number system (real numbers). But the (otherwise quite similar) equation
+has 2 roots, $\pm1$, in the standard number system (real numbers). But the (otherwise quite similar) equation
 
-x^2 + 1 = 0
+\begin{equation}
+  x^2 + 1 = 0
+\end{equation}
 
-has no roots. That is, there is no ordinary number which, where squared, gives a negative result. Eighteenth century mathematicians misliked a state of affairs wherein some polynomial equations of n’th degree had n roots, whereas others had n-2, n-4, etc. This seemed disorderly and unpredictable. How much simpler life would be if every polynomial of n’th Order could always be factored into n primitives of the form (x_n are roots)
+has \textbf{no} roots. That is, there is no ordinary number which, when squared, gives a negative result. Eighteenth century mathematicians misliked a state of affairs wherein some polynomial equations of n'th degree had n roots, whereas others had n-2, n-4, \etc This seemed disorderly and unpredictable. How much simpler life would be if every polynomial of n'th order could \textbf{always} be factored into n primitives of the form ($x_n$ are \textbf{roots})
 
-a_0x^0 + a_1x^1 + a_2x^2 + ... + a_nx^n
-\triple= a_n(x-x_1)(x_x_2) ... (x-x_n)
+\begin{equation}
+  \begin{aligned}
+    a_0 & + a_1x + a_2x^2 + \ldots + a_nx^n \\
+    & \equiv a_n(x-x_1)(x-x_2) \ldots (x-x_n)
+  \end{aligned}
+\end{equation}
 
 \subsection{Cartesian representation of complex numbers}
-\TallC{In} order that every polynomial have n roots it was necessary to extend the idea of number to include objects of the form
+\TallC{In} order that every polynomial have n roots it was necessary to extend the idea of \textbf{number} to include objects of the form
 
-z = x 1 + y i
+\begin{equation}
+  z = x\ 1 + y\text{ i}
+\end{equation}
 
-where i is --by definition-- a “number" whose square is -1; 1 a “number” whose square is +1, and x and y are ordinary numbers. Conventionally, x is called the real part of z, and y the imaginary part:
+where $i$ is ---\,by definition\,--- a ``number'' whose square is $-1$; 1 is a ``number'' whose square is $+1$, and $x$ and $y$ are ordinary numbers. Conventionally, $x$ is called the \textbf{real part} of $z$, and $y$ the \textbf{imaginary part}:
 
-x = Re(z) , y = Im(z).
+\begin{equation}
+  x = \text{Re$(z)$ , $y =$ Im$(z)$.}
+\end{equation}
 
 Thus the solutions of the polynomial equation
-z^2 + 1 = 0
+
+\begin{equation}
+  z^2 + 1 = 0
+\end{equation}
 
 are
 
-z = 01 +/- 1i
+\begin{equation}
+  z = 01 \pm 1\text{i}
+\end{equation}
 
-(that is, x=0,y= +/-1).
+(that is, $x = 0, y = \pm1$).
 
-To reassure readers who find uncomfortable the notion of a “number” i = \sqrt{-1} whose square is negative, it is possible to find a 2\x2 matrix representation for 1 (unit matrix) and i :
+To reassure readers who find uncomfortable the notion of a ``number'' $i = \sqrt{-1}$ whose square is negative, it is possible to find a $2\times2$ \textbf{matrix representation} for 1 (unit matrix) and $i$:
 
-1 = ( 1 0 0 1 ) , i = ( 0 1 -1 0)
+\begin{equation}
+  1 =
+  \begin{pmatrix}
+    1 & 0 \\ 0 & 1
+  \end{pmatrix}
+  \; , \; i =
+  \begin{pmatrix}
+    0 & 1 \\ -1 & 0
+  \end{pmatrix}
+\end{equation}
 
-It is easy to verify that --in the sense of matrix multiplication--
+It is easy to verify that\,---\,in the sense of matrix multiplication\,---
 
-i x i = -1, 1 x i = i x 1, and 1 x 1 = 1.
+\begin{equation}
+  \text{i $\times$ i $= -1$, $1 \times$ i $=$ i $\times 1$, and $1 \times 1 = 1$.}
+\end{equation}
 
-These are just the usual multiplication rules for complex numbers. Note that x l and y i then mean multiplication of a matrix by a scalar:
+These are just the usual multiplication rules for complex numbers. Note that $x$ 1 and $y$ i then mean multiplication of a matrix by a scalar:
 
-x 1 \triple= ( x 0 0 x ) , y i \triple= ( 0 y -y 0 )
+\begin{equation*}
+  \begin{aligned}
+    x\ 1 \equiv
+    \begin{pmatrix}
+      x & 0 \\ 0 & x
+    \end{pmatrix}
+    \ ,\ y \text{ i} \equiv
+    \begin{pmatrix}
+      0 & y \\ -y & 0
+    \end{pmatrix}\\
+    z = x + iy \equiv
+    \begin{pmatrix}
+      x & y \\ -y & x
+    \end{pmatrix}
+  \end{aligned}
+\end{equation*}
 
-\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic -- commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
+\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic\,---\,commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
 
-(a + ib)(x + iy) = (ax - by) + i(ay + bx)
+\begin{equation}
+  \begin{aligned}
+    (a + ib)\ (x + iy) = (ax - by)\ +\ i(ay + bx) \\
+    (a + ib)\ (x + iy) = (ax - by)\ +\ i(ay + bx)
+  \end{aligned}
+\end{equation}
 
-(a + ib)(x + iy) = (ax - by) + i(ay + bx)
+For every complex number, $z = x + iy$ there is a corresponding \textbf{complex conjugate} complex number,
 
-For every complex number, $z = X + iy$ there is a corresponding complex conjugate complex number,
+\begin{equation}
+  z^* = x - iy.
+\end{equation}
 
-z^* = x - iy.
+Each non-zero complex number $z$ has a \textbf{multiplicative inverse} $1/z\ldots$ To see this, multiply numerator and denominator of $1/z$ by the complex conjugate Eq. 11, and note that
 
-Each non-zero complex numberz has a multiplicative inverse 1/z... To see this, multiply numerator and denominator of NZ by the complex conjugate Eq. 11, and note that
+\begin{equation*}
+  zz^* \equiv z^*z = x^2 + y^2
+\end{equation*}
 
-zz^* \equiv z^*z = x^2 + y^2
+is a non-zero \textbf{real} number. We can therefore calculate its inverse by ordinary division, and (scalar-) multiply $z^*$ by the result:
 
-is a non-zero real number. We can therefore calculate its inverse by ordinary division, and (scalar-) multiply z^* by the result:
+\begin{equation}
+  \frac{1}{z_2} \equiv \frac{z_2^*}{z_2z_2^*} \equiv \left(\frac{x_2}{x_2^2 + y_2^2} - i \frac{y_2}{x_2^2 + y_2^2}\right).
+\end{equation}
 
-\frac{1}{z_2} \equiv
+To divide one complex number $z_1$ by another, $z_2$, invert $z_2$ and multiply: $z_1/z_2 \equiv z_1 \times (1/z_2)$, \ie
 
-To divide one complex number z_1 by another, z_2, invert z_2 and multiply: $z_1/z_2 \equiv z_1 X (1/z_2), i.e.
+\begin{equation}
+  \frac{z_1}{z_2} \equiv \big(x_1 + iy_1\big) \times \left(\frac{x_2}{x{^2}{_2} + y{^2}{_2}} - i \frac{y_2}{x_2^2 + y_2^2}\right)
+\end{equation}
 
-\frac{z_1}{z_2} \equiv (x_1 + iy_1 ) x (\frac{x_2}{x{^2}{_2} + y{^2}{_2}} - i \frac{y_2}{x{^2}{_2} + y{^2}{_2}}
+(Numbers that satisfy the addition, multiplication and closure properties of real or complex numbers are said to form a \textbf{field}.)
 
-(Numbers that satisfy the addition, multiplication and closure properties of real or complex numbers are said to form a field.)
+It is easy to prove that even when the coefficients of an n'th degree polynomial are \textbf{complex}, it has n roots that can be represented as complex numbers.
 
-It is easy to prove that evenwhen the coefficients of an n'th degree polynomial are complex, it has n roots that can be represented as complex numbers.
+Complex numbers can be used to represent points in the $x$-$y$ plane with $y$ plotted vertically and $x$ horizontally\sepfootnote{07_04}. ( Sometimes this graphical representation is called an \textbf{Argand plot} or \textbf{Argand diagram}. The $x$-$y$ plane is then called the \textbf{Argand plane}.)
 
-Complex numbers can be used to represent points in the x-y plane with y plotted vertically and x horizontally. ( Sometimes this graphical representation is called an Argand plot or Argand diagram. The x-y plane is then called the Argand plane.)
-
-4. The 2-dimensional graphical representation of complex numbers makes complex arithmetic attractive for computer graphics.
-
-Fig. 7-1Representl acom numberasapolntlntheArgand
-lg plane, In Gangeslan apnlgx polar coordinates
+\begin{figure}
+    \center
+    % TODO figure 7.1
+    \caption{\textit{Representing a complex number as a point in the Argand plane, in Cartesian and polar coordinates}}
+    \label{fig:07_01}
+\end{figure}
 
 \subsection{Polar representation of complex numbers}
 
-The complex number $z = x + iy$ is said (remember the Argand plane) to be represented in Cartesian form (after Rene Descartes, the inventor of analytic geometry, i.e. the idea of graphing equations). However, it is equally valid to use the relationship (Euler’s theorem)
+The complex number $z = x + iy$ is said (remember the Argand plane) to be represented in Cartesian form (after Ren\'e Descartes, the inventor of analytic geometry, \ie the idea of graphing equations). However, it is equally valid to use the relationship (\textbf{Euler’s theorem})
 
-e\theta \equiv cos \theta + i sin \theta
+\begin{equation}
+  e^{i\theta} \equiv \cos \theta + i \sin \theta
+\end{equation}
 
-to write the polar representation of $z$,
+to write the \textbf{polar representation} of $z$,
 
-z = re^{i\theta}, r \gt 0.
+\begin{equation}
+  z = re^{i\theta}\ ,\ r \geq 0.
+\end{equation}
 
-Clearly, since $z^* \equiv re^{i\theta}$, we have
+Clearly, since $z^* \equiv r\ e^{-i\theta}$, we have
 
-r = \sqrt{zz^*} = (x^2 + y^2)^\frac{1}{2}
+\begin{equation}
+  r = \sqrt{zz^*} = \big(x^2 + y^2\big)^\frac{1}{2}
+\end{equation}
 
-and5
+and\sepfootnote{07_05}
 
-\theta = tan^-1(y/x). 
+\begin{equation}
+  \theta = tan^{-1}(y/x).
+\end{equation}
 
-5. See Ch. 3.4.1 for definitions of the inverse trigonometric functions.
-
-Note that $\theta$, sometimes called Arg(z), is defined only up to multiples of $2\pi$ -- that is, adding $2\pi$ to an angle changes neither sine nor cosine because of their periodicity. The relations between $(x,y)$ and $(r,\theta) are illustrated in Fig. 7-1 above:
+Note that $\theta$, sometimes called Arg($z$), is defined only up to multiples of $2\pi$\,---\,that is, adding $2\pi$ to an angle changes neither \textit{sine} nor \textit{cosine} because of their periodicity. The relations between $(x,y)$ and $(r,\theta)$ are illustrated in Fig. 7-1 above:
 
 \section{Load, store, manipulate fstack}
-\TallC{We} now define FORTH words to perform complex arithmetc. All complex operations will be prefixed by the letter X6. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
+\TallC{We} now define FORTH words to perform complex arithmetic. All complex operations will be prefixed by the letter X\sepfootnote{07_06}. We assume all complex operations are performed on the FPU for speed, hence we shall give 87stack diagrams.
 
 In 87stack (or fstack) diagrams 2 stands for complex number, x for real part, and y for imaginary part. Where useful, the 87stack diagrams show the operations decomposed into real and imaginary parts. By convention the imaginary part is higher on the fstack than the real part.
 
@@ -124,7 +178,7 @@ By now most FORTH code should be self-explanatory. Many words have been coded in
 
 With by-now obvious meanings we have
 
-\begin{listing}
+\begin{lstlisting}
 \ -- single & double-precision complex fetch and store.
 : X@    DUP R32@ 4+ R32@ ; ( adr-- 87:--z )
 : X!    DUP 4+ R32! R32! ; ( adr-- 87:z-- )
@@ -132,11 +186,9 @@ CODE    8+ BX 08 IW ADD. END-CODE
 : DX@   DUP R64@ 8+ R64@ ; ( adr-- 87:--z )
 : DX!   DUP 8+ R64! R64! ; ( adr-- 87:z-- )
 \ -- and complex fetch and store.
-\end{listing}
- 
+\end{lstlisting}
 
-The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing byte ("character") operations -- as in C@, C!, etc. The complex extension supplied with HS/FORTH uses the prefix C when it is unambiguous (as in C+, C-, C*, C/, etc.),and CP when C alone won't do, as in CP@, etc.
-
+\begin{lstlisting}
 \ fstack manipulation
 :REAL   FDROP ;      ( 87:z--x )
 :IMAG   FPLUCK ;     ( 87:z--y )
@@ -145,10 +197,12 @@ The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing
 :XDROP FDROP FDROP ; ( 87:z-- )
 :XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
 :XDUP FOVER FOVER ;  ( 87:z--z z )
+\end{lstlisting}
 
 \section{Arithmetic operations}
-\TallC{The} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex X complex and complex/complex.
+\TallC{The} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex $\times$ complex and complex/complex.
 
+\begin{lstlisting}
 :CMPLX F=0 ;     ( 87: x--x 0 )
 : X+ FROT F+  F-ROT F+ FSWAP ;
 : X- FROT FR- F-ROT F- FSWAP ;
@@ -160,9 +214,11 @@ The letter C is more mnemonic, but FORTH conventionally reserves C for prefiaing
 \ CODE X*F 2FMUL'. 1FMULP. END-CODE
 : X*I FNEGATE FSWAP ;
 : X/F 1/F X*F ;
+\end{lstlisting}
 
-The critical operation of complex X complex can be defined in high level FORTH for portability:
+The critical operation of complex $\times$ complex can be defined in high level FORTH for portability:
 
+\begin{lstlisting}
 : X*                ( 87:z1 z2--z1*z2 )
     XOVER X*I FROT  ( 87:--a b x -b a y )
     X*F             ( 87:--a b x -by ay )
@@ -170,9 +226,11 @@ The critical operation of complex X complex can be defined in high level FORTH f
     F4X FSWAP       ( 87:-- -by ay x a b )
     F*X             ( 87:-- -by ay xa xb )
     X+ ;
+\end{lstlisting}
 
 Actually, complex multiplication is sufficiently involved to be worth defining in code. Here is a code definition for the 80x87 family of FPUs. The equivalent for the Motorola 68881/2 family is virtually identical, allowing for minor differences in Intel and Motorola assembler mnemonics, as well as for the fact that the 68881/2 has registers but no stack.
 
+\begin{lstlisting}
 \ operation     87stack contents
 CODE X*         \ x  y a b
     3 FLD.      \ x  y a b x
@@ -186,17 +244,21 @@ CODE X*         \ x  y a b
     1 FMULP.    \ xa-yb bx ay
     1 FADDP.    \ xa-yb bx+ay
 ENDCODE ( x y a b--xa-yb xb+ya )
+\end{lstlisting}
 
 \TallC{Once} we have multiplication, division is easy:
 
+\begin{lstlisting}
 : XMODSQ            ( 87:x y--x**2+y**2 )
     F**2 FSWAP F**2 F+ ;
 : 1/X CONJG XDUP XMODSQ
     FDUP F0= ABORT" Can't divide by 0" X/F ;
 :X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
+\end{lstlisting}
 
-With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH words to accomplish Cartesian-polar transformation and vice versa should also be fairly transparent:
+With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH words to accomplish Cartesian-polar transformation and \textit{vice versa} should also be fairly transparent\sepfootnote{07_07}:
 
+\begin{lstlisting}
 : ARG FSWAP FPATAN ; ( 87:x y--atan[y/x] )
 SYNONYM FATAN2 ARG
 \ FORTRAN defines FATAN2 so we do also.
@@ -204,51 +266,68 @@ SYNONYM FATAN2 ARG
 :XABS                ( 87:z--|z| )
     XMODSQ FSQRT ;
 
-: >POLAR             ( 87:x y--r \theta[radians] )
+: >POLAR             ( 87:x y--r $\theta$[radians] )
     XDUP XABS F-ROT ARG ;
-:POLAR>              ( 87:r \theta[radians]--x y )
+:POLAR>              ( 87:r $\theta$[radians]--x y )
     FSINCOS FROT X*F ;
-
-7. SYNONYM is an HS/FORTH innovation to save some code by avoiding : FATAN2 ARG ;
+\end{lstlisting}
 
 \section{Roots of complex numbers}
-\TallC{The} n'th root of a complex number $z$ is that complex number, $z^{1/n}$, whose n'th power is the original number. That is, as for realnumbers,
+\TallC{The} n'th root of a complex number $z$ is that complex number, $z^{1/n}$, whose n'th power is the original number. That is, as for real numbers,
 
-(z^{1/n})^n \equiv z
+\begin{equation}
+  \left(z^{1/n}\right)^n \equiv z
+\end{equation}
 
 It might seem almost trivial to define the n’th root of a complex number in polar representation:
 
-z = r e^{i\theta}
+\begin{equation}
+  z = r\ e^{i\theta}
+\end{equation}
 
 hence
 
-z^{1/n} = r^{1/n} e^{i\theta/n}
+\begin{equation}
+  z^{1/n} = r^{1/n} e^{i\theta/n}
+\end{equation}
 
 Certainly we know what we mean by the n‘th root of a positive real number, and from Euler’s theorem we know how to evaluate
 
-e^{i\theta/n} \equiv \cos\frac{\theta}{n} + i \sin\frac{\theta}{n}
+\begin{equation}
+  e^{i\theta/n} \equiv \cos\frac{\theta}{n} + i \sin\frac{\theta}{n}
+\end{equation}
 
 However, we can also think of the n'th root as a solution of the polynomial equation in the variable $w$
 
-w^n - z = 0.
+\begin{equation}
+  w^n - z = 0.
+\end{equation}
 
 The fundamental theorem of algebra proves that a polynomial of n'th degree has exactly n roots; this implies there are n distinct values of $w$ that satisfy Eq. 22; i.e., there are n distinct roots of $z$. How can we generate them? Let us call the root shown above (in Eq- 20)
 
-w_0 = r^{1/n} e^{i\theta/n}
+\begin{equation*}
+  w_0 = r^{1/n} e^{i\theta/n}
+\end{equation*}
 
 Then we can multiply $w_0$ by a factor
 
-Z_k = e^{2\pi ik/n}, k = 0, 1, ..., n-1
+\begin{equation}
+  Z_k = e^{2\pi ik/n}, k = 0, 1, \ldots, n-1
+\end{equation}
 
 to obtain n different numbers,
 
-w_k = w_0Z_k, k=0, ..., n-1
+\begin{equation*}
+  w_k = w_0Z_k\ , k=0,\ \ldots,\ n-1
+\end{equation*}
 
-the n’th power of each of which is $z$. Clearly, if k increases past n-1, the numbers $w_k$ simply repeat8. Since it is neither possible, nor desirable for a complex function to return all n roots of $z$, we choose the principal one, $w_0$. All complex root-finding functions should obey this convention. In general the simplest algorithm to calculate the n’th root of a positive real number is
+the n'th power of each of which is $z$. Clearly, if k increases past n-1, the numbers $w_k$ simply repeat\sepfootnote{07_08}. Since it is neither possible, nor desirable for a complex function to return all n roots of $z$, we choose the principal one, $w_0$. All complex root-finding functions should obey this convention. In general the simplest algorithm to calculate the n’th root of a positive real number is
 
-r^{1/n} = e^{ln(r)/n}.
+\begin{equation}
+  r^{1/n} = e^{ln(r)/n}.
+\end{equation}
 
-Then to complete the job of evaluating wo we would need to calculate a sine and a cosine. Thus, 3 divisions, 2 multiplications and 4 transcendental function calls are generally needed to evaluate the n'th root of a complex number.
+Then to complete the job of evaluating $w_o$ we would need to calculate a sine and a cosine. Thus, 3 divisions, 2 multiplications and 4 transcendental function calls are generally needed to evaluate the n'th root of a complex number.
 
 However, for square roots (n = 2) there is a much more efficient method based on ordinary square roots, which we shall now describe.
 
@@ -258,34 +337,61 @@ Our phase convention means the phase $\theta$ of the square root of $z$ must lie
 
 The algorithm can be understood using the half-angle formulae for sines and cosines (we used these to develop the trigonometric functions in Ch. 4.6):
 
-\cos(\frac{\theta}{2}) = \frac{1+\cos\theta}{2}^\frac{1}{2}
-
-\sin(\frac{\theta}{2}) = \frac{1-\cos\theta}{2}^\frac{1}{2}
-
-8. Recall $e^0 \equiv e^{2\pi ni} = 1
+\begin{equation}
+  \begin{aligned}
+    \cos\left(\frac{\theta}{2}\right) = \left(\frac{1+\cos\theta}{2}\right)^\frac{1}{2} \\
+    \sin\left(\frac{\theta}{2}\right) = \left(\frac{1-\cos\theta}{2}\right)^\frac{1}{2}
+  \end{aligned}
+\end{equation}
 
 Now we use the fact that if $z = x + iy$, and if $w = a + ib$ is its square root, then their polar representations are
 
-x r \cos \theta
-y r \sin \theta
-a \sqrt{r} cos(\theta/2)
-b \sqrt{r} sin(\theta/2)
+\begin{equation}
+  \begin{aligned}
+    \begin{pmatrix}
+      x \\
+      y
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      r \cos \theta \\
+      r \sin \theta
+    \end{pmatrix}
+    \\
+    \begin{pmatrix}
+      a \\
+      b
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      \sqrt{r}\; \cos(\theta/2) \\
+      \sqrt{r}\; \sin(\theta/2)
+    \end{pmatrix}
+  \end{aligned}
+\end{equation}
 
 Therefore the principal root is
 
-a = sgn(y)[\frac{1}{2}(r + x)]^\frac{1}{2}
-
-b = [\frac{1}{2}(r - x)]^\frac{1}{2}
+\begin{equation}
+  \begin{aligned}
+  a = sgn(y) \left[\frac{1}{2}(r + x) \right] ^\frac{1}{2} ,\\
+  b = \left[\frac{1}{2}(r - x) \right]^\frac{1}{2} .
+  \end{aligned}
+\end{equation}
 
 That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$) is negative, then Re($w$) will be negative, and vice versa.
 
-Figure 7-2
-
-Fig. 7-2 Complex number with negative imaginary part, and its principal square root
+\begin{figure}
+    \center
+    % TODO figure 7.2
+    \caption{\textit{Complex number with negative imaginary part, and its principal square root}}
+    \label{fig:07_02}
+\end{figure}
 
 \subsection{The complex square root program}
 \TallC{We} now translate these equations into high-level FORTH with comments:
 
+\begin{lstlisting}
 : XSORT                 ( 87:z --z**1/2 )
     FSWAP XDUP XABS     ( 87:--y x r )
     FDUP F0=            \ retun 0 if |z| = 0
@@ -298,27 +404,36 @@ Fig. 7-2 Complex number with negative imaginary part, and its principal square r
     F2/  FSQRT          (--f 87:--b |a| )
     IF FNEGATE THEN \ fix sign of Re(z**1/2)
     FSWAP ;
+\end{lstlisting}
 
-We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small through roundoff, thereby generating an error in the square root routine.
+We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small) through roundoff, thereby generating an error in the square root routine.
 
 \section{Complex exponentials and trigonometric functions}
-\TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on Euler’s theorem,
+\TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on \textbf{Euler’s theorem},
 
-e^{i\theta} = \cos\theta + i \sin\theta
+\begin{equation*}
+  e^{i\theta} = \cos\theta + i \sin\theta
+\end{equation*}
 
 Thus,
 
-e^z \equiv e^{x + iy} \equiv e^x e^{iy} = e^x(\cos(y) + i \sin(y))
+\begin{equation}
+  e^z \equiv e^{x + iy} \equiv e^x e^{iy} = e^x\big(\cos y + i \sin y\big)
+\end{equation}
 
 Similarly,
 
-\cos(z) = \frac{1}{2 }(e^{ix-y} + e^{y - ix})
+\begin{equation}
+  \cos z = \frac{1}{2 }\left(e^{ix-y} + e^{y - ix}\right)
+\end{equation}
 
-\sin(z) = \frac{1}{2i}(e^{ix-y} - e^{y - ix})
+\begin{equation}
+  \sin z = \frac{1}{2i}\left(e^{ix-y} - e^{y - ix}\right)
+\end{equation}
 
 Hence the code for the complex trigonometric functions is
 
-\begin{listing}
+\begin{lstlisting}
 : FSINCOS        ( 87:x--cos[x] sin[x] )
     F2/  FTAN    ( 87:--a=tan[x/2] )
     FDUP F**2    ( 87:--a a**2 )
@@ -340,24 +455,32 @@ Hence the code for the complex trigonometric functions is
 : XCOS   ( 87:x y--cos[x]cosh[y] -sin[x]sinh[y] )
     FNEGATE FEXP FSWAP FSINCOS F*X
     XDUP 1/X X+ X2/ ;
-\end{listing}
+\end{lstlisting}
 
 \section{Logarithms}
-\Tall{T}{he} logarithm of a complex number must be defined by the polar representation of the number. Thus, using the fact that
+\TallC{The} logarithm of a complex number must be defined by the polar representation of the number. Thus, using the fact that
 
-log_e(ab) = log¢(a) + logc(b) ,
+\begin{equation}
+  \log_c(ab) = \log_c(a) + \log_c(b) ,
+\end{equation}
 
 and that
 
-log.(ez) = z ,
+\begin{equation}
+  \log_c(z) = z ,
+\end{equation}
 
 we find it consistent to define the complex logarithm as
 
-log_e(z) =1og_e(re^{i\theta}) \equiv log_e(r) + i\theta.
+\begin{equation}
+  \log_c(z) = \log_c\big(r\;e^{i\theta}\big) \equiv \log_c(r) + i\theta.
+\end{equation}
 
 Thus,
 
+\begin{lstlisting}
 :XLOG (87:x y--ln[r] atan[y/x] )
     >POLAR FSWAP FLN FSWAP ;
+\end{lstlisting}
 
 This completes our dissertation on complex arithmetic.
