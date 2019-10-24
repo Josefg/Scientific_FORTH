@@ -57,7 +57,7 @@ are
 
 (that is, $x = 0, y = \pm1$).
 
-To reassure readers who find uncomfortable the notion of a ``number'' $i = \sqrt{-1}$ whose square is negative, it is possible to find a $2\times2$ \textbf{matrix representation} for 1 (unit matrix) and $i$:
+To reassure readers who find uncomfortable the notion of a "number" \textbf{i} $= \sqrt{-1}$ whose square is negative, it is possible to find a $2\times2$ \textbf{matrix representation} for \textbf{1} (unit matrix) and \textbf{i}:
 
 \begin{equation}
   1 =
@@ -95,7 +95,7 @@ These are just the usual multiplication rules for complex numbers. Note that $x$
   \end{aligned}
 \end{equation*}
 
-\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic\,---\,commutative and associative laws of multiplication and addition. They are complete in the sense that when we multiply or add two complex numbers we get a complex number, not some other kind of number:
+\TallC{The} complex numbers obey all the algebraic rules of ordinary arithmetic\,---\,commutative and associative laws of multiplication and addition. They are \textbf{complete} in the sense that when we multiply or add two complex numbers we get a \textbf{complex} number, not some other kind of number:
 
 \begin{equation}
   \begin{aligned}
@@ -122,7 +122,7 @@ is a non-zero \textbf{real} number. We can therefore calculate its inverse by or
   \frac{1}{z_2} \equiv \frac{z_2^*}{z_2z_2^*} \equiv \left(\frac{x_2}{x_2^2 + y_2^2} - i \frac{y_2}{x_2^2 + y_2^2}\right).
 \end{equation}
 
-To divide one complex number $z_1$ by another, $z_2$, invert $z_2$ and multiply: $z_1/z_2 \equiv z_1 \times (1/z_2)$, \ie
+To \textbf{divide} one complex number $z_1$ by another, $z_2$, invert $z_2$ and multiply: $z_1/z_2 \equiv z_1 \times (1/z_2)$, \ie
 
 \begin{equation}
   \frac{z_1}{z_2} \equiv \big(x_1 + iy_1\big) \times \left(\frac{x_2}{x{^2}{_2} + y{^2}{_2}} - i \frac{y_2}{x_2^2 + y_2^2}\right)
@@ -143,7 +143,7 @@ Complex numbers can be used to represent points in the $x$-$y$ plane with $y$ pl
 
 \subsection{Polar representation of complex numbers}
 
-The complex number $z = x + iy$ is said (remember the Argand plane) to be represented in Cartesian form (after Ren\'e Descartes, the inventor of analytic geometry, \ie the idea of graphing equations). However, it is equally valid to use the relationship (\textbf{Euler’s theorem})
+The complex number $z = x + iy$ is said (remember the Argand plane) to be represented in \textbf{Cartesian} form (after Ren\'e Descartes, the inventor of analytic geometry, \ie the idea of graphing equations). However, it is equally valid to use the relationship (\textbf{Euler’s theorem})
 
 \begin{equation}
   e^{i\theta} \equiv \cos \theta + i \sin \theta
@@ -179,47 +179,45 @@ By now most FORTH code should be self-explanatory. Many words have been coded in
 With by-now obvious meanings we have
 
 \begin{lstlisting}
-\ -- single & double-precision complex fetch and store.
-: X@    DUP R32@ 4+ R32@ ; ( adr-- 87:--z )
-: X!    DUP 4+ R32! R32! ; ( adr-- 87:z-- )
-CODE    8+ BX 08 IW ADD. END-CODE
-: DX@   DUP R64@ 8+ R64@ ; ( adr-- 87:--z )
-: DX!   DUP 8+ R64! R64! ; ( adr-- 87:z-- )
-\ -- and complex fetch and store.
-\end{lstlisting}
+    \ -- single & double-precision complex fetch and store.
+    : X@    DUP R32@ 4+ R32@ ; ( adr-- 87:--z )
+    : X!    DUP 4+ R32! R32! ; ( adr-- 87:z-- )
+    CODE    8+ BX 08 IW ADD. END-CODE
+    : DX@   DUP R64@ 8+ R64@ ; ( adr-- 87:--z )
+    : DX!   DUP 8+ R64! R64! ; ( adr-- 87:z-- )
+    \ -- and complex fetch and store.
 
-\begin{lstlisting}
-\ fstack manipulation
-:REAL   FDROP ;      ( 87:z--x )
-:IMAG   FPLUCK ;     ( 87:z--y )
-:CONJG  FNEGATE ;    ( 87:xy--x,-y )
+    \ fstack manipulation
+    :REAL   FDROP ;      ( 87:z--x )
+    :IMAG   FPLUCK ;     ( 87:z--y )
+    :CONJG  FNEGATE ;    ( 87:xy--x,-y )
 
-:XDROP FDROP FDROP ; ( 87:z-- )
-:XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
-:XDUP FOVER FOVER ;  ( 87:z--z z )
+    :XDROP FDROP FDROP ; ( 87:z-- )
+    :XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
+    :XDUP FOVER FOVER ;  ( 87:z--z z )
 \end{lstlisting}
 
 \section{Arithmetic operations}
 \TallC{The} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex $\times$ complex and complex/complex.
 
 \begin{lstlisting}
-:CMPLX F=0 ;     ( 87: x--x 0 )
-: X+ FROT F+  F-ROT F+ FSWAP ;
-: X- FROT FR- F-ROT F- FSWAP ;
-: XOVER FSP F3P; ( 87:z1 z2--z1 z2 z1 )
-: X*F            ( 87:x y a -- ax ay )
-    FUNDER F*    ( 87:--a x bx )
-    F-ROT  F* FSWAP ;
-: F*X FROT X*F ; ( 87:x a b--ax bx )
-\ CODE X*F 2FMUL'. 1FMULP. END-CODE
-: X*I FNEGATE FSWAP ;
-: X/F 1/F X*F ;
+    :CMPLX F=0 ;     ( 87: x--x 0 )
+    : X+ FROT F+  F-ROT F+ FSWAP ;
+    : X- FROT FR- F-ROT F- FSWAP ;
+    : XOVER FSP F3P; ( 87:z1 z2--z1 z2 z1 )
+    : X*F            ( 87:x y a -- ax ay )
+        FUNDER F*    ( 87:--a x bx )
+        F-ROT  F* FSWAP ;
+    : F*X FROT X*F ; ( 87:x a b--ax bx )
+    \ CODE X*F 2FMUL'. 1FMULP. END-CODE
+    : X*I FNEGATE FSWAP ;
+    : X/F 1/F X*F ;
 \end{lstlisting}
 
 The critical operation of complex $\times$ complex can be defined in high level FORTH for portability:
 
 \begin{lstlisting}
-: X*                ( 87:z1 z2--z1*z2 )
+  : X*              ( 87:z1 z2--z1*z2 )
     XOVER X*I FROT  ( 87:--a b x -b a y )
     X*F             ( 87:--a b x -by ay )
     F3X FSWAP       ( 87:--a ay x b -by )
@@ -231,45 +229,45 @@ The critical operation of complex $\times$ complex can be defined in high level 
 Actually, complex multiplication is sufficiently involved to be worth defining in code. Here is a code definition for the 80x87 family of FPUs. The equivalent for the Motorola 68881/2 family is virtually identical, allowing for minor differences in Intel and Motorola assembler mnemonics, as well as for the fact that the 68881/2 has registers but no stack.
 
 \begin{lstlisting}
-\ operation     87stack contents
-CODE X*         \ x  y a b
-    3 FLD.      \ x  y a b x
-    2 FMUL.     \ x  y a b 1:3
-    4 FXCH.     \ xa y a b x
-    1 FMUL.     \ xa y a b xb
-    1 FXCH.     \ xa y a xb b
-    3 FMUL.     \ xa y a bx yb
-    4 FSUBRP.   \ xa-yb y a bx
-    2 FXCH.     \ xa-yb bx a y
+  \ operation     87stack contents
+  CODE X*       \ x      y  a  b
+    3 FLD.      \ x      y  a  b x
+    2 FMUL.     \ x      y  a  b xa
+    4 FXCH.     \ xa     y  a  b x
+    1 FMUL.     \ xa     y  a  b xb
+    1 FXCH.     \ xa     y  a xb  b
+    3 FMUL.     \ xa     y  a bx yb
+    4 FSUBRP.   \ xa-yb  y  a bx
+    2 FXCH.     \ xa-yb bx  a y
     1 FMULP.    \ xa-yb bx ay
     1 FADDP.    \ xa-yb bx+ay
-ENDCODE ( x y a b--xa-yb xb+ya )
+  ENDCODE ( x y a b -- xa-yb xb+ya )
 \end{lstlisting}
 
 \TallC{Once} we have multiplication, division is easy:
 
 \begin{lstlisting}
-: XMODSQ            ( 87:x y--x**2+y**2 )
-    F**2 FSWAP F**2 F+ ;
-: 1/X CONJG XDUP XMODSQ
-    FDUP F0= ABORT" Can't divide by 0" X/F ;
-:X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
+    : XMODSQ            ( 87:x y--x**2+y**2 )
+        F**2 FSWAP F**2 F+ ;
+    : 1/X CONJG XDUP XMODSQ
+        FDUP F0= ABORT" Can't divide by 0" X/F ;
+    :X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
 \end{lstlisting}
 
 With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH words to accomplish Cartesian-polar transformation and \textit{vice versa} should also be fairly transparent\sepfootnote{07_07}:
 
 \begin{lstlisting}
-: ARG FSWAP FPATAN ; ( 87:x y--atan[y/x] )
-SYNONYM FATAN2 ARG
-\ FORTRAN defines FATAN2 so we do also.
+    : ARG FSWAP FPATAN ; ( 87:x y--atan[y/x] )
+    SYNONYM FATAN2 ARG
+    \ FORTRAN defines FATAN2 so we do also.
 
-:XABS                ( 87:z--|z| )
-    XMODSQ FSQRT ;
+    :XABS                ( 87:z--|z| )
+        XMODSQ FSQRT ;
 
-: >POLAR             ( 87:x y--r $\theta$[radians] )
-    XDUP XABS F-ROT ARG ;
-:POLAR>              ( 87:r $\theta$[radians]--x y )
-    FSINCOS FROT X*F ;
+    : >POLAR             ( 87:x y--r $\theta$[radians] )
+        XDUP XABS F-ROT ARG ;
+    :POLAR>              ( 87:r $\theta$[radians]--x y )
+        FSINCOS FROT X*F ;
 \end{lstlisting}
 
 \section{Roots of complex numbers}
@@ -289,6 +287,7 @@ hence
 
 \begin{equation}
   z^{1/n} = r^{1/n} e^{i\theta/n}
+  \label{eq:07_20}
 \end{equation}
 
 Certainly we know what we mean by the n‘th root of a positive real number, and from Euler’s theorem we know how to evaluate
@@ -301,9 +300,10 @@ However, we can also think of the n'th root as a solution of the polynomial equa
 
 \begin{equation}
   w^n - z = 0.
+  \label{eq:07_22}
 \end{equation}
 
-The fundamental theorem of algebra proves that a polynomial of n'th degree has exactly n roots; this implies there are n distinct values of $w$ that satisfy Eq. 22; i.e., there are n distinct roots of $z$. How can we generate them? Let us call the root shown above (in Eq- 20)
+The \textbf{fundamental theorem of algebra} proves that a polynomial of n'th degree has exactly n roots; this implies there are n distinct values of $w$ that satisfy Eq. \ref{eq:07_22}; \ie, there are n distinct roots of $z$. How can we generate them? Let us call the root shown above (in Eq. \ref{eq:07_20})
 
 \begin{equation*}
   w_0 = r^{1/n} e^{i\theta/n}
@@ -321,7 +321,7 @@ to obtain n different numbers,
   w_k = w_0Z_k\ , k=0,\ \ldots,\ n-1
 \end{equation*}
 
-the n'th power of each of which is $z$. Clearly, if k increases past n-1, the numbers $w_k$ simply repeat\sepfootnote{07_08}. Since it is neither possible, nor desirable for a complex function to return all n roots of $z$, we choose the principal one, $w_0$. All complex root-finding functions should obey this convention. In general the simplest algorithm to calculate the n’th root of a positive real number is
+the n'th power of each of which is $z$. Clearly, if k increases past n-1, the numbers $w_k$ simply repeat\sepfootnote{07_08}. Since it is neither possible, nor desirable for a complex function to return all n roots of $z$, we choose the \textbf{principal} one, $w_0$. All complex root-finding functions should obey this convention. In general the simplest algorithm to calculate the n’th root of a positive real number is
 
 \begin{equation}
   r^{1/n} = e^{ln(r)/n}.
@@ -379,7 +379,7 @@ Therefore the principal root is
   \end{aligned}
 \end{equation}
 
-That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$) is negative, then Re($w$) will be negative, and vice versa.
+That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$) is negative, then Re($w$) will be negative, and \textit{vice versa}.
 
 \begin{figure}
     \center
@@ -392,16 +392,16 @@ That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$
 \TallC{We} now translate these equations into high-level FORTH with comments:
 
 \begin{lstlisting}
-: XSORT                 ( 87:z --z**1/2 )
-    FSWAP XDUP XABS     ( 87:--y x r )
+  : XSORT               ( 87:z --z**1/2 )
+    FSWAP XDUP XABS     ( 87:  --y x r )
     FDUP F0=            \ retun 0 if |z| = 0
     IF FDROP XDROP X=0 EXIT THEN
-    XDUP F+             ( 87:--y x r r+x )
-    F2X  F-             ( 87:--y r+x r-x )
-    F2/  FSORT          ( 87:--y r+x b )
-    F2X                 ( 87:--b r+x )
+    XDUP F+             ( 87:  --y x r r+x )
+    F2X  F-             ( 87:  --y r+x r-x )
+    F2/  FSORT          ( 87:  --y r+x b )
+    F2X                 ( 87:  --b r+x )
     F0<                 \ get sign of Im(z)
-    F2/  FSQRT          (--f 87:--b |a| )
+    F2/  FSQRT      ( --f 87:  --b |a| )
     IF FNEGATE THEN \ fix sign of Re(z**1/2)
     FSWAP ;
 \end{lstlisting}
@@ -409,7 +409,7 @@ That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$
 We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small) through roundoff, thereby generating an error in the square root routine.
 
 \section{Complex exponentials and trigonometric functions}
-\TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on \textbf{Euler’s theorem},
+\TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on \textbf{Euler's theorem},
 
 \begin{equation*}
   e^{i\theta} = \cos\theta + i \sin\theta
@@ -434,25 +434,25 @@ Similarly,
 Hence the code for the complex trigonometric functions is
 
 \begin{lstlisting}
-: FSINCOS        ( 87:x--cos[x] sin[x] )
+  : FSINCOS        ( 87:x--cos[x] sin[x] )
     F2/  FTAN    ( 87:--a=tan[x/2] )
     FDUP F**2    ( 87:--a a**2 )
     F=1 XDUP F+  ( 87:--a a**2 1 1+a**2 )
     F2X F-       ( 87:--a 1+a**2 1-a**2 )
     FOVER F/     ( 87:--a 1+a**2 cos[x] )
     F-ROT F/ F2* ( 87:x--cos[x] sin[x] )
-; \ note FSINCOS ts mlcrocoded on the 80387
+  ; \ note FSINCOS ts mlcrocoded on the 80387
 
-:XEXP    ( 87:x y--e**x*cos[y] e**x*sin[y] )
+  :XEXP    ( 87:x y--e**x*cos[y] e**x*sin[y] )
     FSINCOS FROT FEXP X*F ;
 
-: X2/ F2/ FSWAP F2/ FSWAP ;
+  : X2/ F2/ FSWAP F2/ FSWAP ;
 
-: XSIN   ( 87:x y--sin[x]cosh[y] cos[x]sinh[y] )
+  : XSIN   ( 87:x y--sin[x]cosh[y] cos[x]sinh[y] )
     FNEGATE FEXP FSWAP FSINCOS F*X
     XDUP 1/X X- X2/ ;
 
-: XCOS   ( 87:x y--cos[x]cosh[y] -sin[x]sinh[y] )
+  : XCOS   ( 87:x y--cos[x]cosh[y] -sin[x]sinh[y] )
     FNEGATE FEXP FSWAP FSINCOS F*X
     XDUP 1/X X+ X2/ ;
 \end{lstlisting}
@@ -470,7 +470,7 @@ and that
   \log_c(z) = z ,
 \end{equation}
 
-we find it consistent to define the complex logarithm as
+we find it consistent to \textbf{define} the complex logarithm as
 
 \begin{equation}
   \log_c(z) = \log_c\big(r\;e^{i\theta}\big) \equiv \log_c(r) + i\theta.
@@ -479,7 +479,7 @@ we find it consistent to define the complex logarithm as
 Thus,
 
 \begin{lstlisting}
-:XLOG (87:x y--ln[r] atan[y/x] )
+  :XLOG (87:x y--ln[r] atan[y/x] )
     >POLAR FSWAP FLN FSWAP ;
 \end{lstlisting}
 
