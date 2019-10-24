@@ -376,7 +376,7 @@ It is simpler to thread this particular maze in reverse: begin with where we wan
         DUP G=1       \ x**0
     G=0 0 DUP         ( -- n=0 :: -- x 1 0 )
     adr.c EXECUTE G+  ( -- 0   :: -- x 1 c[0] )
-BEGIN 1+              ( -- n   :: -- x x**n-1 sum )
+    BEGIN 1+          ( -- n   :: -- x x**n-1 sum )
     FS>F GOVER G*
         ( -- n 87: -- sum :: -- x x**n)
     DUP adr.c EXECUTE
@@ -452,15 +452,15 @@ BEHEAD' c \ hide this variahie
 f(x) = 0,
     \label{eq:06_10}
 \end{equation}
-where f(x) is a transcendental function rather than, say, a polynomial or ratio of polynomials\sepfootnote{06_10} (\textbf{rational} function).
+where $f(x)$ is a transcendental function rather than, say, a polynomial or ratio of polynomials\sepfootnote{06_10} (\textbf{rational} function).
 
-There are several standard methods for finding a (or possibly, the) value of x that satisfies this equation, i.e. a root of Eq. \ref{eq:06_10} (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are binomial search and regula falsi.
+There are several standard methods for finding a (or possibly, \textit{the}) value of x that satisfies this equation, i.e. a root of Eq. \ref{eq:06_10} (which might have many or no roots). To guarantee that we find a root we must know an interval of the x-axis that it certainly will be found in. Two methods that can be applied under these circumstances are \textbf{binomial} search and \textbf{regula falsi}.
 
 \subsection{Binary search}
 
-Let us look first at binomial search, since its algorithm is euy to understand. We know some interval, $x_L \leq x \leq x_r$, contains a root because $f(x)$ changes sign when x goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. \ref{fig:06_03} on page \pageref{fig:06_03}.
+\TallC{Let} us look first at binomial search, since its algorithm is easy to understand. We know some interval, $x_L \leq x \leq x_R$, contains a root because $f(x)$ changes sign when $x$ goes from $x_L \rightarrow x_R$. In pseudocode (and FORTH flow chart) the binomial search algorithm is shown in Fig. \ref{fig:06_03} on page \pageref{fig:06_03}.
 
-The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_AV)$ halfway between $x_L$ and $x_R$. If $f=f(x_AV)$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_AV$. If the signs are opposite, $x_AV$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
+The method begins with upper and lower bounds on x that capture the root. Next we look at $f(x_{AV})$ halfway between $x_L$ and $x_R$. If $f=f(x_{AV})$ has the same sign as $f_L = f(x_L)$, the new left end of the interval becomes $x_{AV}$. If the signs are opposite, $x_{AV}$ becomes the new right end of the interval. The algorithm is done when left and right ends agree within some predetermined accuracy.
 
 Binary search has the following virtues: the time it takes to achieve a given accuraqr is predictable, and it is guaranteed to find a captured root. Creating a FORTH program from the pseudocode skeleton of Fig. \ref{fig:06_03} is left as an exercise.
 %  Fig. 6-3 
@@ -504,15 +504,12 @@ Binary search has the following virtues: the time it takes to achieve a given ac
     \label{fig:06_03}
 \end{figure}
 
-
-
-
 \subsection{Regula falsi}
 
 \TallC{Now we} look at \textit{regula falsi}, Latin for "rule of false approach" Here the basic premise is:
 
 \begin{itemize}
-    \item Assume the root lies in the interval (x1, x3, and plot a straight line between the points $(x_L, f_L)$ and $(x_R, f_R)$.
+    \item Assume the root lies in the interval $(x_L, x_R)$, and plot a straight line between the points $(x_L, f_L)$ and $(x_R, f_R)$.
 
     \item This line must intersect the x-axis somewhere in the interval, and we take that point, call It $x'$, as our next guess.
 
@@ -520,7 +517,7 @@ Binary search has the following virtues: the time it takes to achieve a given ac
 \end{itemize}
 
 As Fig. \ref{fig:06_04} on page \pageref{fig:06_04} shows, the straight line is supposed
-approximate the curve f(x). The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
+approximate the curve $f(x)$. The new guess may be much closer to the root than is the midpoint of the interval (which was the next guess in binomial search).
 
 %  Fig. 6-4 
 \begin{figure}
@@ -576,7 +573,7 @@ approximate the curve f(x). The new guess may be much closer to the root than is
     \label{fig:06_04}
 \end{figure}
 
-A straight line in the x-y plane has the analytic form
+A straight line in the $x-y$ plane has the analytic form
 \begin{equation}
     y = ax + b
     \label{eq:06_11}
@@ -659,30 +656,29 @@ The corresponding program is shown on page 132.
 Here is an example of the program in action:
 
 \begin{lstlisting}
-FINIT 6 #PLACE ! ok \ set display to 6 digits
-\ Example: f(x) = exp(-x) - x
-: FNA FDUP FNEGATE FEXP FR- ;
-\ Cleariy, the root lies between 0 and 3. (Why?)
+    FINIT 6 #PLACE ! ok \ set display to 6 digits
+    \ Example: f(x) = exp(-x) - x
+    : FNA FDUP FNEGATE FEXP FR- ;
+    \ Cleariy, the root lies between 0 and 3. (Why?)
 
-USE( FNA % 0. % .3 % 1.E-6 )FALSI
-\ st(4) st(3) st(2)  x'      x'-xold
-?????? ?????? ?????? .759452 -.291530
-?????? ?????? ?????? .588025 -.0326025
-?????? ?????? ?????? .569459 -.00362847
-?????? ?????? ?????? .567400 -.000403560
-?????? ?????? ?????? .567171 -.0000448740
-?????? ?????? ?????? .567146 -.0000050002
-?????? ?????? ?????? .567143 -.0000005544 ok
+    USE( FNA % 0. % .3 % 1.E-6 )FALSI
+    \ st(4) st(3) st(2)  x'      x'-xold
+    ?????? ?????? ?????? .759452 -.291530
+    ?????? ?????? ?????? .588025 -.0326025
+    ?????? ?????? ?????? .569459 -.00362847
+    ?????? ?????? ?????? .567400 -.000403560
+    ?????? ?????? ?????? .567171 -.0000448740
+    ?????? ?????? ?????? .567146 -.0000050002
+    ?????? ?????? ?????? .567143 -.0000005544 ok
 \end{lstlisting}
 
-The display was generated by the word .FS --placed in the
-definition of APART? for debugging -- we show the top 5 of the eight 80x87 registers. The ?????? means the contents of that register are not a properly defined fp number, either because of a mistake or because nothing was stored in them after FINIT. Here, since the program is obviously working, the latter explanation is the correct one.
+The display was generated by the word \textbf{.FS} --placed in the definition of \bc{APART?} for debugging -- we show the top 5 of the eight 80x87 registers. The ?????? means the contents of that register are not a properly defined fp number, either because of a mistake or because nothing was stored in them after \bc{FINIT}. Here, since the program is obviously working, the latter explanation is the correct one.
 
 \section{Ordinary differential equations}
 \TallC{We} wish to solve the first-order general differential equation
 
 \begin{equation}
-    \dot{x} = \frac{dx}{dt} = f(x,t)
+    \dot{x} \equiv \frac{dx}{dt} = f(x,t)
     \label{eq:06_16} 
 \end{equation}
 
@@ -697,7 +693,7 @@ For example, we could expand in Taylor's series\sepfootnote{06_11}
 
 \begin{lstlisting}
     \ USE( Fname % a % b % err )FALSI
-    ( 87:--rooot )
+    ( 87:--root )
     \ Fname is the name of a FORTH function
 
     \ function notation
@@ -710,8 +706,8 @@ For example, we could expand in Taylor's series\sepfootnote{06_11}
     : SAME.SIGN? (87:xy -- -- f)
         F* F0> ;
 
-    :INITIALIZE ( cfa -- 87: a  be -- )
-        IS f1   \ stare cfa
+    :INITIALIZE ( cfa -- 87: a b e -- )
+        IS f1   \ store cfa
         XDUP    \ interval has root?
         SAME.SIGN?
         ABORT" Even number of roots!!!"
@@ -721,10 +717,10 @@ For example, we could expand in Taylor's series\sepfootnote{06_11}
         F=0 OLDX G! ;
 
     : X' XL G@ FR G@ ( 87: -- x')
-        FUNDER F*    ( 87: -- yR xL *yR)
+        FUNDER F*    ( 87: -- yR xL*yR)
         XR G@ YL G@
         FUNDER F* ( 87: -- yR xL*yR xL xR*yL )
-        FROT   F- ( 87: -- yR yL xR*yL -xL*yR)
+        FROT   F- ( 87: -- yR yL xR*yL-xL*yR)
         F-ROT  F- F/ ;
 
     : APART? ( 87: x' -- x' -- f )
@@ -734,13 +730,13 @@ For example, we could expand in Taylor's series\sepfootnote{06_11}
     : REVISE ( 87: x' -- )
         FDUP f1 EXECUTE ( 87: -- x' y')
         FDUP YL G@
-        SAMESIGN? FOVER
+        SAME.SIGN? FOVER
         ( --f 87: -- x'y' x')
         IF      XL G! YL G!
         ELSE    XR G! YR G! THEN
         OLDX G! ; ( -- 87: -- )
 
-    : )FALSI ( cfa-- 87: a b e -- root ) INITIALIZE ;
+    : )FALSI ( cfa-- 87: a b e -- root ) INITIALIZE
 \end{lstlisting}
 
 and keep only the lowest order terms:
@@ -752,7 +748,7 @@ x(t+h) \approx x(t) + hf(x(t), t).
 
 \subsection{Runge-Kutta method}
 
-One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms\sepfootnote{06_12}. The algorithms can be classified according to order n (that is, if h the step size, the error at each step will be $O(h^n)$. The second order Runge-Kutta algorithm is $(x' \equiv x(t+h) , x \equiv x(t) )$
+One standard class of methods that had fallen into disfavor by now are popular again, are the Runge-Kutta algorithms\sepfootnote{06_12}. The algorithms can be classified according to order n (that is, if $h$ the step size, the error at each step will be $O(h^n)$. The second order Runge-Kutta algorithm is $(x' \equiv x(t+h) , x \equiv x(t) )$
 
 \begin{equation}
 \begin{aligned}
@@ -777,9 +773,9 @@ Substituting \ref{eq:06_19} in \ref{eq:06_20} we now find
 \begin{equation*}
     x' = x(t+h) = x(t) + h\dot(t) + \frac{h^2}{2}\ddot{x}(t) ;
 \end{equation*}
-that is, the Runge-Kutta x' agrees with the Taylor's series expansion \ref{eq:06_17}, to $O(h^3)$.
+that is, the Runge-Kutta $x'$ agrees with the Taylor's series expansion \ref{eq:06_17}, to $O(h^3)$.
 
-The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} below. We express the algorithm in FORTH as shown in Fig.  \ref{fig:06_07} on page \pageref{fig:06_07} below.
+The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} below. We express the algorithm in FORTH as shown in Fig. \ref{fig:06_07} on page \pageref{fig:06_07} below.
 
 % Fig. 6-6 
 \begin{figure}
@@ -809,57 +805,57 @@ The flow chart of second-order Runge-Kutta is shown in Fig. \ref{fig:06_06} belo
     \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
     % first column
     \begin{lstlisting}
-    \ STRAIGHT 2ND ORDER RUNGE-KUTTA
-    \ SOLUTION OF FIRST-ORDER DIFEQ
-    \ dx/dt = f(x,t)
+\ STRAIGHT 2ND ORDER RUNGE-KUTTA
+\ SOLUTION OF FIRST-ORDER DIFEQ
+\ dx/dt = f(x,t)
 
-    \ See Abramowitz & Stegun, HMF 25.5.6
+\ See Abramowitz & Stegun, HMF 25.5.6
 
-    \ Usege:
-    \ USE( FNB % x0 % t0 % tf % h )RUNGE
-    \
-    \ FNB (:[t]-- 87:x--f[x,t]) evaluates f(x.t)
-    \ x0 = starting value of dep. variable
-    \ t0 = initial time
-    \ tf = end time
-    \ h = step.size
-    \
-    \ k = hf(x,t), x' = x + (k +hf(x+k,t+h))/2
+\ Usege:
+\ USE( FNB % x0 % t0 % tf % h )RUNGE
+\
+\ FNB (:[t]-- 87:x--f[x,t]) evaluates f(x.t)
+\ x0 = starting value of dep. variable
+\ t0 = initial time
+\ tf = end time
+\ h = step.size
+\
+\ k = hf(x,t), x' = x + (k +hf(x+k,t+h))/2
 
-    6 REAL*4 SCALARS T T' H X TMAX K
-    0 VAR f1 \ to hold cfa
-    : USE( [COMPILE]' CFA LITERAL;
-           IMMEDIATE
-    : INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
-        IS f1 H G! TMAX G! T G! X G! ;
+6 REAL*4 SCALARS T T' H X TMAX K
+0 VAR f1 \ to hold cfa
+: USE( [COMPILE]' CFA LITERAL;
+       IMMEDIATE
+: INITIALIZE (:cfa-- 87: x0 t0 tf h -- )
+    IS f1 H G! TMAX G! T G! X G! ;
     \end{lstlisting}
 \tcblower
     %second column
     \begin{lstlisting}
-    \ These words increment x & t.
-    : inc.T     T G@ H G@ F+ T' G! ;
-    : inc.X     X G@
-             T  f1 EXECUTE (87:--f[x,t])
-             H  G@ F*      (87:--k=hf[x,t])
-             FDUP K G!    \ save k
-             X  G@ F+      (87:-- x+k)
-             T' G@ T G!
-             T  f1 EXECUTE (87:--f[x+k,t+h])
-             H  G@ F*
-             K  G@ F+ F2/
-                           (87:--[k+i[x+k,t+h] ]/2)
-             X  G@ F+ X G! ;
+\ These words increment x & t.
+: inc.T     T G@ H G@ F+ T' G! ;
+: inc.X     X G@
+     T  f1 EXECUTE (87:--f[x,t])
+     H  G@ F*      (87:--k=hf[x,t])
+     FDUP K G!    \ save k
+     X  G@ F+      (87:-- x+k)
+     T' G@ T G!
+     T  f1 EXECUTE (87:--f[x+k,t+h])
+     H  G@ F*
+     K  G@ F+ F2/
+                   (87:--[k+i[x+k,t+h] ]/2)
+     X  G@ F+ X G! ;
 
-    : DONE? TG@ TMAXG@ F>) ; (:--f)
+: DONE? TG@ TMAXG@ F>) ; (:--f)
 
-    0 VAR exact            \ cfa
-    : DISPLAY   exact EXECUTE
-        XG@  T  G@ CR F. F. F. ;
-    \ emit "t x exact”
+0 VAR exact            \ cfa
+: DISPLAY   exact EXECUTE
+    XG@  T  G@ CR F. F. F. ;
+\ emit "t x exact”
 
-    : )RUNGE      (:cfa-- 87: x0 t0 tf h -- )
-            BEGIN DISPLAY
-                    DONE? NOT
+: )RUNGE      (:cfa-- 87: x0 t0 tf h -- )
+        BEGIN DISPLAY
+                DONE? NOT
     \end{lstlisting}
     \end{tcolorbox}
     \caption{\textit{Explicit 2nd-order Runge-Kutta solver}}
@@ -887,12 +883,12 @@ with the initial condition x(t = 0) = 0 , whose exact solution is
         \begin{tabular}{ccc}
             \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
                 .0000  & .0000  & .0000   \\
-                .10000 & .00060 & .00033  \\
-                .20000 & .00300 & .00286  \\
+                .10000 & .00050 & .00033  \\
+                .20000 & .00300 & .00266  \\
                 .30000 & .00946 & .00896  \\
                 .40000 & .02177 & .02111  \\
                 .50000 & .04164 & .04082  \\
-                .60000 & .07049 & .06053  \\
+                .60000 & .07049 & .06953  \\
                 .70000 & .10934 & .10825  \\
                 .80000 & .15875 & .15757  \\
                 .90000 & .21877 & .21752  \\
@@ -903,10 +899,10 @@ with the initial condition x(t = 0) = 0 , whose exact solution is
                 1.4000 & .65061 & .64954  \\
                 1.5000 & .75473 & .75377  \\
                 1.6000 & .86175 & .86091  \\
-                1.7000 & .97061 & .90989  \\
+                1.7000 & .97061 & .96989  \\
                 1.8000 & 1.0803 & 1.0797  \\
                 1.9000 & 1.1902 & 1.1897  \\
-                2.0000 & 1.2906 & 1.2992  \\
+                2.0000 & 1.2996 & 1.2992  \\
                 2.1000 & 1.4080 & 1.4078  \\
                 2.2000 & 1.5151 & 1.5149  \\
                 2.2999 & 1.6206 & 1.6205  \\
@@ -916,26 +912,26 @@ with the initial condition x(t = 0) = 0 , whose exact solution is
 &
         \begin{tabular}{ccc}
             \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
-            2.5910 & 1.9254 & 1.9256 \\ 
+            2.5999 & 1.9254 & 1.9255 \\ 
             2.6999 & 2.0228 & 2.0230 \\ 
             2.7999 & 2.1181 & 2.1183 \\ 
             2.8999 & 2.2113 & 2.2115 \\ 
             2.9999 & 2.3023 & 2.3025 \\ 
             3.0999 & 2.3912 & 2.3915 \\ 
             3.1999 & 2.4781 & 2.4784 \\ 
-            3.2999 & 2.3630 & 2.5633 \\ 
+            3.2999 & 2.5630 & 2.5633 \\ 
             3.3999 & 2.6459 & 2.6462 \\ 
             3.4999 & 2.7270 & 2.7273 \\ 
-            3.5999 & 2.8061 & 2.8086 \\ 
-            3.6999 & 2.8836 & 2.8639 \\ 
-            3.7999 & 2.9502 & 2.9596 \\ 
+            3.5999 & 2.8061 & 2.8065 \\ 
+            3.6999 & 2.8836 & 2.8839 \\ 
+            3.7999 & 2.9592 & 2.9596 \\ 
             3.8999 & 3.0333 & 3.0336 \\ 
-            3.9999 & 3.1057 & 3.1080 \\ 
-            4.0999 & 3.1766 & 3.1709 \\ 
+            3.9999 & 3.1057 & 3.1060 \\ 
+            4.0999 & 3.1766 & 3.1769 \\ 
             4.1999 & 3.2460 & 3.2463 \\ 
             4.2999 & 3.3139 & 3.3142 \\ 
             4.3999 & 3.3804 & 3.3808 \\ 
-            4.4999 & 3.4456 & 3.44e0 \\ 
+            4.4999 & 3.4456 & 3.4460 \\ 
             4.5999 & 3.5095 & 3.5099 \\ 
             4.6999 & 3.5722 & 3.5725 \\ 
             4.7999 & 3.6336 & 3.6339 \\ 
@@ -952,23 +948,23 @@ with the initial condition x(t = 0) = 0 , whose exact solution is
 Thus define
 
 \begin{lstlisting}
-: FNB (:[T]-- 87: x--f[x,t])
-    FNEGATE FEXP G@ F**2 F*
-: EXACT T G@ FDUP FDUP F* F* (87:--t^3)
-    3 S->F F/ F=1 F+ FLN ;
+    : FNB (:[T]-- 87: x--f[x,t])
+        FNEGATE FEXP G@ F**2 F*
+    : EXACT T G@ FDUP FDUP F* F* (87:--t^3)
+        3 S->F F/ F=1 F+ FLN ;
 \end{lstlisting}
 
 and say
 
 \begin{lstlisting}
-USE( EXACT IS exact ok
-USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
+    USE( EXACT IS exact ok
+    USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE
 \end{lstlisting}
 
-The resulting output is shown in fig. 6-8 above.
+The resulting output is shown in Fig. \ref{fig:06_08} above.
 
 \subsection{An implicit Runge-Kutta formula}
-\TallC{A variation} on straight Runge-Kutta is a so-called implicit algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose $x + k$ were replaced by $x'$:
+\TallC{A variation} on straight Runge-Kutta is a so-called \textbf{implicit} algorithm\sepfootnote{06_13}.For example, in the second-order formulae given above, suppose $x + k$ were replaced by $x'$:
 
 \begin{equation}
 \begin{aligned}
@@ -978,7 +974,7 @@ The resulting output is shown in fig. 6-8 above.
 \end{aligned}
 \end{equation}
 
-and the resulting (transcendental) equation solved for x' by --say-- regula falsi. Since we have already written a regula falsi program, we can apply it here to get the algorithm shown diagrammatically in Fig. \ref{fig:06_09} below. We program it\sepfootnote{06_14} as shown in Fig. \ref{fig:06_10} on page \pageref{fig:06_10} below.
+and the resulting (transcendental) equation solved for x' by --say-- \textit{regula falsi}. Since we have already written a \textit{regula falsi} program, we can apply it here to get the algorithm shown diagrammatically in Fig. \ref{fig:06_09} below. We program it\sepfootnote{06_14} as shown in Fig. \ref{fig:06_10} on page \pageref{fig:06_10} below.
 
 % Fig. 6-9 
 \begin{figure}
@@ -998,30 +994,32 @@ and the resulting (transcendental) equation solved for x' by --say-- regula fals
         \node [below=0.40cm of eq3.west, anchor=west, align=left, xshift=0.15cm] (eq4) {SOLVE: \space x' = x + k/2 + hf(x',t+h)/2};
         \node [right= of dot1.west, anchor=west, align=left] (rpt) { REPEAT };
     \end{tikzpicture}
-    \caption{\textit{2nd-order implicit Runge-Kutta for dx/dt = f(x,t)}}
+    \caption{\textit{2nd-order \underline{implicit} Runge-Kutta for dx/dt = f(x,t)}}
     \label{fig:06_09}
 \end{figure}
 
 Now we consider the same example as previously:
 
 \begin{lstlisting}
-: FNB (:[T]-- 87:x--f[x,t])
-    FNEGATE FEXP G@ F"2 F' ;
-: EXACT T G@ FDUP FDUP F* F* (87: -- t^3)
-    F=3 F/ F=1 F+ FLN ;
+    : FNB (:[T]-- 87:x--f[x,t])
+        FNEGATE FEXP G@ F**2 F' ;
+    : EXACT T G@ FDUP FDUP F* F* (87: -- t^3)
+        F=3 F/ F=1 F+ FLN ;
 \end{lstlisting}
 
 and say
+\begin{lstlisting}
+    USE( EXACT IS exact ok
+    USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
+\end{lstlisting}
+
 % Fig. 6-10.
 \begin{figure}
     \tiny
     \begin{tcolorbox} [sidebyside, colback=white, sharp corners, enhanced, segmentation style=solid]
     % first column
     \begin{lstlisting}
-USE( EXACT IS exact ok
-USE( FNB % 0. % 0. % 5. % 0.1 )RUNGE ok
-
-FIND )FALSI 0= ?( FLOAD FALSI.FTH)
+FIND )FALSI 0= ?( FLOAD FALSI.FTH )
 7REAL*4 SCALARS T T' H X X' TMAX K
 0 VAR f1    \ to hold cfa of f(xt)
 : INITIALIZE IS f1
@@ -1035,16 +1033,15 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 
 : X" ( 87:x'--g[x'])
     T f1 EXECUTE   ( 87:--f[x',t+h])
-    H G@ F* K G! F+ F2/
+    H G@ F* K G@ F+ F2/
      ( 87:--[k+f[x+k,t+h] ]/2)
     \end{lstlisting}
 \tcblower
     %second column
     \begin{lstlisting}
     X G@ F+ ;
-
 % 3. FCONSTANT F=3
-:INTERVAL X G@ FDUP
+: INTERVAL X G@ FDUP
        K G@ F=3 F* F+ ;
 
 : X' USE( X" INTERVAL % 1.E-6
@@ -1053,15 +1050,15 @@ FIND )FALSI 0= ?( FLOAD FALSI.FTH)
 : DONE? T G@ TMAX G@ F> ;
       (:--f)
 0 VAR exact         \ cfa
-: DISPLAY exact EXECUTE
+: DISPLAY    exact EXECUTE
     X G@ T G@ CR F. F. F. ;
 \ emit "t x exact"
 : )RUNGE (:cfa--87:x0 t0 tf h -- )
     BEGIN DISPLAY
     \end{lstlisting}
     \end{tcolorbox}
-    \caption{textit{Implicit 2nd-order Runge-Kutta program}}
-    \label{fig:06_07}
+    \caption{\textit{Implicit 2nd-order Runge-Kutta program}}
+    \label{fig:06_10}
 \end{figure}
 
 The resulting output is shown in Fig. \ref{fig:06_11} on page \pageref{fig:06_11}.
@@ -1106,9 +1103,9 @@ Clearly the implicit form is more accurate; whether the putative gain in stabili
         \begin{tabular}{ccc}
             \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
             2.5999 & 1.9253 & 1.9255 \\
-            2.0999 & 2.0228 & 2.0230 \\
+            2.6999 & 2.0228 & 2.0230 \\
             2.7999 & 2.1181 & 2.1183 \\
-            2.8099 & 2.2113 & 2.2115 \\
+            2.8999 & 2.2113 & 2.2115 \\
             2.9999 & 2.3024 & 2.3025 \\
             3.0999 & 2.3914 & 2.3915 \\
             3.1999 & 2.4783 & 2.4784 \\
@@ -1148,28 +1145,26 @@ whose exact solution is
 
 \begin{equation}
 x(t) = -log_e(1-\frac{1}{3}t^3).
+\label{eq:06_25}
 \end{equation}
 
-Manifestly, 25 blows up at $t = 3^\frac{1}{3}=1.442...$ We expect the behavior to become apparent in the numerical solution. So we say
+Manifestly, \ref{eq:06_25} blows up at $t = 3^\frac{1}{3}=1.442...$ We expect the behavior to become apparent in the numerical solution. So we say
 
 \begin{lstlisting}
-: FNB FEXP G@ F**2 F*;
-    ([t] -- 07: x --i[x,t])
+    : FNB FEXP G@ F**2 F* ;
+        ([t] -- 87: x -- f[x,t])
 
-: EXACT F=1 T G@ (87:--t^3)
-    FDUP FDUP F* F* F=3 F/ F+ FLN ;
+    : EXACT F=1 T G@    (87:--t^3)
+        FDUP FDUP F* F* F=3 F/ F+ FLN ;
 \end{lstlisting}
 
 and say again
 \begin{lstlisting}
-USE( EXACT IS exact ok
-USE( FNB % 0. %0 % 5. % 0.1 )RUNGE ok
+    USE( EXACT IS exact ok
+    USE( FNB % 0. %0 % 5. % 0.1 )RUNGE ok
 \end{lstlisting}
 
-The results of doing this with straight-, and then implicit Runge-Kutta are
-displayed in Fig. \ref{fig:06_12} (p. \pageref{fig:06_12}) and \ref{fig:06_13}
-(p. \pageref{fig:06_13}), respectively. We only show the second half of the
-interval (near the singular point) in either case.
+The results of doing this with straight-, and then implicit Runge-Kutta are displayed in Fig. \ref{fig:06_12} (p. \pageref{fig:06_12}) and \ref{fig:06_13} (p. \pageref{fig:06_13}), respectively. We only show the second half of the interval (near the singular point) in either case.
 
 The straight Runge-Kutta algorithm, without the fancy implicit solution for $x(t +h)$, appears more accurate near the singularity, although both methods are acceptably accurate. Does this mean implicit Runge-Kutta is no good? No!
 
@@ -1183,15 +1178,15 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
         \begin{tabular}{ccc}
             \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
             .71999 & .13287 & .13286 \\  
-            .72999 & .13899 & .13888 \\  
+            .72999 & .13889 & .13888 \\  
             .73999 & .14512 & .14511 \\  
             .74999 & .15156 & .15154 \\  
             .75999 & .15821 & .15820 \\  
             .76999 & .16509 & .16508 \\  
             .77999 & .17220 & .17219 \\  
-            .78999 & .17955 & .17964 \\  
+            .78999 & .17955 & .17954 \\  
             .79999 & .18714 & .18713 \\  
-            .93999 & .19499 & .19497 \\  
+            .80999 & .19499 & .19497 \\  
             .81999 & .20309 & .20308 \\  
             .82999 & .21147 & .21145 \\  
             .83999 & .22012 & .22010 \\  
@@ -1224,21 +1219,21 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
         \begin{tabular}{ccc}
             \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
             1.0899 & .56508 & .56506 \\
-            1.0999 & .58640 & .50938 \\
-            1.1099 & .60880 & .60857 \\
-            1.1199 & .63171 & .63189 \\
-            1.1299 & .65580 & .66578 \\
-            1.1399 & .69093 & .68091 \\
+            1.0999 & .58640 & .58638 \\
+            1.1099 & .60860 & .60857 \\
+            1.1199 & .63171 & .63169 \\
+            1.1299 & .65580 & .65578 \\
+            1.1399 & .68093 & .68091 \\
             1.1499 & .70718 & .70715 \\
             1.1599 & .73461 & .73458 \\
             1.1699 & .76331 & .76329 \\
             1.1799 & .79337 & .79335 \\
             1.1899 & .82491 & .82489 \\
             1.1999 & .85803 & .85801 \\
-            1.2099 & .83287 & .89296 \\
+            1.2099 & .89287 & .89286 \\
             1.2199 & .92959 & .92958 \\
             1.2299 & .96834 & .96834 \\
-            1.2393 & 1.0093 & 1.0093 \\
+            1.2399 & 1.0093 & 1.0093 \\
             1.2499 & 1.0527 & 1.0527 \\
             1.2599 & 1.0989 & 1.0989 \\
             1.2699 & 1.1481 & 1.1482 \\
@@ -1257,7 +1252,7 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
             1.3999 & 2.4581 & 2.4611 \\
             1.4099 & 2.7187 & 2.7242 \\
             1.4199 & 3.0760 & 3.0884 \\
-            1.4299 & 3.1076 & 3.6782 \\
+            1.4299 & 3.6376 & 3.6782 \\
             1.4399 & 4.8831 & 5.3657 \\
             & & \\
         \end{tabular}
@@ -1274,18 +1269,18 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
     \begin{tabular}{l|l}
         \begin{tabular}{ccc}
             t &  x  & $x_{ex}$ \\
-            .71999 & .13268 & .13268 \\
-            .72999 & .13800 & .13888 \\
-            .73999 & .14613 & .14611 \\
-            .74999 & .15158 & .15154 \\
+            .71999 & .13288 & .13286 \\
+            .72999 & .13890 & .13888 \\
+            .73999 & .14513 & .14511 \\
+            .74999 & .15156 & .15154 \\
             .75999 & .15822 & .15820 \\
-            .76999 & .10510 & .16506 \\
+            .76999 & .16510 & .16508 \\
             .77999 & .17221 & .17219 \\
             .78999 & .17956 & .17954 \\
             .79999 & .18715 & .18713 \\
-            .80099 & .19500 & .19407 \\
-            .81000 & .20310 & .20308 \\
-            .82909 & .21148 & .21146 \\
+            .80999 & .19500 & .19497 \\
+            .81999 & .20310 & .20308 \\
+            .82999 & .21148 & .21145 \\
             .83999 & .22013 & .22010 \\
             .84999 & .22907 & .22904 \\
             .85999 & .23831 & .23828 \\
@@ -1293,14 +1288,14 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
             .87999 & .25771 & .25767 \\
             .88999 & .26789 & .26786 \\
             .89999 & .27842 & .27839 \\
-            .90999 & .28933 & .28926 \\
+            .90999 & .28930 & .28926 \\
             .91999 & .30055 & .30051 \\
             .92999 & .31217 & .31213 \\
             .93999 & .32419 & .32415 \\
-            .94999 & .33662 & .33667 \\
-            .95909 & .34947 & .34943 \\
+            .94999 & .33662 & .33657 \\
+            .95999 & .34947 & .34943 \\
             .96999 & .36277 & .36272 \\
-            .97999 & .37663 & .37648 \\
+            .97999 & .37653 & .37648 \\
             .98999 & .39077 & .39072 \\
             .99999 & .40551 & .40546 \\
             1.0099 & .42078 & .42073 \\
@@ -1309,32 +1304,32 @@ The implicit scheme lost accuracy through roundoff: the arithmetic was insuffici
             1.0399 & .46999 & .46993 \\
             1.0499 & .48762 & .48755 \\
             1.0599 & .50592 & .50584 \\
-            1.0609 & .52491 & .52483 \\
+            1.0699 & .52491 & .52483 \\
         \end{tabular}
         &
         \begin{tabular}{ccc}
             t &  x  & $x_{ex}$ \\
-            1.0799 & .54464 & .54458 \\
-            1.0899 & .58615 & .56508 \\
-            1.0999 & .58848 & .58038 \\
-            1.1099 & .60808 & .60867 \\
+            1.0799 & .54464 & .54456 \\
+            1.0899 & .56515 & .56506 \\
+            1.0999 & .58648 & .58638 \\
+            1.1099 & .60868 & .60857 \\
             1.1199 & .63180 & .63169 \\
-            1.1299 & .65590 & .66578 \\
+            1.1299 & .65590 & .65578 \\
             1.1399 & .68104 & .68091 \\
             1.1409 & .70729 & .70715 \\
             1.1599 & .73473 & .73458 \\
             1.1699 & .76346 & .76329 \\
-            1.1799 & .79353 & .79336 \\
+            1.1799 & .79353 & .79335 \\
             1.1899 & .82508 & .82489 \\
-            1.1999 & .85822 & .85831 \\
-            1.2099 & .89309 & .89288 \\
-            1.2199 & .92983 & .92968 \\
+            1.1999 & .85822 & .85801 \\
+            1.2099 & .89309 & .89286 \\
+            1.2199 & .92983 & .92958 \\
             1.2299 & .96861 & .96834 \\
-            1.2399 & 1.0098 & 1.0093 \\
-            1.2499 & 1.0531 & 1.0627 \\
+            1.2399 & 1.0096 & 1.0093 \\
+            1.2499 & 1.0531 & 1.0527 \\
             1.2599 & 1.0993 & 1.0989 \\
             1.2699 & 1.1486 & 1.1482 \\
-            1.2799 & 1.2013 & 1.2C08 \\
+            1.2799 & 1.2013 & 1.2008 \\
             1.2899 & 1.2578 & 1.2572 \\
             1.2999 & 1.3186 & 1.3180 \\
             1.3099 & 1.3845 & 1.3837 \\
