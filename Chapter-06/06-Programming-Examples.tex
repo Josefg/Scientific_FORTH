@@ -356,7 +356,7 @@ RETURN
 END
 \end{lstlisting}
 
-\subsubsection{A function protocol for FORTH}
+\subsubsection{A function protocol for FORTH}\label{chap:06_03_02}
 
 We would like to extend to FORTH FORTRAN's ability to write a generic series summation function, passing the variable and the name of the coefficient function as arguments. In other words, we now face the task of devising the function protocol we plan to use throughout the rest of the book and in our future programming -- a heavy responsibility since we do not know what form these future programs will take. \textbf{For once we must engage in top-dawn programming!}
 
@@ -1071,7 +1071,9 @@ Clearly the implicit form is more accurate; whether the putative gain in stabili
     \centering
     \begin{tabular}{l|l}
         \begin{tabular}{ccc}
-            \multicolumn{1}{c}{t} &  \multicolumn{1}{c}{x}  & \multicolumn{1}{c}{$x_{ex}$}\\
+            \multicolumn{1}{c}{t} & 
+            \multicolumn{1}{c}{x} & 
+            \multicolumn{1}{c}{$x_{ex}$}\\
             .00000 & .00000 & .00000 \\
             .10000 & .00050 & .00033 \\
             .20000 & .00299 & .00266 \\

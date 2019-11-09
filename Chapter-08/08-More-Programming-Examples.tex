@@ -8,9 +8,9 @@
 We begin by defining the definite integral of a function $f(x)$. Then we discuss some methods for (numerically) approximating the integral. This process is called \textbf{numerical integration} or \textbf{numerical quadrature}. Finally, we write some FORTH programs based on the various methods we describe.
 
 \subsection{The Integral of a function}
-The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in Fig. 8-1:
+The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in Fig. \label{fig:08_01} \ref{fig:08_01}:
 
-Fig. 8-1 \textit{The integral of a function is the area under the curve.}
+Fig. \ref{fig:08_01} \textit{The integral of a function is the area under the curve.}
 
 We estimate the integral by breaking up the area into narrow rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
 
@@ -22,7 +22,7 @@ We estimate the integral by breaking up the area into narrow rectangles of width
     \end{split}
 \end{equation}
 
-It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert]$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
+It is easy to see that each rectangle in the upper bound is about $w\lvert f'(x)\rvert$ too high\sepfootnote{08_02} on the average, hence overestimates the area by about $\frac{1}{2}w^2\lvert f'(x)\rvert$. There are $(b-a)/w$ such rectangles, so if $\lvert f'(x)\rvert$ remains finite over the interval $[a, b]$ the total discrepancy will be smaller than
 
 \begin{equation*}
 \frac{1}{2}w(b-a) \max_{a\leq x \leq b} \lvert f'(x)\rvert.
@@ -66,7 +66,7 @@ The chief disadvantage of using a differential equation solver to evaluate a def
 \subsection{Monte-Carlo method}
 \TallC{The} area under $f(x)$ is exactly equal to the average height $\bar{f}$ of $f(x)$ on the interval $[a, b]$, times the length, $b-a$, of the interval\sepfootnote{08_04}. How can we estimate $\bar{f}$? One method is to sample $f(x)$ at random, choosing $N$ points in $[a,b]$ with a random number generator. Then
 
-\begin{equation}
+\begin{equation}\label{eq:08_05}
 \bar{f} \approx \frac{1}{N} \sum_{n=1}^{N} f(x_n)
 \end{equation}
 
@@ -110,7 +110,7 @@ Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a 
 Monte-Carlo methods come into their own for multidimensional integrals, where they are much faster than multiple one-dimensional integration subroutines based on deterministic rules.
 
 \subsubsection{A slmple Monte-Carlo program}
-Following the function protocol and naming convention developed in Ch. 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
+Following the function protocol and naming convention developed in Ch. \ref{06_03_02} 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
 
 \begin{lstlisting}
     USE( F.name \% L.lim \% U.lim \% err )MONTE
@@ -124,13 +124,13 @@ We pass \bc{)MONTE} the name \bc{F.name} of the function $f(x)$, the limits of i
 
 The word \bc{INITIALIZE} will be responsible for storing these numbers.
 
-The program uses one of the pseudo-random number generators (\textbf{prng}’s) from Ch. 3 \S\ 5. We need a word to transform prn's --uniformly distributed on the interval (0,1)-- to prn's on the interval (A, B):
+The program uses one of the pseudo-random number generators (\textbf{prng}'s) from Ch. \ref{chap:03_05} 3 \S\ 5. We need a word to transform prn's --uniformly distributed on the interval (0,1)-- to prn's on the interval (A, B):
 
 \begin{lstlisting}
     : NEW.X RANDOM B-A G@ F* A G@ F+ ;
 \end{lstlisting}
 
-The program is described by the simple flow diagram of Fig. 8-2 below:
+The program is described by the simple flow diagram of Fig. \ref{fig:08_02} below:
 
 \begin{lstlisting}
 Diagram yo:
@@ -143,21 +143,21 @@ Diagram yo:
         \bar{f} Var(f)
     REPEAT
         I = (B-A)*<f>
-\end{lstlisting}
+\end{lstlisting}\label{fig:08_02}
 
-Fig. 8-2 \textit{Flow diagram of Monte Carlo Integration}
+Fig. \ref{fig:08_02} \textit{Flow diagram of Monte Carlo Integration}
 
-From the flow diagram we see we have to recompute $\bar{f}$ and $Var(\bar{f})$ at each step. From Eq. 5 we see that
+From the flow diagram we see we have to recompute $\bar{f}$ and $Var(\bar{f})$ at each step. From Eq. \ref{eq:08_05} we see that
 
-\begin{equation}
+\begin{equation*}
 \bar{f}_{N+1} = \bar{f}_N + \frac{f(x_{N+1} - \bar{f}_{N}}{N + 1}
-\end{equation}
+\end{equation*}
 
 and
 
-\begin{equation}
+\begin{equation*}
 Var_{N+1} = Var_{N} + \frac{(f_{N+1}-\bar{f}_{N})(f_{N+1} - \bar{f}_{N+1})-Var_{N}}{N+1}
-\end{equation}
+\end{equation*}
 
 Writing the program is almost automatic:
 
@@ -167,56 +167,61 @@ Writing the program is almost automatic:
 
     : DoAverage             ( n-- n+1 87:f--f )
         Av.F G@ dd.Av.F G!  \ save old.Av
-        FDUP 1+             (--n+187:--fl)
+        FDUP 1+             (--n+1 87:--f f)
         old.Av.F G@         ( 87:--f f old.Av.F )
         FUNDER F-
         DUP S->F F/ F+      ( 87:--f Av.F )
         Av.F G! ;           \ put away \ cont'd below
-
-    : Do.Variance           (n--n 87:f-- )
-        FDUP old.Av.F G@    (87:f f old.Av )
-        FUNDER F- FSWAP
-        Av.F G@ F- F*
-        (87:[f-old.Av]*[f-Av] )
-        Var.F G@ FUNDER F-
-        DUP S->F F/ F+      (87:--Var’)
-    Var.F G! ;
-
-    :INITIALIZE             (:adr-- 87: a b e -- )
-        IS adr.f
-        E G!
-        FOVER F- B-A G! A G!
-        FINIT
-        F=0 Var.F    G!
-        F=0 Av.F     G!
-        F=0 old.Av.F G!
-        0 5 0 DO \ exercise 5 times
-            NEW.X adr.f EXECUTE
-            Do.Average Do.Variance
-        LOOP ;
-
-    : NotConverged? Var.F G@ FSORT
-        B-A G@ F* E G@ F> ;
-    : DEBUG DUP
-        10 MOD              \ every 10 steps
-      0= IF CR DUP.
-        Av.F  G@ F.
-        Var.F G@ F. THEN ;
-
-    : )MONTE
-        INITIALIZE
-        BEGIN DEBUG NotConverged?
-        WHILE NEW.X adr.f EXECUTE
-            Do.Average Do.Variance
-        REPEAT
-        DROP Av.F G@ B-A G@ F* ;
 \end{lstlisting}
+
+\begin{multicols}{2}
+    \begin{lstlisting}[basicstyle=\scriptsize,]
+: Do.Variance       (n--n 87:f-- )
+  FDUP old.Av.F G (87:f f old.Av )
+   FUNDER F- FSWAP
+   Av.F G@ F- F*
+   (87:[f-old.Av]*[f-Av] )
+   Var.F G@ FUNDER F-
+   DUP S->F F/ F+      (87:--Var )
+   Var.F G! ;
+
+:INITIALIZE (:adr-- 87: a b e -- )
+    IS adr.f
+    E G!
+    FOVER F- B-A G! A G!
+    FINIT
+    F=0 Var.F    G!
+    F=0 Av.F     G!
+    F=0 old.Av.F G!
+    0 5 0 DO    \ exercise 5 times
+        NEW.X adr.f EXECUTE
+        Do.Average Do.Variance
+    LOOP ;
+
+: NotConverged? Var.F G@ FSORT
+    B-A G@ F* E G@ F> ;
+: DEBUG DUP
+    10 MOD              \ every 10 steps
+  0= IF CR DUP.
+            Av.F  G@ F.
+           Var.F  G@ F. THEN ;
+
+: )MONTE
+    INITIALIZE
+    BEGIN DEBUG NotConverged?
+    WHILE NEW.X adr.f EXECUTE
+        Do.Average Do.Variance
+    REPEAT
+    DROP Av.F G@ B-A G@ F* ;
+  \end{lstlisting}
+\end{multicols}
+
 
 The word \bc{DEBUG} is included to produce useful output every 10 points as an aid to testing. The final version of the program need not include \bc{DEBUG}, of course. Also it would presumably be prudent to \bc{BEHEAD} all the internal variables.
 
 The chief virtue of the program we have just written is that it is easily generalized to an arbitrary number of dimensions. The generalization is left as an exercise.
 
-\section{Adaptlve methods}
+\subsection{Adaptlve methods}
 \TallC{Obviously}, to minimize the execution time of an integration subroutine requires that we minimize the number of times the function $f(x)$ has to be evaluated. There are two aspects to this:
 \begin{itemize}
     \item First, we must evaluate $f(x)$ only once at each point $x$ in the interval.
@@ -227,16 +232,16 @@ To apply adaptive methods to Monte Carlo integration, we need an algorithm that 
 
 However, adaptive methods can be applied quite easily to deterministic quadrature formulae such as the \textbf{trapezoidal rule} or \textbf{Simpson’s rule}. Adaptive quadrature is both interesting in its own right and illustrates a new class of programming techniques, so we pursue it in some detail.
 
-\section{Adaptive Integration on the real line}
-\TallC{We} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision specified in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. 6 \S\ 1.3.2:
+\subsection{Adaptive integration on the real line}
+\TallC{We} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision specified in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. \ref{chap:06_03_02} 6 \S\ 1.3.2:
 
 \begin{lstlisting}
     USE( F.name % L.lim % U.lim % err )INTEGRAL
 \end{lstlisting}
 
-Now, how do we ensure that the routine takes a lot of points when the function $f(x)$ is rapidly varying, but few when $f(x)$ is smooth? The simplest method uses \textbf{ecursion}\sepfootnote{08_07}.
+Now, how do we ensure that the routine takes a lot of points when the function $f(x)$ is rapidly varying, but few when $f(x)$ is smooth? The simplest method uses \textbf{recursion}\sepfootnote{08_07}.
 
-\subsection{Digression on recursive algorithms}
+\subsubsection{Digression on recursive algorithms}
 \TallC{We} have so far not discussed recursion, wherein a program calls itself directly or indirectly (by calling a second routine that then calls the first).
 
 Since there is no way to know \textit{a priori} how many times a program will call itself, memory allocation for the arguments must be dynamic. That is, a recursive routine places its arguments on a stack so each invocation of the program can find them. This is the method employed in recursive compiled languages such as Pascal, C, or modern BASIC. Recursion is of course natural in FORTH since stacks are intrinsic to the language.
@@ -244,8 +249,11 @@ Since there is no way to know \textit{a priori} how many times a program will ca
 \TallC{We} illustrate with the problem of finding the greatest common divisor (gcd) of two integers. Euclid\sepfootnote{08_08} devised a rapid algorithm for finding the gcd\sepfootnote{08_09} which can be expressed symbolically as
 
 \begin{equation}
-    gcd(u,v) = u, v= 0
-    gcd(u,v) (v, u mod v) else
+    \text{gcd(}v, u \text{)} =
+    \begin{cases}
+        u, & v= 0 \\
+        \text{gcd(}v, u\ mod\ v\text{)} & else
+    \end{cases}
 \end{equation}
     
 That is, the problem of finding the gcd of $u$ and $v$ can be replaced by the problem of finding the gcd of two much smaller numbers. A FORTH word that does this is\sepfootnote{08_10}
@@ -260,23 +268,23 @@ Here is a sample of \bc{GCD} in action, using \bc{TRACE}\sepfootnote{08_11} to e
 
 \begin{lstlisting}
 784 48 TRACE GCD
-                            rstack      stack
+                            (*\underline{rstack}*)       (*\underline{stack}*)
 : GCD                                   784 48
     DUP                                 784 48  48
-    0=                                  784 48   0
+    0=                                  784 48  0
     0BRANCH< 8 >0                       784 48
     UNDER                               48  784 48
     MOD                                 48  16
     : GCD                               48  16
       DUP                   4B76        48  16  16
-      0=                    4B76        48  16   0
+      0=                    4B76        48  16  0
       0BRANCH< 8 >0         4B76        48  16
       UNDER                 4B76        16  48  16
-        MOD                 4B76        16   0
-        : GCD               4B76        16   0
-          DUP               4B76 4B76   16   0   0
-          0=                4B76 4B76   16   0  65535
-          0BRANCH< 8 >-1    4B76 4B76   16   0
+        MOD                 4B76        16  0
+        : GCD               4B76        16  0
+          DUP               4B76 4B76   16  0   0
+          0=                4B76 4B76   16  0   65535
+          0BRANCH<8>-1    4B76 4B76   16  0
           DROP              4B76 4B76   16
         EXIT                4B76        16
     EXIT                                16
@@ -325,10 +333,10 @@ T_{n} \approx T_{n-1} + T_{n-2} + \tau
 where $\tau$ is the integer addition time. The solution of Eq. 12 is
 
 \begin{equation}
-T_{n} = \tau\left[(\frac{1+\sqrt{5}}{2})^n - 1\right]
+T_{n} = \tau\left[\left(\frac{1+\sqrt{5}}{2}\right)^n - 1\right]
 \end{equation}
 
-That is, the execution time increases \textbf{exponentially} with the size of the problem. The reason for this is simple: recursion managed to replace the original problem by two of nearly the same size, \ie recursion nearly \textbf{doubled} the work at each step!
+That is, the execution time increases \textbf{exponentially} with the size of the problem. The reason for this is simple: recursion managed to replace the original problem by two of nearly the same size, \ie\ recursion nearly \textbf{doubled} the work at each step!
 
 \TallC{The} preceding analysis of why recursion was bad suggests how recursion can be helpful: we should apply it whenever a given: problem can be replaced by --say-- two problems of \textbf{half} the original size, that can be recombined in n or fewer operations. An example is \textbf{mergesort}, where we divide the list to be sorted into two roughly equal lists, sort each and then merge them:
 
@@ -355,7 +363,7 @@ T_{n} \approx n log_2 (n)
 
 (In fact, the running time for \textit{mergesort} is comparable with the fastest sorting algorithms.) Algorithms that subdivide problems in this way are said to be of \textbf{divide and conquer} type.
 
-\TallC{Adaptive} integration can be expressed as a divide and conquer algorithm, hence recursion can simplify the program. In pseudocode (actually QuickBasic\textregistered) we have the program shown
+\TallC{Adaptive} integration can be expressed as a divide and conquer algorithm, hence recursion can simplify the program. In pseudocode (actually QuickBasic\textsuperscript{\textregistered}) we have the program shown
 below.
 
 \begin{verbatim}
@@ -364,7 +372,7 @@ below.
         simpson = (f(a) + f(b) + 4*f(c)) * (b - a) /6
     end function
 
-    function integral(f, a, b. error)
+    function integral(f, a, b, error)
         c = (a + b)/2
         old.int = simpson(f, a, b)
         new.int = simpson(f, a, c) + simpson(f, c, b)
@@ -448,7 +456,7 @@ Several solutions to these problems suggest themselves:
     \item We can use "open" formulas like Gauss-Legendre, that omit the endpoints (see Appendix 8.1).
 \end{itemize}
 
-\subsubsection{Adaptive Integration without recursion}
+\subsubsection{Adaptive integration without recursion}
 \TallC{The} chief reason to write a non-recursive program is to avoid any repeated evaluation of the integrand. That is, the optimum
 is not only the smallest number of points $x_n$ in (A, B] consistent with the desired precision, but to evaluate $f(x)$ once only at each $x_n$. This will be worthwhile when the integrand $f(x)$ is costly to evaluate.
 
@@ -646,48 +654,70 @@ The nonrecursive program obviously requires much more code than the recursive ve
 USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
 \end{lstlisting}
 
-N      X            F          I             E
-0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
-1 1.5000E+00  1.2247E+00 6.5973E-01 5.0000E-04
-2 2.0000E+00  1.4142E+00 1.4983E-01 1.2500E-04
-old.I = 1.2071E+00  final.I = 0.0000E+00
-
-0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
-1 1.5000E+00  1.2247E+00 3.1845E-01 2.5000E-04
-2 1.7500E+00  1.3228E+00 3.4213E-01 2.5000E-04
-3 2.0000E+00  1.4142E+00 1.7396E-01 1.2500E-04
-old.I = 6.5973E-01  final.I = 0.0000E+00
-
-0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
-1 1.5000E+00  1.2247E+00 3.1845E-01 2.5000E-04
-2 1.7500E+00  1.3228E+00 1.6826E-01 1.2500E-04
-3 1.8750E+00  1.3693E+00 1.7396E-01 1.2500E-04
-4 2.0000E+00  1.4142E+00 0.0000E+00 0.0000E+04
-old.I = 3.4213E-01  final.I = 0.0000E+00
-
-0 1.0000E+00  1.0000E+00 5.5618E-01 5.0000E-04
-1 1.5000E+00  1.2247E+00 1.5621E-01 1.2500E-04
-2 1.6250E+00  1.2747E+00 1.6235E-01 1.2500E-04
-3 1.7500E+00  1.3228E+00 1.7396E-01 1.2500E-04
-old.I = 3.1845E-01  final.I = 3.4226E+00
-
-N      X            F          I             E
-0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
-1 1.2500E+00  1.1180E+00 2.9284E-01 2.5000E-04
-2 1.5000E+00  1.2247E+00 1.6235E-01 1.2500E-04
-old.I = 5.5618E-01  final.I = 6.6087E+00
-
-0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
-1 1.2500E+00  1.1180E+00 1.4316E-01 1.2500E-04
-2 1.3750E+00  1.1726E+00 1.4983E-01 1.2500E-04
-3 1.5000E+00  1.2247E+00 1.7396E-01 1.2500E-04
-old.I = 2.9284E-01  final.I = 6.6067E+00
-
-0 1.0000E+00  1.0000E+00 1.2879E-01 1.2500E-04
-1 1.1250E+00  1.0606E+00 1.3616E-01 1.2500E-04
-2 1.2500E+00  1.1180E+00 1.4983E-01 1.2500E-04
-old.I = 2.6475E-01  final.I = 9.5392E+00
+\begin{figure}
+    \scriptsize
+    {\setlength{\tabcolsep}{.4em}
+    \begin{tabular}{l|l}
+        \begin{tabular}{lllll}
+\multicolumn{1}{l}{N} & \multicolumn{1}{c}{X} &
+\multicolumn{1}{c}{F} & \multicolumn{1}{c}{I} &
+\multicolumn{1}{c}{E} \\
+0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
+1 & 1.5000E+00 & 1.2247E+00 & 6.5973E-01 & 5.0000E-04 \\
+2 & 2.0000E+00 & 1.4142E+00 & 1.4983E-01 & 1.2500E-04 \\
+\multicolumn{2}{l}{old.I = 1.2071E+00} &
+\multicolumn{2}{l}{final.I = 0.0000E+00} & \\
+\\
+0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
+1 & 1.5000E+00 & 1.2247E+00 & 3.1845E-01 & 2.5000E-04 \\
+2 & 1.7500E+00 & 1.3228E+00 & 3.4213E-01 & 2.5000E-04 \\
+3 & 2.0000E+00 & 1.4142E+00 & 1.7396E-01 & 1.2500E-04 \\
+\multicolumn{2}{c}{old.I = 6.5973E-01} &
+\multicolumn{2}{c}{final.I = 0.0000E+00} & \\
+\\
+0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
+1 & 1.5000E+00 & 1.2247E+00 & 3.1845E-01 & 2.5000E-04 \\
+2 & 1.7500E+00 & 1.3228E+00 & 1.6826E-01 & 1.2500E-04 \\
+3 & 1.8750E+00 & 1.3693E+00 & 1.7396E-01 & 1.2500E-04 \\
+4 & 2.0000E+00 & 1.4142E+00 & 0.0000E+00 & 0.0000E+04 \\
+\multicolumn{2}{c}{old.I = 3.4213E-01} &
+\multicolumn{2}{c}{final.I = 0.0000E+00} \\
+\\
+0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
+1 & 1.5000E+00 & 1.2247E+00 & 1.5621E-01 & 1.2500E-04 \\
+2 & 1.6250E+00 & 1.2747E+00 & 1.6235E-01 & 1.2500E-04 \\
+3 & 1.7500E+00 & 1.3228E+00 & 1.7396E-01 & 1.2500E-04 \\
+\multicolumn{2}{c}{old.I = 3.1845E-01} &
+\multicolumn{2}{c}{final.I = 3.4226E+00} \\
+        \end{tabular}
+      &
+        \begin{tabular}{ccccc}
+\multicolumn{1}{c}{N} & \multicolumn{1}{c}{X} &
+\multicolumn{1}{c}{F} & \multicolumn{1}{c}{I} &
+\multicolumn{1}{c}{E} \\
+0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
+1 & 1.2500E+00 & 1.1180E+00 & 2.9284E-01 & 2.5000E-04 \\
+2 & 1.5000E+00 & 1.2247E+00 & 1.6235E-01 & 1.2500E-04 \\
+\multicolumn{2}{c}{old.I = 5.5618E-01} &
+\multicolumn{2}{c}{final.I = 6.6087E+00} \\
+\\
+0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
+1 & 1.2500E+00 & 1.1180E+00 & 1.4316E-01 & 1.2500E-04 \\
+2 & 1.3750E+00 & 1.1726E+00 & 1.4983E-01 & 1.2500E-04 \\
+3 & 1.5000E+00 & 1.2247E+00 & 1.7396E-01 & 1.2500E-04 \\
+\multicolumn{2}{c}{old.I = 2.9284E-01} &
+\multicolumn{2}{c}{final.I = 6.6067E+00} \\
+\\
+0 & 1.0000E+00 & 1.0000E+00 & 1.2879E-01 & 1.2500E-04 \\
+1 & 1.1250E+00 & 1.0606E+00 & 1.3616E-01 & 1.2500E-04 \\
+2 & 1.2500E+00 & 1.1180E+00 & 1.4983E-01 & 1.2500E-04 \\
+\multicolumn{2}{c}{old.I = 2.6475E-01} &
+\multicolumn{2}{c}{final.I = 9.5392E-01} \\
 1.2189E+00
+\\ \\ \\ \\ \\ \\ \\ \\
+        \end{tabular}
+    \end{tabular}}
+\end{figure}
 
 \begin{equation}
 \int_{1}^{2}dx\sqrt{x} = \frac{2}{3} \left( 2^{3/2} - 1 \right)
@@ -697,7 +727,7 @@ Notice that, although $\sqrt{x}$ is perfectly finite at $x = 0$, its first deriv
 
 It is an instructive exercise to run the above example with the limits (0.0, 1.0). The adaptive routine spends many iterations: approaching $x = 0$ (25 in the range [0., 0.0625] \textit{vs.} 25 in the range: [0.0625, 1.0] ). This is a concrete example of how an adaptive routine will unerringly locate the (integrable) singularities of at function by spending lots of time near them. The best answer to this problem is to separate out the bad parts of a function by hand, if possible, and integrate them by some other algorithm that take the singularities into account. By the same token, one shoul always integrate \textit{up to}, but not \textit{through}, a discontinuity in $f(x)$.
 
-\subsection{Adaptive Integration in the Argand plane}
+\subsection{Adaptive integration in the Argand plane}
 \TallC{We} often want to evaluate the complex integral
 
 \begin{equation}
@@ -1290,7 +1320,7 @@ The first term after $\equiv$ E in Eq. \ref{eq:08_47} is independent of N, and t
 
 The code for Gram polynomials is relatively easy to write using the techniques developed in Ch. 5. The program is displayed in full in Appendix 8.4.
 
-\subsubsection{Simplex algorithm}
+\subsection{Simplex algorithm}
 \TallC{Sometimes} we must fit data by a function that depends on parameters in a \textbf{nonlinear} manner. An example is
 
 \begin{equation}\label{eq:08_48}
@@ -1559,7 +1589,7 @@ CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
                LOOP    ;
 \end{lstlisting}
 
-\subsubsection{Non-linear least squares: simplex method}
+\subsection{Non-linear least squares: simplex method}
 \TallC{A FORTRAN} program for the simplex method is given belton page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
 
 \begin{lstlisting}
@@ -1747,20 +1777,24 @@ SYNONYM >N NEXT
 : F1  ( adr -- :: F )  DUP  0 }   R32@  F**2   1 }  R32@  F**2   F2*  F+  ;
 \ f1 = x^2 + 2*y^2
 
-: F2        ( adr -- :: F )  DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
+: F2 ( adr -- :: F )  DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
             F2* F+  36 S->F  F-  F**2  F2/  FSWAP  6 S->F  F*  F-  ;
-\  f2 = .5 * (x * x + 2 * y * y - 36) ^ 2 - 6 * x
+\ f1 = .5 * (x*x + 2*y*y + 4*z*z - 36) ^ 2 - 6 * x
 
-: F3        ( adr -- :: F )  DUP DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
-          F2* F+  36 S->F  F-  F**2  F2/  FSWAP  6 S->F  F*  F-
-          DUP 1 } R32@  0 } R32@  F/  FATAN  F2*  FCOS  F**2  F*  ;
-\ f3 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x)) ^ 2
-
+: F2   ( adr -- 87: F )  DUP DUP  0 }
+     R32@  FDUP F**2  1 }  R32@  F**2
+         F2* F+ 36 S-F  F- F**2 F2/ FSWAP 6 S-F F* F-
+         DUP 1 } R32@  0 } R32@  F/ FATAN F2* FCOS
+F**2  F*  ;
+\ f2 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x)) ^ 2
 \ Usage:    USE( MYFUNC  10  1.E-3 )MINIMIZE
 
 FLOATS
+ 5. SIMPLEX{{ 0 0 }} R32!    5.  SIMPLEX{{ 0 1 }} R32!
+-3. SIMPLEX{{ 0 1 }} R32!    3.  SIMPLEX{{ 1 1 }} R32!
+ 7. SIMPLEX{{ 0 2 }} R32!   -1.5 SIMPLEX{{ 1 2 }} R32!
 
-5. SIMPLEX{{ 0 0 }} R32!     -3.  SIMPLEX{{ 0 1 }} R32!
-5. SIMPLEX{{ 1 0 }} R32!     3.  SIMPLEX{{ 1 1 }} R32!
--10. SIMPLEX{{ 2 0 }} R32!    1.  SIMPLEX{{ 2 1 }} R32!
+-10. SIMPLEX{{ 2 0 }} R32!   5.  SIMPLEX{{ 3 0 }} R32!
+  1. SIMPLEX{{ 2 1 }} R32!   3.  SIMPLEX{{ 3 1 }} R32!
+  3. SIMPLEX{{ 2 2 }} R32!   3.  SIMPLEX{{ 3 2 }} R32!
 \end{lstlisting}

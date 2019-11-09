@@ -6,35 +6,13 @@
 
 \tableofcontents
 
-\TallC{This} chapter discusses various aspects of floating point arithmetic in
-FORTH. Our approach assumes the central processor (CPU) has a dedicated floating
-point co-processor (FPU) available to it, such as the 80x87 for the Intel 80x86 family; the
-built-in FPU on the 80486; the 68881/2 for Motorola 680x0
-machines; various add-ins and clones like the Weitek, Cyrix, IIT
-and AMD chips; or digital signal processing and array-processing
-co-processor boards.
+\TallC{This} chapter discusses various aspects of floating point arithmetic in FORTH. Our approach assumes the central processor (CPU) has a dedicated floating point co-processor (FPU) available to it, such as the 80x87 for the Intel 80x86 family; the built-in FPU on the 80486; the 68881/2 for Motorola 680x0 machines; various add-ins and clones like the Weitek, Cyrix, IIT and AMD chips; or digital signal processing and array-processing co-processor boards.
 
-If no floating point co-processor were available, one could
-employ co-processor emulation routines. This is the approach
-taken in commercial software written in FORTH, such as the
-(unfortunately now-deceased) VP-Planner spreadsheet. Since
-this text is not a \textit{vade mecum} for writing commercial software, but
-rather a handbook for using FORTH to solve computational
-problems in science and engineering, we consider a co-processor
-essential.
+If no floating point co-processor were available, one could employ co-processor emulation routines. This is the approach taken in commercial software written in FORTH, such as the (unfortunately now-deceased) VP-Planner spreadsheet. Since this text is not a \textit{vade mecum} for writing commercial software, but rather a handbook for using FORTH to solve computational problems in science and engineering, we consider a co-processor essential.
 
 \section{Organization of floating point arithmetic}
 
-\TallC{FORTH} was originally invented as a language for controlling 
-machinery. It is still used extensively for this purpose, with the
-machines in question being as varied as industrial robots,
-laboratory instruments, the Hubble Space Telescope, special
-effects motion picture cameras, and other computers. The floating point
-co-processor in a typical computer is a \textit{machine}, and any
-numerical calculation with floating point or complex numbers, \eg can be organized in terms of loading operands into the
-coprocessor, and transferring results from it to memory. That is,
-FORTH can \textit{control} the FPU through the calculation, as indicated in Fig.
-\ref{fig:03_01} below:
+\TallC{FORTH} was originally invented as a language for controlling machinery. It is still used extensively for this purpose, with the machines in question being as varied as industrial robots, laboratory instruments, the Hubble Space Telescope, special effects motion picture cameras, and other computers. The floating point co-processor in a typical computer is a \textit{machine}, and any numerical calculation with floating point or complex numbers, \eg can be organized in terms of loading operands into the coprocessor, and transferring results from it to memory. That is, FORTH can \textit{control} the FPU through the calculation, as indicated in Fig. \ref{fig:03_01} below:
 
 \tikzstyle{line} = [draw, -latex']
 \tikzstyle{block} = [rectangle, draw, above right, align=center]
@@ -66,20 +44,9 @@ parameter or return stacks. We call this the \textbf{fstack}, and assume it
 has arbitrary depth. (We denote it by :: in stack comments.)
 
 \leftbar[1\linewidth] \noindent
-Whether the fstack should be distinct from the parameter stack
-is currently a subject of lively debate within the FORTH community. 
-One faction wishes to combine the two. The other
-faction, including the author and most other FORTH number-
-crunchers, believes that to organize a floating point- intensive
-calculation as data flow through a dedicated coprocessor, the
-parameter stack must be reserved for addresses, loop indices and
-flags. The data fed to the coprocessor therefore has to stay
-elsewhere, \textit{i.e.} in the data store and the fstack.
-\endleftbar
+Whether the fstack should be distinct from the parameter stack is currently a subject of lively debate within the FORTH community. One faction wishes to combine the two. The other faction, including the author and most other FORTH number- crunchers, believes that to organize a floating point- intensive calculation as data flow through a dedicated coprocessor, the parameter stack must be reserved for addresses, loop indices and flags. The data fed to the coprocessor therefore has to stay elsewhere, \textit{i.e.} in the data store and the fstack.\endleftbar
 
-The words we shall need fall into the categories of fstack 
-manipulation, special constants, arithmetic, tests and mathematical functions.
-Their names are nearly standard\sepfootnote{03_01}.
+The words we shall need fall into the categories of fstack manipulation, special constants, arithmetic, tests and mathematical functions. Their names are nearly standard\sepfootnote{03_01}.
 
 \subsection{Fstack manipulation}
 \TallC{The} fstack words are\sepfootnote{03_02}
@@ -405,7 +372,7 @@ The corresponding definitions are \sepfootnote{03_10}
         FSQRT F+ FLN ;
 \end{lstlisting}
 
-\section{Pseudo-random number generators (PRNG's)}
+\section{Pseudo-random number generators (PRNG's)}\label{chap:03_05}
 \TallC{The}subject of computer-generated (pseudo) random numbers has been discussed extensively in the literature of computation\sepfootnote{03_11}$^,$\sepfootnote{03_12}. We shall confine ourselves here to translating two useful algorithms into FORTH, and discussing tests for pseudo-random number generators (PRNG's).
 
 The first is a method called GGUBS \sepfootnote{03_13} based on the recursion
