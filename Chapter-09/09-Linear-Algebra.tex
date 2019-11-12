@@ -646,10 +646,7 @@ row2 -> row1
 temp -> row2
 \end{verbatim}
 
-Although data moves are relatively fast, up to $N^2/2$ swaps may be
-needed, each row containing N data; row-swapping is an $O(N^3)$
-operation which must be avoided. Indirection, setting up a list of
-row pointers and exchanging those, uses $O(N^2)$ time.
+Although data moves are relatively fast, up to $N^2/2$ swaps may be needed, each row containing N data; row-swapping is an $O(N^3)$ operation which must be avoided. Indirection, setting up a list of row pointers and exchanging those, uses $O(N^2)$ time.
 
 % 228
 
@@ -659,8 +656,7 @@ We anticipate computing the address of an element of \textbf{A\{\{} in a
 A{{ J I }} ( J is row, I is col)
 \end{verbatim}
 
-Suppose we have an array of row pointers and a word \verb|}row{| that
-looks them up. Then the (swapped) element would be
+Suppose we have an array of row pointers and a word \verb|}row{| that looks them up. Then the (swapped) element would be
 \begin{verbatim}
 A{{ J }row{ I }}.
 \end{verbatim}
@@ -1019,14 +1015,9 @@ The 4 inner loops are
         DDUP DCP@L CPR- DCP!L
     16 /LOOP R> F>FS ;
 \end{verbatim} 
-Not surprisingly, the loops contain some duplicate code, but this
-is a small price to pay for the speed increase. A significant further
-increase can be obtained easily, using the HS/FORTH recursive-
-descent optimizer to define these inner loops, or by redefining
-the loops in assembler (for ultimate speed).
+Not surprisingly, the loops contain some duplicate code, but this is a small price to pay for the speed increase. A significant further increase can be obtained easily, using the HS/FORTH recursive-descent optimizer to define these inner loops, or by redefining the loops in assembler (for ultimate speed).
 
-Now we can redefine \bc{\}\}R1-R2*X} using vectored execution, \textit{via}
-HS/FORTH's \bc{CASE: ... ;CASE} construct, or the equivalent high-level version given here:
+Now we can redefine \bc{\}\}R1-R2*X} using vectored execution, \textit{via} HS/FORTH's \bc{CASE: ... ;CASE} construct, or the equivalent high-level version given here:
 
 \begin{verbatim}
 : CASE: CREATE ]
@@ -1045,9 +1036,7 @@ CASE: DO(R1-R2*X)LOOP
     T DO(R1-R2*X)LOOP DDROP DDROP ;
 \ We assume INITIALIZE has been invoked
 \end{verbatim} 
-Another word is needed to perform the same manipulation on
-the inhomogeneous term. Since this latter process runs in $O(N^2)$
-time we need not concern ourselves unduly with efficiency.
+Another word is needed to perform the same manipulation on the inhomogeneous term. Since this latter process runs in $O(N^2)$ time we need not concern ourselves unduly with efficiency.
 \begin{verbatim}
 
 : }V1-V2*X ( r1 r2-- ::x--)
@@ -1063,28 +1052,15 @@ time we need not concern ourselves unduly with efficiency.
         so we drop it here by using \bc{G*} rather than \bc{G*NP}.
 \end{itemize}
 
-We now combine the words \bc{\}SWAP}, \bc{\}\}PIVOT}, \bc{\}\}ROW*X}.
-\bc{\}R1-R2*X} and \bc{\}V1-V2*X} to implement the triangularization portion of pivotal elimination.
+We now combine the words \bc{\}SWAP}, \bc{\}\}PIVOT}, \bc{\}\}ROW*X}. \bc{\}R1-R2*X} and \bc{\}V1-V2*X} to implement the triangularization portion of pivotal elimination.
 
 % 236
 Since the Gaussian elimination method makes it very easy to
-compute the determinant of the matrix as we go, we might as well
-do so, especially as it is only an O(N) process. By evaluating the
-determinants of simple cases, we realize the determinant is simply the product of all the pivot elements, multiplied by
-$(-1)^{\#\mathbf{swaps}}$. Hence we need to keep track of swaps, as well as to
-multiply the determinant (at a given stage) by the next pivot
-element. The need to do these things has been anticipated in
-defining \bc{\}SWAP} above.
+compute the determinant of the matrix as we go, we might as well do so, especially as it is only an O(N) process. By evaluating the determinants of simple cases, we realize the determinant is simply the product of all the pivot elements, multiplied by $(-1)^{\#\mathbf{swaps}}$. Hence we need to keep track of swaps, as well as to multiply the determinant (at a given stage) by the next pivot element. The need to do these things has been anticipated in defining \bc{\}SWAP} above.
 
-Computing the determinant also lets us test as we go, that the
-equations can be solved: if at any stage the determinant is zero,
-(at least) two of the equations must have been equivalent. Should
-it be necessary to test the condition\sepfootnote{09_13} of the equations, this too
-can be found as we proceed, by computing the determinant.
+Computing the determinant also lets us test as we go, that the equations can be solved: if at any stage the determinant is zero, (at least) two of the equations must have been equivalent. Should it be necessary to test the condition\sepfootnote{09_13} of the equations, this too can be found as we proceed, by computing the determinant.
 
-Here is a simple recipe for computing the determinant, with
-checking to be sure it does not vanish identically. We use the
-intelligent fstack (ifstack) defined in Ch. 7.
+Here is a simple recipe for computing the determinant, with checking to be sure it does not vanish identically. We use the intelligent fstack (ifstack) defined in Ch. 7.
 
 \begin{verbatim}
 DCOMPLEX SCALAR DET \ room for any type
@@ -1137,9 +1113,7 @@ Now we define the word that triangularizes the matrix:
 \Usege: A{{ B{ TRIANGULARIZE
 \end{verbatim}
 
-Now at last we can back-solve the triangularized equations to find
-the unknown x's. The word for this is \verb|}BACK-SOLVE|, defined
-as follows:
+Now at last we can back-solve the triangularized equations to find the unknown x's. The word for this is \verb|}BACK-SOLVE|, defined as follows:
 
 % 238
 
@@ -1157,16 +1131,10 @@ as follows:
     -1 +LOOP ;                  \outer loop J
 \end{verbatim} 
 
-Putting the entire program together we have the linear equation
-solver given in the file SOLVE1. Examples of solving dense $3\times 3$
-and $4\times 4$ systems are included for testing purposes.
+Putting the entire program together we have the linear equation solver given in the file SOLVE1. Examples of solving dense $3\times 3$ and $4\times 4$ systems are included for testing purposes.
 
 \subsection{Timing}
-\TallC{We} should like to know how much time it will take to solve a 
-given system. (Of course it is also useful to know whether the
-solution is correct!) We time the solution of 4 sets of N equations,
-with 4 different values of N. The running time can be expressed
-as a cubic polynomial in N with undetermined coefficients:
+\TallC{We} should like to know how much time it will take to solve a given system. (Of course it is also useful to know whether the solution is correct!) We time the solution of 4 sets of N equations, with 4 different values of N. The running time can be expressed as a cubic polynomial in N with undetermined coefficients:
 % ( restart from 19)
 \addtocounter{equation}{-3} % the next equation is back with 3 22 -> 19
 \begin{equation}
@@ -1178,9 +1146,7 @@ times $T_{N_i}$ , we produce 4 inhomogeneous linear equations in 4
 unknowns: $a_i , i = 0, 1, 2, 3$. As luck would have it, we just happen to have on hand a linear equation solver, and are thus in a
 position to determine these coefficients numerically.
 
-For this timing and testing chore we need an exactly soluble dense
-system of linear equations, of arbitrary order. The simplest such
-system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_14}:
+For this timing and testing chore we need an exactly soluble dense system of linear equations, of arbitrary order. The simplest such system involves a rank-1 matrix, that is, a matrix of the form \sepfootnote{09_14}:
 %  (20_)
 \begin{subequations}
 \begin{equation}
@@ -1196,8 +1162,7 @@ In terms of matrix elements,
 \end{equation}
 \end{subequations}
 
-The solution of the system $A\cdot x = b$ is simple: using the standard
-notation
+The solution of the system $A\cdot x = b$ is simple: using the standard notation
 % (21_)
 \begin{equation}
  \label{eq:09_21_}
@@ -1209,8 +1174,7 @@ we have
     \mathrm{x_i = b_i + (v,x)\,u_i}
 \end{equation}
 
-The coefficient $(v, x)$ is just a (generally complex) number; we
-compute it from \ref{eq:09_22_}\textit{via}
+The coefficient $(v, x)$ is just a (generally complex) number; we compute it from \ref{eq:09_22_}\textit{via}
 \begin{equation}
  \label{eq:09_23_}
     \mathrm{(v,x)=(v,b)+(v,u)(v,x)}
@@ -1229,8 +1193,7 @@ Substituting \ref{eq:09_24_}back in\ref{eq:09_22_}, we have
 Everything in \ref{eq:09_25_} is determined, hence the solution is known in
 closed form.
 
-An example that embodies the above idea is given in the file
-EX.20, where we make the special choices
+An example that embodies the above idea is given in the file EX.20, where we make the special choices
 
 \begin{equation*}
     \mathbf{u}=
@@ -1302,21 +1265,9 @@ are (in seconds, 9.54 MHz 8086 machine, machine-coded inner loop)
         a_3 &=\;\; 0.00001539
     \end{split}
 \end{equation*}
-from them we can extrapolate the time to solve a $350 \times 350$ real
-system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addressing implemented, the time should
-decrease five- to tenfold \sepfootnote{09_15}.
+from them we can extrapolate the time to solve a $350 \times 350$ real system to be about 16 minutes. On a 25 MHz 80386/80387 machine with 32-bit addressing implemented, the time should decrease five- to tenfold \sepfootnote{09_15}.
 
-It is interesting to explore a bit further the extracted value of $a_3$,
-which is $\frac{1}{3}$ the time needed to evaluate the inner loop (defined
-above as Re.LP and hand-coded in assembler for ultimate
-speed). Converting to clock cycles on an IBM-PC compatible
-(running at 9.54 MHz) we have an average of 440 clock cycles per
-traversal (of this loop). Recall the operations that are needed: a
-32-bit memory fetch, a floating-point multiply, another 32-bit
-memory fetch, a floating-point subtraction, and a 32-bit store.
-The initial fetch-and-multiply can be be compressed into a single
-co-processor operation, as can the fetch-and-subtract. The times
-in cycles for these basic operations are\sepfootnote{09_16}
+It is interesting to explore a bit further the extracted value of $a_3$, which is $\frac{1}{3}$ the time needed to evaluate the inner loop (defined above as Re.LP and hand-coded in assembler for ultimate speed). Converting to clock cycles on an IBM-PC compatible (running at 9.54 MHz) we have an average of 440 clock cycles per traversal (of this loop). Recall the operations that are needed: a 32-bit memory fetch, a floating-point multiply, another 32-bit memory fetch, a floating-point subtraction, and a 32-bit store. The initial fetch-and-multiply can be be compressed into a single co-processor operation, as can the fetch-and-subtract. The times in cycles for these basic operations are\sepfootnote{09_16}
 % Table 9-2
 \begin{table}
     \centering
@@ -1343,42 +1294,28 @@ in cycles for these basic operations are\sepfootnote{09_16}
         \end{tabular}
 \end{table}
 
-We see from Table \ref{tbl:09_02} above that the time computed from the
-cpu and coprocessor specifications (422 clocks) is close to the
-measured time (440 clocks). The slight difference doubtless
-comes both from measurement error and from the fact the
-timing of CISC chips is not an exact art (for example, there are
-periodic interruptions for dynamic memory refreshment and for
-the system clock).
+We see from Table \ref{tbl:09_02} above that the time computed from the cpu and coprocessor specifications (422 clocks) is close to the measured time (440 clocks). The slight difference doubtless comes both from measurement error and from the fact the timing of CISC chips is not an exact art (for example, there are periodic interruptions for dynamic memory refreshment and for the system clock).
 
-Finally, we confirm that little is to be gained by optimizing out
-loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming
-then we should cut the N = 350 time from 16 to 13 minutes, and 
-the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
+Finally, we confirm that little is to be gained by optimizing out loops. Suppose, \textit{e.g.}, we could halve $a_2$ by clever programming then we should cut the N = 350 time from 16 to 13 minutes, and the time for N = 1000 by some 20 minutes in 5 hours, or 6\%.
 
 \section{Matrix Inversion}
-\TallC{We} introduce this subject with a brief discourse on liners
-algebra of square matrices.
+\TallC{We} introduce this subject with a brief discourse on liners algebra of square matrices.
 
 \subsection{Linear transformations}
-Suppose A is a square $(N\times N)$ matrix and x is an N-dimensional
-vector (a column, or $(N\times 1)$ matrix). We can think of the symbolic
-operation
+Suppose A is a square $(N\times N)$ matrix and x is an N-dimensional vector (a column, or $(N\times 1)$ matrix). We can think of the symbolic operation
  % (26)
 \begin{equation}
     \label{eq:09_26}
     \mathbf{y= A \cdot x}
 \end{equation} 
-as a linear transformation of the column x to a new column y. In
-terms of matrix elements and components,
+as a linear transformation of the column x to a new column y. In terms of matrix elements and components,
 
 \begin{equation}
     \label{eq:09_27}
     \mathrm{y_m = \sum_{n=0}^{N-1} A_{mn} x_n}
 \end{equation}
 
-The transformation is \textbf{linear} because if x is the sum of 2 columns
-(added component by component)
+The transformation is \textbf{linear} because if x is the sum of 2 columns (added component by component)
 \begin{equation}
     \label{eq:09_28}
     \mathrm{x=x^{(1)}+x^{(2)}\;,}
@@ -1389,8 +1326,7 @@ then transforming, written
     \label{eq:09_29}
     \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big)}
 \end{equation}
-or we could transform first and then add the transformed vectors.
-The identity of the results is called the \textbf{distributive law}
+or we could transform first and then add the transformed vectors. The identity of the results is called the \textbf{distributive law}
 \begin{equation}
     \label{eq:09_30}
     \mathrm{A \cdot x = A \cdot \Big( x^{(1)}+x^{(2)} \Big) \equiv   A \cdot x^{(1)}+ A \cdot x^{(2)} }
@@ -1399,8 +1335,7 @@ of linear transformations.
 
 \subsection{Matrix multiplication}
 
-Now, suppose we had several square matrices, \textbf{A, B, C,...} We
-could imagine performing successive linear transformations on a
+Now, suppose we had several square matrices, \textbf{A, B, C,...} We could imagine performing successive linear transformations on a
 vector \textbf{x} \textit{via}
 \begin{subequations}
     \begin{equation}
@@ -1424,8 +1359,7 @@ These can conveniently be written
     \mathrm{w=C \cdot \Big( B \cdot (A \cdot x) \Big) \; .}%  (32)
 \end{equation}
 
-The concept of successive transformations leads to the idea of
-multiplying two matrices to obtain a third:
+The concept of successive transformations leads to the idea of multiplying two matrices to obtain a third:
 % (33)
 \begin{equation}
     \label{eq:09_33}
@@ -1437,43 +1371,31 @@ In terms of matrix elements we have, for example
     \mathrm{D_{ik} = \sum_{j=0}^{N-1} B_{ij} A_{jk}}
 \end{equation}
 
-The important point is that the (matrix) multiplications may be
-performed in any order, so long as the left-to-right ordering of
-the factors is maintained:
+The important point is that the (matrix) multiplications may be performed in any order, so long as the left-to-right ordering of the factors is maintained:
 \begin{equation}
     \label{eq:09_35}
     \mathrm{C \cdot \big( B \cdot A \big) \equiv \big( C \cdot B \big) \cdot A}
 \end{equation}
-Equation \ref{eq:09_35} is known as the associative law of matrix
-multiplication. Finally, we note that -- as hinted above -- the left-to-right
-order of factors in matrix multiplication is significant. That is, i
-general,
+Equation \ref{eq:09_35} is known as the associative law of matrix multiplication. Finally, we note that -- as hinted above -- the left-to-right order of factors in matrix multiplication is significant. That is, in general,
 \begin{equation}
     \label{eq:09_36}
     \mathrm{A \cdot B \neq B \cdot A}
 \end{equation}
-We say that, unlike with ordinary or even complex arithmetics
-matrix multiplication -- even of square matrices -- does not in
-general obey the commutative law \sepfootnote{09_17}.
+We say that, unlike with ordinary or even complex arithmetics matrix multiplication -- even of square matrices -- does not in general obey the commutative law \sepfootnote{09_17}.
 
 \subsection{Matrix Inversion}
-With this introduction, what does it mean to invert a matrix? First
-of all, the concept can apply only to a square matrix. Given an
+With this introduction, what does it mean to invert a matrix? First of all, the concept can apply only to a square matrix. Given an
 $N \times N$ matrix $A$, we seek another $N \times N$ matrix $A^{-1}$ with the property that
 \begin{equation}
     \label{eq:09_37}
     \mathrm{A^{-1} \cdot A \equiv A \cdot A^{-1}}
 \end{equation} 
-where I is the unit matrix defined in the beginning of this chapter
-(Eq. \erratumReplace{typo}{4}{\ref{eq:09_03}}-- 1's on the main diagonal, 0's everywhere else). We have
-implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to
-left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
+where I is the unit matrix defined in the beginning of this chapter (Eq. \erratumReplace{typo}{4}{\ref{eq:09_03}}-- 1's on the main diagonal, 0's everywhere else). We have implied in Eq. \ref{eq:09_37} that a matrix that is an inverse with respect to left-multiplication is also an inverse with respect to right-multiplication. Put another way, we imply that
 \begin{equation}
     \label{eq:09_38}
     \mathrm{\Big(A^{-1} \Big)^{-1} \equiv A}
 \end{equation} 
-The condition that -- given A -- we can construct $A^{-1}$ is the same
-as the condition that we should be able to solve the linear equation
+The condition that -- given A -- we can construct $A^{-1}$ is the same as the condition that we should be able to solve the linear equation
 \begin{equation*}
     \mathrm{A \cdot x = b \,;}
 \end{equation*} 
@@ -1484,21 +1406,12 @@ as the condition that we should be able to solve the linear equation
 We have developed a linear equation solver program already
 -- why should we be interested in a matrix inversion program?
 
-Here is why: The time needed to solve a single system (that is,
-with a given inhomogeneous term) of linear equations is conditioned by the number of floating-point multiplications required:
-about $N^3/3$. The number needed to invert the matrix is about $N^3$,
-roughly $3\times$ as many, meaning roughly $3\times$ as long to invert as to
-solve, if the matrix is large. Clearly there is no advantage to
-inverting unless we want to solve a number of equations with the
-same coefficient matrix but with different inhomogeneous terms.
-In this case, we can write
+Here is why: The time needed to solve a single system (that is, with a given inhomogeneous term) of linear equations is conditioned by the number of floating-point multiplications required: about $N^3/3$. The number needed to invert the matrix is about $N^3$, roughly $3\times$ as many, meaning roughly $3\times$ as long to invert as to solve, if the matrix is large. Clearly there is no advantage to inverting unless we want to solve a number of equations with the same coefficient matrix but with different inhomogeneous terms. In this case, we can write
 \begin{equation}
     \label{eq:09_39}
     \mathrm{x = A^{-1} \cdot b}
 \end{equation} 
-and just recalculate for each \textbf{b}. Clearly this breaks even - relative
-to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior
-to re-solving for more than 3 \textbf{b}'s.
+and just recalculate for each \textbf{b}. Clearly this breaks even - relative to solving 3 sets of equations - for 3 different \textbf{b}'s and is superior to re-solving for more than 3 \textbf{b}'s.
 
 \subsection{An Example} 
 Let us now calculate the inverse of our $3\times 3$ matrix from before.
@@ -1524,11 +1437,7 @@ The equation is (let $C = A^{-1}$ be the inverse\sepfootnote{09_18})
     \end{pmatrix}
 \end{equation} 
 % 246
-It is easy to see that Eq. \ref{eq:09_40} is like 3 linear equations, the unknown
-being each column of the matrix C. The brute-force method to
-calculate A is then to work on the right-hand-side all at once as
-we triangularize, and back-solve. It is easy to see that
-triangularization by pivotal elimination leads to
+It is easy to see that Eq. \ref{eq:09_40} is like 3 linear equations, the unknown being each column of the matrix C. The brute-force method to calculate A is then to work on the right-hand-side all at once as we triangularize, and back-solve. It is easy to see that triangularization by pivotal elimination leads to
 \begin{equation}
     \label{eq:09_41}
     \begin{pmatrix}
@@ -1548,14 +1457,7 @@ triangularization by pivotal elimination leads to
          ^1/_{13} &         ^{-1}/_{13} &        ^2/_{13}
     \end{pmatrix}
 \end{equation} 
-To construct the inverse we replace the right-hand side with the 
-results of back-solving, column by column. This is N times as
-much work as back-solving a single set of equations, hence the
-total time required for brute-force inversion is $\approx \frac{4}{3}N^3$. By keeping track of zero elements we could reduce this time by another
-$\frac{1}{3}N^3$, thereby obtaining the theoretical minimum (for Gaussian
-elimination) of $O(N^3)$. However, the brute-force method is unsatisfactory for another reason: it takes twice the storage of more
-sophisticated algorithms. Modern matrix packages therefore use
-LU decomposition for both linear equations and matrix inversion.
+To construct the inverse we replace the right-hand side with the results of back-solving, column by column. This is N times as much work as back-solving a single set of equations, hence the total time required for brute-force inversion is $\approx \frac{4}{3}N^3$. By keeping track of zero elements we could reduce this time by another $\frac{1}{3}N^3$, thereby obtaining the theoretical minimum (for Gaussian elimination) of $O(N^3)$. However, the brute-force method is unsatisfactory for another reason: it takes twice the storage of more sophisticated algorithms. Modern matrix packages therefore use LU decomposition for both linear equations and matrix inversion.
 
 \section{LU decomposition}
 \TallC{We} now investigate the LU decomposition algorithm\sepfootnote{09_19}. Suppose a given matrix A could be rewritten
@@ -1616,21 +1518,15 @@ solve 45 successively (by back-substitution) for \textbf{x}:
     \dots \;\textit{etc.} \;\dots \nonumber
 \end{align}
 The n'th term of Eq. \ref{eq:09_46} requires n multiplications and n additions.
-Since we must sum n from 0 to N-1, we find $N(N-1)/2 \approx N^2/2$
-multiplications and additions to solve all of \ref{eq:09_46}. Similarly, solving 
-\ref{eq:09_47} requires about $N^2/2$ additions and multiplications. Thus, the
-dominant time in solving must be the time to decompose according to Eq. \ref{eq:09_42}.
+Since we must sum n from 0 to N-1, we find $N(N-1)/2 \approx N^2/2$ multiplications and additions to solve all of \ref{eq:09_46}. Similarly, solving \ref{eq:09_47} requires about $N^2/2$ additions and multiplications. Thus, the dominant time in solving must be the time to decompose according to Eq. \ref{eq:09_42}.
 
-The decomposition time is $\approx N^3/3$, and the method for decomposing is
-described clearly in \textit{Numerical Recipes}. The equations
-to be solved are
+The decomposition time is $\approx N^3/3$, and the method for decomposing is described clearly in \textit{Numerical Recipes}. The equations to be solved are
 % (48)
 \begin{equation}
     \label{eq:09_48}
     \sum_{k=0}^{N-1}\lambda_{mk}\mu_{kn}=A_{mn}
 \end{equation}
-constituting $N^2 + N$ equations for $N^2$ unknowns. Thus we may
-arbitrarily \textbf{choose} $\lambda_{kk} = 1$.
+constituting $N^2 + N$ equations for $N^2$ unknowns. Thus we may arbitrarily \textbf{choose} $\lambda_{kk} = 1$.
 
 The equations \ref{eq:09_48} are easy to solve if we do so in a sensible order.
 Clearly,
@@ -1650,10 +1546,6 @@ so we can divide up the work as follows: for each n, write
     \lambda_{mn} &=\frac{1}{\mu_{nn}}\Big(A_{mn}-\sum_{k=0}^{n-1}\lambda_{mk}\mu_{kn}\Big)\,,\; m=n+1, n+2, \dotsc, N-1  \nonumber
 \end{align}
 
-Inspection of Eq. \ref{eq:09_50} makes clear that the terms on the right side
-are always computed before they are needed. We can store the
-computed elements $\lambda_{mk}$ and $\mu_{kn}$ in place of the corresponding
-elements of the original matrix (on the diagonals we store  $\mu_{nn}$
-since $\lambda_{kk} = 1$ is known).
+Inspection of Eq. \ref{eq:09_50} makes clear that the terms on the right side are always computed before they are needed. We can store the computed elements $\lambda_{mk}$ and $\mu_{kn}$ in place of the corresponding elements of the original matrix (on the diagonals we store  $\mu_{nn}$ since $\lambda_{kk} = 1$ is known).
 
 To limit roundoff error we again pivot, which amounts to permutling so the row with the largest diagonal element is the currenf one. Much of the code developed for the Gauss eliminatios method is applicable, as the file LU.FTH shows.
