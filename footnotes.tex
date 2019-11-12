@@ -326,7 +326,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 
 % 08_14 footnote code box
 \begin{lrbox}{\LstBox}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize,]
     : RECURSE ?COMP LAST-CFA , ;
     : ?COMP STATE  0= ABORT" Compile only!" ;
     : LAST-CFA LATEST PFA CFA ; IMMEDIATE
@@ -335,7 +335,7 @@ M. Kelly and N. Spies, \textit{FORTH, a Text and Reference} (Prentice-Hall, Engl
 \end{lrbox}
 
 \sepfootnotecontent{08_14}{We may deﬁne \bc{RECURSE} (in reverse order) as
-\usebox{\LstBox}
+\usebox{\LstBox} \\
 Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{08_15}{We use the generalized arrays of Ch. 5 \S3.4; A, B, and E are fp \#'s on the fstack, TYPE is the data-type of f(x) and INTEGRAL.}
@@ -344,7 +344,7 @@ Note that \bc{RECURSE} is called \bc{MYSELF} in some dialects.}
 
 \sepfootnotecontent{08_17}{"Analytic" meants the ordinary derivatiove $df(z/dz$ exist. Coonsult any good text on the theory of functions of a complex variable.}
 
-\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for $sin(x)$. See, \eg, Abramowitz and Stegun, \textit{HMF}, \S4.3.104.}
+\sepfootnotecontent{08_18}{This comes from the Chebyshev polynomial representation for sin(x). See, \eg, Abramowitz and Stegun, \textit{HMF}, \S4.3.104.}
 
 \sepfootnotecontent{08_19}{Although the 80x87 already uses a compact represtation of the trigonometric functions and is thus fairly hard to beat, especially if high accuracy is demanded.}
 

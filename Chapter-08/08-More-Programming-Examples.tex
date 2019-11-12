@@ -109,11 +109,11 @@ Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a 
 
 Monte-Carlo methods come into their own for multidimensional integrals, where they are much faster than multiple one-dimensional integration subroutines based on deterministic rules.
 
-\subsubsection{A slmple Monte-Carlo program}
+\subsubsection{A slmple Monte-Carlo program}\label{chap:08_01_03_02}
 Following the function protocol and naming convention developed in Ch. \ref{06_03_02} 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
 
 \begin{lstlisting}
-    USE( F.name \% L.lim \% U.lim \% err )MONTE
+    USE( F.name % L.lim % U.lim % err )MONTE
 \end{lstlisting}
 
 We pass \bc{)MONTE} the name \bc{F.name} of the function $f(x)$, the limits of integration, and the absolute precision of the answer. The answer should be left on the ifstack. \bc{L.lim}, \bc{U.lim}, and \bc{err} stand for explicit ﬂoating point numbers that are placed on the 87stack by \bc{\%}\sepfootnote{08_05}. The word \bc{\%} appears explicitly because in a larger program --of which \bc{)MONTE} could be but a portion-- we might want to specify the parameters as numbers already on the 87stack. Since this is intended to be an illustrative program we keep the fstack simple by defining \bc{SCALAR}s to put the limits and precision into.
@@ -387,7 +387,7 @@ below.
 
 Clearly, there is no obligation to use Simpson's rule on the sub-intervals: any favorite algorithm will do.
 
-To translate the above into FORTH, we decompose into smaller parts. The name of the function representing the integrand (actually its execution address or \textbf{cfa}) is placed on the stack by \bc{USE(}, as in Ch. 8 \S\ 1.3.2 above. Thence it can be saved in a local variable --either on the rstack or in a \bc{VAR} or \bc{VARIABLE} that can be \bc{BEHEAD}ed-- so the corresponding phrases
+To translate the above into FORTH, we decompose into smaller parts. The name of the function representing the integrand (actually its execution address or \textbf{cfa}) is placed on the stack by \bc{USE(}, as in Ch. \ref{chap:08_01_03_02} 8 \S\ 1.3.2 above. Thence it can be saved in a local variable --either on the rstack or in a \bc{VAR} or \bc{VARIABLE} that can be \bc{BEHEAD}ed-- so the corresponding phrases
 
 \begin{lstlisting}
     R@   EXECUTE  \rstack
@@ -401,43 +401,46 @@ The program then takes the form\sepfootnote{08_13} shown on p. 171 below.
 
 Note that in going from the pseudocode to FORTH we replaced \bc{)INTEGRAL} by \bc{RECURSE} inside the word \bc{)INTEGRAL}. The need for this arises from an ideosyncrasy of FORTH: normally words do not refer to themselves, hence a word being defined is hidden from the dictionary search mechanism (compiler) until the final \bc{;} is reached. The word \bc{RECURSE} unhides the current name, and compiles its \textbf{cfa} in the proper spot\sepfootnote{08_14}.
 
-\begin{lstlisting}
-    : USE( [COMPILE] ' CFA LITERAL ;
-        IMMEDIATE
-    
-    : f(x) ( :cfa--cfa ) DUP EXECUTE ;
-    
-    : )integral (f:a b-- I )
-        \ uses trapezoidal rule
-        XDUP FR- F2/    ( 87:--a b [b-a]/2 )
-        F-ROT f(x) FSWAP f(x) F+ F* ;
-    
-    : )Richardson   \ R-extrap. for trap. rule
-        3 S->F F/ F+ ;  ( 87:I' I--Ii'' )
+\begin{multicols}{2}
+    \tiny
+    \begin{lstlisting}
+: USE( [COMPILE] ' CFA LITERAL ;
+    IMMEDIATE
 
-    DVARIABLE ERR   \ place to store err
-    CREAT OLD.I  10 ALLOT
-                    \ place to store I[a,b]
+: f(x) ( :cfa--cfa ) DUP EXECUTE ;
 
-    : )INTEGRAL   ( :adr-- 87:a b err--I )
-        ERR R32!
-        XDUP )integral   ( 87:--a b I )
-        OLD.I R80!
-        XDUP F+ F2/      ( 87:--a b c=[a+b]/2 )
-        FUNDER FSWAP     ( 87:--a c c b )
-        XDUP )integral   ( 87:--a c c b I1 )
-        F4P F4P          ( 87:--a c c b I1 a c )
-        )integral F+     ( 87:--a c c b I1+I2 )
-        FDUP OLD.I R80@ F<
-        IF )Richardson
-            FPLUCK FPLUCK FPLUCK FPLUCK
-        ELSE FDROP FDROP ( 87:--a c c b )
-            ERR R32@ F2/
-            F-ROT F2P    ( 87:--a c err/2 c b err/2 )
-            RECURSE      ( 87:--a c err/2 I[c,b] )
-            F3R F3R F3R RECURSE F+
-        THEN DROP ;
-\end{lstlisting}
+: )integral (f:a b-- I )
+    \ uses trapezoidal rule
+    XDUP FR- F2/    ( 87:--a b [b-a]/2 )
+    F-ROT f(x) FSWAP f(x) F+ F* ;
+
+: )Richardson   \ R-extrap. for trap. rule
+    3 S->F F/ F+ ;  ( 87:I' I--I'' )
+
+DVARIABLE ERR   \ place to store err
+CREAT OLD.I  10 ALLOT
+                \ place to store I[a,b]
+
+: )INTEGRAL   ( :adr-- 87:a b err--I )
+    ERR R32!
+    XDUP )integral ( 87:--a b I )
+    OLD.I R80!
+    XDUP F+ F2/    ( 87:--a b c=[a+b]/2 )
+    FUNDER FSWAP   ( 87:--a c c b )
+    XDUP )integral ( 87:--a c c b I1 )
+    F4P F4P        ( 87:--a c c b I1 a c )
+    )integral F+   ( 87:--a c c b I1+I2 )
+    FDUP OLD.I R80@ F<
+    IF )Richardson
+        FPLUCK FPLUCK FPLUCK FPLUCK
+    ELSE FDROP FDROP ( 87:--a c c b )
+        ERR R32@ F2/
+        F-ROT F2P    ( 87:--a c err/2 c b err/2 )
+        RECURSE      ( 87:--a c err/2 I[c,b] )
+        F3R F3R F3R RECURSE F+
+    THEN DROP ;
+    \end{lstlisting}
+\end{multicols}
 
 \subsubsection{Disadvantages of recursion in adaptive integration}
 \TallC{The} main advantage of the recursive adaptive integration algorithm is its ease of programming. As we shall see, the recursive program is much shorter than the non-recursive one. For any reasonable integrand, the fstack (or ifstack) depth grows only as the square of the logarithm of the finest subdivision, hence never gets too large.
@@ -457,12 +460,11 @@ Several solutions to these problems suggest themselves:
 \end{itemize}
 
 \subsubsection{Adaptive integration without recursion}
-\TallC{The} chief reason to write a non-recursive program is to avoid any repeated evaluation of the integrand. That is, the optimum
-is not only the smallest number of points $x_n$ in (A, B] consistent with the desired precision, but to evaluate $f(x)$ once only at each $x_n$. This will be worthwhile when the integrand $f(x)$ is costly to evaluate.
+\TallC{The} chief reason to write a non-recursive program is to avoid any repeated evaluation of the integrand. That is, the optimum is not only the smallest number of points $x_n$ in (A, B] consistent with the desired precision, but to evaluate $f(x)$ once only at each $x_n$. This will be worthwhile when the integrand $f(x)$ is costly to evaluate.
 
 To minimize evaluations of $f(x)$, we shall have to save values $f(x_n)$ that can be re-used as we subdivide the intervals.
 
-The best place to store the $f(x_n)$’s is some kind of stack or array. Moreover, to make sure that a value of $f(x)$ computed at one mesh size is usable at all smaller meshes, we must subdivide into two equal sub-intervals; and the points $x_n$ must be equally spaced and include the end-points. Gaussian quadrature is thus out of the question since it invariably (because of the non-uniform spacings of the points) demands that previously computed $f(x_n)$’s are thrown away because they cannot be re-used.
+The best place to store the $f(x_n)$’s is some kind of stack or array. Moreover, to make sure that a value of $f(x)$ computed at one mesh size is usable at all smaller meshes, we must subdivide into two equal sub-intervals; and the points $x_n$ must be equally spaced and include the end-points. Gaussian quadrature is thus out of the question since it invariably (because of the non-uniform spacings of the points) demands that previously computed $f(x_n)$'s are thrown away because they cannot be re-used.
 
 The simplest quadrature formula that satisfies these criteria is the \textbf{trapezoidal rule} (see Appendix 8.2). This is the formula used in the following program.
 
@@ -498,7 +500,9 @@ Fig. 8-4 \textit{Non-recursive adaptive quadrature}
 
 and the resulting FORTH program is\sepfootnote{08_15}:
 
-\begin{lstlisting}
+\begin{multicols}{2}
+    \tiny
+    \begin{lstlisting}
 \ COPYRIGHT 1991 JUUAN V. NOBLE
 TASK IN1EGRAL
 FIND CP@L 0= ? ( FLOAD COMPLEX )
@@ -644,14 +648,15 @@ CASE: g*6 CP*F F* ;CASE
     REPEAT final.I G@L ;
 BEHEAD" N INTERPOLATE   \ optional
 \ USE( F.name % A % B % E type )INTEGRAL
-\end{lstlisting}
+    \end{lstlisting}
+\end{multicols}
 
-The nonrecursive program obviously requires much more code than the recursive version. This is the chief disadvantage of a nonrecursive method\sepfootnote{08_16}.
+The nonrecursive program obviously requires \textit{much} more code than the recursive version. This is the chief disadvantage of a nonrecursive method\sepfootnote{08_16}.
 
 \subsubsection{Example of )INTEGRAL IN USE}
-\TallC{The} debugging code ("\bc{DEBUG-ON}") lets us track the execution of the program by exhibiting the simulated stacks. Here is an example, $int_{1}^{2} dx \sqrt{x}$:
+\TallC{The} debugging code ("\bc{DEBUG-ON}") lets us track the execution of the program by exhibiting the simulated stacks. Here is an example, $\int_{1}^{2} dx \sqrt{x}$:
 \begin{lstlisting}
-USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
+USE( FSQRT % 1. % 2. % 1.E-3 REAL*4 )INTEGRAL E.
 \end{lstlisting}
 
 \begin{figure}
@@ -665,14 +670,14 @@ USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
 0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
 1 & 1.5000E+00 & 1.2247E+00 & 6.5973E-01 & 5.0000E-04 \\
 2 & 2.0000E+00 & 1.4142E+00 & 1.4983E-01 & 1.2500E-04 \\
-\multicolumn{2}{l}{old.I = 1.2071E+00} &
+\multicolumn{2}{l}{old.I = 1.2071E+00}   &
 \multicolumn{2}{l}{final.I = 0.0000E+00} & \\
 \\
 0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
 1 & 1.5000E+00 & 1.2247E+00 & 3.1845E-01 & 2.5000E-04 \\
 2 & 1.7500E+00 & 1.3228E+00 & 3.4213E-01 & 2.5000E-04 \\
 3 & 2.0000E+00 & 1.4142E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 6.5973E-01} &
+\multicolumn{2}{c}{old.I = 6.5973E-01}   &
 \multicolumn{2}{c}{final.I = 0.0000E+00} & \\
 \\
 0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
@@ -680,14 +685,14 @@ USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
 2 & 1.7500E+00 & 1.3228E+00 & 1.6826E-01 & 1.2500E-04 \\
 3 & 1.8750E+00 & 1.3693E+00 & 1.7396E-01 & 1.2500E-04 \\
 4 & 2.0000E+00 & 1.4142E+00 & 0.0000E+00 & 0.0000E+04 \\
-\multicolumn{2}{c}{old.I = 3.4213E-01} &
+\multicolumn{2}{c}{old.I = 3.4213E-01}   &
 \multicolumn{2}{c}{final.I = 0.0000E+00} \\
 \\
 0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
 1 & 1.5000E+00 & 1.2247E+00 & 1.5621E-01 & 1.2500E-04 \\
 2 & 1.6250E+00 & 1.2747E+00 & 1.6235E-01 & 1.2500E-04 \\
 3 & 1.7500E+00 & 1.3228E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 3.1845E-01} &
+\multicolumn{2}{c}{old.I = 3.1845E-01}   &
 \multicolumn{2}{c}{final.I = 3.4226E+00} \\
         \end{tabular}
       &
@@ -698,20 +703,20 @@ USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
 0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
 1 & 1.2500E+00 & 1.1180E+00 & 2.9284E-01 & 2.5000E-04 \\
 2 & 1.5000E+00 & 1.2247E+00 & 1.6235E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 5.5618E-01} &
+\multicolumn{2}{c}{old.I = 5.5618E-01}   &
 \multicolumn{2}{c}{final.I = 6.6087E+00} \\
 \\
 0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
 1 & 1.2500E+00 & 1.1180E+00 & 1.4316E-01 & 1.2500E-04 \\
 2 & 1.3750E+00 & 1.1726E+00 & 1.4983E-01 & 1.2500E-04 \\
 3 & 1.5000E+00 & 1.2247E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 2.9284E-01} &
+\multicolumn{2}{c}{old.I = 2.9284E-01}   &
 \multicolumn{2}{c}{final.I = 6.6067E+00} \\
 \\
 0 & 1.0000E+00 & 1.0000E+00 & 1.2879E-01 & 1.2500E-04 \\
 1 & 1.1250E+00 & 1.0606E+00 & 1.3616E-01 & 1.2500E-04 \\
 2 & 1.2500E+00 & 1.1180E+00 & 1.4983E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 2.6475E-01} &
+\multicolumn{2}{c}{old.I = 2.6475E-01}   &
 \multicolumn{2}{c}{final.I = 9.5392E-01} \\
 1.2189E+00
 \\ \\ \\ \\ \\ \\ \\ \\
@@ -719,9 +724,9 @@ USE( FSQRT \% 1. \% 2. \% 1.E-3 REAL*4 )INTEGRAL
     \end{tabular}}
 \end{figure}
 
-\begin{equation}
+\begin{equation*}
 \int_{1}^{2}dx\sqrt{x} = \frac{2}{3} \left( 2^{3/2} - 1 \right)
-\end{equation}
+\end{equation*}
 
 Notice that, although $\sqrt{x}$ is perfectly finite at $x = 0$, its first derivative is not. This is not a problem in the above case, because the lower limit is 1.0.
 
@@ -739,7 +744,7 @@ where $\Gamma$ is a \textbf{contour} (simple, closed, piecewise tinuous curve) i
 The easiest way to evaluate 16 is to parameterize $z$ as a function of a real variable $t$; as $t$ runs from A to B, $z(t)$ traces out the contour. For example, the parameterization
 
 \begin{equation}
-z(t) = z_0 + R cos(t) + iR sin(t) , 0 \leq t \leq 2\pi
+z(t) = z_0 + R cos(t) + iR sin(t) ,\ 0 \leq t \leq 2\pi
 \end{equation}
 
 traces out a (closed) circle of radius R centered at $z = z_0$.
@@ -769,7 +774,7 @@ The calculus of residues (Cauchy's theorem) gives
 We parameterize the unit circle as $z(t) = cos(2\pi t) + i sin(2\pi t)$, hence $\dot{z}(t) = 2\pi iz(t)$, and we might as well evaluate
 
 \begin{equation}
-int_{0}^{1} dt z(t) e^{1/z(t)} \equiv 1.
+\int_{0}^{1} dt z(t) e^{1/z(t)} \equiv 1.
 \end{equation}
 
 For reasons of space, we exhibit only the first and last few iterationst
@@ -781,14 +786,175 @@ For reasons of space, we exhibit only the first and last few iterationst
         ( 87:x y--e^x cos[y] e^x sin[y] )
     : G(T) Z(T) XDUP 1/X XEXP X* ;
     DEBUG_ON
-    USE( G(T) \% 0 \% 1 \% 1.E-2 COMPLEX )INTEGRAL X.
+    USE( G(T) % 0 % 1 % 1.E-2 COMPLEX )INTEGRAL X.
 \end{lstlisting}
 
-N      X            F          I             E
-0 1.0000E+00  1.0000E+00 2.6475E-01 2.5000E-04
-1 1.2500E+00  1.1180E+00 2.9284E-01 2.5000E-04
-2 1.5000E+00  1.2247E+00 1.6235E-01 1.2500E-04
-old.I = 5.5618E-01    final.I = 6.6087E+00
+\begin{figure}
+    \tiny
+    \setlength{\tabcolsep}{.2em}
+    \begin{tabular}{l|l}
+
+        \begin{tabular}{cccllll}
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000 & .58760 & 0.0000 & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000 & .58760 & 0.0000 & .0049999 \\
+            2 & 1.0000 & 2.7182  &  0.0000 & .00000 & .00000 & .0000000 \\
+            \multicolumn{3}{l}{old.I = 2.7182 0.0000} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000 & .58760 & 0.0000   & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000 & .59198 & -.067537 & .0024999 \\
+            2 & .75000 & .84147  & -.54030 & .44496 & -.067537 & .0024999 \\
+            3 & 1.0000 & 2.7182  &  0.0000 & .00000 & .00000   & .0000000 \\
+            \multicolumn{3}{l}{old.I = .58760 0.0000} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000 & .58760  & 0.0000   & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000 & .059198 & -.067537 & .0024999 \\
+            2 & .75000 & .84147  & -.54030 & .17896  & -.043682 & .0012499 \\
+            3 & .87500 & .20219  & -.15862 & .29626  & -.009914 & .0012499 \\
+            4 & 1.0000 & 2.7182  & 0.0000  & .00000  &  .000000 & .0000000 \\
+            \multicolumn{3}{l}{old.I = .44496 -.06537} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000  & .58760  & 0.0000   & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000  & .059198 & -.067537 & .0024999 \\
+            2 & .75000 & .84147  & -.54030  & .17896  & -.043682 & .0012499 \\
+            3 & .87500 & 2.0219  & -.15862  & .14190  & -.005745 & .00062499 \\
+            4 & .93750 & 2.5189  & -.025229 & .16366  & -.000788 & .00062499 \\
+            5 & 1.0000 & 2.7182  & 0.0000   & .000000 &  .000000 & .00000000 \\
+            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \end{tabular}
+      &
+        \begin{tabular}{cccllll}
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000   & .58760  & 0.0000    & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000   & .059198 & -.067537  & .00249999 \\
+            2 & .75000 &  .84147 & -.54030   & .17896  & -.043682  & .0012499 \\
+            3 & .87500 & 2.0219  & -.15862   & .14190  & -.005745  & .00062499 \\
+            4 & .93750 & 2.5189  & -.025229  & .081022 & -.0004467 & .00031249 \\
+            5 & .96875 & 2.6665  & -.0033577 & .08414  & -.0000525 & .00031249 \\
+            6 & 1.0000 & 2.7182  & 0.0000    & .000000 &  .000000  & .000000000 \\
+            \multicolumn{3}{l}{old.I = .16366 -.00078842} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000    & .58760  & 0.0000    & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000    & .059198 & -.067537  & .0024999 \\
+            2 & .75000 &  .84147 &  -.54030   & .14896  & -.043682  & .0012499 \\
+            3 & .87500 & 2.0219  &  -.15862   & .14190  & -.0057453 & .00062499 \\
+            4 & .93750 & 2.5189  &  -.025229  & .08102  & -.0004467 & .00031249 \\
+            5 & .96875 & 2.6665  &  -.0033577 & .04197  & -.0000296 & .00015624 \\
+            6 & .98437 & 2.7052  &  -.000426  & .042371 & -.0000033 & .00015624 \\
+            7 & 1.0000 & 2.7182  &  0.0000    & 0.0000  & 0.0000    & 0.0000 \\
+            \multicolumn{3}{l}{old.I = .084137 -.000052465} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000}     \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & 2.7182  &  0.0000   & .58760  & 0.0000    & .0049999 \\
+            1 & .50000 & -.36787 & -0.0000   & .059198 & -.067537  & .0024999 \\
+            2 & .75000 &  .84147 &  -.54030  & .14896  & -.043682  & .0012499 \\
+            3 & .87500 & 2.0219  &  -.15862  & .14190  & -.005745  & .00062499 \\
+            4 & .93750 & 2.5189  &  -.025229 & .040020 & -.0002833 & .00015624 \\
+            5 & .95312 & 2.6036  &  -.011038 & .041173 & -.0001125 & .00015624 \\
+            6 & .96875 & 2.6665  &  -.003358 & .042371 & -.0000033 & .00015624 \\
+            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
+            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
+        \end{tabular}
+    \end{tabular}
+\end{figure}
+
+\begin{figure}
+    \tiny
+    \setlength{\tabcolsep}{.2em}
+    \begin{tabular}{l|l}
+
+        \begin{tabular}{cccllll}
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = 2.7182 0.0000} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .58760 0.0000} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .44496 -.06537} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \end{tabular}
+      &
+        \begin{tabular}{cccllll}
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\ 
+            \multicolumn{3}{l}{old.I = .16366 -.00078842} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\ 
+            \multicolumn{3}{l}{old.I = .084137 -.000052465} & &
+            \multicolumn{3}{r}{final.I = 0.0000 0.0000}     \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
+            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
+        \\
+            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
+            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
+            \multicolumn{1}{c}{E} \\
+            0 & 0.0000 & & & & & \\
+            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
+            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
+        \end{tabular}
+    \end{tabular}
+\end{figure}
 
 box this in yo!
 Note:
@@ -797,22 +963,22 @@ Note:
 \section{Fitting functions to data}
 \TallC{One} of the, most important applications of numerical analysis is the representation of numerical data in functional form. This includes fitting, smoothing, filtering, interpolating, \etc
 
-A typical example is the problem of table lookup: a program requires values of some mathematical function --$sin(x)$, say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
+A typical example is the problem of table lookup: a program requires values of some mathematical function --sin(x), say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
 
-There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent $sin(x)$ by a simple polynomial\sepfootnote{08_18}
+There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent sin(x) by a simple polynomial\sepfootnote{08_18}
 
 \begin{equation}
 sin(x) \approx x \left( 0.994108 - 0.147207x\right),
 \end{equation}
 
-accurate to better than 1\% over the range $-\frac{\pi}{2}\leq x \leq \frac{\pi}{2}$, that requires but 3 multiplications and an addition to evaluate. This would be twice as fast as calculating $sin(x)$ on the 80x87 chip\sepfootnote{08_19}.
+accurate to better than 1\% over the range $-\frac{\pi}{2}\leq x \leq \frac{\pi}{2}$, that requires but 3 multiplications and an addition to evaluate. This would be twice as fast as calculating sin(x) on the 80x87 chip\sepfootnote{08_19}.
 
 \TallC{To} achieve substantially greater speed requires table look-up. To locate data in an ordered table, we might employ binary search: that is, look at the $x$-value halfway down the table and see if the desired value is greater or less than that. On the average,$log_{2}(N)$ comparisons are required, where $N$ is the length of the table. For a table with 1\% precision, we might need 128 entries, \ie seven comparisons.
 
-Binary search is unacceptably slow --is there a faster method? In fact, assuming an ordered table of equally-spaced abscissae the fastest way to locate the desired $x$-value is \textbf{hashing}, a method for \textit{computing} the address rather than finding it using comparisons. Suppose, as before, we need 1\% accuracy, \ie a 128-point table with $x$ in the range $[0,\pi/2]$. To look up a value, we multiply $x$ by $256/\pi \cong 81.5$, truncate to an integer and quadruple it to get a (4-byte) floating point address. These operations --including fetch to the 87stack-- take about 1.5-2 fp multiply times, hence the speedup is 4-fold.
+Binary search is unacceptably slow --is there a faster method? In fact, assuming an ordered table of equally-spaced abscissae the fastest way to locate the desired $x$-value is \textbf{hashing}, a method for \textit{computing} the address rather than finding it using comparisons. Suppose, as before, we need 1\% accuracy, \ie\ a 128-point table with $x$ in the range $[0,\pi/2]$. To look up a value, we multiply $x$ by $256/\pi \cong 81.5$, truncate to an integer and quadruple it to get a (4-byte) floating point address. These operations --including fetch to the 87stack-- take about 1.5-2 fp multiply times, hence the speedup is 4-fold.
 
 The speedup factor does not seem like much, especially for a
-function such as $sin(x)$ that is built into the fast co-processor. However, if we were speaking of a function that is considerably slower to evaluate (for example one requiring evaluation of an integral or solution of a differential equation) hashed table lookup with interpolation can be several orders of magnitude faster than direct evaluation.
+function such as sin(x) that is built into the fast co-processor. However, if we were speaking of a function that is considerably slower to evaluate (for example one requiring evaluation of an integral or solution of a differential equation) hashed table lookup with interpolation can be several orders of magnitude faster than direct evaluation.
 
 \TallC{We} now consider how to represent data by mathematical functions. This can be useful in several contexts:
 
@@ -820,90 +986,92 @@ function such as $sin(x)$ that is built into the fast co-processor. However, if 
     \item The theoretical form of the function, but with unknown parameters, may be known. One might like to \textit{determine} the parameters from the data. For example, one mi t have a lot of data on pendulums: their periods, masses, imensions, \etc The period of a pendulum is given, theoretically, by
     
     \begin{equation}
-    \tau = \frac{2\pi L}{g}^{1/2} f\left( \frac{L}{r},\frac{m_{\text{bob}}}{m_{\text{string}},\mathellipsis}\right)
+    \tau = \frac{2\pi L}{g}^{1/2} f\left(\frac{L}{r},\frac{m_{\text{bob}}}{m_{\text{string}}},\mathellipsis\right)
     \end{equation}
     where L is the length of the string, g the acceleration of gravity, and $f$ is some function of ratios of typical lengths, masses, and other factors in the problem. In order to determine g accurately, one generally fits a function of all the measured factors, and tries to minirmze its deviation from the measured periods. That is, one might try
     
     \begin{equation}
-    \tau_{n} = \left(frac{2\pi L_{n}}{g}^{1/2}\right) \left[ 1 + \alpha frac{r_{n}}{L_{n}} + \beta\left(\frac{m_{bob}}{m_string}\right)_{n} + \mathellipsis\right]
+    \tau_{n} = \left(\frac{2\pi L_{n}}{g}\right)^{1/2} \left[ 1 + \alpha \frac{r_{n}}{L_{n}} + \beta\left(\frac{m_{bob}}{m_{string}}\right)_{n} + \mathellipsis\right]
     \end{equation}
     for the n'th set of observations, with g, $\alpha$, $\beta$, $\mathellipsis$ the unknown parameters to be determined.
     
     \item Sometimes one knows that a phenomenon is basically smoothly varying; so that the wiggles and deviations in observations are noise or otherwise umnteresting. How can we filter out the noise without losing the significant part of the data? Several methods have been developed for this purpose, based on the same principle: the data are represente as a sum of functions from a \textbf{complete} set of functions, with unknown coefficients. That is, if $\varphi_{m}(x)$ are the functions, we say ($y_n$ are the data)
 
-    \begin{equation}
+    \begin{equation}\label{eq:08_25}
     y_n = \sum_{m=0}^{\infty}c_{m}\varphi_{m}(x_{n})
     \end{equation}
 
     Such representations are theoretically possible under general conditions. Then to filter we keep on] a finite sum, retaining the first N (usually simplest and smoothest) functions from the set. An example of a complete set is \textbf{monomials}, $\varphi_{m}(x) = x^{m}$. Another is \textbf{sinusoidal (trigonometric) functions},
-        $\sin(2\pi mx), \cos(2\pi mx), 0 \leq x \leq 1$,
+    \begin{equation*}
+        \sin(2\pi mx), \cos(2\pi mx), 0 \leq x \leq 1,
+    \end{equation*}
     
     used in Fourier-series representation. \textbf{Gram polynomials}, discussed below, comprise a third useful complete set.
 \end{itemize}
 
-\TallC{The} representation in Eq. 25 is called \textbf{linear} because the unknown coefficients $c_{m}$ appear to their first power. Thus, if all the data were to double, we see immediately that the $c_{m}$'s would have to be multiplied by the same factor, 2. Sometimes, as in the example of the measurement of g above, the unknown parameters appear in more complicated fashion. The problem of fitting with these more general functional forms is called \textbf{nonlinear} for obvious reasons. The \textbf{simplex algorithm} of Ch. 8 \S\ 2.3 below is an example of a nonlinear fitting procedure.
+\TallC{The} representation in Eq. \ref{eq:08_25} is called \textbf{linear} because the unknown coefficients $c_{m}$ appear to their first power. Thus, if all the data were to double, we see immediately that the $c_{m}$'s would have to be multiplied by the same factor, 2. Sometimes, as in the example of the measurement of g above, the unknown parameters appear in more complicated fashion. The problem of fitting with these more general functional forms is called \textbf{nonlinear} for obvious reasons. The \textbf{simplex algorithm} of Ch. \ref{chap:08_02_03} below is an example of a nonlinear fitting procedure.
 
 We are now going to write programs to fit both linear and non-linear functions to data. The first and conceptually simplest of these is the \textbf{Fourier transform}, namely representing a function as a sum of sines and cosines.
 
 \subsection{Fast Fourier transform}
 \TallC{What} is a Fourier transform? Suppose we have a function that is \textbf{periodic} on the interval $0 \leq x \leq 2\pi$:
 
-\begin{equation}
+\begin{equation*}
 f(x + 2\pi) = f(x) ;
-\end{equation}
+\end{equation*}
 
 Then under fairly general conditions the function can be expressed in the form
 
-\begin{equation}
+\begin{equation}\label{eq:08_26}
 f(x) = a_{0} + \sum_{n=1}^{\infty} (a_{n} \cos(nx) + b_{n} \sin(nx))
 \end{equation}
 
-Another way to write Eq. 26 is
+Another way to write Eq. \ref{eq:08_26} is
 
-\begin{equation}
+\begin{equation}\label{eq:08_27}
 f(x) = \sum_{-\infty}^{+\infty} c_{n}e^{inx}.
 \end{equation}
 
-In either way of writing, the $c_{n}$ are called \textbf{Fourier coefficients} of the function $f(x)$. Looking, \eg at Eq. 27, we see that the \textbf{orthogonality} of the sinusoidal functions leads to the expression
+In either way of writing, the $c_{n}$ are called \textbf{Fourier coefficients} of the function $f(x)$. Looking, \eg\ at Eq. \ref{eq:08_27}, we see that the \textbf{orthogonality} of the sinusoidal functions leads to the expression
 
-\begin{equation}
+\begin{equation}\label{eq:08_28}
 c_{n} = \frac{1}{2\pi}\int_{0}^{2\pi}f(x)e^{-inx}dx
 \end{equation}
 
-Evaluating Eq. 28 numerically requires --for given n-- at least 2n pomts\sepfootnote{08_20} Naively, for each $n = 0$ to N-1 we have to do a sum
+Evaluating Eq. \ref{eq:08_28} numerically requires --for given n-- at least 2n pomts\sepfootnote{08_20} Naively, for each $n = 0$ to N-1 we have to do a sum
 
-\begin{equation}
+\begin{equation*}
 c_{n} \approx \sum_{k=1}^{2N}f_{k}e^{-2\pi inx}dx .
-\end{equation}
+\end{equation*}
 
 which means carrying out $2N^2$ complex multiplications.
 
-The \textbf{fast Fourier transform (FFT)} was discovered by Runge and K\"{o}nig, rediscovered by Danielzslon and Lanaos and \textbf{\underline{re}}-rediscovered by Cooley and Tukey\sepfootnote{08_21}. The FFT algorithm can be expressed as three steps:
+The \textbf{fast Fourier transform (FFT)} was discovered by Runge and K\"{o}nig, rediscovered by Danielzslon and Lanaos and \textit{\underline{re}}-rediscovered by Cooley and Tukey\sepfootnote{08_21}. The FFT algorithm can be expressed as three steps:
 
 \begin{itemize}
-    \item Discretize the interval, \ie evaluate $f(x)$ only for
-    \begin{equation}
+    \item Discretize the interval, \ie\ evaluate f($x$) only for
+    \begin{equation*}
         x_{k} = 2\pi \frac{k}{N} , 0 \leq x \leq N-1.
-    \end{equation}
+    \end{equation*}
     Call $f(x_k) \equiv f_k$.
     \item   Express the Fourier coefficients as
-    \begin{equation}
-        c_{n} \approx \sum_{k=0}^{N-1}f_{k}e^{-2\pi inx/N} .
+    \begin{equation}\label{eq:08_29}
+        c_{n} = \sum_{k=0}^{N-1}f_{k}e^{-2\pi ink/N} .
     \end{equation}
-    \item With $w_{n} = e^{-2\pi inx/N}$, Eq. 29 is an $N-1$’st degree polynomial in $w_{n}$. We evaluate the polynomial using a fast algorithm.
+    \item With $w_{n} = e^{-2\pi inx/N}$, Eq. \ref{eq:08_29} is an N-1’st degree polynomial in $w_{n}$. We evaluate the polynomial using a fast algorithm.
 \end{itemize}
 
 To evaluate rapidly the polynomial
 
-\begin{equation}
+\begin{equation*}
 c_{n} = P_{n}(w_{n}) \equiv \sum_{k=0}^{N-1}f_{k}(w_{n})^k
-\end{equation}
+\end{equation*}
 
-we divide it into two polynomials of order N/Z, dividing each of those in two, \etc This procedure is efficient only for $N=2^v$, with $v$ an integer, so this is the case we attack.
+we divide it into two polynomials of order N/Z, dividing each of those in two, \etc\ This procedure is efficient only for $N=2^v$, with $v$ an integer, so this is the case we attack.
 
 How does dividing a polynomial in two help us? If we segregate the odd from the even powers, we have, symbolically,
 
-\begin{equation}
+\begin{equation}\label{eq:08_30}
 P_{N}(w) = E_{N/2}(w^{2}) + w O_{N/2}(w^2).
 \end{equation}
 
@@ -928,38 +1096,51 @@ Symbolically, the number of multiplications needed to evaluate, a polynomial for
 whose solution is
 
 \begin{equation}
-\tau_{N} = \lambda N \log_{2}(N) + 2\tau_{N/2}
+\tau_{N} = \lambda N \log_{2}(N).
 \end{equation}
 
-Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. 30: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
+Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. \ref{eq:08_30}: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
 
-Table 8-1 Bit-reversal for re-ordering discrete data
+Table \ref{table:08_01} Bit-reversal for re-ordering discrete data
 
-Start   Step 1  Step 2  Step 3    $Bin_0 Bin_3$
-0       0       0       0         0000  0000
-1       2       4       8         0001  1000
-2       4       8       4         0010  0100
-3       6       12      12        0011  1100
-4       8       2       2         0100  0010
-5       10      6       10        0101  1010
-6       12      10      6         0110  0110
-7       14      14      14        0111  1110
-0       1       1       1         1000  0001
-9       3       5       9         1001  1001
-10      5       9       5         1010  0101
-11      7       13      13        1011  1101
-12      9       3       3         1100  0011
-13      11      7       11        1101  1011
-14      13      11      7         1110  0111
-15      15      15      15        1111  1111
+\begin{figure}
+    \setlength{\tabcolsep}{1em}
+    \begin{tabular}{llllll}
+        \multicolumn{1}{c}{Start}  &
+        \multicolumn{1}{c}{Step 1} &
+        \multicolumn{1}{c}{Step 2} &
+        \multicolumn{1}{c}{Step 3} & 
+        \multicolumn{1}{c}{Bin\textsubscript{0}}  &
+        \multicolumn{1}{c}{Bin\textsubscript{1}} \\
+        0  &      0  &    0  &    0  &    0000 & 0000 \\
+        1  &      2  &    4  &    8  &    0001 & 1000 \\
+        2  &      4  &    8  &    4  &    0010 & 0100 \\
+        3  &      6  &    12 &    12 &    0011 & 1100 \\
+        4  &      8  &    2  &    2  &    0100 & 0010 \\
+        5  &      10 &    6  &    10 &    0101 & 1010 \\
+        6  &      12 &    10 &    6  &    0110 & 0110 \\
+        7  &      14 &    14 &    14 &    0111 & 1110 \\
+        0  &      1  &    1  &    1  &    1000 & 0001 \\
+        9  &      3  &    5  &    9  &    1001 & 1001 \\
+        10 &      5  &    9  &    5  &    1010 & 0101 \\
+        11 &      7  &    13 &    13 &    1011 & 1101 \\
+        12 &      9  &    3  &    3  &    1100 & 0011 \\
+        13 &      11 &    7  &    11 &    1101 & 1011 \\
+        14 &      13 &    11 &    7  &    1110 & 0111 \\
+        15 &      15 &    15 &    15 &    1111 & 1111
+    \end{tabular}
+    \label{table:08_01}
+\end{figure}
 
-The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns $Bin_0$ and $Bin_3$, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
+The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns Bin\textsubscript{0} and Bin\textsubscript{3}, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
 
-\TallC{A} standard FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
+\TallC{A standard} FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
 
 \TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program. Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overflow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
 
-\begin{verbatim}
+\begin{multicols}{2}
+    \tiny
+    \begin{verbatim}
   SUBROUTINE FOUR1(DATA, NN, ISIGN)
 C
 C  from Press, et al., Numerical Recipes, ibid., p. 394
@@ -985,7 +1166,6 @@ C  DATA IS THE (COMPLEX) ARRAY OF DISCRETE INPUT
     ENDIF
     J = J + M
 11  CONTINUE              \ end bit.reversal
-      
       MMAX=1              \ begin Danielson-Lancszos section
 2     IF (N.GT.MMAX) THEN
            ISTEP=2*MMAX   \ executed lg(N) times
@@ -1008,7 +1188,8 @@ C
     GO TO 2
   ENDIF
   RETURN
-\end{verbatim}
+    \end{verbatim}
+\end{multicols}
 
 Fig. 8-5 \textit{Pictorial representation of bit-reversal}
 
@@ -1052,7 +1233,7 @@ where \bc{V\{} is the name of the (complex) array to be transformed, \bc{n.pts} 
 
 \TallC{Now} we test the program. Table 8-2 on page 192 contains the weekly stock prices of IBM stock, for the year 1983 (the 52 values have been made complex numbers by adding $0i$, and the table padded out to 64 entries (the nearest power of 2) with complex zeros)\sepfootnote{08_22}. The first two entries (2,64) are the type and length of the file. (The file reads from left to right.)
 
-We FFl‘ Table 8- 2 using the phrase \bc{IBM{ 64 DIRECT }FFT}. The power spectrum of the resulting FFI‘ (Table 8-3) is shown in Fig. 8-7 on page 192 below.
+We FFl‘ Table 8- 2 using the phrase \bc{IBM\{ 64 DIRECT \}FFT}. The power spectrum of the resulting FFT (Table 8-3) is shown in Fig. 8-7 on page 192 below.
 
 \begin{lstlisting}
 \ Complex Fast Fourier Transform
@@ -1320,7 +1501,7 @@ The first term after $\equiv$ E in Eq. \ref{eq:08_47} is independent of N, and t
 
 The code for Gram polynomials is relatively easy to write using the techniques developed in Ch. 5. The program is displayed in full in Appendix 8.4.
 
-\subsection{Simplex algorithm}
+\subsection{Simplex algorithm}\label{chap:08_02_03}
 \TallC{Sometimes} we must fit data by a function that depends on parameters in a \textbf{nonlinear} manner. An example is
 
 \begin{equation}\label{eq:08_48}
