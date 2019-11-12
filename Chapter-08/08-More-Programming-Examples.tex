@@ -1480,7 +1480,7 @@ The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $
 
 In practice, we would never wish to fit a polynomial of order comparable to the number of data, since this would include the noise as well as the significant information.
 
-We therefore calculate a statistic called $\chi^{2}$/(textit{degrce of freedom})\sepfootnote{08_24} With M data points and an N'th order polynomial, there are M-N-l degrees of freedom. That is, we evaluate Eq. \ref{08_38} for fixed N, and divide by M-N-l. We then increase N by l and do it again The value of N to stop at is the one where
+We therefore calculate a statistic called $\chi^{2}$/(textit{degrce of freedom})\sepfootnote{08_24} With M data points and an N'th order polynomial, there are M-N-l degrees of freedom. That is, we evaluate Eq. \ref{eq:08_38} for fixed N, and divide by M-N-l. We then increase N by l and do it again The value of N to stop at is the one where
 
 \begin{equation*}
 \delta_{M,N}^{2} = \frac{\chi_{M,N}^{2}}{M-N-1}
@@ -1661,51 +1661,58 @@ Here is a FORTH program for implementing the algorithm
 I derived in \S2\S\S2 above.
 
 \begin{lstlisting}
+TASK GRAM1
+
 \         CODEed words to simplify fstack management
 \ ---------------------------------------------------------------
-CODE G(N+1)  4 FMUL.  FCHS.  2 FLD.  6 FSUB.  2 FMUL.  1 FADDP.
-             DX DS MOV.  DS POP.   R64  DS: [BX] FST.
-             DS DX MOV.  BX POP.   END-CODE
-( seg off --  :: s a b w x g[n] g[n-1] -- s a b w x g[n] g[n+1] )
+CODE G(N+1)  4 FMUL.  FCHS.  2 FLD.  6 FSUB.
+    2 FMUL.  1 FADDP.
+    DX DS MOV.  DS POP.   R64  DS: [BX] FST.
+    DS DX MOV.  BX POP.   END-CODE
+( seg off -- 87: s a b w x g[n] g[n-1] -- s a b w x g[n] g[n+1] )
 
-CODE  B(N+1)  2 FXCH.  2 FMUL.  3 FMUL.  1 FXCH.  1 FMUL.
-      DX DS MOV.  DS POP.  R64  DS: [BX]  FADD.  DS: [BX] FSTP.
-      DS DX MOV.  BX POP.  END-CODE
-( seg off --  :: s a b w x g[n] g[n+1] -- s a b w g[n+1] wxg[n+1] )
+CODE  B(N+1)  2 FXCH.  2 FMUL.  3 FMUL.
+    1 FXCH.  1 FMUL. DX DS MOV. DS POP.
+    R64  DS: [BX]  FADD.  DS: [BX] FSTP.
+    DS DX MOV.  BX POP.  END-CODE
+( seg off --)
+(87: s a b w x g[n] g[n+1] -- s a b w g[n+1] w x g[n+1] )
 
-CODE  A(N+1)  1 FMUL.  DX DS MOV.  DS POP.  R64  DS: [BX] FADD.
-              DS: [BX] FSTP.    DS DX MOV.  BX POP.  END-CODE
-( seg off --  :: s a b w g[n+1] wxg[n+1] -- s a b w g[n+1] )
+CODE  A(N+1)  1 FMUL.  DX DS MOV.  DS POP.
+    R64  DS: [BX] FADD.
+    DS: [BX] FSTP.    DS DX MOV.  BX POP.  END-CODE
+( seg off -- 87: s a b w g[n+1] wxg[n+1] -- s a b w g[n+1] )
 
-CODE C(N+1)  1 FXCH. 2 FMUL".  2 FMUL.  2 FXCH.  1 FMULP.
-     DX DS MOV.  DS POP.  R64  DS: [BX] FADD.  DS: [BX] FSTP.
-     DS DX MOV.  BX POP.  3 FADDP.  END-CODE
-( seg off --   :: s a b w g[n+1] f -- s=s+wg[n+1]**2  a  b )
-\ ===============================================================
+CODE C(N+1)  1 FXCH. 2 FMUL".  2 FMUL.
+    2 FXCH.  1 FMULP.
+    DX DS MOV.  DS POP.
+    R64  DS: [BX] FADD.  DS: [BX] FSTP.
+    DS DX MOV.  BX POP.  3 FADDP.  END-CODE
+( seg off -- 87: s a b w g[n+1] f -- s=s+wg[n+1]**2  a  b )
 
-\ ===============================================================
-\            Gram polynomial coding
-\ ---------------------------------------------------------------
+\------------------------------------Gram polynomial coding
+REAL*8 SCALAR  DELTA
+0 VAR Nmax
 \ Usage:      A{ B{ C{ G{{ Nmax }FIT
-REAL*8 SCALAR  DELTA    0 VAR Nmax
 
-: FIRST.AB's   F=0 a{ 0 0} G!    F=0 b{ 0 0} G!  ;
+: FIRST.AB's   F=0 a{ 0 } G!    F=0 b{ 0 } G!  ;
 
-: INIT.DELTA   ( :: -- g{{ 1 I }} )    F=0  F=0
-     M 0 DO  w{ I 0} G@  y{ I 0} G@   F**2  FOVER  F* 
-             ( ::s s' -- s s' w wf^2)
-             FROT  F+   F-ROT  F+  FSWAP ( :: -- s=s+w  s'=s'+wf^2 )
-     LOOP    DELTA G!  FSQRT  1/F  ;
+: INIT.DELTA   ( 87: -- g{{ 1 I }} )    F=0  F=0
+    M 0 DO  w{ I 0} G@  y{ I 0} G@   F**2  FOVER  F* 
+    ( 87:s s' -- s s' w w*f^2)
+    FROT  F+   F-ROT  F+  FSWAP
+    ( 87:-- s=s+w  s'=s'+wf^2 )
+    LOOP    DELTA G!  FSQRT  1/F  ;
 
-: FIRST.G's  ( :: g{{ 1 I }} -- g{{ 1 I }} ) 
+: FIRST.G's  ( 87: g{{ 1 I }} -- g{{ 1 I }} ) 
      M 0 DO  F=0  g{{ 0 I }} G!  FDUP  g{{ 1 I }} G!  LOOP  ;
 
-: SECOND.AB's   ( :: g{{ 1 I }} -- g{{ 1 I }} )
+: SECOND.AB's   ( 87: g{{ 1 I }} -- g{{ 1 I }} )
      F=0 b{ 1 0}  G!   FDUP  F**2
      F=0  M 0 DO  w{ I 0} G@ x{ I 0} G@  F*  F+  LOOP  
      F*  a{ 1 0} G! ;
 
-: FIRST.&.SECOND.C's  ( :: g{{ 1 I }} -- )
+: FIRST.&.SECOND.C's  ( 87: g{{ 1 I }} -- )
      F=0 c{ 0 0} G!  F=0
      M 0 DO  w{ I 0} G@  y{ I 0} G@  F*  F+   LOOP
      F*  c{ 1 0} G! ;
@@ -1714,64 +1721,66 @@ REAL*8 SCALAR  DELTA    0 VAR Nmax
      FIRST.AB's   INIT.DELTA   FIRST.G's  SECOND.AB's
      FIRST.&.SECOND.C's  ;
 
-0 VAR N   0 VAR N+1
-: inc.N   N+1  DUP  IS N   1+  IS N+1 ;
+0 VAR N    0 VAR N+1
+: inc.N    N+1  DUP  IS N   1+  IS N+1 ;
+: DISPOSE  R  DDUP  R@ G@ R ;
+: inc.OFF  #BYTES DROP + ;
+: ZERO.L   DDUP  F=0 R64!L ;
 
-: DISPOSE   >R  DDUP  R@ G@   R> ;  \ just a convenient word
-: inc.OFF   #BYTES DROP + ;  \ increment the offset by 1 item
+: START.Next.G
+( -- [c{n+1}] [a{n+1}] [b{n+1}] 87: -- s=0 a{n} b{n} )
+        FINIT   F=0   c{ N+1 0} DROP ZERO.L
+        a{ N 0} DISPOSE   inc.OFF  ZERO.L
+        b{ N 0} DISPOSE   inc.OFF  ZERO.L  ;
 
-: R64.ZERO.L   ( seg off --)  DDUP  F=0 R64!L  ( R32!L ) ;  
+: SET.FSTACK  w{ I' 0} G@  x{ I' 0} G@ g{{ N I' }} G@
+    g{{ N 1-I' }} G@ ;
 
-: START.Next.G   ( -- [c{n+1}] [a{n+1}] [b{n+1}]  :: -- s=0 a{n} b{n} )
-        FINIT   F=0   c{ N+1 0} DROP  R64.ZERO.L
-        a{ N 0} DISPOSE   inc.OFF  R64.ZERO.L
-        b{ N 0} DISPOSE   inc.OFF  R64.ZERO.L  ;
+: }@*!  ( adr n -- 87:x -- x)  FDUP  0}  DISPOSE  F*  G! ;
 
-: SET.FSTACK   
-    w{ I' 0} G@  x{ I' 0} G@   g{{ N I' }} G@  g{{ N 1- I' }} G@   ;
+: NORMALIZE    ( 87: sum -- )  
+      1/F  a{ N+1 }@*!   FSQRT
+      b{ N+1 }@*!   c{ N+1 }@*!
+      M 0 DO  FDUP  g{{ N+1 I }}  DISPOSE   F*  G!  LOOP
+      FDROP  ;
 
-: }@*!  ( adr n --  :: x -- x)  FDUP  0}  DISPOSE  F*  G! ;
-\ just another convenient word
-
-: NORMALIZE    ( :: sum -- )  
-      1/F  a{ N+1 }@*!   FSQRT   b{ N+1 }@*!   c{ N+1 }@*!
-      M 0 DO  FDUP  g{{ N+1 I }}  DISPOSE   F*  G!  LOOP   FDROP  ;
-
-CODE 6DUP  OPT" 6 PICK  6 PICK  6 PICK  6 PICK  6 PICK  6 PICK " END-CODE
+CODE 6DUP  OPT" 6 PICK  6 PICK  6 PICK
+                6 PICK  6 PICK  6 PICK " END-CODE
 CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
 
 : Next.G   START.Next.G 
-      M 0 DO  6DUP    SET.FSTACK
-              g{{ N+1 I }} DROP   G(N+1)   B(N+1)   A(N+1)
-              y{ I 0} G@   C(N+1)
-      LOOP    6DROP   FDROP FDROP   NORMALIZE  ;
+    M 0 DO  6DUP    SET.FSTACK
+        g{{ N+1 I }} DROP   G(N+1)   B(N+1)   A(N+1)
+        y{ I 0} G@   C(N+1)
+    LOOP    6DROP   FDROP FDROP   NORMALIZE  ;
 
 : New.DELTA   ( :: -- old.delta new.delta)
-      DELTA G@  FDUP   c{ N 0} G@  F**2  F-   FDUP  DELTA G! ;
+      DELTA G@  FDUP   c{ N 0} G@  F**2  F-   FDUP
+      DELTA G! ;
 
-: NOT.ENUF.G's?   New.DELTA    M N+1 -   S->F   FDUP  F=1 F- 
-            ( CR  .FS  ."  NEXT ITERATION?" ?YN  0= IF ABORT THEN )
-              ( :: -- d d' m-n-1  m-n-2 )  
-              FROT  F\   F-ROT   F/   ( :: -- d'/[m-n-2]  d/[m-n-1] )
-              FOVER  F0>  IF  F<=  ELSE  FDROP FDROP 0 THEN  ;
-
+: NOT.ENUF.G's?   New.DELTA    M N+1 -   S->F
+    FDUP  F=1 F- 
+    ( CR  .FS  ."  NEXT ITERATION?" ?YN  0= IF ABORT THEN )
+        ( :: -- d d' m-n-1  m-n-2 )  
+        FROT  F\   F-ROT   F/   ( :: -- d'/[m-n-2]  d/[m-n-1] )
+        FOVER  F0 IF  F ELSE  FDROP FDROP 0 THEN  ;
 
 : }FIT  ( X{ Y{ S{ Nmax A{ B{ C{ G{{ -- )
         INITIALIZE    1 IS N   2 IS N+1
-        BEGIN      NOT.ENUF.G's?     N Nmax <  AND 
+        BEGIN      NOT.ENUF.G's?     N Nmax  AND 
         WHILE      Next.G   inc.N
         REPEAT  FINIT ;
-\ ============================================== end of code ;
+\----------------------------------------------- end of code ;
 
 : RECONSTRUCT  M 0  DO  CR  x{ I 0} G@ F.  y{ I 0} G@ F. 
-                 F=0  N+1 1+  1  DO 
-                        c{ I 0} G@  g{{ I J }} G@  F* F+ 
-                      LOOP   F. 
-               LOOP    ;
+        F=0  N+1 1+  1  DO 
+            c{ I 0} G@  g{{ I J }} G@  F* F+ 
+            LOOP   F. 
+        LOOP ;
 \end{lstlisting}
 
 \subsection{Non-linear least squares: simplex method}
-\TallC{A FORTRAN} program for the simplex method is given belton page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
+\TallC{A FORTRAN} program for the simplex method is given below page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
 
 \begin{lstlisting}
 \ FUNCTION MINIMIZATION BY THE SIMPLEX METHOD
