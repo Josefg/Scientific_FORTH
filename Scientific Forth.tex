@@ -17,7 +17,8 @@
 \makeatother
 %end errata 
 % math formatting
-\usepackage{amssymb, amsmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{multicol}
     \setlength{\columnseprule}{1pt}
 % Code formatting
@@ -62,7 +63,9 @@
     \renewcommand{\LettrineTextFont}{\normalfont}
 \usepackage{xstring}
     \newcommand{\TallC}[1]{
-        \lettrine[realheight=true]{\StrLeft{#1}{1}}{\StrGobbleLeft{#1}{1}}
+        \StrLeft{#1}{1}[\tempA]
+        \StrGobbleLeft{#1}{1}[\tempB]
+        \lettrine[realheight=true]{\tempA}{\tempB}
     }
 % \TallC{The} to create a large "T" and small "he"
 
@@ -167,9 +170,9 @@
     % \include{Chapter-03/03-Floating-Point-Arithmetic}
     % \include{Chapter-04/04-The-80x87-Family}
     % \include{Chapter-05/05-Scientific-Data-Structures}
-     \include{Chapter-06/06-Programming-Examples}
-    % \include{Chapter-07/07-Complex-arithmetic-in-FORTH}
-    % \include{Chapter-08/08-More-Programming-Examples}
+    % \include{Chapter-06/06-Programming-Examples}
+    % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
+     \include{Chapter-08/08-More-Programming-Examples}
     % \include{Chapter-09/09-Linear-Algebra}
     % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
     % \include{Chapter-11/11-Symbolic-Programming}

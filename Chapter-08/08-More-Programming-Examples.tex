@@ -8,9 +8,13 @@
 We begin by defining the definite integral of a function $f(x)$. Then we discuss some methods for (numerically) approximating the integral. This process is called \textbf{numerical integration} or \textbf{numerical quadrature}. Finally, we write some FORTH programs based on the various methods we describe.
 
 \subsection{The Integral of a function}
-The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in Fig. \label{fig:08_01} \ref{fig:08_01}:
+The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in
 
-Fig. \ref{fig:08_01} \textit{The integral of a function is the area under the curve.}
+\begin{equation} \label{fig:08_01}
+x=5
+\end{equation}
+
+Fig. \ref{fig:08_01}: \textit{The integral of a function is the area under the curve.}
 
 We estimate the integral by breaking up the area into narrow rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
 
@@ -39,8 +43,8 @@ Similarly, the lower bound will be low by about the same amount. This means that
 
 so that
 
-\begin{equation}\label{eq:08_03}
-F'(b) = \lim_{\Delta b \to 0} \frac{1}{\Delta b} \left(\int_{a}^{b+\Delta b} dx - \int_{a}^{b}f(x) dx \right)
+\begin{equation}
+F'(b) = \lim_{\Delta b \to 0} \frac{1}{\Delta b} \left(\int_{a}^{b+\Delta b} dx - \int_{a}^{b}f(x) dx \right) \label{eq:08_03}
 \end{equation}
 
 Equation \ref{eq:08_03} is a fancy way to say that integration and differentiation are \textbf{inverse operations} in the same sense as multiplication and division, or addition and subtraction.
@@ -130,7 +134,7 @@ The program uses one of the pseudo-random number generators (\textbf{prng}'s) fr
     : NEW.X RANDOM B-A G@ F* A G@ F+ ;
 \end{lstlisting}
 
-The program is described by the simple flow diagram of Fig. \ref{fig:08_02} below:
+The program is described by the simple flow diagram of Fig. \label{fig:08_02} \ref{fig:08_02} below:
 
 \begin{lstlisting}
 Diagram yo:
@@ -143,7 +147,7 @@ Diagram yo:
         \bar{f} Var(f)
     REPEAT
         I = (B-A)*<f>
-\end{lstlisting}\label{fig:08_02}
+\end{lstlisting}
 
 Fig. \ref{fig:08_02} \textit{Flow diagram of Monte Carlo Integration}
 
@@ -294,7 +298,7 @@ Note how \bc{GCD} successively calls itself, placing the same address (displayed
 
 Recursion can get into difficulties by exhausting the stack or rstack. Since the stack in \bc{GCD} never contains more than three numbers, only the rstack must be worried about in this example.
 
-\TallC{Recursive} programming possesses an undeserved reputation or slow execution, compared with nonrecursive equivalent programs\sepfootnote{08_12}. Compiled languages that permit recursion --\eg, BASIC, C, Pascal-- generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
+\TallC{Recursive} programming possesses an undeserved reputation for slow execution, compared with nonrecursive equivalent programs\sepfootnote{08_12}. Compiled languages that permit recursion --\eg, BASIC, C, Pascal-- generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
 
 Nevertheless, not all algorithms should be formulated recursively. A disastrous example is the Fibonacci sequence
 
@@ -1111,7 +1115,7 @@ Table \ref{table:08_01} Bit-reversal for re-ordering discrete data
         \multicolumn{1}{c}{Step 2} &
         \multicolumn{1}{c}{Step 3} & 
         \multicolumn{1}{c}{Bin\textsubscript{0}}  &
-        \multicolumn{1}{c}{Bin\textsubscript{1}} \\
+        \multicolumn{1}{c}{Bin\textsubscript{3}} \\
         0  &      0  &    0  &    0  &    0000 & 0000 \\
         1  &      2  &    4  &    8  &    0001 & 1000 \\
         2  &      4  &    8  &    4  &    0010 & 0100 \\
@@ -1237,18 +1241,180 @@ We FFl‘ Table 8- 2 using the phrase \bc{IBM\{ 64 DIRECT \}FFT}. The power spec
 
 \begin{lstlisting}
 \ Complex Fast Fourier Transform
+\ Usage: Vector.name{ N FORWARD ( INVERSE ) }FFT
 
+TASK FFT
+FIND  C+        0= ?( FLOAD COMPLEX )
+FIND  1ARRAY    0= ?( FLOAD MATRIX.HSF )
+FIND  FILL      0= ?( FLOAD FILEIO.FTH )
+FIND  TRIG      0= ?( FLOAD TRIG )
+\ if not there
+DECIMAL
+\ = = = = = = = = = = = = = = = = = = = = = = = = = =
+\ auxiliary words
+  CODE  SHR  BX 1 SHR.  END-CODE
+  : LG2 ( n -- lg2[n]) 0 SWAP ( -- 0 n)  SHR
+    BEGIN   ?DUP 0>
+    WHILE   SHR   SWAP 1+  SWAP  REPEAT  ;
+
+0 VAR DIRECTION?
+: FORWARD   0 IS DIRECTION? ;
+: INVERSE  -1 IS DIRECTION? ;
+
+    0 VAR N.BITS            \ some VARs
+    0 VAR N
+    0 VAR MMAX
+    0 VAR f{
+
+: C/N    N S->F  C/F  ;
+: NORMALIZE    DIRECTION?
+    IF   C/N  CPSWAP  C/N   CPSWAP   THEN ;
+\ end auxiliary words ;
+\ = = = = = = = = = = = = = = = = = = = = = = = = = =
+\ key bit-reveral routine!
+0 VAR I.R
+: B.R  ( n -- n')             \ reverses order of bits
+     0  SWAP   ( -- 0 n )     \ set up stack
+     N.BITS 0 DO  DUP  1 AND  \ pick out 1's bit
+            ROT  2* +     \ double sum and add 1's bit
+            SWAP  2/      \ n -> n/2
+     LOOP  DROP ;
+
+: BIT.REVERSE  0 IS I.R
+     N 0  DO   I B.R   IS  I.R
+       I.R  I  < NOT   ( I.R >=I ?)
+       IF  f{ I.R } G@L  f{ I }  G@L  NORMALIZE
+           f{ I.R } G!L  f{ I }  G!L  THEN
+     LOOP ;
+\ end bit-reversal (N times)
+
+\ = = = = = = = = = = = = = = = = = = = = = = = = = =
+                                    \ main algorithm
+CODE C-+   2 FLD.   1 FXCH.  3 FSUBR".
+    1 FADDP.  1 FXCH. 3 FLD.
+    1 FXCH.  4 FSUBR".  1 FADDP.  1 FXCH.  END-CODE
+    ( 87: w z -- w-z  w+z)
+
+: THETA   F=PI  MMAX  S->F  F/  DIRECTION? FSIGN ;
+
+CREATE  WP  16  ALLOT OKLW
+: INIT.TRIG   FINIT  THETA  EXP(I*PHI)  WP  DCP!  C=1 ;
+
+: NEW.W   ( 87: w -- w')  WP DCP@ C* ;
+
+0 VAR ISTEP
+
+: DO.INNER.LOOP
+    DO  MMAX I +  IS I.R
+        CPDUP  f{ I.R } G@L  C*   f{ I } G@L
+        CPSWAP  C-+ f{ I } G!L  f{ I.R } G!L
+    ISTEP +LOOP ;
+
+: }FFT ( adr n -- ) IS N IS f{
+    1 IS MMAX
+    N LG2 IS N.BITS
+    FINIT
+    BIT.REVERSE
+    BEGIN
+      N MMAX >
+    WHILE
+      INIT.TRIG  MMAX  2* IS ISTEP
+      MMAX 0 DO
+        N I  DO.INNER.LOOP   NEW.W
+      LOOP
+      ISTEP IS MMAX
+    REPEAT  CPDROP  ;
+
+: POWER  0 DO  f{ I } G@L  CABS  CR  I .  F.  LOOP ;
+\ power spectrum of FFT            \ end of fft code
+\ = = = = = = = = = = = = = = = = = = = = = = = = = =
+                                   \ an example
+64 LONG COMPLEX 1ARRAY A{
+: INIT.A  A{ $" IBM.EX" OPEN-INPUT FILL CLOSE-INPUT  ;
+INIT.A
+A{ 64 DIRECT }FFT
+                                   \ end of example
+\ = = = = = = = = = = = = = = = = = = = = = = = = = =
 \end{lstlisting}
 
 \TallC{How} do we know the FFT program actually worked? The simplest method is to inverse-transform the transform, and compare with the input file. The FFT and inverse FFT are given, respectively, in Tables 8-3 and 8-4 on page 193 below. Within roundoff error, Table 8-4 agrees with Table 8-2 on page 192.
 
 Table 8-2 \textit{Weekly IBM common stock prices, 1983}
+\begin{figure}
+    \setlength{\tabcolsep}{1em}
+    \begin{tabular}{cccccccc}
+             2 & 64  &        &     &        &     &        &     \\
+         96.63 & 0.0 &  99.13 & 0.0 &  94.63 & 0.0 &  97.38 & 0.0 \\
+         97.38 & 0.0 &  96.38 & 0.0 &  98.63 & 0.0 & 100.38 & 0.0 \\
+        102.25 & 0.0 & 100.75 & 0.0 &  99.88 & 0.0 & 102.13 & 0.0 \\
+        101.63 & 0.0 & 103.88 & 0.0 & 110.13 & 0.0 & 117.25 & 0.0 \\
+        117.00 & 0.0 & 117.63 & 0.0 & 116.50 & 0.0 & 110.63 & 0.0 \\
+        113.00 & 0.0 & 114.00 & 0.0 & 114.25 & 0.0 & 121.13 & 0.0 \\
+        123.00 & 0.0 & 121.00 & 0.0 & 121.50 & 0.0 & 120.13 & 0.0 \\
+        124.38 & 0.0 & 120.38 & 0.0 & 119.75 & 0.0 & 118.50 & 0.0 \\
+        122.50 & 0.0 & 117.83 & 0.0 & 119.75 & 0.0 & 122.25 & 0.0 \\
+        123.13 & 0.0 & 126.63 & 0.0 & 126.88 & 0.0 & 132.25 & 0.0 \\
+        131.75 & 0.0 & 127.00 & 0.0 & 128.00 & 0.0 & 122.25 & 0.0 \\
+        126.88 & 0.0 & 123.50 & 0.0 & 121.00 & 0.0 & 117.88 & 0.0 \\
+        122.25 & 0.0 & 120.88 & 0.0 & 123.63 & 0.0 & 122.00 & 0.0 \\
+           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 \\
+           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 \\
+           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0
+    \end{tabular}
+    \label{table:08_02}
+\end{figure}
 
 Fig. 8-7 \textit{Power spectrum of FFT of 1983 IBM prices (from Table 63)}
 
 Table 8-3 \textit{FFT of IBM weekly stock prices, 1983}
+\begin{figure}
+    \setlength{\tabcolsep}{1em}
+    \begin{tabular}{cccccccc}
+         0 &  5989.4599 &  0.0000000 & 32 &  3.1601562 &  0.0000000 \\ 
+         1 & -1356.9239 &  562.94860 & 33 &  13.450067 &  44.866729 \\
+         2 & -374.28417 &  956.64282 & 34 &  89.175987 &  32.346035 \\
+         3 &  305.66314 &  634.45819 & 35 &  99.756584 & -25.042837 \\
+         4 &  327.40542 &  177.60118 & 36 &  39.756885 & -83.410888 \\
+         5 &  125.21042 & -8.0063304 & 37 & -30.826173 & -14.841442 \\
+         6 & -178.28504 &  39.630813 & 38 &  19.293210 &  29.322504 \\
+         7 & -90.525482 &  226.27159 & 39 &  86.785362 &  22.908525 \\
+         8 &  150.24264 &  260.91506 & 40 &  107.71731 & -34.415077 \\
+         9 &  191.18481 &  128.15400 & 41 &  44.172229 & -110.77391 \\
+        10 &  80.279541 & -33.341926 & 42 & -11.327768 & -52.313049 \\
+        11 & -49.475231 & -5.4212093 & 43 &  1.8497861 &  37.864341 \\
+        12 & -49.510669 &  147.45129 & 44 &  87.868354 &  24.258874 \\
+        13 &  84.502433 &  165.21282 & 45 &  119.02930 & -71.422492 \\
+        14 &  146.10401 &  64.187637 & 46 &  68.084251 & -117.80709 \\
+        15 &  69.775169 & -29.838697 & 47 & -27.548482 & -81.061904 \\
+        
+        16 &  7.2500000 & -15.170043 & 48 &  7.2500000 &  15.170043 \\
+        17 & -27.548482 &  81.061904 & 49 &  69.775169 &  29.838697 \\
+        18 &  68.084251 &  117.80709 & 50 &  146.10401 & -64.187637 \\
+        19 &  119.02930 &  71.422492 & 51 &  84.502433 & -165.21282 \\
+        20 &  87.868354 & -24.258874 & 52 & -49.510669 & -147.45129 \\
+        21 &  1.8497861 & -37.864341 & 53 & -49.475231 &  5.4212093 \\
+        22 & -11.327768 &  52.313049 & 54 &  80.279541 &  33.341926 \\
+        23 &  44.172229 &  110.77391 & 55 &  191.18481 & -128.15400 \\
+        24 &  107.71731 &  34.415077 & 56 &  150.24264 & -260.91406 \\
+        25 &  86.785362 & -22.908525 & 57 & -90.525482 & -226.27159 \\
+        26 &  19.293210 & -29.322504 & 58 & -178.28504 & -39.630813 \\
+        27 & -30.826173 &  14.841442 & 59 &  125.21042 &  8.0063304 \\
+        28 &  39.756885 &  83.410888 & 60 &  327.40542 & -177.60118 \\
+        29 &  99.756584 &  25.042837 & 61 &  305.66314 & -634.45819 \\
+        30 &  89.175987 & -32.346035 & 62 & -374.28417 & -956.64282 \\
+        31 &  13.450067 & -44.866729 & 63 & -1356.9239 & -562.94860 \\
+    \end{tabular}
+    \label{table:08_03}
+\end{figure}
 
 Table 8-4 \textit{Reconstructed IBM prices (inverse FFT)}
+\begin{figure}
+    \setlength{\tabcolsep}{1em}
+    \begin{tabular}{cccccccc}
+          1 &  5989.4599  0.0000000 
+    \end{tabular}
+    \label{table:08_04}
+\end{figure}
 
 \subsection{Gram polynomials}
 \TallC{Gram} polynomials are useful in fitting data by the linear least-squares method. The usual method is based on the following question: What is the "best" polynomial,
@@ -1312,13 +1478,14 @@ a particularly virulent example of an exponentially \textbf{ill-conditioned matr
 The matrix then becomes
 
 \begin{subequations}
-    \begin{equation}\label{eq:08_39a}
+    \begin{equation}
     A_{nm} = \sum_{k=0}^{M-1} p_{n}(x_{k})p_{m}(x_{k}) \frac{1}{\sigma_{k}^{2}}
     \end{equation}
 and the inhomogeneous term is now
     \begin{equation}
     \beta_{n} = \sum_{k=0}^{M-1} p_{n}(x_{k})f_{k} \frac{1}{\sigma_{k}^{2}}
     \end{equation}
+    \label{eq:08_39a}
 \end{subequations}
 
 \TallC{Is} there any choice of the polynomials $p_{n}(x)$ that will eliminate roundoff? The best kinds of linear equations are those with nearly diagonal matrices. We note the sum in Eq. \ref{eq:08_39a} is nearly an integral, if M is large. If we choose the polynomials so they are \textbf{orthogonal} with respect to the weight function
@@ -1553,31 +1720,6 @@ used in the format
 Fleshing out the details is a --by now-- familiar process, so we leave the program \textit{per se} to Appendix 8.5. We also include there a FORTRAN subroutine for the simplex algorithm, taken from
 
 \begin{lstlisting}
-INHIALIZE \ choose simplex? is am of param. space
-BEGIN
-Converged? NOT N N.rnax s
-WHILE
-'—- REFLECT\ worst point thru geoeenter of other points
-DONE '0") S «best-Pt) 7
-.~
-I
-Yes No l(x') z l(2worst.pl) ?
-DOUBLE '/\’
-N Y
-xx") s «bestpo ? m r ’0”) < “3”“ 7
-l .
-
-Am REPEAT .
-Store r'
-
-HALVE
-i
-f(x") < I(worst.pl) ?
-REPEAT A
-
-Store r' SHRINK
-
-REPEAT
 
 Fig. 8-8 \textit{Flow dlagram of the slmplex algorithm}
 \end{lstlisting}
@@ -1602,20 +1744,29 @@ Finally, we note that the more common integration formulae such as Simpson’s r
 
 For given N Gaussian formulae can be more accurate than equally-spaced rules, as they have twice as many parameters to play with.
 
-
 Some FORTH words for 5-point Gauss-Legendre integration:
 
 \begin{lstlisting}
-N swarm WANT ﬂ
-1. ossamroreasss FCONSTANT x1 :mm (arse--0
-it ow Pomsrmr wo soda (arse-[mew [sat/2)
-N 0.4mm FWANT wt FCNER Fm IOF' F-ROT (87:-Jab)
-% QWID WTANT W2 XDIP in” FIX) wt F' F3R+
-XDIP x1 FPEGATE rude
-:acde (arse-[mam [eat/2) Poo m F‘ F3R+
-FOVERF—leFtNDERF+; Mia“ F(X)\~2F' F$+
-:reeede (a7:abx--a+b"x) F'F+; XDUP )eFNEGATEreaede
-':F3R+(e7:abcx--a+xbc)F3RF+ F-ROT; Pot) waF' F3R+
+% 0.906179845938664     FCONSTANT   x2
+% 0.538469310105683     FCONSTANT   x1
+% 0.588888888888889     FCONSTANT   w0
+% 0.478628670499366     FCONSTANT   w1
+% 0.236926885056189     FCONSTANT   w2
+
+: scale ( 87: A B -- [A+B]/2 [B-A]/2 )
+    FOVER F- F2/ FUNDER F+ ;
+: rescale ( 87: a b x -- a+b*x ) F* F+ ;
+: F3R+ ( 87: a b c x -- a+x b c ) F3R F+ F-ROT ;
+
+: }integral ( 87: A B -- I )
+    scale ( 87: A B -- [A+B]/2 [B-A]/2 )
+    FOVER F(X) w0 F* F-ROT ( 87: -- I a b )
+    XDUP x1 rescale F(X) w1 F* F3R+
+    XDUP x1 FNEGATE rescale
+    F(X) w1 F* F3R+
+    XDUP x2 rescale F(X) w2 F* F3R+
+    XDUP x2 FNEGATE rescale
+    F(X) w2 F* F3R+
 \end{lstlisting}
 
 \subsection{The trapezoidal rule}
