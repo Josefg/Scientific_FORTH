@@ -1536,9 +1536,9 @@ We evaluate the function to be minimized at each of the vertices, and sort the t
             IF r<worst? IF STORE.X THEN
                 HALVE r<worst?
                 IF STORE.X ELSE SHRINK THEN
-            ELSE STOREX THEN
+            ELSE STORE.X THEN
         ELSE DOUBLE r> =best?
-        IF STOREXP ELSE STORE.X THEN
+        IF STORE.XP ELSE STORE.X THEN
         THEN
         N 1+ IS N SORT
     REPEAT ;
@@ -1783,204 +1783,286 @@ CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
 \TallC{A FORTRAN} program for the simplex method is given below page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
 
 \begin{lstlisting}
+   SUBROUTINE AMOEBA(P,Y,MP,NP,NDIM,FTOL,FUNK,ITER)
+   PARAMETER (NMAX=20,ALPHA=1.0,
+C     BETA=0.5,GAMMA=2.0,ITMAX=500)
+   DIMENSION P(MP,NP),Y(MP),PR(NMAX),PRR(NMAX),PBAR(NMAX)
+   MPTS=NDIM + 1
+   ITER=0
+1  ILO=1
+   IF(Y(1).GT.5(2))THEN
+    IHI=1
+    INHI=2
+   ELSE
+    IHI=2
+    INHI=1
+   ENDIF
+   DO 11 I=1,MPTS
+    IF(Y(I).LT.Y(ILO)) ILO=I
+    IF(Y(I).GT.Y(IHI)) THEN
+     INHI=IHI
+     IHI=I
+    ELSE IF(Y(I).GT.Y(INHI)) THEN
+     IF(I.NE.IHI) INHI=I
+    ENDIF
+11 CONTINUE
+   RTOL=2.*ABS(Y(IHI).Y(ILO))/(ABS(Y(IHI))+ ABS(Y(ILO)))
+   IF(RTOL.LT.FTOL)rETURN
+   IF(ITER.EQ.ITMAX)PAUSE "Amoeba exceeding maximum iterations.'
+   ITER=ITER + 1
+   DO 12 J=1,NDIM
+    PBAR(J)=0.
+12 CONTINUE
+   DO 14 I=1,MPTS
+    IF(I.NE.IHI)THEN
+     DO 13 J=1,NDIM
+      PBAR(J)=PBAR(J) + P(I,J)
+13    CONTINUE
+   ENDIF
+14 CONTINUE
+   DO 15 J=1,NDIM
+    PBAR(J)=PBAR(J)/NDIM
+    PR(J)=(1.+ALPHA)*PBAR(J)-ALPHA*P(IHI,J)
+15  CONTINUE
+   YPR=FUNK(PR)
+   IF(YPR.LE.Y(ILO))THEN
+     DO 16 J=1,NDIM
+      PRR(J)=GAMMA*PR(J) + (1.-GAMMA)*PBAR(J)
+16    CONTINUE
+    YPRR=FUNK(PRR)
+    IF(YPRR.LT.Y(ILO))THEN
+     DO 17 J=1,NDIM
+      P(IHI,J)=PRR(J)
+17    CONTINUE
+     Y(IHI)=YPRR
+    ELSE
+     DO 18 J=1,NDIM
+      P(IHI,J)=PR(J)
+18    CONTINUE
+       Y(IHI)=YPRR
+    ENDIF
+   ELSE IF(YPR.GEY(INHI))THEN
+    IF(YPR.LT.Y(IHI))THEN
+     DO 19 J=1,NDIM
+      P(IHI,J)=PR(J)
+19    CONTINUE
+       Y(IHI)=YPR
+    ENDIF
+    DO 21 J=1,NDIM
+     PRR(J)=BETA*P(IHI,J)+(1.-BETA)*PBAR(J)
+21   CONTINUE
+    YPRR=FUNK(PRR)
+    IF(YPRR.LT.Y(IHI))THEN
+     DO 22 J=1,NDIM
+      P(IHI,J)=PRR(J)
+22    CONTINUE
+     Y(IHI)=YPRR
+    ELSE
+     DO 24 I=1,MPTS
+      IF(I.NE.ILO)THEN
+       DO 23 J=1,NDIM
+        PR(J)=0.5*(P(I,J)+P(ILO,J))
+        P(I,J)=PR(J)
+23      CONTINUE
+       Y(I)=FUNK(PR)
+      ENDIF
+24    CONTINUE
+    ENDIF
+   ELSE
+    DO 25 J=1,NDIM
+     P(IHI,J)=PR(J)
+25   CONTINUE
+    Y(IHI)=YPRR
+   ENDIF
+   GO TO 1
+   END
+\end{lstlisting}
+
+\begin{lstlisting}
 \ FUNCTION MINIMIZATION BY THE SIMPLEX METHOD
-\ VERSION OF 18:57:29  5/31/1990
+\ VERSION OF 20:51:19 4/30/1991
 
 TASK AMOEBA
 
-\ ------------------------------------------------ FINITE STATE MACHINE
-: WIDE   0 ;
-: STATE.TAB:   ( width 0 -- )   CREATE   ,  ,   ]   DOES>   ( col# -- )
-               UNDER  D@        ( -- adr col# width state )
-               *  +   1+  4*    ( -- adr offset )
-               OVER +           ( -- adr adr' )
-               DUP@  SWAP 2+    ( -- adr [adr']  adr'+2 )
-               EXECUTE@         ( -- adr [adr']  state')
-               ROT !   EXECUTE   ;
-
-0 CONSTANT >0
-1 CONSTANT >1
-2 CONSTANT >2
-3 CONSTANT >3
-4 CONSTANT >4
-\ -------------------------------------------- END FINITE STATE MACHINE
-
-\ --------------------------------------------------- FUNCTION NOTATION
+\ ----------------------- FUNCTION NOTATION
     VARIABLE <F>
-    : USE(   [COMPILE]  '   CFA  <F> ! ;
-    : F(X)   <F>  EXECUTE@  ;
-    BEHEAD'  <F>
-\ ----------------------------------------------- END FUNCTION NOTATION
+    : USE( [COMPILE] ' CFA <F> I ;
+    : F(X) EXECUTE@ ;
+    BEHEAD' <F>
+\ -------------------- END FUNCTION NOTATION
 
-\ ----------------------------------------------------- DATA STRUCTURES
-2 VAR Ndim
+\ -------------------------- DATA STRUCTURES
+3 VAR Ndim
 0 VAR N
 0 VAR N.max
-0 VAR I.worst
-0 VAR I.best
 
-CREATE SIMPLEX{{  Ndim   4  ( bytes )  *  Ndim 1+  ( # points )  *  ALLOT
-CREATE F{  Ndim 1+  4  ( bytes )  *   ALLOT    \ residuals
+CREATE SIMPLEX{{ Ndim 4 ( bytes ) * Ndim 1+ ( # points )
+    * ALLOT
+CREATE F{ Ndim 1+ 4 ( bytes ) * ALLOT \ residuals
+CREATE index Ndim 1+ 2* ALLOT \ array for scrambled indices
 
-DVARIABLE  Residual
-DVARIABLE  Residual'
-DVARIABLE  Epsilon
+: >index ( i - i') 2* index + @ ;
+DVARIABLE Residual
+DVARIABLE Residual'
+DVARIABLE Epsilon
+CREATE X{   Ndim 4 ( bytes ) * ALLOT \ trial point
+CREATE XP{  Ndim 4 ( bytes ) * ALLOT \ 2nd trial point
+CREATE Y{   Ndim 4 ( bytes ) * ALLOT \ geocenter
 
-CREATE X{  Ndim     4  ( bytes )  *   ALLOT    \ trial point
-CREATE XP{ Ndim     4  ( bytes )  *   ALLOT    \ 2nd trial point
-CREATE Y{  Ndim     4  ( bytes )  *   ALLOT    \ geocenter
+: }  ( adr n - adr + 4n ) 4 * + ; \ part of array notation
+: }} ( adr m n - adr + [m*Ndim + n]*4 ) SWAP Ndim * + } ;
+\ ---------------------- END DATA STRUCTURES
+\ ----------------------------- ACTION WORDS
+: RESIDUALS
+    Ndim 1+ 0 DO SIMPLEX{{ I 0 }} F(X) F(I) R32!
+    LOOP ;
+: <index> Ndim 1+ 0 DO I index I 2* + ! LOOP ; \ fill index
 
-: }    ( adr n -- adr + 4n)   4*  +  ;
-: }}   ( adr m n -- adr + [m*Ndim + n]*4 )   SWAP  Ndim *  +   }  ;
-\ ------------------------------------------------- END DATA STRUCTURES
+: ORDER     <index>
+    Ndim 1+ DO F{ I >index } R32@
+    I 1+ BEGIN Ndim 1+ OVER
+    WHILE F{ OVER >index } R32@ FOVER FOVER F>
+        IF FSWAP
+            I >index OVER >index
+            index I 2* + ! index 3 PICK 2* + !
+         THEN FDROP 1+
+      REPEAT FDROP FDROP
+    LOOP ;
+CENTER ( - ) FINIT Ndim S-F     ( 87: - Ndim )
+    Ndim 0 DO F=0   \ loop over components
+        Ndim 0 DO   \ average over vectors
+        
+           SIMPLEX{{ I index J }} R32@ F+
+        LOOP FOVER F/
 
-\ -------------------------------------------------------- ACTION WORDS
-: RESIDUALS   Ndim 1+  0  DO  SIMPLEX{{ I 0 }}  F(X)  F{ I }  R32!
-              LOOP  ;
+        Y{ I } R32! \ put away
+    LOOP FDROP ;
+\ note: Worst.Point is SIMPLEX{{ Ndim index J }}
+\ -- excluded!
 
-: CENTER  ( -- )   FINIT  Ndim S->F
-        Ndim 0  DO                            \ loop over components
-                                              ( :: -- N )
-             F=0                              \ loop over vectors
-             Ndim 1+ 0  DO   I I.worst  <>  IF
-                  SIMPLEX{{ I J }}  R32@  F+   THEN
-             LOOP   FOVER  F/   Y{ I }  R32!  \ put away
-        LOOP    FDROP  ;
+: DONE!     CR ." We're finished." ;
+: TOO.MANY  CR ." Too many iterations." ;
 
-: DONE!    CR  ." We're finished."  ;
-: TOO.MANY   CR  ." Too many iterations."  ;
+: V.MOVE ( src.adr dest.adr - ) \ move vector
+    Ndim 0 DO OVER I } OVER I } 2 MOVE
+  LOOP DDROP ;
+: STORE ( adr1 adr2 -- ) 0 }
+    SIMPLEX{{ nDIM INDEX 0 }} V.MOVE
+    F{ Ndim index } 2 MOVE ;
+: STORE.X   Residual   X{ STORE ;
+: STORE.XP  Residual' XP{ STORE ;
 
-: V.MOVE   ( src.adr  dest.adr -- )
-        Ndim 0  DO   OVER  I }   OVER  I }  2 MOVE   LOOP   DDROP  ;
+: New.F X{ F(X) Residual R32! ;
+: EXTRUDE   ( 87: scale.factor -- )
+\ extend pseudopod
+    Ndim 0 DO DUP I } R32@   ( 87: -- s.f x )
+    Y{I} R32@ FUNDER F-  ( 87: -- s.f y x-y )
+    FROT FUNDER F* ( 87: -- y s.f [x-y]*s.f )
+    FROT F+        ( 87: -- s.f y+[x-y]*s.f )
+    X{ I } R32!
+    LOOP DROP FDROP New.F ;
 
-: STORE   ( adr1 adr2 -- )   0 }  SIMPLEX{{ I.worst 0 }} V.MOVE
-                             F{ I.worst }  2  MOVE  ;
+: F=1/2 F=1 FNEGATE F=1 FSCALE FPLUCK ;
+: F=2   F=1 FDUP FSCALE FPLUCK ;
 
-: ST0  Residual  X{  STORE ;
-: ST1  Residual'  XP{  STORE ;
-
-: New.F     X{   F(X)   Residual   R32!  ;
-
-FIND CPDUP  0= ?( : CPDUP  FOVER FOVER ;  )
-
-: Worst.Point   FINIT    F{ 0 } R32@   0
-                Ndim 1+  1  DO   F{ I }  R32@  CPDUP   F<
-                     IF   FSWAP  DROP  I   THEN   FDROP
-                LOOP   FDROP  ;
-
-: Best.Point    FINIT    F{ 0 } R32@   0
-                Ndim 1+  1  DO   F{ I }  R32@  CPDUP   F>
-                     IF   FSWAP  DROP  I   THEN   FDROP
-                LOOP   FDROP  ;
-
-: 2worst        FINIT  F{ I.best }  R32@  0
-                Ndim 1+  0  DO
-                     I I.worst <>
-                     IF   F{ I }  R32@   CPDUP   F<=
-                          IF   FSWAP  DROP  I   THEN  FDROP
-                     THEN
-                LOOP   FDROP  ;
-
-: SCALE     ( :: scale -- )
-            Ndim 0  DO  DUP  I }  R32@       ( :: -- sc x )
-                        Y{ I }  R32@  FUNDER  F-   ( :: -- sc y x-y)
-                        FROT  FUNDER  F*           ( :: -- y sc [x-y]*sc)
-                        FROT  F+                   ( :: -- sc y+[x-y]*sc)
-                        X{ I }  R32!
-            LOOP  DROP  FDROP  New.F  ;
-
-FIND F=1/2  0= ?( : F=1/2  F=1 FNEGATE F=1 FSCALE FPLUCK ; )
-FIND F=2    0= ?( : F=2    F=1 FDUP FSCALE FPLUCK ;  )
-\ -------------------------------------------------- DEBUGGING CODE
+\ --------------------- DEBUGGING CODE
 0 VAR DBG
 : DEBUG-ON  -1 IS DBG ;
-: DEBUG-OFF 0 IS DBG ;
+: DEBUG-OFF  0 IS DBG ;
 
-: .V   3 SPACES  Ndim 0  DO   DUP I }  R32@  F.   LOOP  DROP  ;
-: .M   ( -- )   Ndim 1+ 0  DO  DBG  CR  IF  I .  2 SPACES  THEN
-                     SIMPLEX{{ I 0 }}  .V
-                     DBG  IF  F{ I }  R32@ F.  THEN
-                LOOP  CR
-                DBG  IF CR  X{ .V   Residual R32@ F. THEN ;
+: .V 3 SPACES Ndim 0 DO DUP I } R32@ F.
+    LOOP DROP ;
+: .M ( -- )
+    Ndim 1+ 0 DO DBG CR
+    IF I . 2 SPACES THEN
+    SIMPLEX{{ I index 0 }} .V
+    DBG IF CR X{ .V Residual R32@ F. THEN ;
 
-: .F   Ndim 1+  0 DO  CR   F{ I }   R32@  F.   LOOP ;
-\ ---------------------------------------------- END DEBUGGING CODE
-: REFL      CENTER   F=1  FNEGATE  SIMPLEX{{ I.worst 0 }}
-            SCALE    DBG IF  CR ." REFLECTING"  THEN  .M    ;
+: .F Ndim 1+ 0 DO CR F{ I index } R32@ F.
+    LOOP ;
+\ ----------------- END DEBUGGING CODE
+: REFLECT CENTER
+    F=1 FNEGATE \ scale.factor = -1
+    SIMPLEX{{ Ndim index 0 }} \ worst pt.
+    EXTRUDE     \ calculate x, f(x)
+    DBG IF CR ." REFLECTING" THEN .M ;
 
+\ AMOEBA, CONT'D
 
-: DBL     Residual Residual'  2 MOVE       \ swap points, resid.
-          X{  XP{  V.MOVE
-          FINIT  F=2   FNEGATE  X{  SCALE
-          DBG IF  CR ." DOUBLING"  THEN  .M  ;
+: DOUBLE Residual Residual' 2 MOVE
+    \ save residual
+    X{ XP{ V.MOVE             \ save point
+    FINIT F=2 FNEGATE ( ? )   \ scale.factor = -2
+    SIMPLEX{{ Ndim index 0 }} \ worst pt.
+    EXTRUDE                   \ calculate x, f(x)
+    DBG IF CR ." DOUBLING" THEN .M ;
 
-: HALVE   FINIT  F=1/2   SIMPLEX{{ I.worst 0 }}  SCALE
-          DBG IF  CR ." HALVING"  THEN  .M  ;
+: HALVE FINIT F=1/2           \ scale factor = 0.5
+    SIMPLEX{{ Ndim index 0 }} \ worst pt.
+    EXTRUDE                   \ calculate x, f(x)
+    DBG IF CR ." HALVING" THEN .M ;
 
-: SHRINK   SIMPLEX{{ I.best 0 }}  Y{  V.MOVE
-           Ndim 1+  0  DO
-                   Ndim 0  DO  SIMPLEX{{ J I }}  DUP
-                            R32@   Y{ I }  R32@    FUNDER  F-
-                            F=1/2  F*   F+     R32!
-                   LOOP
-           LOOP   RESIDUALS
-           DBG  IF  CR ." SHRINKING"   THEN  .M  ;
-\ ---------------------------------------------------- END ACTION WORDS
+: SHRINK    SIMPLEX{{ 0 >index 0 }} \ best pt.
+    Y{ V.MOVE                 \ save IT
+    Ndim 1+ 1 DO              \ by vector
+      Ndim 0 DO               \ by component
+        SIMPLEX{{ J >index I }} DUP
+        R32@ Y{ I } R32@ FUNDER F-
+        F=1/2 F* F+ R32!
+      LOOP
+    LOOP RESIDUALS ORDER
+    DBG IF CR ." SHRINKING" THEN .M ;
+\ ------------------------- END ACTION WORDS
+\ ------------------------------- TEST WORDS
+: (test) FINIT Residual R32@
+    F{ SWAP >index } R32@ F> NOT ;
+: r>=best? 0   (test) ;
 
-SYNONYM >N NEXT
-\ ---------------------------------------------------------- TEST WORDS
-: (test)   FINIT  Residual  R32@  F{ SWAP }  R32@   F<  NOT ;
-: best>=    I.best   (test)  ;
-: worst>=   I.worst  (test)  ;
-: 2worst>=  2worst   (test)  ;
+: r<worst?   Ndim    (test) NOT ;
+: r>=2worst? Ndim 1- (test)     ;
 
-: done?   F{ I.worst } R32@  F{ I.best }  R32@  CPDUP  F-  F2*
-          F-ROT  F+  F/   FABS   Epsilon  R32@   F<  ;
-\ ------------------------------------------------------ END TEST WORDS
+: done? F{ Ndim index } R32@
+    F{ 0 index } R32@
+    FOVER FOVER F- F2*
+    F-ROT F+ F/ FABS Epsilon R32@ F> ;
+\ ----------------------------END TEST WORDS
 
-4 WIDE STATE.TAB:  New.Point
-\ Input:   |  best<   |  2worst< |  worst<  |  worst>= |
-\ State:   ---------------------------------------------
-  ( 0 )       DBL >1     ST0  >4    ST0  >2     >N  >2
-  ( 1 )       ST0 >4     ST1  >4    ST1  >4    ST1  >4
-  ( 2 )       >N  >4     >N   >4    HALVE >3   HALVE >3
-  ( 3 )       ST0 >4     ST0  >4    ST0  >4    SHRINK >4    ;
+: }MINIMIZE ( n.iter -- 87: error -- )
+    IS N.max Epsilon R32! 0 is N \ initialize
+    RESIDUALS           \ compute residuals
+    ORDER               \ locate best, 2worst, worst
+    BEGIN               \ start iteration
+        done? NOT N N.max < AND
+    WHILE
+      REFLECT r>=best?
+      IF r>=2worst?
+        IF r<worst? IF STORE.X THEN
+            HALVE r<worst?
+            IF STORE.X ELSE SHRINK THEN
+        ELSE STORE.X THEN
+      ELSE DOUBLE
+        r>=best?
+        IF STORE.XP ELSE STORE.X THEN
+      THEN
+      N 1+ IS N ORDER
+    REPEAT DONE! ;
 
-: cat->col#  ( -- col#)  1  2worst>=   -
-                         worst>=  -     best>=  AND  ;
+\ --------------------- EXAMPLE FUNCTIONS
+: F1    ( adr -- 87: F ) DUP 0 } R32@ FDUP F**2
+                  DUP 1 } R32@ F**2 F2* F+
+                      2 } R32@ F**2 F2* F2* F+
+        36 S-F F- F**2 F2/ FSWAP 6 S-F F* F- ;
+\ f1 = .5 * (x*x + 2*y*y + 4*z*z - 36) ^2 - 6*x
 
-: )MINIMIZE   ( n.iter --  :: error -- )
-       IS N.max   Epsilon R32!   0 IS N
-       RESIDUALS  Worst.Point IS I.worst
-                  Best.Point IS I.best
-       BEGIN    done?  NOT    N N.max  <  AND   WHILE
-            Worst.Point IS I.worst
-            Best.Point  IS I.best
-            REFL   ' New.Point  0!
-            BEGIN   cat->col#    New.Point
-                    ' New.Point @   4 =    UNTIL
-            N 1+  IS N
-       REPEAT   DONE!  ;
-
-
-\ EXAMPLE FUNCTIONS
-: F1  ( adr -- :: F )  DUP  0 }   R32@  F**2   1 }  R32@  F**2   F2*  F+  ;
-\ f1 = x^2 + 2*y^2
-
-: F2 ( adr -- :: F )  DUP  0 }   R32@  FDUP F**2  1 }  R32@  F**2
-            F2* F+  36 S->F  F-  F**2  F2/  FSWAP  6 S->F  F*  F-  ;
-\ f1 = .5 * (x*x + 2*y*y + 4*z*z - 36) ^ 2 - 6 * x
-
-: F2   ( adr -- 87: F )  DUP DUP  0 }
-     R32@  FDUP F**2  1 }  R32@  F**2
-         F2* F+ 36 S-F  F- F**2 F2/ FSWAP 6 S-F F* F-
-         DUP 1 } R32@  0 } R32@  F/ FATAN F2* FCOS
-F**2  F*  ;
-\ f2 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x)) ^ 2
-\ Usage:    USE( MYFUNC  10  1.E-3 )MINIMIZE
-
+: F2    ( adr -- 87: F ) DUP DUP 0 }
+      R32@ FDUP F**2 1 } R32@ F**2
+        F2* F+ 36 S-F F- F**2 F2/ FSWAP 6 S-F F* F-
+        DUP 1 } R32@ 0 } R32@ F/ FATAN F2* FCOS
+    F**2 F* ;
+\ f2 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x))^2
+\ Usage:    USE( MYFUNC 10 1.E-3 )MINIMIZE
 FLOATS
- 5. SIMPLEX{{ 0 0 }} R32!    5.  SIMPLEX{{ 0 1 }} R32!
+ 5. SIMPLEX{{ 0 0 }} R32!    5.  SIMPLEX{{ 1 0 }} R32!
 -3. SIMPLEX{{ 0 1 }} R32!    3.  SIMPLEX{{ 1 1 }} R32!
  7. SIMPLEX{{ 0 2 }} R32!   -1.5 SIMPLEX{{ 1 2 }} R32!
 
