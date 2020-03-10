@@ -1,95 +1,91 @@
 % Chapter 11 -- Symbolic Programming
 
 \chapter{Symbolic Programming}
+\TallC{All} symbolic programming is based on \textbf{rules} --- a set of generalized instructions that tells the computer how to transform one set of \textbf{tokens} into another. An assembler, \textit{e.g.}, inputs a series of machine instructions in mnemonic form and outputs a series of numbers that represent the actual machine instructions in executable form. A FORTH compiler translates a definition into a series of addresses of previously defined objects. Even higher on the scale of complexity, a FORTRAN compiler inputs high-level language constructs formed according to a certain \textbf{grammar} and outputs an executable program in another language such as assembler, machine code or C.
 
-All symbolic programming is based on rules --- a set of generalized instructions that tells the computer how to transform one set of tokens into another. An assembler, \textit{e.g.}, inputs a series of machine instructions in mnemonic form and outputs a series of numbers that represent the actual machine instructions in executable form. A FORTH compiler translates a definition into a series of addresses of previously defined objects. Even higher on the scale of complexity, a FORTRAN compiler inputs high-level language constructs formed according to a certain grammar and outputs an executable program in another language such as assembler, machine code or C.
-
-What do rules have to do with scientific problem-solving? The crucial element in the rule-based style of programming is the ability to specify general patterns or even classes of patterns so the computer can recognize them in the input and take appropriate action.
+What do rules have to do with scientific problem-solving? The crucial element in the rule-based style of programming is the ability to specify general \textbf{patterns} or even classes of patterns so the computer can recognize them in the input and take appropriate action.
 
 For example, in a modern high-energy physics experiment the rate at which events (data) impinge on detectors might be $10^{7}$ discrete events per second. Since each event might be represented by 5-10 numbers, the storage requirements for recording the results of a search for some rare process, lasting 3-6 months of running time, might be $10^16$ bytes, or $10^7$ high-capacity disk drives! Clearly, so much storage is out of the question and most of the incoming data must be discarded. That is, such experiments demand extremely fast filtering methods that can determine - in 10-20$\mu$sec - whether a given event is interesting. The criteria for "interesting" may be quite general and may need to be changed during the running of the experiment. In a word, they must be specified by some form of pattern recognition program rather than hard-wired.
 
 Another area where pattern recognition helps the scientist is computer algebra. Closely related is the ability to translate mathematical formulae into machine code. So far we have stressed a FORTH programming style natural to that language, namely postfix notation, augmenting it primarily for readability or abstracting power. It cannot be denied, however, that sometimes it is useful simply to be able to write down a mathematical formula and have it translated automatically into executable form. This chapter develops the tools for symbolic programming and illustrates their use with a typical algebra program and a simple FORmula TRANslator.
 
 \subsection{Rules}
-
-Before we can specify rules we need a language to express them in. We need to be able to describe the grammar of the rules in some way. The standard notation states rules as regular expressions\sepfootnote{11_01}. The following rules describing some parts of FORTRAN illustrate how this works.
+Before we can specify rules we need a language to express them in. We need to be able to describe the \textbf{grammar} of the rules in some way. The standard notation states rules as \textbf{regular expressions\sepfootnote{11_01}}. The following rules describing some parts of FORTRAN illustrate how this works.
 
 \begin{verbatim}
+\ Rules for FORTRAN
 
-\Rules for FORTRAN
+\ NOTATION:
+\ |         -> "or"
+\ ^         -> "unlimited repetitions"
+\ ^n        -> "0-n repetitions"
+\ Q         -> "empty set"
+\ &         -> + | -
+\ %         -> * | /
+\ <d>       -> "digit"
 
-\NOTATION:
-\|              -> "or"
-\^              -> "unlimited repetitions"
-\^n             -> "0-n repetitions"
-\Q              -> "empty set"
-\&              -> + | -
-\%              -> * | /
-\<d>            -> "digit"
+\ NUMBERS:
+\ <int>     -> {-|Q} {<d> <d> ^8}
+\ <exp't>   -> {dDeE} {&|Q}{<d> <d> ^2} | Q
+\ <fp\#>    -> {-|Q}{ <d> | Q} . <d> ^ <exp't>
 
-\NUMBERS:
-\<int>          -> {-|Q} {<d> <d> ^8}
-\<exp't>        -> {dDeE} {&|Q}{<d> <d> ^2} | Q
-\<lp\#>          -> {-|Q}{ <d> | Q} . <d> ^ <exp't>
-
-\FORMULAS:
-\<assign>       -> <subj> = <expression>
-\<id>           -> <letter> {<letter>|<d>}^6
-\<subject>      -> <id> {<idlist> | Q}
-\<idlist>       -> ( <id> {, <id> } ^)
-\<arglist>      -> ( <expr'n> {, <expr'n>}^)
-\<func>         -> <id> <arglist>
-\<expr'n>       -> <terrn> | <terrn> & <expr'n>
-\<terrn>        -> <fctr> | <fctr> % <trm> | <fctr>**<fctr>
-\<factor>       -> <id> | <tp\#> |(<expr'n> )| (tum)
+\ FORMULAS:
+\ <assign>  -> <subj> = <expression>
+\ <id>      -> <letter> {<letter>|<d>}^6
+\ <subject> -> <id> {<idlist> | Q}
+\ <idlist>  -> ( <id> {, <id> } ^)
+\ <arglist> -> ( <expr'n> {, <expr'n>}^)
+\ <func>    -> <id> <arglist>
+\ <expr'n>  -> <terrn> | <terrn> & <expr'n>
+\ <terrn>   -> <fctr> | <fctr> % <trm> | <fctr>**<fctr>
+\ <factor>  -> <id> | <tp\#> |(<expr'n> )| (tum)
 
 \end{verbatim}
 
-We use angular brackets " < ", " > " to set off "parts of speech" being defined, and arrows "->" to denote "is defined by". Other notational conventions, such as "|" to stand for "or", are listed in the "NOTATION" section of the rules list, mainly for mnemonic reasons. A statement such as
+We use angular brackets "$<$", "$>$" to set off "parts of speech" being defined, and arrows "-$>$" to denote "is defined by". Other notational conventions, such as "$|$" to stand for "or", are listed in the "NOTATION" section of the rules list, mainly for mnemonic reasons. A statement such as
 
 \begin{verbatim}
-\<int>      -> {-|Q}<d><d>^8
+\ <int>     -> {-|Q}<d><d>^8
 \end{verbatim}
 
 therefore means "an integer is defined by an optional leading minus sign, followed by 1 digit which is in turn followed by as many as 8 more digits". Similarly, the phrase
 
 \begin{verbatim}
-\<assign>   -> <subj> = <expression>
+\ <assign>  -> <subj> = <expression>
 \end{verbatim}
 
-means “an assignment statement consists of a subject ---a symbol that can be translated into an address in memory--- followed by an equals sign, followed by an expression". Literal symbols --- parentheses, decimal points, commas --- are shown in \textbf{bold} type.
+means “an assignment statement consists of a subject --a symbol that can be translated into an address in memory-- followed by an equals sign, followed by an expression". Literal symbols -- parentheses, decimal points, commas-- are shown in \textbf{bold} type.
 
-Note that some of these definitions are recursive. A statement such as
+Note that some of these definitions are \textbf{recursive}. A statement such as
 
 \begin{verbatim}
-\<expr'n>   -> <term> | <term> & <expr'n>
+\ <expr'n>  -> <term> | <term> (*\textbf{&}*) <expr'n>
 \end{verbatim}
 
 seems to be defined in terms of itself. So it is a good bet the program that recognizes and translates a FORTRAN expression will be recursive, even if not explicitly so.
 
 \subsection{Tools}
-
-In order to apply a rule stated as a regular expression, we need to be able to recognize a given pattern. That is, given a string, we need —say— to be able to state whether it is a floating point number or something else. We want to step through the string, one character at a time, following the rule
+\TallC{In} order to apply a rule stated as a regular expression, we need to be able to recognize a given pattern. That is, given a string, we need —say— to be able to state whether it is a foating point number or something else. We want to step through the string, one character at a time, following the rule
 
 \begin{verbatim}
-\<fp\#>      -> {-|Q}{{d . | .d | d} d ^ exp't
+\ <fp\#>    -> {-|Q}{{d . | .d | d} d ^ exp't
 \end{verbatim}
 
 This pattern begins with a minus or nothing, followed by a digit and a decimal point or a decimal point and a digit or a digit with no decimal point, followed by zero or more digits, then an exponent.
 
 \subsubsection{Pattern recognizers}
-
-One often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. 11-1 on page 263 below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with textbf{IF...ELSE...THEN} statements, the program becomes too long
+\TallC{One} often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. \ref{fig:11_01} on page 263 below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with \bc{IF...ELSE...THEN} statements, the program becomes too long
 
 \begin{figure}
-    \caption{Fig. 11-1 \textit{Logic tree for <floating point \#>}}
+    \caption{Fig. 11-1 \textit{Logic tree for <foating point \#>}}
+    \label{fig:11_01}
 \end{figure}
 
-and too complex either for easy comprehension or for easy maintainance\sepfootnote{11_02}
+and too complex either for easy comprehension or for easy maintainance\sepfootnote{11_02}.
 
-It has been known for many years that a better way to apply general rules — \textit{e.g.}, to detemiine whether a given string conforms to the rules for "floating point number" --- uses finite state machines (FSMs —we define them in §2 “2 below). Here is an example, written in standard FORTH:
+It has been known for many years that a better way to apply general rules — \textit{e.g.}, to detemiine whether a given string conforms to the rules for "foating point number" --- uses \textbf{finite state machines} (FSMs —we define them in \ref{chap:11_02_02} below). Here is an example, written in standard FORTH:
 
-\begin{verbatim}
+\begin{lstlisting}
 \ determine whether the string at Sadr is a fp#
 :skip-   ( adr -- adr') DUP C@ ASCII- = - ;
 :skip_dp ( adr -- adr') DUP C@ ASCII. = - ;
@@ -102,40 +98,43 @@ It has been known for many years that a better way to apply general rules — \t
     DUP ASCII D = SWAP ASCII E = OR ;
 
 : skip_exponent ; \ this definition shown below
+
 :fp#?    ( $adr -- f )
     DUP 0 OVER COUNT + C! \ add terminator
     DUP C@ 1+ OVER C!     \ count =count+1
     COUNT OVER + 1- SWAP  ( -- $end $beg )
     skip- skip_dig skip_dp skip_dig
     skip_exponent
-    UNDER =          \$beg' = $end?
-    SWAP C@ 0= AND ; \char[$beg']=terminal?
+    UNDER =          \ $beg' = $end?
+    SWAP C@ 0= AND ; \ char[$beg']=terminal?
+\end{lstlisting}
 
 The program works like this:
+
 \begin{itemize}
     \item Append a unique terminal character to the string.
     \item If the first character is "-" advance the pointer 1 byte, otherwise advance 0 bytes.
     \item Skip over any digits until a non-digit is found.
     \item If that character is a decimal point skip over it.
     \item Skip any digits following the decimal point.
-    \item A floating point number terminates with an exponent formed according to the appropriate rule (p. 261). skip_exponent advances the pointer through this (sub)string, or else halts at the first character that fails to fit the rule.
-    \item Does the initial pointer ($beg') now point to the calculated end of the string ($end)? And is the last character ( char[$beg'] ) the unique terminal? If so, report "true", else report "false".
+    \item A foating point number terminates with an exponent formed according to the appropriate rule (p. 261). \bc{skip_exponent} advances the pointer through this (sub)string, or else halts at the first character that fails to fit the rule.
+    \item Does the initial pointer (\$beg') now point to the calculated end of the string (\$end)? And is the last character ( char[\$beg'] ) the unique terminal? If so, report "true", else report "false".
 \end{itemize}
 
-We deferred the definition of skip_exponent. Using conditionals it could look like
+We deferred the definition of \bc{skip_exponent}. Using conditionals it could look like
 
-\begin{verbatim}
+\begin{lstlisting}
 : skip_exponent ( adr -- adr' )
-    DUP C@ dDeE? IF 1+ ELSE EXIT THEN
+    DUP C@ dDeE?  IF 1+ ELSE EXIT THEN
     skip- skip+
     DUP C@ digit? IF 1+ ELSE EXIT THEN
     DUP C@ digit? IF 1+ ELSE EXIT THEN
     DUP C@ digit? IF 1+ ELSE EXIT THEN ;
-\end{verbatim}
+\end{lstlisting}
 
 which,as we see in Fig. 11-2 below, has nearly as convoluted a logic tree as Fig. 11-1 on page 263 above.
 
-\subsubsection{Finite state machines}
+\subsubsection{Finite state machines}\label{chap:11_02_02}
 
 Just as we needed a FSM to achieve a graceful definition of fp\#?, we might try to define skip\_exponent as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to deterministic FSMs.) A finite state macliine\sepfootnote{11_03}\sepfootnote{11_04} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
 
@@ -198,19 +197,18 @@ FORTRAN, BASIC or Assembler can implement FSMs with computed GOTOs. In BASIC, \t
 The advantage of FSM construction using computed GOTOs is simplicity; its disadvantage is the linear format of the program that hides the structure represented by the state table, 11-1. CASE statements —as in C, Pascal or QuickBASIC— are no clearer. We can use a state table for documentation, but the subroutine takes more-or-less the above form.
 
 \subsubsection{FSMs In FORTH}
+In the preceding FORTH example we synthesized the FSM from \bc{BEGIN...WHILE...REPEAT} loops. FORTH's lack of line-labels and GOTOs (jumps) imposed this method, producing code as untransparent as the BASIC version. The Eaker CASE statement can streamline the program,
 
-In the preceding FORTH example we synthesized the FSM from \textbf{BEGIN. ..WHILE. . .REPEAT} loops. FORTH’s lack of line-labels and GOTOs (jumps) imposed this method, producing code as untransparent as the BASIC version. The Eaker CASE statement can streamline the program,
+\begin{lstlisting}
+CASE: ADVANCE? NEXT 1+ ;CASE
+: 1digit DUP C@ digit? ABS ADVANCE? ;
+: skip_exponent (adr -- adr')
+    DUP C@ dDeE? IF 1+ ELSE EXIT THEN
+    skip- skip+
+    1digit 1digit 1digit ;
+\end{lstlisting}
 
-\begin{verbatim}
-    CASE: ADVANCE? NEXT 1+ ;CASE
-    : 1digit DUP C@ digit? ABS ADVANCE? ;
-    : skip_exponent (adr -- adr')
-        DUP C@ dDeE? IF 1+ ELSE EXIT THEN
-        skip- skip+
-        1digit 1digit 1digit ;
-\end{verbatim}
-
-(three of four \textbf{IF...ELSE...THEN}s have been factored out and disguised as \textbf{CASE:}...\textbf{;CASE}), but this does not much improve clarity. We still need the state transition table to understand the program.
+(three of four \bc{IF...ELSE...THEN}s have been factored out and disguised as \bc{CASE:}...\bc{;CASE}), but this does not much improve clarity. We still need the state transition table to understand the program.
 
 Various authors have tried to improve FSMs in FORTH using what amount to line-labels and GOTOs\sepfootnote{11_08}\sepfootnote{11_09}\sepfootnote{11_10}. The resulting code is less elegant than the BASIC version shown above.
 
@@ -404,7 +402,7 @@ REDUCE. e.g.. on a large mainframe.
 irac y-matrices are 0“ traceless, complex matrices deﬁned
 by a set of (anti)commutation relations 6. These are
 
-WYV+YVVI=2vwv ﬂ.V=0.---.3 (1)
+WYV+YVVI=2vwv f.V=0.---.3 (1)
 where 77‘" is a matrix-valued tensor,
 p\v0 1 2 a
 O I 0 O 0
@@ -414,7 +412,7 @@ O I 0 O 0
 
 274
 
-Chapter 11 - Symbolic Proorammhg Sclendﬂc FORTH
+Chapter 11 - Symbolic Proorammhg Sclendfc FORTH
 
 The trace of a matrix is deﬁned to be the sum of its diagonal
 elements,
@@ -486,14 +484,14 @@ niﬁcantly, hence the rule
 In the same category, when two vectors are orthogonal,
 A -B = 0, another simpliﬁcation occurs,
 
-\PERP A8 -> A.B=O.
+\ PERP A8 -> A.B=O.
 \ Tr(A/B/prodl) -> -Tr(A/prod/B'/)
 
 The ability to recognize orthogonal vectors lets us ggorrectly)
 include the trace of a product times the special matrix
 
 0010
-__-01 _ 0001
+-01 0001
 Y5"yyy2y3- 1000 (9)
 0100
 
@@ -516,15 +514,15 @@ ing
 Since y-matrices often appear in expressions like (A + m Al ) it I
 will also be convenient to include the additional rules
 
-\*A/ -> [N + ms]
-\Tr(*A/X/) -> m[A](Tr(x/))+Tr(x/A/)
+\  *A/ -> [N + ms]
+\ Tr(*A/X/) -> m[A](Tr(x/))+Tr(x/A/)
 
 §§3 The program
 
 We program from the bottom up, testing, adding and modifying )
 as we go. Begin with the user interface; we would like to say ‘
 
-TFl( NB/C/DI)
+Tf( NB/C/DI)
 
 to obtain the output:
 
@@ -545,7 +543,7 @@ Since the rules are inherently recursive, we push the input string onto a stack 
 The pseudocode for the last word of the deﬁnition is clearly
 something like
 
-:TR( )get$ \get a $ -terminated with ")'
+:TR( )get$ \ get a $ -terminated with ")'
 setup \ push $ on $stack
 parse :
 
@@ -566,8 +564,8 @@ purposes”.
 
 
 (59 : parse Spop \ a/b/x/
-yes Ziactors (--ab) \x/
-b=b'? \done?
+yes Ziactors (--ab) \ x/
+b=b'? \ done?
 A.B \ output
 N° length( XI) 0 > \ more?
 rearrange \ "a/x/b'l
@@ -575,7 +573,7 @@ rearrange \ "a/x/b'l
 
  
 
-.' (' recurse .')" \Tr(x/)
+.' (' recurse .')" \ Tr(x/)
 
  
 
@@ -589,7 +587,7 @@ Exit
 
  
 
-Fig. 11-4 Pseudocode/ﬂow diagram for ‘parse'
+Fig. 11-4 Pseudocode/fow diagram for ‘parse'
 
 How deep an the Sstack get? The algorithm expressed by the rule
 \ Tr( a/b/prodl) - > a.b ( Tr( prodl) ) - Tr( a/prod/b'l)
@@ -599,7 +597,7 @@ depth will be k + 1. Thus we should plan for a stack depth of at
 least 11, perhaps 12 for safety. Assuming factor-names up to three
 characters long, and strings of up to 20 names, we need =60
 characters per string. My first impulse was to create a dynamic
-$stack that could accomodate strings of variable length, meaning
+\bc{$stack} that could accomodate strings of variable length, meaning
 that some 330 bytes of storage would be needed, at the cost of
 some complexity in keeping track of the addresses. This is a big
 improvement on 720 bytes needed for a 60-wide fixed-width
@@ -610,296 +608,25 @@ go on the Sstack would be tokenized. The memory cost of the
 table together with a 12-deep, fixed-width Sstack is thus only
 80 + 242 = 322 bytes.
 
-WM?"
-
-MM
-
-\mreararem
-
-«we 0;
-
-:m: (m0—) WTE ..]
-m> (d'-i
-
-moo (-a¢mmnl
-' 4 1+ 4' i-mm)
-
-OVER+ (—a¢ra¢r‘)
-
-m W24 (-a¢r|ﬂ‘] «4-2)
-mm i-Idrllﬂr'l It)
-KIT! EXBJJTE '
-
-ocmsrmr >0 acousmlr >3
-momma >1 measure at
-acousrmr >2 soonsrmr >5
-\aomresmem
-
-\Membtaa
-:rpa: (em-i
-GENE “OVERALLOT
-SWAPOFLL \Inithnia
-DCES> + W;
-
-:inatﬂ (mnwnw.1—)
-SVWHSWAP
-DOWI+ C! LOOP OW;
-\and-nmaleoorwionm
-
-\1-tll
-\addla-aa
-
-\smuoumm
-l-EX
-\Nouzmi ...... niconallomlympllu- ...... '
-Humo-
-?(((:81(MM—)OVBC@1+ mm»
-muo-
-?(((:8+ (mi-ma —a-d)
-Dime (4mm)
->Rt+ OVERC®PAD+1+
-Re «move most
-a) PADOO + omxsnm moon)»
-pecan
-:1+0l (ear—l Dome 1+ smpcn
-:a. (Int-l \duutammt
-Dunn cannot Gamma+w
-0° '60” ﬂ<>
-F 911000th + Cl PAD1+CI
-ELSE anon ‘l'l-EN
-m PADR> SI:
-\aosrmasmmmo
-
-\PAFSEW
-\MINW‘Nhﬂmm
-\nsa-law+ Mulls»
-
-0W-
-
-:nrt 1818mm: human-luv
-(WM OI \MIUW
-we] Ate/1+1 W: \IneOl
-
-Mtt-SMW 279
-
-:an an ”Mutants-Inland)";
-:4W(d.-) ﬂm \dﬂ?
-rmcomr 4 CHMDCO1¢ P001 oven;
-
-GMMJM (cum-l
-\WIWIWIMIII'I
-\nso ———————————————————————
+\begin{verbatim}
 (0) arr >0 wan >2 err >0 +0! >5 _!>1
 (1) on >0 4PM >2 an >1 +OI>5 en >1
 (2) on >0 4?“) >3 +PAD >3 +0! >5tr >2
 (3) 01" >0 OPPD >4+PND >4 +O/ >5” >3
-(4) on >0 W um» 40/ >Sarr>4
-- \mm
-18118:”) \ennmdlbenu
-1'IWIWIMAW
-1'[W]A$I1A50Iahﬂ
-rimuscusscsom
-3‘[lanu)A80I/ +Ci
-C‘IWIABCI' + Cl
-:<m> (It-IF)
-PADOi ‘(laebriot OIS‘r \ﬂidb
-
-BEGNOIMM [tannin-ear)”
-' )05-
-UNle
-
-CREATEtaeasr{m4'ALLOT0<l.W \tpbzotaea-ln
-:} (dru—adr+4ﬁ1)4'+: \compuh-scira-
-
-OVARN OVARN1
-GREATEBLF‘ manor MW \mm
-
-:undar121ND;
-:s-(Sdnm—i)
--1~FOT m
-ROTOOWT (—satl12+1nzsa¢1+1m)
-FDTW -
-IF neon
-
-\toltoni-A] - mix] 12s on
-
-00mm >Rt+
-WERCOMFD <>
-F WMT—FUTlEAVETl-EN
-SWAP1+
-m comr-
-asuneopoorneuornei:
-:M.“ (--) \Mwm
--1|SN1
-Monomer-taut“):-
-F IBNI LEAVETFBJ
-
-m:
-whales NNt-t-MNt-1>N1Am +
-\uanNerNi
-PADHQIIMDCII Vina-tut?
-
-mm+t+CtMI+CH
-\Wﬂlﬂ
-
-emvuouoim-me.
-
-280
-
-Im (Slur-l \dleornpoaainbtaetm
-lactation om \mallnnnlo
-CONT OER+ (-8dr+1hdr’) \ddreuaa
->R \M‘-M+LENB)+1
-OBUFsCI \lnithullot
-OlSN \tnltN
-BEGN «no» \tnglnioopmeltacu
-
-mountable \prwantmullbieantiu
-+burs \addi‘actnrhtoltanizads
-N1-1- \notintabla?
-IFPAD lactot{N}sl \putintnblo
-ATN1+l \lne.N
-Tl-EN
-DUPR@ = UNTlL \ondloop
-bnopmaoa; \eloanup
-
-\ENOPARSEWGIDS
-
-\Setaek
-
-CREATEW ZOZ)‘2+ALLOTOKLW \21orptr
-
-:Spush (“d1")
-DUPC@19>ABORT‘STHINGTOOLONGI'
-M DUP@ DUP 19> mat-dined”?
-20' 2+ 4» Si SeudHH;
-
-:spop (Sadr--)SetackDUP@1-OMAX
-DDUPSWAP!
-20'2+ + SWAP 3!;
-
-\ondsmak
-
-CREATE BwALLOTOKLW \mlminpmahils
-
-:gotS BC!) TEXT \inputaSterrnlnabdby)
-PAD -BL \deletebianlra
-PADXS $1;
-
-:1tactor (--a) \get1fa:tor.tai-> 11$
-BUFS 1+ 0@ (--a)
-
-BLFS C(XJNT 1- >11
-
-1+ X$1+F@<CWVE Vail->16
-
-R> XSCI: \adiuetoount
-:21‘aebra(--ab) \getietztaebra
-
-tractoran $1 “actor;
-OVAFlu'gn \emitmrreetalgn
-ZTAB: [sign] \maltehbla
-ASCI+ '[dgn] Ci \1lltabla
-m- '[I‘gn] 1+ Cl
-:jgn (a--) 64AM) O> ABS [sign] ﬁgnAND EMT;
-
-\Nob:anmar11prirm(')by640ﬁ (aatbltelnbiwn)
-\ a'ncaiatlaehrianm',maetbltotorlaadng'-'algn
-
-:prirnel 64 OR ;
-
-:urpr'vne 6 AM):
-
-:A8(ab-—) \emll‘dotprodlet'
-W \b'->b
-OVER «lion \O'Mdﬁ'l
-SWAPmptﬁne \ttoplaﬂtg‘J
-our MAX-MT W \uﬂlnmo
-
-fund SWAP ) I.
-
-Chapter 11 — Symbolic Programming
-
-:daan
-
- 
-
-Scientiﬁc FORTH
-
-sec-sun imiswmis. steam;
-(UP-l
-
-\MI‘W
-CGMOVEH+MAP
-00 log mm lCl LCXN';
-
-:rlarrl'lge (ab--)
-1min \hltM
-Burns» PAD E881 \IMS->_/ll
-primal (nab)
-
-BUPHDUNT-l» C1 “1+0! \Mo M7
-“XOR (--axor84) \Isgdaimota
-3131+ Cl : ("l \M-> ”M7
-
-:aotup XStohnIna
-W01
-OISdgn
-BUBSPush:
-
-\ mood.
-:ss (soar-)owuromnswmmm
-DUPC@.aign wwvmw urprima)8..'l'
-1+ no tactor{lC@mprime} 8.
-IC@64NDO> \ptimad?
-IF ."THEN .'I'
-
-\bnnm
-\inits-taolt
-\initdenha
-\mpumlmsmssudt
-
-LOOP:
-
-:durnpsetndﬂom NOT IF EXIT Tl'EN
-My ("90401)
-wevwo= \sutnekunpm
-IF DDFOP CFlfWemptrEﬂl’THEN
-ODOIE'OVER+CR8. WW;
-
-OVAR DEBUG
-
-\ “WM
-( '(' Dis-ion:
-) ')'-1|Ssian:
-pane durum
-BUR 39°F 21-”! (--ab)
-DUPMAM) o> \b-b'?
-IF MOUTH-EN
-DDUPAB (--ab) \etnput
-X30®0> \mora?
-IF rearrange \M-"alzb'l
-BUBspuah V'M'I
-XSeIaan 13M \a/
-(. HECUﬁE).
-FECURSE
-ELSE 0W "EN:
-:mlgols \Inpuls
-W
-.' -' CR \hrbaalay
-pal-i
+(4) on >0 W umf 40/ >Sarr>4
+\end{verbatim}
 
 Since the tokens are 1-byte integers smaller than 32, their 5th, 6th
-and 7th bits can serve as flags to indicate their properties. For
+and 7th bits can serve as fags to indicate their properties. For
 example, we need to indicate whether a factor was “starred”, Le.
 
 whether it represents (A + mAl) or A , according to the rule
-\‘A/ -> (N+m[A)).
+\ A / -> (N+m[A)).
 
 Again, we need to be able to indicate a “prime", showing that a
 factor has been permuted following the rule
 
-\TI’(8/b/Pf°d/) -> lbiNPVOUO) ~"(9/P'06/b'0
+\ TI’(8/b/Pf°d/) -> lbiNPVOUO) ~"(9/P'06/b'0
 
 Thus we set bit 7 (128 OR) to indicate “star", and bit 6 (64 OR)
 to indicate “prime".
@@ -915,7 +642,7 @@ on it. The entire program appears on pages 279 and 280 above.
 
 Now we test the program:
 
-rm NB/C/D/E/Fl) =
+rm NB/C/D/E/f) =
 A.B(C.D(E.F)—C.E(D.F) + C.F(D.E))
 —A.C(D.E(B.F)—D.F(B.E) + B.D(E.F))
 +A.D(E.F(B.C)—B.E(C.F) +C.E(B.F))
@@ -933,7 +660,7 @@ ing constructs. A finite state machine would be ideal for clarity;
 however, as Table 11-2 makes clear, the logic is not really that of
 a FSM, besides which, the FSM compiler described above would
 
-OJlﬂanVNoHoim—Altigﬂamorvad.
+OJlfanVNoHoim—Altigfamorvad.
 
  
 
@@ -971,7 +698,7 @@ consulted by the test word perps?.
 ow might we implement a leading factor of y5? While there
 is no difficulty in taking traces of the form
 
-Tr( 1'54 18 a» ...) a iTr(e,..aA"B ’c‘y‘n ...), (11)
+Tr( 1'54 18 af ...) a iTr(e,..aA"B ’c‘y‘n ...), (11)
 
 expressions with y5 between "starred" factors are more difficult.
 However, the permutation properties of traces let us write, e.g.,
@@ -1037,28 +764,30 @@ we use p-code or some such artifice we would lose all hope of
 portability. Thus, we take instead the simpler course of translating
 FORTRAN formulae to FORTH according to the rules
 
-\NUMBERS:
+\begin{verbatim}
+\ NUMBERS:
 
 \ <int> -> -| 0} {digit digit"8}
 
 \ <exp't> -> dDeEI{& | 0} {digit digit"2}| 0}
-\<fp#> -> -|O} dig | Q} . dig" <exp't>
-\FORMULAS:
+\ <fp#> -> -|O} dig | Q} . dig" <exp't>
+\ FORMULAS:
 
 \ <assignment> -> <subject> = <expression>
 
 \ <id> -> letter {ietter|digit}"6
 
-\<subjec1> -> <id>{<id|ist>10}
+\ <subjec1> -> <id>{<id|ist>10}
 
-\<idiist> ->(<id> {,<id> ")
+\ <idiist> ->(<id> {,<id> ")
 
-\<arglist> ->(<expr'n> {,<expr’n> }")
-\<function> -> <id> <arglist>
+\ <arglist> ->(<expr'n> {,<expr’n> }")
+\ <function> -> <id> <arglist>
 
-\<expression> -> <terrn> | < term> at <expr'n>
-\<term> _> <factor> | <tactor> 96 <term>
-\<factor> -> <id>| <tp#>| (<expr'n>) |
+\ <expression> -> <terrn> | < term> at <expr'n>
+\ <term> _> <factor> | <tactor> 96 <term>
+\ <factor> -> <id>| <tp#>| (<expr'n>) |
+\end{verbatim}
 
 -> <factor> “ <iactor>
 
@@ -1067,20 +796,18 @@ kernel of a more complete FORTRAN- >FORTH filter by ad-
 ding to the above rules for formulae the following rules for loops
 and conditionals:
 
-\DOLOOPS:
+\begin{verbatim}
+\ DOLOOPS:
 
-\<label> -> <integer>
-\<lim> -> <integer>|<id>}
-\<step> -> ,<lim>|O}
+\ <label> -> <integer>
+\ <lim> -> <integer>|<id>}
+\ <step> -> ,<lim>|O}
 
-\<do> -> DO<label><id>=<iim>,<lim><step>
-
-
-288 cr-ptom -Symbollc Progunmlng SclenﬂﬂcFORTHQl
+\ <do> -> DO<label><id>=<iim>,<lim><step>
 
 \ BRANCHING STRUCTURES:
 \ < logical expr > - > <factor > .op. < factor >
-\<il0> -> IF(<Ioglcalexpr>)<assignment>
+\ <il0> -> IF(<Ioglcalexpr>)<assignment>
 <if1 > -> IF(< logical expr>)THEN
 {< statement > } "
 END IF
@@ -1091,11 +818,6 @@ ELSE
 { < statement > } "
 END IF
 
- 
-
-A
-3
-v
 
 - > IF ( < logical expr > )THEN
 { < statement >} "
@@ -1103,7 +825,7 @@ ELSEIF( < logical expr >)
 { < statement > } A
 END IF
 
-///////////////
+\end{verbatim}
 
 §§2 Details of the Problem
 The general principles of compiler writing are of course well
@@ -1117,14 +839,14 @@ invoking it.
 
 Let us proceed by translating a FORTRAN formula into FORTH
 code by hand. For simplicity, ignore integer arithmetic and as-
-sume all literals will be placed on the intelligent ﬂoating point
+sume all literals will be placed on the intelligent foating point
 stack (ifstack). Similarly assume all variable names in the pro- ,
 gram refer to SCALARs (see Ch. 5). A word that has become
 fairly standard is 96, which interprets a following number asE
-ﬂoating point, and places it on the fstack. With these conventions,
+foating point, and places it on the fstack. With these conventions,
 we see that we shall want to translate an expression like
 
-A - -15.3€7'EXP(7/X) + Z/(W-SINUHETA'Pl/lmyﬂ
+A - -15.3€7'EXP(7/X) + Z/(W-SINUHETA'Pl/lmyf
 into (generic) FORTH something like this:
 
 964 REAL’B >FS
@@ -1231,7 +953,7 @@ A I -15.3€7'EXP(7/X) + Z/(W-SINCI'HETA'PII 1N)/4)
 
 Clearly, we must apply the first rule
 
-\<assignment> -> <subiect> n <expression>
+\ <assignment> -> <subiect> n <expression>
 
 embodied in the word < assignment > . We split at the “ = " sign,
 and interpret the text to its left as a SCALAH. Since we want to
@@ -1251,7 +973,7 @@ A FS > \ < subject >
 -15.3E7*EXP(7/X) + Z/(W-SlN('l’HETA"P|/180)/4) \ < expressio
 
 Next we apply the rule
-\<expr'n> -> <term> |<term> a <axpr'n>
+\ <expr'n> -> <term> |<term> a <axpr'n>
 
 This breaks the top expression at the + sign between “ ) " and Z.
 We should think of the two terms
@@ -1270,7 +992,7 @@ left, so the Sstack now looks like
 
 emvuounm-umm.
 
-Chapter 11 - Symbolic Programming Sclemlﬂc FORTH
+Chapter 11 - Symbolic Programming Sclemlfc FORTH
 
  
 
@@ -1341,17 +1063,19 @@ POPping off code strings); we thus have to put NOP on the 0/5
 to balance a string on the BS.
 
 The IDS now contains a < term > , so we apply the rules
-\<function> -> <id> <arglist>
-\<term> -> <iactor> | <factor> 96 <term>
+\begin{verbatim}
+\ <function> -> <id> <arglist>
+\ <term> -> <iactor> | <factor> 96 <term>
 
-\<factor>-> <id>| <fp#>| (<expr’n>) |<func>
+\ <factor>-> <id>| <fp#>| (<expr’n>) |<func>
+\end{verbatim}
 
 We note there is an operator at the “ 96 " priority level (the “a"
 in the TOS). We split the top < term > at this point, issuing a G'.
 
  
 
-EIS QLS_N.QIQ§
+EIS QLSN.QIQ§
 A FS > \ < subject >
 Z/(W-SINO’HEI'A'Pl/180)/4) G + \ < term >
 EXPO/X) G‘ \ (term >
@@ -1399,21 +1123,21 @@ pose, so drop them.
 We see, once again, an operator of the priority-level 96 (the “I”
 between 7 and X), so we again apply the rule
 
-\<term> -> <factor> | <factor> 9i. <term>
+\ <term> -> <factor> | <factor> 9i. <term>
 
 to obtain
 
 El: 013 Item
 
 A F8 > \ < subject >
-ZlM-SlNCFHETA'Pi/iwyﬂ G + \ < term >
+ZlM-SlNCFHETA'Pi/iwyf G + \ < term >
 NULL G“
 
 NULL GEXP
 
 X G] \ < id >
 
-7 NOP \ < ip# >
+7 NOP \ < ip\# >
 
 Once again we can emit a number, so we do it:
 
@@ -1441,11 +1165,11 @@ Z/(W-SlNCI’HETA'PI/180)l4) G + \ < term >
 Once again we find the most exposed operator to be “ / which
 we split with the rule
 
-\<term> -> <factor> | <factor> 96 <term>
+\ <term> -> <factor> | <factor> 96 <term>
 
  
 
-E/S QLS__N91§§
+E/S QLSN91§§
 
 A FS> \ <subject>
 NULL G + \ < term >
@@ -1457,7 +1181,7 @@ Emit the T082
 2 > PS
 and apply the rule (first drop the parentheses)
 
-\<expr'n> -> <term> | <term> a <expr'n>
+\ <expr'n> -> <term> | <term> a <expr'n>
 
  
 
@@ -1484,7 +1208,7 @@ signs as unops to the expressions that follow them. Eventually,
 of course, we shall have to deal with the distinction between
 negative literals (-15.3E7, e.g.) and negation of variables. The
 first we can leave alone, since the literal-handling word 96 (“treat
-the following number as ﬂoating point and put it on the 87stack”)
+the following number as foating point and put it on the 87stack”)
 surely knows how to handle a unary “—" sign; whereas the second
 case will require us to issue a strategic GNEGATE.
 
@@ -1525,7 +1249,7 @@ once more, to get:
 EIS OLS Notes
 NULL GNEGATE
 4 G/
-SINO‘HETA'PIHBO) NOP \( <expr'n> )
+SINO‘HETA'PIHBO) NOP \ ( <expr'n> )
 
 After handling the function as before we find the successive stacks
 and FORTH code emissions
@@ -1547,7 +1271,7 @@ Chapter 1 t - Symbolic Programming Scientific FORTH
 
  
 
-51$ 0/8 Joins
+51 0/8 Joins
 A FS > \ < subject >
 NULL G + \ < term >
 NULL 6/
@@ -1563,7 +1287,7 @@ THETA >FS PI >FS G“ 96180 REAL*8 F>FS
 G/ GSIN %4 REAL‘B F>FS G/ GNEGATE G+
 G/ G+ AFS> ok
 
-§§4 Coding the FORmula TRANslator
+4 Coding the FORmula TRANslator
 
 e proceed in the usual bottom-up manner. The first question
 
@@ -1577,20 +1301,18 @@ stack is pushed or popped and the levels never get out of
 synchronization.
 
 Again at the lowest level, we can develop the components that
-recognize patterns, e.g., whether a piece of text is a ﬂoating point
+recognize patterns, e.g., whether a piece of text is a foating point
 
-number. The word that does the latter is fp#?, already described
+number. The word that does the latter is \bc{fp\#?}, already described
 in §2§§1.
 
 A function is defined by the rule
 
-\<arglist> -> ( <expr'n> {, <expr'n>}")
-\<function> -> <id> <argl|st>
+\ <arglist> -> ( <expr'n> {, <expr'n>}")
+\ <function> -> <id> <argl|st>
 
 We may therefore identify a function by splitting at the first left
 parenthesis,
-
-OJUthNobie 1N2-Alirightlmervod.
 
 sand scrum new
 1- Beam 1mm ASCII ()- ,ii (
@@ -1641,7 +1363,7 @@ omvmtm-umm.
 
 :LIBRARY? ($end$beg--cta | 0)
 —ROT UNDER — DUP>R
-PADt+ SWAP CMOVE R> PAD CI \makes
+PADt+ SWAP CMOVE R> PAD CI \ makes
 PAD FIND (--cia n) o= NOT AND ;
 
 now we can define function! which, assuming pointers to the
@@ -1654,21 +1376,23 @@ now we can define function! which, assuming pointers to the
 this:
 BS QIS Notes
 (argt, argz, argN) .F(X) \ an op.
-NULL .iib_name \ if library function
+NULL .iib\_name \ if library function
 or, if it is a user-defined function, like this:
 E18 018 Notes
-(arg1, argZ, argN) .F(X) \an op.
+(arg1, argZ, argN) .F(X) \ an op.
 name NOP \ user function
 
 The code that does all this is
 
+\begin{lstlisting}
 : function! ($end2 $beg2 $end1 $beg1 - -)
 .F(X) $push \ push arglist
 DDUP LIBRARY? DUP 0=
-IF DROP .NOP $push \userfn
-ELSE EXECUTE \inlib.
+IF DROP .NOP $push \ userfn
+ELSE EXECUTE \ inlib.
 NULL ROT $PUSH DDROP
 THEN ." USE( " ;
+\end{lstlisting}
 
 For the program itself24 we work from the last word, < aslgn-
 
@@ -1676,10 +1400,12 @@ ment > , to the first (which we do not know the name of yet).
 We shall describe the program in pseudocode only, in the interest
 of saving space. Clearly,
 
+\begin{lstlisting}
 : < assignment > \ input $ assumed in buffer
-<subj> = <expr> \splitat "=" (- -t)
+<subj> = <expr> \ splitat "=" (- -t)
 IF subjl THEN \ put Subj and its code on $staci<
 .NOP $push ; \ then put expr on Sstack
+\end{lstlisting}
 
 Certain decisions need to be made here: for example, do we want
 F' to be able to parse an expression that is not an assignment (that
@@ -1690,8 +1416,8 @@ Next we pseudocode < oxproeeion >:
 : <expression> empty? IF EXIT THEN
 59°F
 
-<trm>&<expr> (--f) \splitat].
-IF trm&exprl RECURSE
+
+IF trm\&exprl RECURSE
 ELSE NULL ROT $push
 .NOP $push <term>
 THEN ;
@@ -1705,25 +1431,25 @@ Thus:
 
 : <term> empty? IF EXIT THEN
 
-$pop < arglist >
+$pop < arglist >$
 IF arglist! < expression > EXIT THEN
-<factor>%<term> (--f)\splitat%="/'
+<factor>\%<term> (--f)\ splitat\%="/'
 
 IF fct%trml RECURSE
-ELSE .NOP $push <factor> \term = factor
+ELSE .NOP $push$ <factor> \ term = factor
 THEN ;
 
 And finally, we define < factor > , again recursively,
-
-: <factor> empty? IF EXIT THEN \done
+\begin{lstlisting}
+: <factor> empty? IF EXIT THEN \ done
 SPOP <fp# > \ fp#?
 IF fp#I RECURSE EXIT THEN
 leading -?
-IF leading—I < expression > \ forward ref.
+IF leading-I < expression > \ forward ref.
 EXIT THEN
 < id > IF idI < expression > \ forward ref.
 EXIT THEN
-<f>"<f> \exponent’?
+<f>"<f> \ exponent'?
 IF f"fi RECURSE RECURSE
 EXIT THEN
 \ oont'd
@@ -1736,6 +1462,7 @@ EXIT THEN
 
 IF exposel < expression > \ forward ref.
 ELSE ." Notafactorl' ABORT THEN ;
+\end{lstlisting}
 
 Note the forward references found in \bc{<factor>}; since \bc{<expression >} is defined later, we must use vectored execution or some similar method to permit this recursive call.
 
