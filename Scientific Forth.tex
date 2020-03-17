@@ -1,6 +1,7 @@
 \documentclass{book}
-\usepackage[total={105mm, 148mm}]{geometry}
+\usepackage[paper=c5paper, top=1.25in, textwidth=5.0in, textheight=7.0in, nomarginpar, showframe]{geometry}
 \setlength\parindent{0pt}
+\usepackage[T1]{fontenc}
 \usepackage{errata} 
 % begin errata for math mode
 \usepackage{marginnote}
@@ -25,10 +26,11 @@
 \usepackage{pxfonts}    % Bold inline code
 \usepackage{fancyvrb}
 \usepackage{listings}
-    \lstset{escapeinside={(*}{*)},  basicstyle=\sffamily, columns=fixed}
+    \usepackage[scaled]{helvet}
+    \lstset{escapeinside={(*}{*)}, basicstyle=\sffamily, columns=[c]flexible}
     % Julian specified a Helvetica font for code
     \makeatletter
-    \def\verbatim@font{\normalfont\sffamily}
+    \def\verbatim@font{\normalfont\ttfamily, escapeinside={(*}{*)}}
     \makeatother
 
 % Create box for code in footnote 08_14
@@ -67,12 +69,12 @@
         \StrGobbleLeft{#1}{1}[\tempB]
         \lettrine[lraise=.25]{\tempA}{\tempB}
     }
-% \TallC{The} to create a large "T" and small "he"
+%% Example: \TallC{The} to create a large "T" and small "he"
 
 % Dotted lines across the page
 \newcommand{\dotrule}[1]{%
    \parbox[t]{#1}{\dotfill}}
-% \dotrule{1\textwidth} will make it across the page
+%% Example: \dotrule{1\textwidth} will make it across the page
 
 % Side bar at some points in the text
 \usepackage{framed}
@@ -87,8 +89,8 @@
     \MakeFramed{\hsize#1\advance\hsize-\width\FrameRestore}%
 }
 {\endMakeFramed}
-% Use \leftbar[1\linewidth] at the beginning
-% Ues \endleftbar at the end
+%% Use \leftbar[1\linewidth] at the beginning
+%% Ues \endleftbar at the end
 
 % Highlight cell color
 \usepackage[table]{xcolor}
@@ -99,7 +101,6 @@
     \newcommand{\digray}{\cellcolor[HTML]{696969}}
 % use \cellcolor[HTML]{AA0044} in the prefered cell
 \usepackage[framemethod=tikz]{mdframed}
-
 
 % Create charts with tikz
 \usepackage{tikz}
@@ -120,37 +121,64 @@
   %\Crefname{section}{\S}{\S\S}
   %\crefformat{section}{\S#2#1#3}
 
-% Mini table of contents
+% Table of Contents formatting
+% \usepackage{tocloft}
+
+% Table of contents
 \setcounter{secnumdepth}{3}
-\usepackage{titlesec}
+\usepackage{titlesec, titletoc}
+    \renewcommand{\thechapter}{\arabic{chapter}}
     \renewcommand{\thesection}{\arabic{section}}
     \renewcommand{\thesubsection}{\arabic{subsection}}
     \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
+    
+    \titleformat{\chapter}[display]{\Large\bfseries}{}{0.1em}{}    [{\vspace*{1pc}%
+        \startcontents
+        \printcontents{l}{1}[2]{}}]
+        \titlespacing*{\chapter}
+        {0pt}   % left
+        {0pt}  % Before-sep
+        {0pt}  % after-sepfootnotes
+        [0pt]      % right-sep
+        
     \titleformat{\section}
         {\normalfont\large\bfseries}
         {\S\thesection }{0.5em}{}
     \titleformat{\subsection}
         {\normalfont\bfseries}
-        {\S\S\thesubsection }{.5em}{}
+        {\S\S\thesubsection}{.5em}{}
     \titleformat{\subsubsection}
         {\normalfont\bfseries}
         {\S\S\thesubsection-\thesubsubsection}{.5em}{}
-\usepackage{titletoc}
+    
+    \titlecontents{chapter}[.5em]
+        {\normalfont\large\bfseries}     % above-code
+        {Chapter \thecontentslabel -- }% numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ }\thecontentspage}% filler-page-format
+        [\addvspace{.5em}]             % below-code
 
-% Thinking FORTH
-\newcommand{\TF}{\textbf{TF }}
-% Starting FORTH
-\newcommand{\SF}{\textbf{SF }}
-% FORTH: a Text and Reference
-\newcommand{\FTR}{\textbf{FTR }}
-% e.g. in italics
-\newcommand{\eg}{\textit{e.g.}}
-% i.e. in italics
-\newcommand{\ie}{\textit{i.e.}}
-% etc. in italics
-\newcommand{\etc}{\textit{etc.}}
-% Note
-\newcommand{\Note}{\textbf{\underline{Note}}}
+    \titlecontents{section}[2.2em]
+        {\normalfont\large}            % above-code
+        {\S\thecontentslabel  }        % numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
+        []                   % below-code
+    \titlecontents{subsection}[5.4em]
+        {\normalfont\large}            % above-code
+        {\S\S\thecontentslabel  }      % numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
+        []                             % below-code
+    
+%    Common shorthand                         % Long hand version
+\newcommand{\TF}{\textbf{TF }}                  % Thinking FORTH
+\newcommand{\SF}{\textbf{SF }}                  % Starting FORTH
+\newcommand{\FTR}{\textbf{FTR }}                % FORTH: a Text and Reference
+\newcommand{\eg}{\textit{e.g.}}                 % e.g. in italics
+\newcommand{\ie}{\textit{i.e.}}                 % i.e. in italics
+\newcommand{\etc}{\textit{etc.}}                % etc. in italics
+\newcommand{\Note}{\textbf{\underline{Note}}}   % Note
 
 % References
 \usepackage{hyperref}
@@ -160,21 +188,27 @@
 \usepackage{makecell}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,xparse}
+
 \begin{document}
-\tableofcontents
-    \input{footnotes}
-    % must include footnotes for all Chapters
-    % *** include{chapter on which you are working} ***
-    % \include{Chapter-01/01-Toward-Scientific-FORTH}
-    % \include{Chapter-02/02-Programming-in-FORTH}
-    % \include{Chapter-03/03-Floating-Point-Arithmetic}
-    % \include{Chapter-04/04-The-80x87-Family}
-    % \include{Chapter-05/05-Scientific-Data-Structures}
-    % \include{Chapter-06/06-Programming-Examples}
-    % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
-    % \include{Chapter-08/08-More-Programming-Examples}
-    % \include{Chapter-09/09-Linear-Algebra}
-    % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
-     \include{Chapter-11/11-Symbolic-Programming}
+    %\dominitoc
+    \tableofcontents
+    \frontmatter
+        % \include{Cover/Warning_and_Disclamer_of_Warranty}
+        % \include{Preface/Preface}
+    \mainmatter
+        \input{footnotes}
+        % must include footnotes for all Chapters
+        % *** include{chapter on which you are working} ***
+        % \include{Chapter-01/01-Toward-Scientific-FORTH}
+        % \include{Chapter-02/02-Programming-in-FORTH}
+        % \include{Chapter-03/03-Floating-Point-Arithmetic}
+        % \include{Chapter-04/04-The-80x87-Family}
+        % \include{Chapter-05/05-Scientific-Data-Structures}
+        % \include{Chapter-06/06-Programming-Examples}
+        % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
+        % \include{Chapter-08/08-More-Programming-Examples}
+        % \include{Chapter-09/09-Linear-Algebra}
+        % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
+         \include{Chapter-11/11-Symbolic-Programming}
 \VerbatimFootnotes
 \end{document}

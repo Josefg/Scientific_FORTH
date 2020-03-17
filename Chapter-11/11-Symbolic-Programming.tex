@@ -9,7 +9,7 @@ For example, in a modern high-energy physics experiment the rate at which events
 
 Another area where pattern recognition helps the scientist is computer algebra. Closely related is the ability to translate mathematical formulae into machine code. So far we have stressed a FORTH programming style natural to that language, namely postfix notation, augmenting it primarily for readability or abstracting power. It cannot be denied, however, that sometimes it is useful simply to be able to write down a mathematical formula and have it translated automatically into executable form. This chapter develops the tools for symbolic programming and illustrates their use with a typical algebra program and a simple FORmula TRANslator.
 
-\subsection{Rules}
+\section{Rules}
 Before we can specify rules we need a language to express them in. We need to be able to describe the \textbf{grammar} of the rules in some way. The standard notation states rules as \textbf{regular expressions\sepfootnote{11_01}}. The following rules describing some parts of FORTRAN illustrate how this works.
 
 \begin{verbatim}
@@ -42,7 +42,7 @@ Before we can specify rules we need a language to express them in. We need to be
 
 \end{verbatim}
 
-We use angular brackets "$<$", "$>$" to set off "parts of speech" being defined, and arrows "-$>$" to denote "is defined by". Other notational conventions, such as "$|$" to stand for "or", are listed in the "NOTATION" section of the rules list, mainly for mnemonic reasons. A statement such as
+We use angular brackets "<", ">" to set off "parts of speech" being defined, and arrows "->" to denote "is defined by". Other notational conventions, such as "|" to stand for "or", are listed in the "NOTATION" section of the rules list, mainly for mnemonic reasons. A statement such as
 
 \begin{verbatim}
 \ <int>     -> {-|Q}<d><d>^8
@@ -64,7 +64,7 @@ Note that some of these definitions are \textbf{recursive}. A statement such as
 
 seems to be defined in terms of itself. So it is a good bet the program that recognizes and translates a FORTRAN expression will be recursive, even if not explicitly so.
 
-\subsection{Tools}
+\section{Tools}
 \TallC{In} order to apply a rule stated as a regular expression, we need to be able to recognize a given pattern. That is, given a string, we need —say— to be able to state whether it is a foating point number or something else. We want to step through the string, one character at a time, following the rule
 
 \begin{verbatim}
@@ -73,11 +73,11 @@ seems to be defined in terms of itself. So it is a good bet the program that rec
 
 This pattern begins with a minus or nothing, followed by a digit and a decimal point or a decimal point and a digit or a digit with no decimal point, followed by zero or more digits, then an exponent.
 
-\subsubsection{Pattern recognizers}
-\TallC{One} often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. \ref{fig:11_01} on page 263 below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with \bc{IF...ELSE...THEN} statements, the program becomes too long
+\subsection{Pattern recognizers}
+\TallC{One} often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. \ref{fig:11_01} on page \pageref{fig:11_01} below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with \bc{IF...ELSE...THEN} statements, the program becomes too long
 
 \begin{figure}
-    \caption{Fig. 11-1 \textit{Logic tree for <foating point \#>}}
+    \caption{Fig. 11-1 \textit{Logic tree for <floating point \#>}}
     \label{fig:11_01}
 \end{figure}
 
@@ -97,7 +97,7 @@ It has been known for many years that a better way to apply general rules — \t
 :dDeE?   ( char -- f) 95 AND \->uppercase
     DUP ASCII D = SWAP ASCII E = OR ;
 
-: skip_exponent ; \ this definition shown below
+: skip_exponent ... ; \ this definition shown below
 
 :fp#?    ( $adr -- f )
     DUP 0 OVER COUNT + C! \ add terminator
@@ -125,53 +125,64 @@ We deferred the definition of \bc{skip_exponent}. Using conditionals it could lo
 
 \begin{lstlisting}
 : skip_exponent ( adr -- adr' )
-    DUP C@ dDeE?  IF 1+ ELSE EXIT THEN
+    DUP C@ dDeE?    IF 1+ ELSE EXIT THEN
     skip- skip+
-    DUP C@ digit? IF 1+ ELSE EXIT THEN
-    DUP C@ digit? IF 1+ ELSE EXIT THEN
-    DUP C@ digit? IF 1+ ELSE EXIT THEN ;
+    DUP C@ digit?   IF 1+ ELSE EXIT THEN
+    DUP C@ digit?   IF 1+ ELSE EXIT THEN
+    DUP C@ digit?   IF 1+ ELSE EXIT THEN ;
 \end{lstlisting}
 
-which,as we see in Fig. 11-2 below, has nearly as convoluted a logic tree as Fig. 11-1 on page 263 above.
+which,as we see in Fig. \ref{fig:11_02} below, has nearly as convoluted a logic tree as Fig. \ref{fig:11_01} on page \pageref{fig:11_01} above.
 
-\subsubsection{Finite state machines}\label{chap:11_02_02}
+\subsection{Finite state machines}\label{chap:11_02_02}
 
-Just as we needed a FSM to achieve a graceful definition of fp\#?, we might try to define skip\_exponent as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to deterministic FSMs.) A finite state macliine\sepfootnote{11_03}\sepfootnote{11_04} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
+Just as we needed a FSM to achieve a graceful definition of \bc{fp\#?}, we might try to define \bc{skip\_exponent} as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to \textbf{deterministic} FSMs.) A \textbf{finite state machine}\sepfootnote{11_03}\sepfootnote{11_04} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
 
 \begin{figure}
     \caption{ Fig. 11-2 \textit{Logic tree for <exponent>}}
+    \label{fig:11_02}
 \end{figure}
 
-inputs and also maintains a state variable that tracks the history of the machine's inputs. According to which state the machine is in, a given input will produce different results. The FSM program is most easily expressed in tabular form, as in Table 11-1, which we interpret as follows:
+inputs and also maintains a \textbf{state variable} that tracks the history of the machine's inputs. According to which state the machine is in, a given input will produce different results. The FSM program is most easily expressed in tabular form, as in Table 11-1, which we interpret as follows:
 
 \begin{itemize}
     \item each major column heading is an input.
-    \item the inputs must be mutually exclusive and exhaustive; to exhaust all possibilities we include "other".
+    \item the inputs must be \textbf{mutually exclusive} and \textbf{exhaustive}; to exhaust all possibilities we include "other".
     \item each row represents the current state of the machine.
     \item each cell contains an action, followed by a state-transition.
 \end{itemize}
 
-Table 11-1 Example of finite state machine arrow ( -> ) means 'next state'
 
-Input:  other       dDeE        +/-         digit
-State         ->          ->          ->          ->
-0       Next  5     1+    1     Error 5     Next  5
-1       Next  5     Next  5     1+ 2  1+    3
-2       Next  5     Next  5     Next  5     1+    3
-3       Next  5     Next  5     Next  5     1+    4
-4       Next  5     Next  5     Next  5     1+    5
+\begin{table}
+    \caption{Example of finite state machine arrow ( $\rightarrow$ ) means 'next state'}
+    \begin{center}
+        \begin{tabular}{|lllllllll|}
+            \hline
+\underline{Input:} & \underline{other} & & \underline{dDeE} & & \underline{+/-} & & \underline{digit} &    \\
+        State      &     & $\rightarrow$ &    & $\rightarrow$ &   & $\rightarrow$ &        & $\rightarrow$ \\
+      $\downarrow$ &                   & &                  & &                 & &                   &    \\
+            0      & Next  & 5  & 1+   & 1  & Error & 5  & Next  & 5  \\ &&&&&&&& \\
+            1      & Next  & 5  & Next & 5  & 1+    & 2  & 1+    & 3  \\ &&&&&&&& \\
+            2      & Next  & 5  & Next & 5  & Next  & 5  & 1+    & 3  \\ &&&&&&&& \\
+            3      & Next  & 5  & Next & 5  & Next  & 5  & 1+    & 4  \\ &&&&&&&& \\
+            4      & Next  & 5  & Next & 5  & Next  & 5  & 1+    & 5  \\ &&&&&&&& \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \label{tab:11_01}
+\end{table}
 
-The tabular representation of a FSM is much clearer than the logic diagram, Fig. 11-2. Since the inputs must be mutually exclusive\sepfootnote{11_06} and exhaustive\sepfootnote{11_07}, there are \textit{never} conditions that cannot be fulfilled —that is, leading to "dead" code— as frequently happens with logic trees (owing to human frailty). This means the chance of introducing bugs is reduced by FSMs in tabular form.
+The tabular representation of a FSM is much clearer than the logic diagram, Fig. 11-2. Since the inputs must be \textbf{mutually exclusive}\sepfootnote{11_06} and \textbf{exhaustive}\sepfootnote{11_07}, there are \textit{never} conditions that cannot be fulfilled —that is, leading to "dead" code— as frequently happens with logic trees (owing to human frailty). This means the chance of introducing bugs is reduced by FSMs in tabular form.
 
-FORTRAN, BASIC or Assembler can implement FSMs with computed GOTOs. In BASIC, \textit{e.g.},
+FORTRAN, BASIC or Assembler can implement FSMs with computed GOTOs. In BASIC, \eg,
 
 \begin{verbatim}
-    DEF SUB FSM (c$. adress)
+    DEF SUB FSM (c$, adress%)
     k% =0         ' convert input to column #
     C$=UCASE (c$)
     IF C$="D" OR C$="E" THEN k%=1
     IF C$="+" OR C$="-" THEN k%=2
-    IF ASC(C$) > = 48 AND ASC(C$) < =57 THEN k%=3
+    IF ASC(C$) >= 48 AND ASC(C$) <=57 THEN k%=3
     ' cont'd
 \end{verbatim}
 
@@ -193,10 +204,18 @@ FORTRAN, BASIC or Assembler can implement FSMs with computed GOTOs. In BASIC, \t
     19:adress% = adress% +1 : state% = 5
     END SUB
 \end{verbatim}
+\begin{lstlisting}
+            ' begin FSM proper
+    ON state% *3 + k% GOTO
+    (* \textbf{you} *)
+       (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19)
+    0: state%=5
 
-The advantage of FSM construction using computed GOTOs is simplicity; its disadvantage is the linear format of the program that hides the structure represented by the state table, 11-1. CASE statements —as in C, Pascal or QuickBASIC— are no clearer. We can use a state table for documentation, but the subroutine takes more-or-less the above form.
+\end{lstlisting}
 
-\subsubsection{FSMs In FORTH}
+The advantage of FSM construction using computed GOTOs is simplicity; its disadvantage is the linear format of the program that hides the structure represented by the state table, \ref{tab:11_01}. CASE statements —as in C, Pascal or QuickBASIC— are no clearer. We can use a state table for documentation, but the subroutine takes more-or-less the above form.
+
+\subsection{FSMs In FORTH}
 In the preceding FORTH example we synthesized the FSM from \bc{BEGIN...WHILE...REPEAT} loops. FORTH's lack of line-labels and GOTOs (jumps) imposed this method, producing code as untransparent as the BASIC version. The Eaker CASE statement can streamline the program,
 
 \begin{lstlisting}
@@ -384,7 +403,7 @@ at a cost of 128 bytes of dictionary space. If dictionary space becomes tight, i
 
 tables to their own segment. in the same way we did with generic arrays in Chapter 5.
 
-53 Computer algebra
+\section{Computer algebra}
 
 One of the most revolutionary recent developments in scientiﬁc
 programming is the ability to do algebra on the computer.
@@ -729,7 +748,7 @@ that execute the branches. We have avoided this method here
 because it conceals the algorithm, a distinct pedagogical disad-
 vantage.
 
-FORmula TRANslator
+\section{FORmula TRANslator}
 
 That prehistoric language FORTRAN -despite its manifold
 deficiencies relative to FORTH — contains a useful and widely
@@ -766,27 +785,20 @@ FORTRAN formulae to FORTH according to the rules
 
 \begin{verbatim}
 \ NUMBERS:
+\ <int>        -> -| 0} {digit digit"8}
+\ <exp't>      -> dDeEI{& | 0} {digit digit"2}| 0}
+\ <fp#>        -> -|O} dig | Q} . dig" <exp't>
 
-\ <int> -> -| 0} {digit digit"8}
-
-\ <exp't> -> dDeEI{& | 0} {digit digit"2}| 0}
-\ <fp#> -> -|O} dig | Q} . dig" <exp't>
 \ FORMULAS:
-
 \ <assignment> -> <subject> = <expression>
-
-\ <id> -> letter {ietter|digit}"6
-
-\ <subjec1> -> <id>{<id|ist>10}
-
-\ <idiist> ->(<id> {,<id> ")
-
-\ <arglist> ->(<expr'n> {,<expr’n> }")
-\ <function> -> <id> <arglist>
-
+\ <id>         -> letter {ietter|digit}"6
+\ <subjec1>    -> <id>{<id|ist>10}
+\ <idiist>     ->(<id> {,<id> ")
+\ <arglist>    ->(<expr'n> {,<expr’n> }")
+\ <function>   -> <id> <arglist>
 \ <expression> -> <terrn> | < term> at <expr'n>
-\ <term> _> <factor> | <tactor> 96 <term>
-\ <factor> -> <id>| <tp#>| (<expr'n>) |
+\ <term>       -> <factor> | <tactor> 96 <term>
+\ <factor>     -> <id>| <tp#>| (<expr'n>) |
 \end{verbatim}
 
 -> <factor> “ <iactor>
