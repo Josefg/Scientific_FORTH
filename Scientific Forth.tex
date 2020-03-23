@@ -20,7 +20,7 @@
 % math formatting
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{multicol}
+\usepackage{multicol,multirow,bigdelim}
     \setlength{\columnseprule}{1pt}
 % Code formatting
 \usepackage{pxfonts}    % Bold inline code
@@ -83,7 +83,7 @@
     \def\FrameCommand
     {%
         {\vrule width 2pt}%
-        \hspace{0pt}%must no space.
+        \hspace{2pt}%must no space.
         % \fboxsep=\FrameSep\colorbox{yellow}%
     }%
     \MakeFramed{\hsize#1\advance\hsize-\width\FrameRestore}%
@@ -188,6 +188,10 @@
 \usepackage{makecell}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,xparse}
+
+\usepackage{centernot}
+    \newcommand{\tr}[1]{{\centernot{#1}}}
+    \newcommand{\Tr}[1]{{Tr(\centernot{#1})}}
 
 \begin{document}
     %\dominitoc

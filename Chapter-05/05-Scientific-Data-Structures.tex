@@ -1,7 +1,7 @@
 % Chapter 5 -- Scientific Data Structures
 
 \chapter{Scientific Data Structures}
-
+\label{chap:05}
 \TallC{Data} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
 
 \begin{itemize}
@@ -257,9 +257,15 @@ G: G! R32!L R64!L X!L DX!L ;
 The stack comments and comments should make the preceding code self-explanatory.
 
 \subsection{Unary and binary generic operators}
+\label{chap:05_02_06}
+\TallC{We} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table \ref{tbl:05_01} on page \pageref{tbl:05_01}, in binary notation.
+
+Real and complex can then be distinguished \textit{via} the code fragment
+
+\quad 2 AND ( type - - 0 = real$\mid$ 2 = complex )
 
 % Table 5-1
-\begin{table}
+\begin{table}{H!}
     \centering
     \caption{\textit{Bit-patterns of data type descriptors}}
         \bigskip
@@ -281,12 +287,6 @@ The stack comments and comments should make the preceding code self-explanatory.
             \hline 
         \end{tabular}
 \end{table}
-
-\TallC{We} want to define generic unary and binary operators whose run-time action selects the desired operation using information contained in the ifstack. A unary operator such as \bc{FNEGATE} or \bc{FEXP} expects one argument and leaves one result. With a floating-point coprocessor (FPU) the only distinction is between real or complex. This distinction is contained in the second bit of the type descriptor, which we exhibit in Table \ref{tbl:05_01} on page \pageref{tbl:05_01}, in binary notation.
-
-Real and complex can then be distinguished \textit{via} the code fragment
-
-\quad 2 AND ( type - - 0 = real$\mid$ 2 = complex )
 
 Since most unary operators produce results of the same type as their argument, we write a defining word for \textit{generic} unary operators:
 
