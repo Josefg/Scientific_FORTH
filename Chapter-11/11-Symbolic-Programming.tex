@@ -598,574 +598,429 @@ have to be modified to keep its state variable on the stack, since otherwise it 
 
 \TallC{How} might we implement a leading factor of $\gamma^{5}$? While there is no difficulty in taking traces of the form
 
-Tr( 1'54 18 af ...) a iTr(e,..aA"B ’c‘y‘n ...), (11)
+\begin{equation}
+Tr( \gamma^{5} \tr{A} \tr{B} \tr{C} \tr{D} ...) \equiv Tr(\varepsilon_{v\mu\kappa\lambda} A^{\mu} B^{v} C^{\kappa} \gamma^{\lambda} \tr{D} ...),
+\end{equation}
 
-expressions with y5 between "starred" factors are more difficult.
-However, the permutation properties of traces let us write, e.g.,
+expressions with $\gamma^{5}$ between "starred" factors are more difficult. However, the permutation properties of traces let us write, \eg,
 
-Tr((A +mA)(B+mB)y5¢(D+mD)E...)
-(12)
+\begin{align}
+& Tr( (\tr{A} + m_{A})(\tr{B} + m_{B})\gamma^{5} \tr{C}(\tr{D} + m_{D})\tr{E} ... ) \\
+\equiv & Tr(\gamma^{5}\tr{C}(\tr{D} + m_{D})\tr{E} ... (\tr{A} + m_{A})(\tr{B} + m_{B}) ,
+\end{align}
 
-ETI(YS¢(D+MD)E---(A +mi)(B+ms)).
+so the key issue becomes decomposing leading starred factors, saving the pieces on the \$stack until at least three distinct unstarred factors are adjacent on the left. Replace these by a special 
+
+token which stands for "\bc{^}" as shown on page \pageref{page:11_276}. This token is a marked orthogonal to all three of the vectors it represents, at the time it is inserted.
+
+To avoid further extending \bc{parse}, probably the best scheme is to define a distinct word, \bc{Trg5(}, that uses the components of \bc{parse} to perform the above preliminary steps. Then \bc{Trg5(} will invoke \bc{parse} to do the rest of its work.
+
+The only other significant task is to extend the output routine to
+
+\begin{enumerate}
+\item[a)] recognize the special "\bc{^}" token; and
+\item[b)] replace dot products like "\bc{^.d}" by \bc{[a,b,c,d]}.
+\end{enumerate}
 
 
-token which stands for “ " " as shown on page 276. This token is;
-marked orthogonal to all three of the vectors it represents, at the:
-time it is inserted. '
-To avoid further extending parse, probably the best scheme is to-i
-define a distinct word, TigS(, that uses the components of parsed
-to perform the above preliminary steps. Then 1195( will invokeli
-parse to do the rest of its work. i
-
-The only other significant task is to extend the output routine to ‘
-
-a) recognize the special “ " ” token; and
-b) replace dot products like “ " .d ” by [a,b,c,d].
-
-A final remark: one or another form of vectoring can simplify
-parse (relative to Fig. \ref{fig:11_05}) by hiding the recursion within words
-that execute the branches. We have avoided this method here
-
-because it conceals the algorithm, a distinct pedagogical disadvantage.
+\leftbar[1\linewidth]
+A final remark: one or another form of vectoring can simplify \bc{parse} (relative to Fig. \ref{fig:11_05}) by hiding the recursion within words that execute the branches. We have avoided this method here because it conceals the algorithm, a distinct pedagogical disadvantage.
+\endleftbar
 
 \section{FORmula TRANslator}
+\TallC{That} prehistoric language FORTRAN -despite its manifold deficiencies relative to FORTH - contains a useful and widely imitated invention that helps maintain its popularity despite competition from more modern languages: This is the FORmula TRANslator from which the name FORTRAN derives.
 
-That prehistoric language FORTRAN -despite its manifold
-deficiencies relative to FORTH - contains a useful and widely
-imitated invention that helps maintain its popularity despite come
-petition from more modern languages: This is the FORmula
-TRANslator from which the name FORTRAN derives.
+FORTH's lack of FORmula TRANslator is keenly felt. Years of scientific FORTH programming have not entirely eliminated my habit of first writing a pseudo-FORTRAN version of a new algorithm before reexpressing it in FORTH. Sometimes I will even write a test program in QuickBASIC$^{\copyright}$ before re-coding it in FORTH for speed and power, just to avoid worry about getting the arithmetic expressions correct.
 
-FORTH’s lack of FORmula TRANslator is keenly felt. Years of
-scientific FORTH programming have not entirely eliminated my
-habit of first writing a pseudo-FORI'RAN version of a new algo-
-rithm before reexpressing it in FORTH. Sometimes I will even
-write a test program in QuickBASIC‘D before re- coding it in
-FORTH for speed and power, just to avoid worry about getting
-the arithmetic expressions correct.
+\subsection{Rules of FORTRAN}
+\TallC{A} FORmula TRANslator provides a nice illustration of rule-based programming. To maintain portability, we employ the standard FORTH kernel, omitting special HS/FORTH words as well as CODE words.
 
-l
-imam
-
-awn-BMW 285
-
-III mum
-
-A FORmula TRANslator provides a nice illustration of rule-
-
-d programming. To maintain portability, we employ the
-standard FORTH kernel, omitting special HS/FORTH words as
-well as CODE words.
-
-In principle we could provide a true compiler that translates
-formulae to machine code (or anng, to assembler). But unless
-we use p-code or some such artifice we would lose all hope of
-portability. Thus, we take instead the simpler course of translating
-FORTRAN formulae to FORTH according to the rules
+In principle we could provide a true compiler that translates formulae to machine code (or anyway, to assembler). But unless we use p-code or some such artifice\sepfootnote{11_21} we would lose all hope of portability. Thus, we take instead the simpler course of translating FORTRAN formulae to FORTH according to the rules
 
 \begin{verbatim}
 \ NUMBERS:
-\ <int>        -> -| 0} {digit digit"8}
-\ <exp't>      -> dDeEI{& | 0} {digit digit"2}| 0}
-\ <fp#>        -> -|O} dig | Q} . dig" <exp't>
+\ <int>          ->     {-| Q} {digit digit^8}
+\ <exp't>        ->     {dDeE} {& | Q} {digit digit^2}| 0}
+\ <fp#>          ->     {-| Q} {dig | Q} . dig^ <exp't>
 
 \ FORMULAS:
-\ <assignment> -> <subject> = <expression>
-\ <id>         -> letter {ietter|digit}"6
-\ <subjec1>    -> <id>{<id|ist>10}
-\ <idiist>     ->(<id> {,<id> ")
-\ <arglist>    ->(<expr'n> {,<expr’n> }")
-\ <function>   -> <id> <arglist>
-\ <expression> -> <terrn> | < term> at <expr'n>
-\ <term>       -> <factor> | <tactor> 96 <term>
-\ <factor>     -> <id>| <tp#>| (<expr'n>) |
+\ <assignment>   ->     <subject> = <expression>
+\ <id>           ->     letter {letter|digit}^6
+\ <subject>      ->     <id>{<idlist> | Q}
+\ <idlist>       ->     ( <id> {, <id> }^)
+\ <arglist>      ->     ( <expr'n> {, <expr’n> }^)
+\ <function>     ->     <id> <arglist>
+\ <expression>   ->     <terrn> | < term> & <expr'n>
+\ <term>         ->     <factor> | <factor> % <term>
+\ <factor>       ->     <id> | <fp#> | ( <expr'n> ) |
+                 ->     <factor> ** <factor>
 \end{verbatim}
 
--> <factor> “ <iactor>
-
-Clearly, the FORTH FORmula TRANslator could become the
-kernel of a more complete FORTRAN- >FORTH filter by ad-
-ding to the above rules for formulae the following rules for loops
-and conditionals:
+Clearly, the FORTH FORmula TRANslator could become the kernel of a more complete FORTRAN->FORTH filter by adding to the above rules for formulae the following rules for loops and conditionals:
 
 \begin{verbatim}
-\ DOLOOPS:
-
-\ <label> -> <integer>
-\ <lim> -> <integer>|<id>}
-\ <step> -> ,<lim>|O}
-
-\ <do> -> DO<label><id>=<iim>,<lim><step>
+\ DO LOOPS:
+\ <label>        -> <integer>
+\ <lim>          -> { <integer> | <id> }
+\ <step>         -> {, <lim> | Q }
+\ <do>           -> DO <label> <id> = <lim>, <lim> <step>
 
 \ BRANCHING STRUCTURES:
-\ < logical expr > - > <factor > .op. < factor >
-\ <il0> -> IF(<Ioglcalexpr>)<assignment>
-<if1 > -> IF(< logical expr>)THEN
-{< statement > } "
-END IF
-
-<if2> -> lF(<Iogical expr>)THEN
-{ < statement > } "
-ELSE
-{ < statement > } "
-END IF
-
-
-- > IF ( < logical expr > )THEN
-{ < statement >} "
-ELSEIF( < logical expr >)
-{ < statement > } A
-END IF
-
+\ <logical expr> -> <factor > .op. < factor >
+\ <il0>          -> IF( <logical expr> ) <assignment>
+\ <if1 >         -> IF( <logical expr> )THEN
+\                       { <statement> }^
+\                   END IF
+\
+\ <if2>          -> IF( <logical expr> )THEN
+\                       { <statement> }^
+\                   ELSE
+\                       { <statement> }^
+\                   END IF
+\
+\ <if3>          -> IF( <logical expr> )THEN
+\                       { <statement> }^
+\                   ELSEIF( <logical expr> )
+\                       { <statement> }^
+\                   END IF
 \end{verbatim}
 
-§§2 Details of the Problem
-The general principles of compiler writing are of course well
-understood and have been described extensively elsewhere. ..
-Several computer science texts expound programs for formula ‘
-evaluators . Once we have our translator, we can easily make it
-an evaluator by compiling the FORTH as a single word, then
-invoking it.
+\subsection{Details of the Problem}
+The general principles of compiler writing are of course well understood and have been described extensively elsewhere. Several computer science texts expound programs for formula evaluators\sepfootnote{11_22}. Once we have our translator, we can easily make it an evaluator by compiling the FORTH as a single word, then invoking it.
 
- 
+Let us proceed by translating a FORTRAN formula into FORTH code by hand. For simplicity, ignore integer arithmetic and assume all literals will be placed on the intelligent foating point stack (\textbf{ifstack}). Similarly assume all variable names in the program refer to \bc{SCALAR}s (see \ref{chap:05}). A word that has become fairly standard is \bc{\%}, which interprets a following number as floating point, and places it on the fstack. With these conventions, we see that we shall want to translate an expression like
 
-Let us proceed by translating a FORTRAN formula into FORTH
-code by hand. For simplicity, ignore integer arithmetic and as-
-sume all literals will be placed on the intelligent foating point
-stack (ifstack). Similarly assume all variable names in the pro- ,
-gram refer to SCALARs (see Ch. 5). A word that has become
-fairly standard is 96, which interprets a following number asE
-foating point, and places it on the fstack. With these conventions,
-we see that we shall want to translate an expression like
+\begin{lstlisting}
+    A = -15.3E7*EXP(7/X) + Z/(W-SIN(THETA*PI/180/4)
+\end{lstlisting}
 
-A - -15.3€7'EXP(7/X) + Z/(W-SINUHETA'Pl/lmyf
 into (generic) FORTH something like this:
 
-964 REAL’B >FS
-96 1M REAL'B >FS
-Pl G\
+\begin{lstlisting}
+    % 4   REAL*8 >FS
+    % 180 REAL*8 >FS
+    PI G\
+    THETA   >FS  G*
+    GSIN    G\
+    W   >FS GR-
+    Z   >FS G\
+    X   >FS
+    % 7   REAL*8 G\
+    GEXP
+    % -15.3E7 REAL*8 >FS
+    G*
+    G+
+    A FS>
+\end{lstlisting}
 
-THEl’A >FS G‘
-GSIN G
+\TallC{Begin} with the user interface. We will define a word, \bc{F"}, that will accept a terminated string and attempt to translate it to FORTH. That is, we might say
 
-W >FS G -
-
-Z >FS G\
-
-X >FS
-
-967 REAL'B G\
-GEXP
-
-96 45.357 REAL‘B >FS
-Gt
-
-G+
-
-A FS>
-
-Begin with the user interface. We will define a word, F' , that
-will accept a terminated string and attempt to translate it to
-FORTH. That is, we might say
-
-F- A = -15,3E7*EXP(7/X) +Z/(W-SIN(THETA'PI/180)/4)'
+\begin{lstlisting}
+    F" A = -15,3E7*EXP(7/X) + Z/(W-SIN(THETA*PI/180)/4)"
+\end{lstlisting}
 
 and obtain the output (actual output from the working program!)
 
-96 -15.3E7 REALM F>FS 96 7 REAL‘B F>FS
-X>FS G/ GEXP G* Z>FS W>FS
-THETA >FS Pl >FS G‘ 96 180 REAL‘B F>FS
-G/ GSIN 96 4REAL‘8 F>FS G/ GNEGATE
-G-l-G/ G+ AFS> 0k
+\begin{lstlisting}
+    % -15.3E7 REAL*4 F>FS % 7 REAL*8 F>FS
+    X>FS G/ GEXP G* Z >FS W >FS
+    THETA >FS PI >FS G* % 180 REAL*8 F>FS
+    G/ GSIN % 4 REAL*8 F>FS G/ GNEGATE
+    G+ G/ G+ A FS> ok
+\end{lstlisting}
 
-Although the second version differs somewhat from the hand
-translation, the two are functionally equivalent.
+Although the second version differs somewhat from the hand translation, the two are functionally equivalent.
 
-We would also like to have the possibility of compiling the emitted
-FORTH words, if F' appears within a colon definition, as in
+We would also like to have the possibility of compiling the emitted FORTH words, if F" appears within a colon definition, as in
 
-: do.B F' B = 39.37/ATAN(X“W) + 7"Z/X' ;
+\begin{lstlisting}
+    : do.B  F" B=39.37/ATAN(X**W)+7*Z/X" ;
+\end{lstlisting}
 
-FORTRAN expression obeys the rules of algebra in a general-
-y obvious fashion. Parentheses can be used to eliminate all
-ambiguity and force a definite order on the evaluation of terms
+\TallC{A} FORTRAN expression obeys the rules of algebra in a generally obvious fashion. Parentheses can be used to eliminate all ambiguity and force a definite order on the evaluation of terms and factors. However, to reduce the number of parentheses, FORTRAN adopted a heirarchy of operators that has been followed by all other languages that incorporate semi-algebraic replacement statements like the above. The heirarchy is
 
-esuuvuouoiaaa-Mmm.
+\begin{enumerate}
+    \item[0.] FUNCTION
+    \item[1.] EXPONENTIATION ( \bc{^} or \bc{**})
+    \item[2.] \bc{*} or \bc{/}
+    \item[3.] \bc{+} or \bc{-}
+    \item[4.] "\bc{,}" (argument separator in lists)
+\end{enumerate}
 
-Chapter 11 - Symbolic Programming Scientific FORTH
+The translator must both enforce these rules and resolve ambiguities involving operators at the same heirarchical level. Thus, \eg, does the fragment
 
-and factors. However, to reduce the number of parentheses,
-FORTRAN adopted a heirarchy of operators that has been fol-
-lowed by all other languages that incorporate semi-algebraic
-replacement statements like the above. The heirarchy is
+\begin{lstlisting}
+    A/B*C
+\end{lstlisting}
 
-0. FUNCTION
+mean $A/(B*C)$ or $(A/B)*C$? Many FORTRAN compilers follow the latter convention, so we will maintain this tradition.
 
-1. EXPONEN'TIATION ( A or u)
-2. t or/
+\TallC{A} second issue is the function library. The FORmula Translator must recognize functions, and be able to determine whether a given function is in the standard library. In the example above, \bc{F"} recognized \texttt{EXP} and \texttt{SIN} as standard library functions and emitted the FORTH code to invoke them. A beauty of FORTH is that there are several easy ways to accomplish this, using components of the FORTH kernel.
 
-3. + or -
+A third issue is the ability of a true FORTRAN compiler to perform mixed-mode arithmetic, combining INTEGER*2, INTEGER*4, INTEGER*8, REAL*4, REAL*8, COMPLEX*8, and 
+and COMPLEX*16 types \textit{ad libitem}. FORTRAN does this using the information contained in the type declarations at the beginning of a routine. A pure FORmula TRANslator has no such noncontextual information available to it, hence has no way to decide how to insert the proper FORTH words during compilation. To get around this we employ the generic data and operator conventions developed in Chapter \ref{chap:05_01}.
 
-4. “ , ” (argument separator in lists)
+\subsection{Parsing}
+\TallC{Let} us hand-parse the example, reproduced below:
 
-The translator must both enforce these rules and resolve am-
-biguities involving operators at the same heirarchical level. Thus,
-e.g., does the fragment
-
-NB‘C
-
-mean N(B*C) or (NB)*C ? Many FORTRAN compilers follow
-the latter convention, so we will maintain this tradition.
-
-Wd issue is the function library. The FORmula
-slator must recognize functions, and be able to deter-
-mine whether a given function is in the standard library. In the
-example above, F" recognized EXP and SIN as standard library
-functions and emitted the FORTH code to invoke them. Abeauty
-of FORTH is that there are several easy ways to accomplish this,
-using components of the FORTH kernel.
-
-A third issue is the ability of a true FORTRAN compiler to
-perform mixed-mode arithmetic, combining INTEGER'Z, IN-
-TEGER‘4, INTEGER'8, REAL‘4, REAL'S, COMPLEX'S
-and COMPLEX' 16 types ad libitem. FORTRAN does this using
-the information contained in the type declarations at the begin-
-ning of a routine. A pure FORmula TRANslator has no such
-noncontextual information available to it, hence has no way to
-decide how to insert the proper FORTH words during compila-
-tion. To get around this we employ the generic data and operator
-conventions developed in Chapter 5 §l.
-
-swimmer" awn-OMW 2”
-
-"3 Pm
-Let us hand-parse the example, reproduced below:
-
-A I -15.3€7'EXP(7/X) + Z/(W-SINCI'HETA'PII 1N)/4)
+\begin{lstlisting}
+    A = -15.3E7*EXP(7/X)+Z/(W-SIN(THETA*PI/180/4)
+\end{lstlisting}
 
 Clearly, we must apply the first rule
 
-\ <assignment> -> <subiect> n <expression>
+\begin{verbatim}
+\ <assignment>   ->     <subiect> = <expression>
+\end{verbatim}
 
-embodied in the word < assignment > . We split at the “ = " sign,
-and interpret the text to its left as a SCALAH. Since we want to
-emit the phrase A FS > last, yet have parsed it first, we have to
-hold it somewhere. Clearly the buffer where we store it will be a
-first-in last-out type; and by induction, last-in, first-out also. But
-a LIFO buffer is a stack. Hence the fundamental data structure
-needed in our parsing algorithm is a string stack. So we might
-imagine that after the first parsing step the string stack contains
+embodied in the word \bc{<assignment>}. We split at the "\bc{=}" sign, and interpret the text to its left as a \bc{SCALAR}. Since we want to emit the phrase \regc{A FS>} last, yet have parsed it first, we have to hold it somewhere. Clearly the buffer where we store it will be a first-in last-out type; and by induction, last-in, first-out also. But a LIFO buffer is a stack. Hence the fundamental data structure needed in our parsing algorithm is a string stack. So we might imagine that after the first parsing step the string stack contains
 
- 
+\begin{tabular}{ll}
+    \regc{\$STACK}                                    & Notes \\
+    \hline
+                                                      & \\
+    \regc{A FS>}                                      & \regc{\\ <subject>} \\
+    \regc{-15.3E7*EXP(7/X)+Z/(W-SIN(THETA*PI/180)/4)} & \regc{\\ <expression>}
+\end{tabular}
 
-two strings
-£SIACK Notes
-A FS > \ < subject >
+\TallC{Next} we apply the rule
 
--15.3E7*EXP(7/X) + Z/(W-SlN('l’HETA"P|/180)/4) \ < expressio
+\begin{verbatim}
+\ <expr'n>       ->     <term> | <term> & <axpr'n>
+\end{verbatim}
 
-Next we apply the rule
-\ <expr'n> -> <term> |<term> a <axpr'n>
+This breaks the top expression at the + sign between "\bc{)}" and \bc{Z}. We should think of the two terms
 
-This breaks the top expression at the + sign between “ ) " and Z.
-We should think of the two terms
-
--15.3E7*EXP(7/X)
+\begin{lstlisting}
+    -15.3E7*EXP(7/X)
+\end{lstlisting}
 
 and
 
-as numbers on the ifstack; hence the code to evaluate each should
-be emitted before the addition operator (that is, these expres-
-sions are higher on the string stack than the addition operator
-0 +). We adopt a rule that the right term is pushed before the
-left, so the Sstack now looks like
+\begin{lstlisting}
+    Z/(W-SIN(THETA*PI/180)/4)
+\end{lstlisting}
 
+as numbers on the ifstack; hence the code to evaluate each should be emitted before the addition operator (that is, these expressions are higher on the string stack than the addition operator \bc{G+}). We adopt a rule that the right term is pushed before the left, so the \$stack now looks like
 
-A FS > \ < subject >
-Z/(W-SIN(THETA*PI/180)/4) G + \ <term >
--15.3E7*EXP(7IX) \ < term >
+\begin{tabular}{lll}
+    \regc{\$STACK}                      & & Notes               \\
+    \hline                                                    \\
+    \regc{A FS>}                        & & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4) G+} & & \regc{\\ <term>}    \\
+    \regc{-15.3E7*EXP(7/X)}             & & \regc{\\ <term>}
+\end{tabular}
 
-We now anticipate a new problem: suppose we have somehow -
-no need to worry about details yet - emitted the code for the
-< term > -15.3E7*EXP(7/X) on top of the Sstack. Then we
-would have to parse the line Z/(W-SINCI’ HETA'Pl/1 80)/4) G + .
-Assuming the program knows how to handle the first part,
-Z/(W-SIN(THETA"PI/180)/4), how will it deal with the G + ?
-We do not want to use the space as a delimiter (an obvious out)
-because this will cause trouble with A FS > .
+We now anticipate a new problem: suppose we have somehow --no need to worry about details yet -- emitted the code for the \texttt{<term>} \bc{-15.3E7*EXP(7/X)} on top of the \$stack. Then we would have to parse the line \bc{Z/(W-SIN(THETA*PI/180)/4) G+}. Assuming the program knows how to handle the first part, \bc{Z/(W-SIN(THETA*PI/180)/4)}, how will it deal with the \bc{G+}? We do not want to use the space as a delimiter (an obvious out) because this will cause trouble with \bc{A FS>}.
 
-The difficulty came from placing 6+ on the same line as
--1 5.3E7‘EXP(7/X). What if we had placed the operator on the
-line above, as in
+The difficulty came from placing \bc{G+} on the same line as \bc{-15.3E7*EXP(7/X)}. What if we had placed the operator on the line above, as in
 
- 
+\begin{tabular}{lll}
+    \regc{\$STACK}                   & & Notes               \\
+    \hline                                                   \\
+    \regc{A FS>}                     & & \regc{\\ <subject>} \\
+    \regc{G+}                        & & \regc{\\ operator}  \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & & \regc{\\ <term>}    \\
+    \regc{-15.3E7*EXP(7/X)}          & & \regc{\\ <term>}
+\end{tabular}
 
-SSIACK Notes
+Eventually we see this merely exchanges one problem for another of equal difficulty: How do we distinguish a \texttt{<factor>} or \texttt{<term>} that contains no more operators or functions -- and is therefore ready to be emitted as code -- from the operator \bc{G+}, which contains a "\bc{+}" sign? Now we need complex expression recognition, which will lead to a slow, complicated program.
 
-A FS > \ < subject >
-G + \ operator
-Z/(W-SINUHETA'PI/180)/4) \ < term >
--15.3E7*EXP(7/X) \ < term >
+\TallC{When} this sort of impasse arises (and I am pretending it had been realized early in the design process, although the difficulty did not register until somewhat later) it signals that a key issue has been overlooked. Here, we failed to distinguish FORTH words, \bc{FS>} and \bc{G+}, from FORTRAN expressions. We have, in effect, mixed disparate data types (like trying to add scalars and vectors). Worse, we discarded too soon information that might have been useful at a later stage. This leads to a programming tip, \textit{a la} Brodie\sepfootnote{11_23}:
 
-Eventually we see this merely exchanges one problem for another
-of equal difficulty: How do we distinguish a < factor > or
-< term > that contains no more operators or functions - and is
-therefore ready to be emitted as code - from the operator G +,
-which contains a “ +” sign? Now we need complex expression
-recognition, which will lead to a slow, complicated program.
+\leftbar[1\linewidth]
+\textbf{\underline{Tip}:} Never discard information. You might need it later.
+\endleftbar
 
-When this sort of impasse arises (and I am pretending it had
+Phrased this way. the solution becomes obvious: keep the operators on a separate stack, whose level parallels the expressions. So we now envision an expression stack and an operator stack, which we call E/S and O/S for short. On two stacks,
 
-been realized early in the design process, although the dif-
-ficulty did not register until somewhat later) it signals that a key
-issue has been overlooked. Here, we failed to distinguish FORTH
-words, FS > and G +, from FORTRAN expressions. We have, in
-effect, mixed disparate data types (like trying to add scalars and
-vectors). Worse, we discarded too soon information that might
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{-15.3E7*EXP(7/X)}          & \regc{NOP} & \regc{\\ <term>}
+\end{tabular}
 
-have been [BCfUI at a later stage. This leads to a programming tip,
-a la Brodie :
+Why the \bc{NOP}s ("no operation") on the O/S? We want to keep the stack levels the same (so we do not have to check when POPping off code strings); we thus have to put \bc{NOP} on the O/S to balance a string on the E/S.
 
-I m: Never discard information. You might need it later.
+The TOS now contains a <term> , so we apply the rules
 
-Phrased this way. the solution becomes obvious: keep the
-operators on a separate stack. whose level parallels the expres-
-sions. So we now envision an expression stack and an operator
-stack, which we call 13/8 and 0/5 for short. On two stacks,
-
-E/S Q15 Notes
-A FS > \ < subject >
-Z/(W-SINCI‘HETA'Pi/180)/4) G + \ < term >
--15.3E7"EXP(7/X) NOP \ < term >
-
-Why the NOPs (“no operation”) on the 0/8? We want to keep
-the stack levels the same (so we do not have to check when
-POPping off code strings); we thus have to put NOP on the 0/5
-to balance a string on the BS.
-
-The IDS now contains a < term > , so we apply the rules
 \begin{verbatim}
-\ <function> -> <id> <arglist>
-\ <term> -> <iactor> | <factor> 96 <term>
-
-\ <factor>-> <id>| <fp#>| (<expr’n>) |<func>
+\ <function>     ->     <id> <arglist>
+\ <term>         ->     <factor> | <factor> % <term>
+\ <factor>     -> <id> | <fp#> | (<expr’n>) | <func>
 \end{verbatim}
 
-We note there is an operator at the “ 96 " priority level (the “a"
-in the TOS). We split the top < term > at this point, issuing a G'.
+We note there is an operator at the "\bc{\%}" priority level (the "\bc{*}" in the TOS). We split the top \texttt{<term>} at this point, issuing a \bc{G*}.
 
-EIS QLSN.QIQ§
-A FS > \ < subject >
-Z/(W-SINO’HEI'A'Pl/180)/4) G + \ < term >
-EXPO/X) G‘ \ (term >
--1 5.367 NOP
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{EXP(7/X)}                  & \regc{G*}  & \regc{\\ <term>}    \\
+    \regc{-15.3E7}                   & \regc{NOP} &
+\end{tabular}
 
 
-The parsing has now reached a turning point: the top string on
-the E/S can be reduced no further. The program must recognize
-this and emit the corresponding line of code (sec Ch. 5):
+The parsing has now reached a turning point: the top string on the E/S can be reduced no further. The program must recognize this and emit the corresponding line of code (sec Ch. \ref{chap:05}):
 
-% -15.3E7 REALM F>FS
-
- 
+\begin{lstlisting}
+    % -15.3E7 REAL*4 F>FS
+\end{lstlisting}
 
 leaving
 
-E18 018 Notes
-A FS > \ < subject >
-Z/(W-SIN (T HETA*P|/180)/4) G + \ < term >
-NULL 6*
-EXP(7/X) NOP \ < function >
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                      & \regc{G*}  &                     \\
+    \regc{EXP(7/X)}                  & \regc{NOP} & \regc{\\ <function>}
+\end{tabular}
 
-What is NULL and why have we pushed it onto the E/S? Simply,
-it is not yet time to emit the 6" so we have to save it; however,
-we have another operator, G +, to associate with Z/(W-
-SlN(THETA*PI/180)/4) . Thus we have no choice but to define a
-placeholder for the 13/5, analogous to NOP on the 0/5.
+What is \bc{NULL} and why have we pushed it onto the E/S? Simply, it is not yet time to emit the \bc{G*} so we have to save it; however, we have another operator, \bc{G+}, to associate with \bc{Z/(W-SIN(THETA*PI/180)/4)}. Thus we have no choice but to define a placeholder for the E/S, analogous to \bc{NOP} on the O/S.
 
-S now contains a function. Assuming we can recognize it as
-such, we want to check that it is in the library and put the
-correct operator on the 13/5. Thus we want to decompose to
+\TallC{TOS} now contains a function. Assuming we can recognize it as such, we want to check that it is in the library and put the correct operator on the E/S. Thus we want to decompose to
 
-E15 018 Notes
-A FS > \ < subject >
-Z/(W-SIN(THETA*P|/180)/4) G + \ < term >
-NULL 6*
-NULL GEXP \ < function >
-(7 IX) NOP \ < arglist >
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                      & \regc{G*}  &                     \\
+    \regc{NULL}                      & \regc{GEXP} & \regc{\\ <function>} \\
+    \regc{(7/X)}                     & \regc{NOP} & \regc{\\ <arglist>}
+\end{tabular}
 
-The parentheses around the <arglist> on TOS serve no pur-
-pose, so drop them.
+The parentheses around the \texttt{<arglist>} on TOS serve no purpose, so drop them.
 
-We see, once again, an operator of the priority-level 96 (the “I”
-between 7 and X), so we again apply the rule
+We see, once again, an operator of the priority-level \bc{\%} (the "\bc{/}"between \bc{7} and \bc{X}), so we again apply the rule
 
-\ <term> -> <factor> | <factor> 9i. <term>
+\begin{verbatim}
+\ <term>         ->     <factor> | <factor> % <term>
+\end{verbatim}
 
 to obtain
 
-El: 013 Item
-
-A F8 > \ < subject >
-ZlM-SlNCFHETA'Pi/iwyf G + \ < term >
-NULL G“
-
-NULL GEXP
-
-X G] \ < id >
-
-7 NOP \ < ip\# >
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                      & \regc{G*}  &                     \\
+    \regc{NULL}                      & \regc{GEXP} &                    \\
+    \regc{X}                         & \regc{G/}  & \regc{\\ <id>}      \\
+    \regc{7}                         & \regc{NOP} & \regc{\\ <arglist>} \\
+\end{tabular}
 
 Once again we can emit a number, so we do it:
 
-96 7 REAL'B F> FS
+\begin{lstlisting}
+    % 7 REAL*8 F>FS
+\end{lstlisting}
 
-Wait! Why did we say REALM with -15.3E7, but REAL'B with
-7 just now? Can’t we make up our minds? The answer is that we
-want to respect precision over-rides via FORTRAN's E (single
-precision, so we say REALM) or D (double precision - REAL'B)
-exponent prefixes. However, where we are free to choose, it
-makes sense to keep maximum precision.
+\leftbar[1\linewidth]
+Wait! Why did we say \regc{REAL*4} with \regc{-15.3E7}, but \regc{REAL*8} with \regc{7} just now? Can’t we make up our minds? The answer is that we want to respect precision over-rides \textit{via} FORTRAN's E (single precision, so we say \regc{REAL*4}) or \regc{D} (double precision -- \regc{REAL*8}) exponent prefixes. However, where we are free to choose, it makes sense to keep maximum precision.
+\endleftbar
 
-We continue, emitting the next simple items on the Sstack:
+We continue, emitting the next simple items on the \$stack:
 
-X G/ GEXP G‘
+\begin{lstlisting}
+    X G/ GEXP G*
+\end{lstlisting}
 
 leaving
 
-E18 018 Notes
-A FS > \ < subject >
-Z/(W-SlNCI’HETA'PI/180)l4) G + \ < term >
+\begin{tabular}{lll}
+    E/S                              & O/S        & Notes               \\
+    \hline                                                              \\
+    \regc{A}                         & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{Z/(W-SIN(THETA*PI/180)/4)} & \regc{G+}  & \regc{\\ <term>}    \\
+\end{tabular}
 
-Once again we find the most exposed operator to be “ / which
-we split with the rule
+Once again we find the most exposed operator to be "\bc{/}", which we split with the rule
 
-\ <term> -> <factor> | <factor> 96 <term>
+\begin{verbatim}
+\ <term>         ->     <factor> | <factor> % <term>
+\end{verbatim}
 
-E/S QLSN91§§
+\begin{tabular}{lll}
+    E/S                            & O/S        & Notes               \\
+    \hline                                                            \\
+    \regc{A}                       & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{NULL}                    & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{(W-SIN(THETA*PI/180)/4)} & \regc{G/}  & \regc{\\ ( <expr> )}\\
+    \regc{Z}                       & \regc{NOP} & 
+\end{tabular}
 
-A FS> \ <subject>
-NULL G + \ < term >
-(ZW~SIN(THETA*Pi/180)/4) Slop \ ( < expr > )
+Emit the TOS:
 
+\begin{lstlisting}
+    Z >FS
+\end{lstlisting}
 
-Emit the T082
-2 > PS
 and apply the rule (first drop the parentheses)
 
-\ <expr'n> -> <term> | <term> a <expr'n>
+\begin{verbatim}
+\ <expr'n>       ->     <term> | <term> & <expr'n>
+\end{verbatim}
 
-EIS Q15 Nona
-A FS > \ < subject >
-NULL G + \ < term >
-NULL G/
--SIN(THEl'A*PI/180)/4 G +
-W NOP
+\begin{tabular}{lll}
+    E/S                         & O/S        & Notes               \\
+    \hline                                                         \\
+    \regc{A}                    & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{NULL}                 & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                 & \regc{G/}  &                     \\
+    \regc{-SIN(THETA*PI/180)/4} & \regc{G+}  &                     \\
+    \regc{W}                    & \regc{NOP} & 
+\end{tabular}
 
-Why did we issue G + and keep the leading “-” sign with SIN?
-Simple: any 9th grader can tell the difference between a “-”
-binary operator (binop) and a “-” unary operator (unop) in an
-expression. But, while not impossible, it is unnecessarily difficult
-to program this distinction. The FORTH philosophy is “Keep it
-simple!” Simplicity dictates that we embrace every opportunity
-to avoid a decision, such as that between “-” binop and “-" unop.
-The algebraic identity
+\leftbar[1\linewidth]
+Why did we issue \bc{G+} and keep the leading "-" sign with \bc{SIN}? Simple: any 9th grader can tell the difference between a "-" binary operator (\textbf{binop}) and a "-" unary operator (\textbf{unop}) in an expression. But, while not impossible, it is unnecessarily difficult to program this distinction. The FORTH philosophy is “Keep it simple!” Simplicity dictates that we embrace every opportunity to avoid a decision, such as that between "-" binop and "-" unop. The algebraic identity
+\endleftbar
 
-X-YEX+(-Y)
+\begin{equation*}
+X - Y \equiv X + (-Y)
+\end{equation*}
 
-lets us issue only G + , as long as we agree always to attac “-”
-signs as unops to the expressions that follow them. Eventually,
-of course, we shall have to deal with the distinction between
-negative literals (-15.3E7, e.g.) and negation of variables. The
-first we can leave alone, since the literal-handling word 96 (“treat
-the following number as foating point and put it on the 87stack”)
-surely knows how to handle a unary “-" sign; whereas the second
-case will require us to issue a strategic GNEGATE.
+\leftbar[1\linewidth]
+lets us issue only \bc{G+} , as long as we agree always to attach "-" signs as unops to the expressions that follow them. Eventually, of course, we shall have to deal with the distinction between negative literals (\bc{-15.3E7}, \eg) and negation of variables. The first we can leave alone, since the literal-handling word \bc{\%} ("treat the following number as foating point and put it on the 87stack") surely knows how to handle a unary "-" sign; whereas the second case will require us to issue a strategic \bc{GNEGATE}.
+\endleftbar
 
-A consequence of this method for handling “-” signs is that the
+A consequence of this method for handling "-" signs is that the
 compiler will resolve the ambiguous expression
 
--X" =9 -(X") or (-X )Y
+\begin{equation*}
+-X^{Y} = -(X^{Y}) or (-X)^{Y}
+\end{equation*}
 
-Mir-WW 295
-
-in favor of the former alternative. if the latter is intended, it must
-be specified with explicit parentheses.
+in favor of the former alternative. if the latter is intended, it must be specified with explicit parentheses.
 
 After sending forth the phrase
-W > PS
 
-the leading “-" preceding SIN( ...)/4 must be dealt with. To
-preserve the proper ordering on emission we will want a word
-LEADING- that puts the token for GNEGATE on the 0/8 and
-moves the string SiNCl'i-iETA'PI/i 00)“ to the TOS, issuing a
-NOP on the BS, obtaining
+\begin{lstlisting}
+    W >FS
+\end{lstlisting}
 
-E18 018 Ngtgs
-A FS > \ < subject >
-NULL G + \ < term >
-NULL 6/
-NULL G +
-NULL GNEGATE
-SIN (THETA'Pl/1 80)/4 NOP
+the leading "-" preceding \bc{SIN( ...)/4} must be dealt with. To preserve the proper ordering on emission we will want a word \bc{LEADING-} that puts the token for \bc{GNEGATE} on the O/S and moves the string \bc{SIN(THETA*PI/180)/4} to the TOS, issuing a \bc{NOP} on the E/S, obtaining
 
-The next exposed operator is at“ 96 " -level. We apply < term >
-once more, to get:
+The next exposed operator is at "\bc{\%}" -level. We apply \texttt{<term>} once more, to get:
 
-EIS OLS Notes
-NULL GNEGATE
-4 G/
-SINO‘HETA'PIHBO) NOP \ ( <expr'n> )
+After handling the function as before we find the successive stacks and FORTH code emissions
 
-After handling the function as before we find the successive stacks
-and FORTH code emissions
-
-E/S MS Notes
-A FS > \ < subject >
-NULL G + \ < term >
-NULL 6/
-NULL G +
-NULL, GNEGATE
-4 GI
-NULL GSIN
-
-(THETA'PI/180) NOP
-
-
-51 0/8 Joins
-A FS > \ < subject >
-NULL G + \ < term >
-NULL 6/
-NULL G +
-NULL GNEGATE
-4 GI
-NULL GSIN
-180 6/
-PI 6*
-THETA NOP
-
-THETA >FS PI >FS G“ 96180 REAL*8 F>FS
-G/ GSIN %4 REAL‘B F>FS G/ GNEGATE G+
-G/ G+ AFS> ok
+\begin{lstlisting}
+    THETA >FS PI >FS G* % 180 REAL*8 F>FS
+    G/ GSIN %4 REAL*8 F>FS G/ GNEGATE G+
+    G/ G+ A FS> ok
+\end{lstlisting}
 
 \subsection{Coding the FORmula TRANslator}
+\TallC{We} proceed in the usual bottom-up manner. The first question is how to define the \$stack. In the interest of brevity, I chose not to push the actual strings on the E/S, but rather pointers to their beginnings and ends. By using a token to represent the operator, we can define a 6-byte wide stack which will point to the text of interest (which itself resides in a buffer), and will hold the token for the operator at the current level. This way only one stack is pushed or popped and the levels never get out of synchronization.
 
-e proceed in the usual bottom-up manner. The first question
-
-is how to define the Sstack. In the interest of brevity, I chose
-not to push the actual strings on the E/S, but rather pointers to
-their beginnings and ends. By using a token to represent the
-operator, we can define a 6-byte wide stack which will point to
-the text of interest (which itself resides in a buffer), and will hold
-the token for the operator at the current level. This way only one
-stack is pushed or popped and the levels never get out of
-synchronization.
-
-Again at the lowest level, we can develop the components that
-recognize patterns, e.g., whether a piece of text is a foating point
-
-number. The word that does the latter is \bc{fp\#?}, already described
-in §2§§1.
+Again at the lowest level, we can develop the components that recognize patterns, \eg, whether a piece of text is a foating point number. The word that does the latter is \bc{fp\#?}, already described in \ref{chap:02_01}.
 
 A function is defined by the rule
 

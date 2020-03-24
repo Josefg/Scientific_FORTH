@@ -1,7 +1,7 @@
 % Chapter 5 -- Scientific Data Structures
 
-\chapter{Scientific Data Structures}
-\label{chap:05}
+\chapter{Scientific Data Structures}\label{chap:05}
+
 \TallC{Data} structures are the soul of any computer program in any language. Some languages, most notably FORTRAN and BASIC, predefine some data structures but require extensive contortions to define others. This straitjacket approach has virtues as well as defects:
 
 \begin{itemize}
@@ -14,8 +14,7 @@ FORTH pre-defines a minimal set of data structures but allows unlimited definiti
 
 This chapter\sepfootnote{05_01} suggests protocols for arrays and typed data\sepfootnote{05_02} that will increase the portability of code and encourage the exchange of scientific programs. The keys to this are generic operations that recognize the data type of a scalar or array variable at run-time and act appropriately.
 
-\section{Typed data structures}
-
+\section{Typed data structures}\label{chap:05_01}
 One of the virtues of FORTRAN or BASlC is that the programmer does not have to keep track of what type of data he is fetching and storing from memory. In fact the user does not even program such operations explicitly -- the compiler takes care of everything induding the bookkeeping. Mixed-arithmetic expressions like
 
 \begin{lstlisting}
