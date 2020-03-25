@@ -16,7 +16,7 @@ The Institute for Applied FORTH Research (Rochester, NY) publishes the refereed 
 
 Finally, an attempt to codify and standardize FORTH is underway, so by the time this book appears the first draft of an ANS FORTH and extensions may exist.
 
-\section{The structure of FORTH}
+\section{The structure of FORTH}\label{chap:02_01}
 
 \TallC{The} "atom" of FORTH is a \textbf{word} a previously-defined operation (defined in terms of machine code or other, previously-defined words) whose definition is stored in a series of linked lists called the \textbf{dictionary}. The FORTH operating system is an endless loop (outer interpreter) that reads the console and interprets the input stream, consulting the dictionary as necessary. If the stream contains a word\sepfootnote{02_04} in the dictionary the interpreter immediately executes that word.
 

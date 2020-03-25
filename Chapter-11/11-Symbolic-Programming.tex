@@ -1024,156 +1024,143 @@ Again at the lowest level, we can develop the components that recognize patterns
 
 A function is defined by the rule
 
-\ <arglist> -> ( <expr'n> {, <expr'n>}")
-\ <function> -> <id> <argl|st>
+\begin{verbatim}
+\ <arglist>      ->     ( <expr'n> {, <expr'n>}^)
+\ <function>     ->     <id> <arglist>
+\end{verbatim}
 
-We may therefore identify a function by splitting at the first left
-parenthesis,
+We may therefore identify a function by splitting at the first left parenthesis,
 
-sand scrum new
-1- Beam 1mm ASCII ()- ,ii (
-ooup - a> UNTIL'
+\begin{lstlisting}
+    : >(    ( $end $beg -- $end $beg' ) \ find first "("
+        1- BEGIN 1+ DUPC@ ASCII( = >R
+              DDUP = R> OR UNTIL ;
+\end{lstlisting}
 
-and then applying appropriately defined FSMs to determine
-whether the pieces are as they should be.
+and then applying appropriately defined FSMs to determine whether the pieces are as they should be.
 
-:<thction>($endSbeg--i)
-DUP>R >( (--Send$beg')
-UNDER 1- fi> <id>
+\begin{lstlisting}
+    : <function> ( $end $beg -- f )
+        DUP>R >(           ( -- $end $beg' )
+        UNDER 1- R> <id>
+        -ROT SWAP <arglist> AND ;
+\end{lstlisting}
 
--ROT SWAP <arglist> AND ;
+The FSM \texttt{<arglist>} must be smart enough to exclude cases such as
 
-The FSM < argllct > must be smart enough to exclude cases such
-as
+\begin{lstlisting}
+    SIN(A + B)/(C-D)
+\end{lstlisting}
 
-SIN(A + B)/(C-D)
 and
-SIN(A + B)/EXP(C-D)
 
-that is, compound expressions that might contain functions; it
-must also correctly recognize, e.g.,
+\begin{lstlisting}
+    SIN(A + B)/EXP(C-D)
+\end{lstlisting}
 
-SIN((A + B)/EXP(C-D))
+that is, compound expressions that might contain functions; it must also correctly recognize, \eg,
+
+\begin{lstlisting}
+    SIN((A + B)/EXP(C-D))
+\end{lstlisting}
 
 as a function.
 
-In FORTH there is no distinction between library functions and
-functions we define ourselves. In either case, the protocol defined
-in Chapter 8 will work fine. Thus the code generator for < func-
-tion > emits the code
+In FORTH there is no distinction between library functions and functions we define ourselves. In either case, the protocol defined in Chapter \ref{chap:08} will work fine. Thus the code generator for \bc{<function>} emits the code
 
-USE( fn.name arg1 argz argN F(x)
+\begin{lstlisting}
+    USE( fn.name arg1 arg2 ... argN F(x)
+\end{lstlisting}
 
-What, however, do we do about translating standard FORTRAN
-names such as SIN, COS and EXP to their generic FORTH
-equivalents? The simplest method defines words with the names
-of the FORTRAN library functions. The FORTH-83 word fiND
-locates the code-field address of a name residing in a string. Thus
-we could have (note: .GSIN is a CONSTANT containing a token)
+What, however, do we do about translating standard FORTRAN names such as SIN, COS and EXP to their generic FORTH equivalents? The simplest method defines words with the names of the FORTRAN library functions. The FORTH-83 word \bc{FIND} locates the code-field address of a name residing in a string. Thus we could have (\textbf{\underline{note}:} \bc{.GSIN} is a \bc{CONSTANT} containing a token)
 
-.GSIN CONSTANT sm \etc.
+\begin{lstlisting}
+    .GSIN CONSTANT SIN  \etc.
+\end{lstlisting}
 
-omvmtm-umm.
+\begin{lstlisting}
+    : LIBRARY? ( $end $beg -- cfa | 0 )
+        -ROT UNDER - DUP>R
+        PAD 1+ SWAP CMOVE R> PAD C! \ make $
+        PAD FIND ( -- cfa n) 0= NOT AND ;
+\end{lstlisting}
 
-298 Chapter 11 - Symbolic Programming Scientific FORTH
+now we can define \bc{function!} which, assuming pointers to the \texttt{<id>} and \texttt{<arglist>} are on the stack, rearranges the Sstack like this:
 
-:LIBRARY? ($end$beg--cta | 0)
--ROT UNDER - DUP>R
-PADt+ SWAP CMOVE R> PAD CI \ makes
-PAD fiND (--cia n) o= NOT AND ;
-
-now we can define function! which, assuming pointers to the
-< id > and < arglist > are on the stack, rearranges the Sstack like
-
-this:
-BS QIS Notes
-(argt, argz, argN) .F(X) \ an op.
-NULL .iib\_name \ if library function
 or, if it is a user-defined function, like this:
-E18 018 Notes
-(arg1, argZ, argN) .F(X) \ an op.
-name NOP \ user function
 
 The code that does all this is
 
 \begin{lstlisting}
-: function! ($end2 $beg2 $end1 $beg1 - -)
-.F(X) $push \ push arglist
-DDUP LIBRARY? DUP 0=
-IF DROP .NOP $push \ userfn
-ELSE EXECUTE \ inlib.
-NULL ROT $PUSH DDROP
-THEN ." USE( " ;
+    : function! ( $end2 $beg2 $end1 $beg1 -- )
+        .F(X) $push                     \ push arglist
+        DDUP LIBRARY? DUP 0=
+        IF      DROP .NOP $push         \ user fn
+        ELSE    EXECUTE                 \ in lib.
+                NULL ROT $PUSH DDROP
+        THEN ." USE( " ;
 \end{lstlisting}
 
-For the program itself24 we work from the last word, < aslgn-
-
-ment > , to the first (which we do not know the name of yet).
-We shall describe the program in pseudocode only, in the interest
-of saving space. Clearly,
+\TallC{For} the program itself\sepfootnote{11_23} we work from the last word, \bc{<assignment>}, to the first (which we do not know the name of yet). We shall describe the program in pseudocode only, in the interest of saving space. Clearly,
 
 \begin{lstlisting}
-: < assignment > \ input $ assumed in buffer
-<subj> = <expr> \ splitat "=" (- -t)
-IF subjl THEN \ put Subj and its code on $staci<
-.NOP $push ; \ then put expr on Sstack
+    : <assignment>      \ input $ assumed in buffer
+        <subj> = <expr> \ split at "=" (--f)
+        IF subj! THEN   \ put subj and its code on $stack
+        .NOP $push ;    \ then put expr on $stack
 \end{lstlisting}
 
-Certain decisions need to be made here: for example, do we want
-F' to be able to parse an expression that is not an assignment (that
-is, generating code which evaluates the expression and leaves the
-result on the ifstack)? We allowed this with the IF...THEN.
+Certain decisions need to be made here: for example, do we want \bc{F"} to be able to parse an expression that is \textit{not} an assignment (that is, generating code which evaluates the expression and leaves the result on the ifstack)? We allowed this with the \bc{IF...THEN}.
 
-Next we pseudocode < oxproeeion >:
-: <expression> empty? IF EXIT THEN
-59°F
+Next we pseudocode \bc{<expression>}:
 
-
-IF trm\&exprl RECURSE
-ELSE NULL ROT $push
-.NOP $push <term>
-THEN ;
-
-Defined recursively in this way, < oxpreoolon > will keep
-working on the TOS until it has broken it up into term 5.
-
-We similarly define < term > recursively, so it will break up any
-term 5 into all their factors. It should also recognize < arglist > 5.
-Thus:
-
-: <term> empty? IF EXIT THEN
-
-$pop < arglist >$
-IF arglist! < expression > EXIT THEN
-<factor>\%<term> (--f)\ splitat\%="/'
-
-IF fct%trml RECURSE
-ELSE .NOP $push$ <factor> \ term = factor
-THEN ;
-
-And finally, we define < factor > , again recursively,
 \begin{lstlisting}
-: <factor> empty? IF EXIT THEN \ done
-SPOP <fp# > \ fp#?
-IF fp#I RECURSE EXIT THEN
-leading -?
-IF leading-I < expression > \ forward ref.
-EXIT THEN
-< id > IF idI < expression > \ forward ref.
-EXIT THEN
-<f>"<f> \ exponent'?
-IF f"fi RECURSE RECURSE
-EXIT THEN
-\ oont'd
+    : <expression> empty? IF EXIT THEN
+        $pop
+        <trm>&<expr>         ( -- f ) \ split at &
+        IF trm&expr! RECURSE
+        ELSE NULL ROT $push
+             .NOP $push <term>
+        THEN ;
+\end{lstlisting}
 
-< function >
-IF functionl < expression > \ forward ref.
-EXIT THEN
 
-(< expression >) \ expression inside ( )?
+Defined recursively in this way, \bc{<expression>} will keep working on the TOS until it has broken it up into term \texttt{s}.
 
-IF exposel < expression > \ forward ref.
-ELSE ." Notafactorl' ABORT THEN ;
+We similarly define \bc{<term>} recursively, so it will break up any term 5 into all their factors. It should also recognize \texttt{<arglist> s}. Thus:
+
+\begin{lstlisting}
+    : <term> empty? IF EXIT THEN
+        $pop <arglist>$
+        IF arglist! <expression> EXIT THEN
+        <factor>%<term> ( --f )  \ split at %="*/"
+        IF fct%trm! RECURSE
+        ELSE .NOP $push <factor> \ term = factor
+        THEN ;
+\end{lstlisting}
+
+And finally, we define \bc{<factor>}, again recursively,
+
+\begin{lstlisting}
+    : <factor> empty?   IF EXIT THEN  \ done
+        $POP <fp#>                    \ fp#?
+        IF    fp#! RECURSE EXIT THEN
+        leading -?
+            IF leading-! <expression> \ forward ref.
+            EXIT THEN
+        <id> IF id! <expression>      \ forward ref.
+            EXIT THEN
+        <f>^<f>                       \ exponent?
+            IF f^f! RECURSE RECURSE
+            EXIT THEN
+    \ oont'd
+        <function>
+            IF functionl <expression> \ forward ref.
+            EXIT THEN
+
+        (<expression>)      \ expression inside ( )?
+            IF expose! <expression>   \ forward ref.
+            ELSE ." Not a factor!" ABORT THEN ;
 \end{lstlisting}
 
 \leftbar[1\linewidth]
