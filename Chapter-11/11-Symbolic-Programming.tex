@@ -952,7 +952,7 @@ Once again we find the most exposed operator to be "\bc{/}", which we split with
     \hline                                                            \\
     \regc{A}                       & \regc{FS>} & \regc{\\ <subject>} \\
     \regc{NULL}                    & \regc{G+}  & \regc{\\ <term>}    \\
-    \regc{(W-SIN(THETA*PI/180)/4)} & \regc{G/}  & \regc{\\ ( <expr> )}\\
+    \regc{(W-SIN(THETA*PI/180)/4)} & \regc{G/}  & \regc{\\ ( <expr> )}  \\
     \regc{Z}                       & \regc{NOP} & 
 \end{tabular}
 
@@ -1007,10 +1007,57 @@ After sending forth the phrase
 
 the leading "-" preceding \bc{SIN( ...)/4} must be dealt with. To preserve the proper ordering on emission we will want a word \bc{LEADING-} that puts the token for \bc{GNEGATE} on the O/S and moves the string \bc{SIN(THETA*PI/180)/4} to the TOS, issuing a \bc{NOP} on the E/S, obtaining
 
+\begin{tabular}{lll}
+    E/S                         & O/S        & Notes              \\
+    \hline                                                        \\
+    \regc{A}                   & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{NULL}                & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                & \regc{G/}      &                 \\
+    \regc{NULL}                & \regc{G+}      &                 \\
+    \regc{NULL}                & \regc{GNEGATE} &                 \\
+    \regc{SIN(THETA*PI/180)/4} & \regc{NOP}     & 
+\end{tabular}
+
 The next exposed operator is at "\bc{\%}" -level. We apply \texttt{<term>} once more, to get:
+
+\begin{tabular}{lll}
+    E/S                         & O/S        & Notes              \\
+    \hline                                                        \\
+    ...                        & ... & \textbackslash ...         \\
+    \regc{NULL}                & \regc{GNEGATE} &                 \\
+    \regc{NULL}                & \regc{G/}      &                 \\
+    \regc{SIN(THETA*PI/180)/4} & \regc{NOP}     & \regc{\\ <expr'n>}
+\end{tabular}
 
 After handling the function as before we find the successive stacks and FORTH code emissions
 
+\begin{tabular}{lll}
+    E/S                         & O/S        & Notes              \\
+    \hline                                                        \\
+    \regc{A}                   & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{NULL}                & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                & \regc{G/}      &                 \\
+    \regc{NULL}                & \regc{G+}      &                 \\
+    \regc{NULL}                & \regc{GNEGATE} &                 \\
+    \regc{4}                   & \regc{G/}      &                 \\
+    \regc{NULL}                & \regc{GSIN}    &                 \\
+    \regc{(THETA*PI/180)}      & \regc{NOP}     & 
+\end{tabular}
+
+\begin{tabular}{lll}
+    E/S                         & O/S        & Notes              \\
+    \hline                                                        \\
+    \regc{A}                   & \regc{FS>} & \regc{\\ <subject>} \\
+    \regc{NULL}                & \regc{G+}  & \regc{\\ <term>}    \\
+    \regc{NULL}                & \regc{G/}      &                 \\
+    \regc{NULL}                & \regc{G+}      &                 \\
+    \regc{NULL}                & \regc{GNEGATE} &                 \\
+    \regc{4}                   & \regc{G/}      &                 \\
+    \regc{NULL}                & \regc{GSIN}    &                 \\
+    \regc{180}                 & \regc{G/}      &                 \\
+    \regc{PI}                  & \regc{G*}      &                 \\
+    \regc{(THETA)}             & \regc{NOP}     & 
+\end{tabular}
 \begin{lstlisting}
     THETA >FS PI >FS G* % 180 REAL*8 F>FS
     G/ GSIN %4 REAL*8 F>FS G/ GNEGATE G+
@@ -1155,7 +1202,7 @@ And finally, we define \bc{<factor>}, again recursively,
             EXIT THEN
     \ oont'd
         <function>
-            IF functionl <expression> \ forward ref.
+            IF function! <expression> \ forward ref.
             EXIT THEN
 
         (<expression>)      \ expression inside ( )?

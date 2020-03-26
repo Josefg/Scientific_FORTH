@@ -2,7 +2,7 @@
 
 \chapter{Complex arithmetic in FORTH}
 
-\TallC{One} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this feature\sepfootnote{07_01}. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal \textit{via} subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)\sepfootnote{07_02} . The same problem would afflict C and the new structured BASICs.
+\TallC{One} of the most crucial features of FORTRAN for scientific computation is the ease with which it embeds complex arithmetic into formulae. No other compiled language has this feature\sepfootnote{07_01}. From time to time someone gets a bright idea, and adds complex arithmetic to Pascal \textit{via} subroutines (since Pascal functions can return only a single number, and complex functions must return two numbers)\sepfootnote{07_02}. The same problem would afflict C and the new structured BASICs.
 
 Recently, a mechanism for adding complex arithmetic to Pascal by defining a stack and using postfix notation has been proposed\sepfootnote{07_03}. Does this sound at all familiar?
 
@@ -188,20 +188,20 @@ With by-now obvious meanings we have
     \ -- and complex fetch and store.
 
     \ fstack manipulation
-    :REAL   FDROP ;      ( 87:z--x )
-    :IMAG   FPLUCK ;     ( 87:z--y )
-    :CONJG  FNEGATE ;    ( 87:xy--x,-y )
+    : REAL   FDROP ;      ( 87:z--x )
+    : IMAG   FPLUCK ;     ( 87:z--y )
+    : CONJG  FNEGATE ;    ( 87:xy--x,-y )
 
-    :XDROP FDROP FDROP ; ( 87:z-- )
-    :XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
-    :XDUP FOVER FOVER ;  ( 87:z--z z )
+    : XDROP FDROP FDROP ; ( 87:z-- )
+    : XSWAP F4R F4R ;     ( 87:z1 z2--z2 z1 )
+    : XDUP FOVER FOVER ;  ( 87:z--z z )
 \end{lstlisting}
 
 \section{Arithmetic operations}
 \TallC{The} standard complex operations should be virtually self-explanatory. For efficiency we define multiplication and division of a complex number by a scalar, as well as complex $\times$ complex and complex/complex.
 
 \begin{lstlisting}
-    :CMPLX F=0 ;     ( 87: x--x 0 )
+    : CMPLX F=0 ;     ( 87: x--x 0 )
     : X+ FROT F+  F-ROT F+ FSWAP ;
     : X- FROT FR- F-ROT F- FSWAP ;
     : XOVER FSP F3P; ( 87:z1 z2--z1 z2 z1 )
@@ -217,31 +217,31 @@ With by-now obvious meanings we have
 The critical operation of complex $\times$ complex can be defined in high level FORTH for portability:
 
 \begin{lstlisting}
-  : X*              ( 87:z1 z2--z1*z2 )
-    XOVER X*I FROT  ( 87:--a b x -b a y )
-    X*F             ( 87:--a b x -by ay )
-    F3X FSWAP       ( 87:--a ay x b -by )
-    F4X FSWAP       ( 87:-- -by ay x a b )
-    F*X             ( 87:-- -by ay xa xb )
-    X+ ;
+    : X*              ( 87:z1 z2--z1*z2 )
+        XOVER X*I FROT  ( 87:--a b x -b a y )
+        X*F             ( 87:--a b x -by ay )
+        F3X FSWAP       ( 87:--a ay x b -by )
+        F4X FSWAP       ( 87:-- -by ay x a b )
+        F*X             ( 87:-- -by ay xa xb )
+        X+ ;
 \end{lstlisting}
 
 Actually, complex multiplication is sufficiently involved to be worth defining in code. Here is a code definition for the 80x87 family of FPUs. The equivalent for the Motorola 68881/2 family is virtually identical, allowing for minor differences in Intel and Motorola assembler mnemonics, as well as for the fact that the 68881/2 has registers but no stack.
 
 \begin{lstlisting}
-  \ operation     87stack contents
-  CODE X*       \ x      y  a  b
-    3 FLD.      \ x      y  a  b x
-    2 FMUL.     \ x      y  a  b xa
-    4 FXCH.     \ xa     y  a  b x
-    1 FMUL.     \ xa     y  a  b xb
-    1 FXCH.     \ xa     y  a xb  b
-    3 FMUL.     \ xa     y  a bx yb
-    4 FSUBRP.   \ xa-yb  y  a bx
-    2 FXCH.     \ xa-yb bx  a y
-    1 FMULP.    \ xa-yb bx ay
-    1 FADDP.    \ xa-yb bx+ay
-  ENDCODE ( x y a b -- xa-yb xb+ya )
+    \ operation     87stack contents
+    CODE X*       \ x      y  a  b
+        3 FLD.      \ x      y  a  b x
+        2 FMUL.     \ x      y  a  b xa
+        4 FXCH.     \ xa     y  a  b x
+        1 FMUL.     \ xa     y  a  b xb
+        1 FXCH.     \ xa     y  a xb  b
+        3 FMUL.     \ xa     y  a bx yb
+        4 FSUBRP.   \ xa-yb  y  a bx
+        2 FXCH.     \ xa-yb bx  a y
+        1 FMULP.    \ xa-yb bx ay
+        1 FADDP.    \ xa-yb bx+ay
+    ENDCODE ( x y a b -- xa-yb xb+ya )
 \end{lstlisting}
 
 \TallC{Once} we have multiplication, division is easy:
@@ -251,7 +251,7 @@ Actually, complex multiplication is sufficiently involved to be worth defining i
         F**2 FSWAP F**2 F+ ;
     : 1/X CONJG XDUP XMODSQ
         FDUP F0= ABORT" Can't divide by 0" X/F ;
-    :X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
+    : X/ 1/X X* ;        ( 87:z1 z2--z1/z2 )
 \end{lstlisting}
 
 With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH words to accomplish Cartesian-polar transformation and \textit{vice versa} should also be fairly transparent\sepfootnote{07_07}:
@@ -266,7 +266,7 @@ With the preceding discussion and referring to Fig. 7-1 at page 147 the FORTH wo
 
     : >POLAR             ( 87:x y--r $\theta$[radians] )
         XDUP XABS F-ROT ARG ;
-    :POLAR>              ( 87:r $\theta$[radians]--x y )
+    : POLAR>              ( 87:r $\theta$[radians]--x y )
         FSINCOS FROT X*F ;
 \end{lstlisting}
 
@@ -392,18 +392,18 @@ That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$
 \TallC{We} now translate these equations into high-level FORTH with comments:
 
 \begin{lstlisting}
-  : XSORT               ( 87:z --z**1/2 )
-    FSWAP XDUP XABS     ( 87:  --y x r )
-    FDUP F0=            \ retun 0 if |z| = 0
-    IF FDROP XDROP X=0 EXIT THEN
-    XDUP F+             ( 87:  --y x r r+x )
-    F2X  F-             ( 87:  --y r+x r-x )
-    F2/  FSORT          ( 87:  --y r+x b )
-    F2X                 ( 87:  --b r+x )
-    F0<                 \ get sign of Im(z)
-    F2/  FSQRT      ( --f 87:  --b |a| )
-    IF FNEGATE THEN \ fix sign of Re(z**1/2)
-    FSWAP ;
+  : XSORT                   ( 87:z --z**1/2 )
+        FSWAP XDUP XABS     ( 87:  --y x r )
+        FDUP F0=            \ retun 0 if |z| = 0
+        IF FDROP XDROP X=0 EXIT THEN
+        XDUP F+             ( 87:  --y x r r+x )
+        F2X  F-             ( 87:  --y r+x r-x )
+        F2/  FSORT          ( 87:  --y r+x b )
+        F2X                 ( 87:  --b r+x )
+        F0<                 \ get sign of Im(z)
+        F2/  FSQRT      ( --f 87:  --b |a| )
+        IF FNEGATE THEN \ fix sign of Re(z**1/2)
+        FSWAP ;
 \end{lstlisting}
 
 We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small) through roundoff, thereby generating an error in the square root routine.
@@ -434,27 +434,27 @@ Similarly,
 Hence the code for the complex trigonometric functions is
 
 \begin{lstlisting}
-  : FSINCOS        ( 87:x--cos[x] sin[x] )
-    F2/  FTAN    ( 87:--a=tan[x/2] )
-    FDUP F**2    ( 87:--a a**2 )
-    F=1 XDUP F+  ( 87:--a a**2 1 1+a**2 )
-    F2X F-       ( 87:--a 1+a**2 1-a**2 )
-    FOVER F/     ( 87:--a 1+a**2 cos[x] )
-    F-ROT F/ F2* ( 87:x--cos[x] sin[x] )
-  ; \ note FSINCOS ts mlcrocoded on the 80387
+    : FSINCOS        ( 87:x--cos[x] sin[x] )
+        F2/  FTAN    ( 87:--a=tan[x/2] )
+        FDUP F**2    ( 87:--a a**2 )
+        F=1 XDUP F+  ( 87:--a a**2 1 1+a**2 )
+        F2X F-       ( 87:--a 1+a**2 1-a**2 )
+        FOVER F/     ( 87:--a 1+a**2 cos[x] )
+        F-ROT F/ F2* ( 87:x--cos[x] sin[x] )
+      ; \ note FSINCOS ts mlcrocoded on the 80387
 
-  :XEXP    ( 87:x y--e**x*cos[y] e**x*sin[y] )
-    FSINCOS FROT FEXP X*F ;
+  : XEXP    ( 87:x y--e**x*cos[y] e**x*sin[y] )
+      FSINCOS FROT FEXP X*F ;
 
   : X2/ F2/ FSWAP F2/ FSWAP ;
 
   : XSIN   ( 87:x y--sin[x]cosh[y] cos[x]sinh[y] )
-    FNEGATE FEXP FSWAP FSINCOS F*X
+      FNEGATE FEXP FSWAP FSINCOS F*X
     XDUP 1/X X- X2/ ;
 
   : XCOS   ( 87:x y--cos[x]cosh[y] -sin[x]sinh[y] )
-    FNEGATE FEXP FSWAP FSINCOS F*X
-    XDUP 1/X X+ X2/ ;
+      FNEGATE FEXP FSWAP FSINCOS F*X
+      XDUP 1/X X+ X2/ ;
 \end{lstlisting}
 
 \section{Logarithms}
@@ -479,8 +479,8 @@ we find it consistent to \textbf{define} the complex logarithm as
 Thus,
 
 \begin{lstlisting}
-  :XLOG (87:x y--ln[r] atan[y/x] )
-    >POLAR FSWAP FLN FSWAP ;
+    : XLOG (87:x y--ln[r] atan[y/x] )
+        >POLAR FSWAP FLN FSWAP ;
 \end{lstlisting}
 
 This completes our dissertation on complex arithmetic.

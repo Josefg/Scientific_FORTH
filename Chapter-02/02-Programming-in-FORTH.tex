@@ -123,7 +123,7 @@ The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. U
     \item Creates a new dictionary entry, \bc{NEW-WORD}, and switches from \textbf{interpret}- to \textbf{compile} mode.
     \item In compile mode, the interpreter looks up words and --rather than executin them-- installs ointers to their code. If the text is a number (\bc{17} above), FORTH builds the literal number into the dictionary space allotted for \bc{NEW-WORD}.
     \item The action of \bc{NEW-WORD} will be to \bc{EXECUTE} sequentially the previously-defined words \bc{WORD1}, \bc{WORD2}, ...\bc{WORDn}, placing any built-in numbers on the stack as they occur.
-    \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\sepfootnote{02_07}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as ﬂags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
+    \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\sepfootnote{02_07}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as flags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
 
 In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.
@@ -352,7 +352,7 @@ than 3 (TOS). Conversely, the phrase
     2 3 < <cr> ok
 \end{lstlisting}
 
-will leave -1 ("true") because 2 is less than 3. Relational operators typically consume their arguments and leave a "ﬂag" to show what happened\sepfootnote{02_12}. Those listed so far work with signed 16-bit integers. The operator \bc{U<} tests \textit{unsigned} 16-bit integers (0-65535).
+will leave -1 ("true") because 2 is less than 3. Relational operators typically consume their arguments and leave a "flag" to show what happened\sepfootnote{02_12}. Those listed so far work with signed 16-bit integers. The operator \bc{U<} tests \textit{unsigned} 16-bit integers (0-65535).
 
 FORTH offers unary relational operators \bc{0= 0>} and \bc{0<} that determine whether the TOS contains a (signed) 16-bit integer that is 0, positive or negative. Most FORTHs offer equivalent relational operators for use with double-length integers.
 
@@ -382,17 +382,17 @@ In either example, \bc{THEN} marks the end of the branch, rather than having its
 \TallC{FORTH} contains words for setting up loops that can be definite or indefinite:
 
 \begin{lstlisting}
-    BEGIN xxx ﬂag UNTIL
+    BEGIN xxx flag UNTIL
 \end{lstlisting}
 
-The words represented by \bc{xxx} are executed, leaving the TOS (ﬂag) set to 0 (F) -at which point \bc{UNTIL} leaves the loop - or -1 (T) -at which point \bc{UNTIL} makes the loop repeat from \bc{BEGIN}.
+The words represented by \bc{xxx} are executed, leaving the TOS (flag) set to 0 (F) -at which point \bc{UNTIL} leaves the loop - or -1 (T) -at which point \bc{UNTIL} makes the loop repeat from \bc{BEGIN}.
 
 A variant is
 \begin{lstlisting}
-    BEGIN xxx ﬂag WHILE yyy REPEAT
+    BEGIN xxx flag WHILE yyy REPEAT
 \end{lstlisting}
 
-Here \bc{xxx} is executed, \bc{WHILE} tests the ﬂag and if it is 0 (F) leaves the loop; whereas if flag is -1 (T) \bc{WHILE} executes \bc{yyy} and \bc{REPEAT} then branches back to \bc{BEGIN}. These forms can be used to set up loops that repeat until some external event (pressing a key at the keyboard, \textit{e.g.}) sets the ﬂag to exit the loop. They can also used to make endless loops (like the outer interpreter of FORTH) by forcing flag to be 0 in a definition like
+Here \bc{xxx} is executed, \bc{WHILE} tests the flag and if it is 0 (F) leaves the loop; whereas if flag is -1 (T) \bc{WHILE} executes \bc{yyy} and \bc{REPEAT} then branches back to \bc{BEGIN}. These forms can be used to set up loops that repeat until some external event (pressing a key at the keyboard, \textit{e.g.}) sets the flag to exit the loop. They can also used to make endless loops (like the outer interpreter of FORTH) by forcing flag to be 0 in a definition like
 
 \begin{lstlisting}
     : ENDLESS BEGIN xxx 0 UNTIL ;
@@ -739,7 +739,7 @@ One might contemplate modifying the \FTR lexicon by using a full 16-bit cell for
 \Note: The word {\textbackslash } means "disregard the rest of this line". It is a convenient method for commenting code.
 \endleftbar
 
-In other words, a FORTH program consists of a series of word definitions, culminating in a definition that invokes the whole shebang. This aspect gives FORTH programming a somewhat different ﬂavor from programming in more conventional languages.
+In other words, a FORTH program consists of a series of word definitions, culminating in a definition that invokes the whole shebang. This aspect gives FORTH programming a somewhat different flavor from programming in more conventional languages.
 
 Brodie notes in \TF that high-level programming languages are considered good if they require structured, top-down programming, and \textit{wonderful} if they impose \textit{information hiding}. Languages such as FORTRAN, BASIC and assembler that permit direct jumps and do not impose structure, top-down design and data-hiding are considered \textit{primitive} or bad. To what extent does FORTH follow the norms of good or \textit{wonderful} programming practice?
 
@@ -756,7 +756,7 @@ A second aspect of structure that FORTH imposes (or at least encourages) is \tex
 \TallC{Most} authors of "how to program" books recommend designing the entire program from the general to the particular. This is called "top-down" programming, and embodies these steps:
 
 \begin{itemize}
-    \item Make an outline, ﬂow chart, data-ﬂow diagram or whatever, taking a broad overview of the whole problem.
+    \item Make an outline, flow chart, data-flow diagram or whatever, taking a broad overview of the whole problem.
     \item Break the problem into small pieces (decompose it).
     \item Then code the individual components.
 \end{itemize}
