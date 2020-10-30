@@ -31,6 +31,10 @@
     \def\verbatim@font{\normalfont\sffamily}
     \makeatother
 
+% Graphics
+\usepackage{graphicx}
+\graphicspath{ {./Images/} }
+    
 % Create box for code in footnote 08_14
 \newsavebox{\LstBox}
     
@@ -126,31 +130,72 @@
     \renewcommand{\thesection}{\arabic{section}}
     \renewcommand{\thesubsection}{\arabic{subsection}}
     \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
+    
+    \titlecontents{chapter}[.5em]
+    {\normalfont\large}
+    {\S\thecontentslabel}
+    {}
+    {\titlerule*[1pc]{ } \thecontentspage}
+    [\addvspace{-0.55em}]
+    \titleformat{\chapter}[hang]
+    {\huge\bfseries}
+    {}{0.1em}{}
+    [{
+    \startcontents[chapter]
+        \printcontents[chapter]{l}{1}[2]{}
+    }]
+
+    \titlecontents{lsection}[.5em]
+    {\normalfont\large}
+    {\S\thecontentslabel}
+    {}
+    {\titlerule*[1pc]{ } \thecontentspage}
+    [\addvspace{-0.55em}]
+    \titlecontents{lsubsection}[2.2em]
+    {\normalfont\large}
+    {\S\thecontentslabel}
+    {}
+    {\titlerule*[1pc]{ } \thecontentspage}
+    [\addvspace{-0.55em}]
+        
     \titleformat{\section}
         {\normalfont\large\bfseries}
-        {\S\thesection }{0.5em}{}
+        {\S\thesection }{.5em}{}
     \titleformat{\subsection}
         {\normalfont\bfseries}
         {\S\S\thesubsection }{.5em}{}
     \titleformat{\subsubsection}
         {\normalfont\bfseries}
         {\S\S\thesubsection-\thesubsubsection}{.5em}{}
-\usepackage{titletoc}
 
-% Thinking FORTH
-\newcommand{\TF}{\textbf{TF }}
-% Starting FORTH
-\newcommand{\SF}{\textbf{SF }}
-% FORTH: a Text and Reference
-\newcommand{\FTR}{\textbf{FTR }}
-% e.g. in italics
-\newcommand{\eg}{\textit{e.g.}}
-% i.e. in italics
-\newcommand{\ie}{\textit{i.e.}}
-% etc. in italics
-\newcommand{\etc}{\textit{etc.}}
-% Note
-\newcommand{\Note}{\textbf{\underline{Note}}}
+% This is the book table of contents
+    \titlecontents{chapter}[.5em]
+        {\normalfont\large\bfseries}   % above-code
+        {Chapter \thecontentslabel -- }% numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ }\thecontentspage}% filler-page-format
+        [\addvspace{.5em}]             % below-code
+
+    \titlecontents{section}[2.2em]
+        {\normalfont\large}            % above-code
+        {\S\thecontentslabel  }        % numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
+
+    \titlecontents{subsection}[5.4em]
+        {\normalfont\large}            % above-code
+        {\S\S\thecontentslabel  }      % numbered-entry-format
+        {}                             % numberless-entry-format
+        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
+    
+%    Common shorthand                         % Long hand version
+\newcommand{\TF}{\textbf{TF }}                  % Thinking FORTH
+\newcommand{\SF}{\textbf{SF }}                  % Starting FORTH
+\newcommand{\FTR}{\textbf{FTR }}                % FORTH: a Text and Reference
+\newcommand{\eg}{\textit{e.g.}}                 % e.g. in italics
+\newcommand{\ie}{\textit{i.e.}}                 % i.e. in italics
+\newcommand{\etc}{\textit{etc.}}                % etc. in italics
+\newcommand{\Note}{\textbf{\underline{Note}}}   % Note
 
 % References
 \usepackage{hyperref}
@@ -160,21 +205,37 @@
 \usepackage{makecell}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,xparse}
+
+
+\usepackage{centernot}
+    \newcommand{\tr}[1]{{\centernot{#1}}}
+    \newcommand{\Tr}[1]{{Tr(\centernot{#1})}}
+
+ \usepackage{makeidx}
+ \makeindex
 \begin{document}
-\tableofcontents
-    \input{footnotes}
-    % must include footnotes for all Chapters
-    % *** include{chapter on which you are working} ***
-    % \include{Chapter-01/01-Toward-Scientific-FORTH}
-    % \include{Chapter-02/02-Programming-in-FORTH}
-    % \include{Chapter-03/03-Floating-Point-Arithmetic}
-    % \include{Chapter-04/04-The-80x87-Family}
-    % \include{Chapter-05/05-Scientific-Data-Structures}
-    % \include{Chapter-06/06-Programming-Examples}
-    % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
-    % \include{Chapter-08/08-More-Programming-Examples}
-    % \include{Chapter-09/09-Linear-Algebra}
-    % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
-     \include{Chapter-11/11-Symbolic-Programming}
+    \tableofcontents
+    \frontmatter
+        % \include{Cover/Printing_Page}
+        % \include{Cover/Warning_and_Disclamer_of_Warranty}
+        % \include{Preface/Preface}
+    \mainmatter
+        \input{footnotes}
+        % must include footnotes for all Chapters
+        % *** include{chapter on which you are working} ***
+        % \include{Chapter-01/01-Toward-Scientific-FORTH}
+        % \include{Chapter-02/02-Programming-in-FORTH}
+        % \include{Chapter-03/03-Floating-Point-Arithmetic}
+        % \include{Chapter-04/04-The-80x87-Family}
+        % \include{Chapter-05/05-Scientific-Data-Structures}
+        % \include{Chapter-06/06-Programming-Examples}
+        % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
+        % \include{Chapter-08/08-More-Programming-Examples}
+        % \include{Chapter-09/09-Linear-Algebra}
+        % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
+         \include{Chapter-11/11-Symbolic-Programming}
+        % \include{Cover/Backcover}
+        % \printindex
+        % \include{Bibliography/Bibliography}
 \VerbatimFootnotes
 \end{document}
