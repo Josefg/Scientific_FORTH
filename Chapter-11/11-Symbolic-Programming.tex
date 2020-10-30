@@ -77,6 +77,7 @@ This pattern begins with a minus or nothing, followed by a digit and a decimal p
 \TallC{One} often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. \ref{fig:11_01} on page \pageref{fig:11_01} below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with \bc{IF...ELSE...THEN} statements, the program becomes too long
 
 \begin{figure}
+    \includegraphics[width=\textwidth]{figure_11_1_diagram.png}
     \caption{Fig. 11-1 \textit{Logic tree for <floating point \#>}}
     \label{fig:11_01}
 \end{figure}
@@ -87,8 +88,8 @@ It has been known for many years that a better way to apply general rules - \tex
 
 \begin{lstlisting}
     \ determine whether the string at Sadr is a fp#
-    :skip-   ( adr -- adr' ) DUP C@ ASCII- = - ;
-    :skip_dp ( adr -- adr' ) DUP C@ ASCII. = - ;
+    :skip-   ( adr -- adr' ) DUP C@ ASCII - = - ;
+    :skip_dp ( adr -- adr' ) DUP C@ ASCII . = - ;
     \ NOTE: these "hacks" assume "true" = -1.
     :digit?  ( char -- f ) ASCII 9 ASCII 0 WITHIN ;
     : skip_dig ( adr2 adr1 -- adr2 adr1')
@@ -139,6 +140,7 @@ which,as we see in Fig. \ref{fig:11_02} below, has nearly as convoluted a logic 
 Just as we needed a FSM to achieve a graceful definition of \bc{fp\#?}, we might try to define \bc{skip_exponent} as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to \textbf{deterministic} FSMs.) A \textbf{finite state machine\sepfootnote{11_03}\sepfootnote{11_04}} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
 
 \begin{figure}
+    \includegraphics[width=\textwidth]{figure_11_1_diagram.png}
     \caption{Fig. 11-2 \textit{Logic tree for <exponent>}}
     \label{fig:11_02}
 \end{figure}
@@ -517,6 +519,244 @@ Evidently our program will input a string terminated by a right parenthesis "\bc
     : get$ ASCII) TEXT PAD X$ $! ;
 \end{lstlisting}
 
+Since the rules are inherently recursive, we push the input string onto a stack before operations commence. What stack? Clearly we need a stack that can hold strings of “arbitrary” length. The strings cannot be too long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact. like (gr: )1 .
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figure_11_4_diagram.png}
+    \caption{Fig. 11-4 \textit{Pseudocode/flow diagram for "parse"}}
+    \label{fig:11_04}
+\end{figure}
+
+\begin{lstlisting}
+TASK GAMMA
+\ FINITE STATE MACHINE
+: WIDE 0 ;
+: FSM: ( width 0 -- ) CREATE , , ]
+    DOES> ( col# -- )
+        UNDER D@        ( -- adr col# width state )
+        * + 1+ 4*       ( -- adr offset )
+        OVER +          ( -- adr adr1 )
+        DUP@ SWAP 2+    ( -- adr [adr'] adr1+2 )
+        EXECUTE@        ( -- adr [adr'] state' )
+        ROT! EXECUTE    ;
+0 CONSTANT >0 3 CONSTANT >3
+1 CONSTANT >1 4 CONSTANT >4
+2 CONSTANT >2 5 CONSTANT >5
+\ END FINITE STATE MACHINE
+
+\ Automatic conversion tables
+: TAB:  ( #bytes -- )
+    CREATE  HERE OVER ALLOT
+            SWAP 0 FILL     \ init table
+    DOES>   + C@ ;
+
+: install   ( col# adr char.n char.1 -- )    \ fast fill
+    SWAP 1+ SWAP
+    DO DDUP I + C! LOOP DDROP ;
+\ end automatic conversion tables
+
+\ STRING HANDLING
+HEX
+\ Note: ?((( ...... ))) conditionally compiles "......"
+FIND $! 0=
+  ?((( : $! ( sadr dadr -- ) OVER C@ 1+  CMOVE ; )))
+FIND $+ 0=
+  ?((( : $+ ( adr$1 adr$2 -- pad )
+    DUPC@   ( -- $adr a )
+    >R 1+ OVER C@ PAD + 1+
+    R@ <CMOVE PAD $!
+    R> PAD C@ + 0 MAX FF MIN    PAD C! ; )))
+DECIMAL
+: 1+C!  ( adr -- ) DUPC@ '+ SWAP C! ;
+: -BL  ( $adr -- )   \ delete all blanks from $
+    DUP >R 0 PAD C! COUNT OVER + SWAP
+    DO I C@ DUP@ 32 <>
+        IF  PAD COUNT = C! PAD 1+C!
+        ELSE DROP THEN
+    LOOP    PAD R> $! ;
+\ END STRING HANDLING
+
+\ PARSE WORDS
+\ Note: The factor *A/ in the input string
+\ means (A/ + M sub A)
+0 VAR star
+: star! 123 IS star DROP ;  \ set 7th bit if 1st char=*
+
+0 VAR #/                    \ counts # of factors
+: +#/       AT #/ 1+!       DROP ; \ inc #/
+
+: err CR -1 ABORT" Name-> letter (letter | numeral )*" ;
+: +PAD ( char -- ) star OR       \ set bit 7
+    PAD COUNT + C! PAD C@ '+ PAD C! 0 IS star ;
+    
+5 WIDE FSM: (factor)    (char col# -- )
+\ input | other | letter | digit |   /   |   *   |
+\ state -----------------------------------
+(0)     err #0  +PAD >2  err  >0  +#/ >5  star! >1
+(1)     err #0  +PAD >2  err  >1  +#/ >5  err   >1
+(2)     err #0  +PAD >3  +PAD >3  +#/ >5  err   >2
+(3)     err #0  +PAD >4  +PAD >4  +#/ >5  err   >3
+(4)     err #0  DROP >4  DROP >4  +#/ >5  err   >4
+    ;       \ terminate definition
+
+128 TAB:    [factor]        \ convert char to col#
+1 '[factor]     ASCII Z ASCII A install
+1 '[factor]     ASCII z ASCII a install
+2 '[factor]     ASCII 0 ASCII 9 install
+3 '[factor]     ASCII / + C!
+4 '[factor]     ASCII * + C!
+
+: <factor>  (adr -- adr')
+    PAD 0!  '(factor) 0! 0 IS star  \ initialize
+    BEGIN DUPC@ DUP     [factor] (factor) 1+
+        '(factor) @ 5 =
+    UNTIL ;
+
+CREATE factor{ 20 4* ALLOT OKLW     \ up to 20 factors
+: } ( adr n - adr + 4*n) 4* + ; \ compute address
+
+0 VAR N 0 VAR N1
+CREATE  BUF$ 20 ALLOT OKLW      \ data structures
+
+: unstar 127 AND ;  \ token[*A] = token[A] 128 OR
+: $= ( $adr1 $adr2 -- f)
+    -1 -ROT COUNT
+    ROT COUNT ( -- $adr2+1 n2 $adr1+1 n1 )
+    ROT DDUP =
+    IF DROP
+        0 DO  DUPC@ unstar  >R 1+
+            OVER C@ unstar R>  <>
+            IF ROT NOT -ROT LEAVE THEN
+            SWAP 1+
+        LOOP DDROP
+    ELSE DDROP DDROP NOT THEN ;
+: check.table ( -- )    \ prevent duplicate tokens
+    -1 IS N1 LEAVE THEN
+    LOOP ;
+
+: +buf$ N N1 -1 = AND N1 -1 > N1 AND +
+                                    \ token N or N1
+    PAD 1+ C@ 128 AND OR            \ if star, set bit 7
+    BUF$ DUPC@ + 1+ C! BUG$ 1+C! ;
+                                    \ append token
+
+: tokeniz ( $adr -- )                \ decompose into factors
+    factor{ 80 0 FILL               \ initialize table
+    COUNT OVER + ( -- $adr+1 $adr' ) \ addresses
+    >R                  \ $adr' = $adr+LEN($) + 1
+    0 BUF$ C!           \ init. buffer
+    0 IS N              \ init. N
+    BEGIN <factor>      \ begin loop; get factor
+        check.table     \ prevent multiple entries
+        +buf$           \ add factor to tokenized $
+        N1 -1 =         \ not in table?
+        IF PAD factor{ N } $!   \ put in table
+            AT N 1+!    \ inc. N
+        THEN
+    DUP R@ = UNTIL      \ end loop
+    DROP RDROP ;        \ clean up
+\ END PARSE WORDS
+
+\ $stack
+CREATE $stack 20 20 * 2+ ALLOT OKLW     \ 2 for ptr
+: $push ( $adr -- )
+    DUPC@ 19 > ABORT" STRING TOO LONG!"
+    $stack DUP@ DUP 19 > ABORT" $stack too deep!"
+    20 * 2+ + $!    $stack 1+! ;
+: $pop  ( $adr -- ) $stack DUP@ 1- 0 MAX
+    DDUP SWAP !
+    20 * 2+ + SWAP $!
+\ end $stack
+
+CREATE X$ 80 ALLOT OKLW \ buffer for input $, tail$
+: get$ ASCII ) TEXT     \ input a $ terminated by )
+    PAD -BL             \ delete blanks
+    PAD X$ $! ;
+
+: 1factor ( -- a )      \ get 1 factor, tail -> x$
+    BUF$ 1+ C@          ( -- a )
+    BUF$ COUNT 1- >R
+    1+ X$ 1+ R@ <CMOVE  \ tail -> x$
+    R> X$ C! ;          \ adjust count
+: 2factors ( -- a b )   \ get 1st 2 factors
+    1factor X$ BUF$ $! 1factor ;
+
+0 VAR sign              \ emit correct sign
+2 TAB: [sign]           \ make table
+ASCII + '[sign]    C!   \ fill table
+ASCII - '[sign] 1+ C!
+: .sign ( a -- ) 64 AND 0> [sign] sign AND EMIT ;
+
+\ Note: we mark prime (') by 64 OR (set bit 6 in token)
+\   since 1st factor is never ', we set bit 6 for leading "-" sign
+: prime!    64 OR  ;
+: unprime   63 AND ;
+: A.B   ( a b -- )      \ emit "dot product"
+    unprime             \ b' -> b
+    OVER .sign          \ emit sign
+    SWAP unprime        \ drop leading "-"
+    DDUP MAX -ROT MIN   \ sort factors
+    factor{ SWAP } $.
+    ASCII . EMIT factor{ SWAP } $.  -1 IS sign ;
+
+: clean ( $adr -- )     \ unprime all factors
+    COUNT OVER + SWAP
+    DO I C@ unprime I C! LOOP ;
+
+
+: rearrange      ( a b -- )
+    1 BUF$  \ init buf$
+    BUF$ X$ $+ PAD BUF$ $!       \ buf$-> _/x/
+    prime!          ( -- a b' )
+    BUF$ COUNT + C! BUF$ 1+C!    \ buf$-> _/x/b'/
+    64 XOR       ( -- a xor 64 ) \ toggle sign of a
+    BUF$ 1+ C! ; ( -- )          \ buf$-> ~a/x/b'/
+
+: setup     X$ tokenize         \ form token$
+            $stack 0!           \ init $stack
+            0 IS sign           \ init sign flags
+            BUF$ $push ;        \ input token$ on $ stack
+
+\                               debugging code
+: $$.   ( $adr -- ) COUNT OVER + SWAP   \ translate token$
+    DUPC@ .sign factor{ OVER C@ unprime } $. ."/"
+    1+ DO   factor{ I C@ unprime } $.
+            I C@ 64 AND 0>              \ primed?
+            IF ." '" THEN   ."/"
+    LOOP ;
+: dump$stack? DEBUG NOT IF EXIT THEN
+    $stack 2+       ( -- $adr[0] )
+    $stack @ DUP 0= \ $stack empty?
+    IF DDROP CR ." $stack empty" EXIT THEN
+    0 DO I 20 * OVER + CR $$. LOOP DROP ;
+0 VAR DEBUG
+: DEBUG-ON  -1 IS DEBUG ;
+: DEBUG-OFF  0 IS DEBUG ;
+\               end bebugging code
+
+: (.    ."("  0 IS sign ;
+: ).    .")" -1 IS sign ;
+: parse dump$stack?
+    BUF$    $pop    2factors ( -- a b )
+    DUP     64 AND 0>        \ b = b'?
+    IF      DDROP EXIT THEN
+    DDUP A.B    ( -- a b )   \ output
+    X$ C@ 0>                 \ more?
+    IF  rearrange   \ buf$=    ~a/x/b'/
+        BUF$ $push           \ ~a/x/b'/
+        X$ clean X$ $push    \    x/
+        (. RECURSE ).
+           RECURSE
+    ELSE    DDROP   THEN ;
+
+: TR(   get$                 \ input $
+        setup
+        ." =" CR             \ for beauty
+        parse ;
+\end{lstlisting}
+
+Since the tokens are 1-byte integers smaller than 32, their 5th, 6th, and 7th bits can serve as flags to indicate their properties. For example, we need to indicate whether a factor was "starred", \ie. whether it represents $(\tr{A} + m_{A}I)$ or $\tr{A}$ , according to the rule
+
 Since the rules are inherently recursive, we push the input string onto a \textbf{stack} before operations commence. What stack? Clearly we need a stack that can hold strings of "arbitrary" length. The strings cannot be \textit{too} long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact, like $\left(\frac{1}{2}N)\right)$\bc{!}.
 
 The pseudocode for the last word of the definition is clearly something like
@@ -596,11 +836,20 @@ Note: characters shown in light typeface are \bc{EMIT}ed.
 
 have to be modified to keep its state variable on the stack, since otherwise it could not support recursion. The resulting pseudocode program is shown in Fig. \ref{fig:11_05}. Implementing the code is now straightforward, so we omit the details, such as how to define \bc{PERP} to appropriately mark the symbols. The simplest method is a linked list or table of some sort, that is filled by \bc{PERP} and consulted by the test word \bc{perps?}.
 
+
 \TallC{How} might we implement a leading factor of $\gamma^{5}$? While there is no difficulty in taking traces of the form
 
 \begin{equation}
 Tr( \gamma^{5} \tr{A} \tr{B} \tr{C} \tr{D} ...) \equiv Tr(\varepsilon_{v\mu\kappa\lambda} A^{\mu} B^{v} C^{\kappa} \gamma^{\lambda} \tr{D} ...),
 \end{equation}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figure_11_5_diagram.png}
+    \caption{Fig. 11-5 \textit{Pseudocode/flow diagram for extended "parse"}}
+    \label{fig:11_05}
+\end{figure}
+
+so the key issue becomes decomposing leading starred factors, saving the pieces on the \$stack until at least three distinct unstarred factors are adjacent on the left. Replace these by a special 
 
 expressions with $\gamma^{5}$ between "starred" factors are more difficult. However, the permutation properties of traces let us write, \eg,
 
@@ -797,7 +1046,7 @@ This breaks the top expression at the + sign between "\bc{)}" and \bc{Z}. We sho
 
 and
 
-\begin{lstlisting}
+\begin{dd}
     Z/(W-SIN(THETA*PI/180)/4)
 \end{lstlisting}
 
@@ -1080,7 +1329,7 @@ We may therefore identify a function by splitting at the first left parenthesis,
 
 \begin{lstlisting}
     : >(    ( $end $beg -- $end $beg' ) \ find first "("
-        1- BEGIN 1+ DUPC@ ASCII( = >R
+        1- BEGIN 1+ DUPC@ ASCII ( = >R
               DDUP = R> OR UNTIL ;
 \end{lstlisting}
 
