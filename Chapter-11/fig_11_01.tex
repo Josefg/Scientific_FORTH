@@ -1,0 +1,107 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[framed, every edge/.style  = {draw,-{Kite[length=6pt,width=4pt]}, line width=0.5mm}]
+    % Start
+    \node[inner sep=0pt, anchor=center] (start) at (0,0) {};
+    
+    % 1st Branch Nodes
+    \node[coordinate,below      =1.75cm of start]               (1branch)   {};
+    \node[coordinate,below  left=0.5cm and 0.5cm of 1branch]    (1n)        {};
+    \node[coordinate,below      =0.75cm of 1n]                  (11n)       {};
+    \node[coordinate,below right=1.5cm and 1.5cm of 1branch]    (1y)        {};
+    \node[inner sep=0pt, anchor=north] (1yotimes) at (1y) {\LARGE $\otimes$};
+    
+    % 2nd Branch Nodes
+    \node[coordinate,below      =0.75cm of 1yotimes]            (2branch)   {};
+    \node[coordinate,below right=1.5cm and 1.5cm of 2branch]    (2n)        {};
+    \node[coordinate,below      =1.0cm of 2branch]              (2y)        {};
+    
+    % 3rd Branch Nodes
+    \node[coordinate,below=0.75cm of 2n]                        (3branch)   {};
+    \node[coordinate,below  left=1.0cm and 1.5cm of 3branch]    (3n)        {};
+    \node[coordinate,below right=1.0cm and 1.5cm of 3branch]    (3y)        {};
+    \node[inner sep=0pt, anchor=north] (3yotimes) at (3y) {\LARGE $\otimes$};
+    
+    % 4th ***left*** Branch Nodes
+    \node[coordinate,below=0.75cm of 3n]                        (l4branch)  {};
+    \node[coordinate,below=0.75cm of l4branch]                  (l4n)       {};
+    \node[coordinate,below  left=1.5cm and 2.0cm of l4branch]   (l4y)       {};
+    \node[coordinate,below=0.5cm of l4y]                        (l44y)      {};
+
+    % 4th ***right*** Branch Nodes
+    \node[coordinate,below=0.5cm of 3yotimes]                   (r4branch)  {};
+    \node[coordinate,below right=1.25cm and 1.0cm of r4branch]  (r4n)       {};
+    \node[coordinate,below=1.0cm of r4branch]                   (r4y)       {};
+    
+    % 5th Branch Nodes
+    \node[coordinate,below=0.75cm of r4n]                       (5branch)   {};
+    \node[coordinate,below=0.75cm of 5branch]                   (5n)        {};
+    \node[coordinate,below right=1.0cm and 1.5cm of 5branch]    (5y)        {};
+    \node[coordinate,below=0.75cm of 5y]                        (55y)       {};
+    
+    % Start
+    \draw (start)       edge                                (1branch)   ;
+    
+    % 1st Branch edges
+    \draw (1branch)     edge  node[xshift=-0.5cm] {No}      (1n)        ;
+    \draw (1n)          edge                                (11n)       ;
+    \draw (1branch)     edge  node[xshift=0.4cm]  {Yes}     (1y)        ;
+    
+    % 2nd Branch edges
+    \draw (1yotimes)        edge                            (2branch)   ;
+    \draw (2branch)     edge  node[xshift=0.4cm]  {No}      (2n)        ;
+    \draw (2branch)     edge  node[xshift=-0.4cm] {Yes}     (2y)        ;
+    
+    % 3rd Branch edges
+    \draw (2n)          edge                                (3branch)   ;
+    \draw (3branch)     edge  node[xshift=-0.5cm] {No}      (3n)        ;
+    \draw (3branch)     edge  node[xshift=0.5cm]  {Yes}     (3y)        ;
+    
+    % 4th ***left*** Branch edges
+    \draw (3n)          edge                                (l4branch)  ;
+    \draw (l4branch)    edge  node[xshift=0.4cm]  {No}      (l4n)       ;
+    \draw (l4branch)    edge  node[xshift=-0.6cm] {Yes}     (l4y)       ;
+    \draw (l4y)         edge                                (l44y)      ;
+    
+    % 4th ***right*** Branch edges
+    \draw (3yotimes)    edge                                (r4branch)  ;
+    \draw (r4branch)    edge  node[xshift=0.4cm]  {No}      (r4n)       ;
+    \draw (r4branch)    edge  node[xshift=-0.4cm] {Yes}     (r4y)       ;
+    
+    % 5th Branch edges
+    \draw (r4n)         edge                                (5branch)   ;
+    \draw (5branch)     edge  node[xshift=-0.4cm] {No}      (5n)        ;
+    \draw (5branch)     edge  node[xshift=0.5cm]  {Yes}     (5y)        ;
+    \draw (5y)          edge                                (55y)       ;
+    
+    % All repeats
+    \node[circle, fill=black, draw, below=0.0cm of 2y]  (2yrepeat)  {};
+    \node[circle, fill=black, draw, below=0.0cm of r4y] (r4yrepeat) {};
+    
+    % All Exits
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 11n  ] (11nexit) {};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of l44y ] (l44yexit){};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of l4n  ] (l4nexit) {};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 5n   ] (5nexit)  {};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 55y  ] (55yexit) {};
+    
+    % All Text
+    \node[below right=0.0cm and 0.1cm of start, align=left] (starting)  {START\\Get first char\\"-" or digit?};
+    \node[align=left, below=0.0cm of 11nexit, ] (11nef)  {Exit,\\return\\"false"};
+    \node[align=left, below=0.0cm of l44yexit,] (l44yet) {Exit,\\return\\"true"};
+    \node[align=left, below=0.0cm of l4nexit, ] (l4nef)  {Exit,\\return\\"false"};
+    \node[align=left, below=0.0cm of 5nexit,  ] (5nef)   {Exit,\\return\\"false"};
+    \node[align=left, below=0.0cm of 55yexit, ] (55yet)  {Exit,\\return\\"true"};
+    
+    % All boardered rectangles
+    \node[rectangle, draw=black, below   left=0.0cm and 0.2cm of 1y]  (1ybegin)      {begin};
+    \node[rectangle, draw=black, below   left=0.0cm and 0.2cm of 2y]  (2ybrepeat)    {repeat};
+    \node[rectangle, draw=black, below  right=0.0cm and 0.2cm of 2n]  (2nbdecimal)   {decimal point};
+    \node[rectangle, draw=black, below   left=0.0cm and 0.2cm of 3y]  (3ybegin)      {begin};
+    \node[rectangle, draw=black, below   left=0.0cm and 0.2cm of 3n]  (3nbexponent)  {exponent?};
+    \node[rectangle, draw=black, below   left=0.0cm and 0.2cm of r4y] (r4ybrepeat)   {repeat};
+    \node[rectangle, draw=black, below  right=0.0cm and 0.2cm of r4n] (r4nbexponent) {exponent?};
+    
+\end{tikzpicture}
+\caption{\textit{Logic tree for <floating point \#>}} \label{fig:11_01}
+\end{figure}

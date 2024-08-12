@@ -1,0 +1,63 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[framed]
+    % Nodes - prime path
+    \node[inner sep=0pt, anchor=center] (start) at (0,0) {\LARGE $\otimes$};
+    
+    % Match code to start
+    % Code on the right
+    \node[right=1.0cm of start] (1a) {: parse\space\space\space\space\space \$pop};
+    \node[below right=0.50cm and   0.5cm of 1a, anchor=text] at (1a.text) (2b)  {2factors (- - a b)};
+    \node[below right=0.50cm and   0.0cm of 2b, anchor=text] at (2b.text) (3c)  {b=b'?};
+    \node[below right=0.75cm and   0.0cm of 3c, anchor=text] at (3c.text) (4d)  {A.B};
+    \node[below right=0.75cm and   0.0cm of 4d, anchor=text] at (4d.text) (5e)  {length(x) 0>};
+    \node[below right=0.75cm and   0.0cm of 5e, anchor=text] at (5e.text) (6f)  {rearrange};
+    \node[below right=0.50cm and   0.0cm of 6f, anchor=text] at (6f.text) (zz)  {};
+    \node[below right=0.50cm and   0.0cm of zz, anchor=text] at (zz.text) (7g)  {." (" recurse :")"};
+    \node[below right=1.00cm and   0.0cm of 7g, anchor=text] at (7g.text) (8h)  {recurse};
+    \node[below right=1.00cm and  -0.5cm of 8h, anchor=text] at (8h.text) (9i)  {;};
+    
+    % Text on the right of code
+    \node[right=4.2cm of start] (a1)    {\textbackslash{}  a/b/x/};
+    \node[below right=0.5cm  and  0.0cm of a1, anchor=text] at (a1.text) (a2)   {\textbackslash{}  x/};
+    \node[below right=0.5cm  and  0.0cm of a2, anchor=text] at (a2.text) (a3)   {\textbackslash{}  done?};
+    \node[below right=0.75cm and  0.0cm of a3, anchor=text] at (a3.text) (a4)   {\textbackslash{}  output};
+    \node[below right=0.75cm and  0.0cm of a4, anchor=text] at (a4.text) (a5)   {\textbackslash{}  more?};
+    \node[below right=0.75cm and  0.0cm of a5, anchor=text] at (a5.text) (a6)   {\textbackslash{}  \~{}a/x/b'/};
+    \node[below right=0.5cm  and  0.0cm of a6, anchor=text] at (a6.text) (xx)   {\textbackslash{}  x/};
+    \node[below right=0.5cm  and  0.0cm of xx, anchor=text] at (xx.text) (a8)   {\textbackslash{}  Tr(x/};
+    \node[below right=1.0cm  and  0.0cm of a8, anchor=text] at (a8.text) (a9)   {\textbackslash{}  Tr(\~a/x/b'/)};
+    
+    % Nodes - prime path
+    \node[coordinate, below=0.75cm of start]    (yup)       {};
+    \node[coordinate, below=2.25cm of start]    (nope)      {};
+    \node[circle, fill=black, draw, below=3.875cm of start]                 (decision1) {};
+    \node[circle, draw, fill=black, below=5.00cm of start, anchor=center]   (decision2) {};
+    \node[rectangle, draw, below=5.75 of start, minimum width=1.5cm, minimum height=0.5cm, pattern=dots] (exit1) {};
+    
+    % Nodes - left path
+    \node[coordinate,  left=1.5cm of yup]       (yup2)  	{};
+    \node[coordinate,  left=1.5cm of nope]      (nope2)     {};
+    \node[rectangle, draw, below=.5cm of nope2, minimum width=1.5cm, minimum height=0.5cm, pattern=dots] (exit2) {};
+
+    % Connections - prime path
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (start)     -- (yup) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (yup)       -- (nope) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (nope)      -- (decision1) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (decision1) -- (decision2) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (decision2) -- (exit1) ;
+    
+    % Connections - left path
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (yup)     	--  (yup2) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (nope)    	--  (nope2) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (yup2)    	--  (exit2) ;
+
+    % Labels
+    \node[anchor=south west] at (yup2.north east)  {Yes};
+    \node[anchor=south west] at (nope2.north east) {No};
+    \node[below=0.01cm of exit1] {Exit};
+    \node[below=0.01cm of exit2] {Exit};
+
+\end{tikzpicture}
+\caption{Pseudocode/flow diagram for "parse"} \label{fig:11_01_04}
+\end{figure}

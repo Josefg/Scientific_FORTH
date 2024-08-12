@@ -108,8 +108,8 @@
 
 % Create charts with tikz
 \usepackage{tikz}
-\usetikzlibrary{arrows,shapes,positioning}
-\usetikzlibrary{calc,decorations.markings}
+\usetikzlibrary{arrows,shapes,positioning,patterns,arrows.meta}
+\usetikzlibrary{calc,decorations.markings,backgrounds}
     \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
     \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
     \tikzstyle{arrow}   = [thick,->,>=stealth]
@@ -222,26 +222,26 @@
 \begin{document}
     \tableofcontents
     \frontmatter
-        % \include{Cover/Printing_Page}
-        % \include{Cover/Warning_and_Disclamer_of_Warranty}
-        % \include{Preface/Preface}
+        % \input{Cover/Printing_Page}
+        % \input{Cover/Warning_and_Disclamer_of_Warranty}
+        % \input{Preface/Preface}
     \mainmatter
         \input{footnotes}
         % must include footnotes for all Chapters
         % *** include{chapter on which you are working} ***
-        % \include{Chapter-01/01-Toward-Scientific-FORTH}
-        % \include{Chapter-02/02-Programming-in-FORTH}
-        % \include{Chapter-03/03-Floating-Point-Arithmetic}
-        % \include{Chapter-04/04-The-80x87-Family}
-        % \include{Chapter-05/05-Scientific-Data-Structures}
-        % \include{Chapter-06/06-Programming-Examples}
-        % \include{Chapter-07/07-Complex-arthmetic-in-FORTH}
-        % \include{Chapter-08/08-More-Programming-Examples}
-        % \include{Chapter-09/09-Linear-Algebra}
-        % \include{Chapter-10/10-Strings-and-IO-in-FORTH}
-         \include{Chapter-11/11-Symbolic-Programming}
-        % \include{Cover/Backcover}
+        \input{Chapter-01/01-Toward-Scientific-FORTH}
+        \input{Chapter-02/02-Programming-in-FORTH}
+        \input{Chapter-03/03-Floating-Point-Arithmetic}
+        \input{Chapter-04/04-The-80x87-Family}
+        \input{Chapter-05/05-Scientific-Data-Structures}
+        \input{Chapter-06/06-Programming-Examples}
+        \input{Chapter-07/07-Complex-arthmetic-in-FORTH}
+        \input{Chapter-08/08-More-Programming-Examples}
+        \input{Chapter-09/09-Linear-Algebra}
+        \input{Chapter-10/10-Strings-and-IO-in-FORTH}
+        \input{Chapter-11/11-Symbolic-Programming}
+        % \input{Cover/Backcover}
         % \printindex
-        % \include{Bibliography/Bibliography}
+        % \input{Bibliography/Bibliography}
 \VerbatimFootnotes
 \end{document}

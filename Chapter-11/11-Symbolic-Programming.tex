@@ -76,11 +76,7 @@ This pattern begins with a minus or nothing, followed by a digit and a decimal p
 \subsection{Pattern recognizers}
 \TallC{One} often sees pattern recognizers expressed as complex logic trees, \textit{i.e.} as sequences of nested conditionals, as in Fig. \ref{fig:11_01} on page \pageref{fig:11_01} below. As we see, the tree is already five levels deep, even though we have concealed the decisions pertaining to the exponent part of the number in a word \textbf{exponent?}. When programmed in the standard procedural fashion with \bc{IF...ELSE...THEN} statements, the program becomes too long
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{figure_11_1_diagram.png}
-    \caption{Fig. 11-1 \textit{Logic tree for <floating point \#>}}
-    \label{fig:11_01}
-\end{figure}
+\input{Chapter-11/fig_11_01}
 
 and too complex either for easy comprehension or for easy maintainance\sepfootnote{11_02}.
 
@@ -137,13 +133,9 @@ which,as we see in Fig. \ref{fig:11_02} below, has nearly as convoluted a logic 
 
 \subsection{finite state machines}\label{chap:11_02_02}
 
-Just as we needed a FSM to achieve a graceful definition of \bc{fp\#?}, we might try to define \bc{skip_exponent} as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to \textbf{deterministic} FSMs.) A \textbf{finite state machine\sepfootnote{11_03}\sepfootnote{11_04}} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
+\TallC{Just} as we needed a FSM to achieve a graceful definition of \bc{fp\#?}, we might try to define \bc{skip_exponent} as a state machine also. This means it is time to define what we mean by finite state machines. (We restrict attention to \textbf{deterministic} FSMs.) A \textbf{finite state machine\sepfootnote{11_03}\sepfootnote{11_04}} is a program (originally it was a hard-wired switching circuit\sepfootnote{11_05}) that takes a set of discrete, mutually exclusive
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{figure_11_1_diagram.png}
-    \caption{Fig. 11-2 \textit{Logic tree for <exponent>}}
-    \label{fig:11_02}
-\end{figure}
+\input{Chapter-11/fig_11_02}
 
 inputs and also maintains a \textbf{state variable} that tracks the history of the machine's inputs. According to which state the machine is in, a given input will produce different results. The FSM program is most easily expressed in tabular form, as in Table \ref{table:11_01}, which we interpret as follows:
 
@@ -236,10 +228,11 @@ Since state tables clearly document FSMs, it eventually occurred to me to let FO
 \TallC{Compilation}implies a \textbf{compiling word}; after some experimentation\sepfootnote{11_11} I settled on the following usage\sepfootnote{11_12}:
 
 \begin{figure}[H]
+	\centering
     \begin{tabular}{|c|}
         \hline
         \begin{lstlisting}
-    4 WIDE   FSM:   (exporters)
+    4 WIDE   FSM:   (exponents)
     \ Input: | other    | dDeE      | +/-       | digit  |
     \ state: - - - - - - - - - - - - - - - - - - - - - - -
      (0)     NEXT   >5    1+   >1   Error  >5   NEXT   >5
@@ -521,11 +514,54 @@ Evidently our program will input a string terminated by a right parenthesis "\bc
 
 Since the rules are inherently recursive, we push the input string onto a stack before operations commence. What stack? Clearly we need a stack that can hold strings of “arbitrary” length. The strings cannot be too long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact. like (gr: )1 .
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{figure_11_4_diagram.png}
-    \caption{Fig. 11-4 \textit{Pseudocode/flow diagram for "parse"}}
-    \label{fig:11_04}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[framed]
+    % Nodes - prime path
+    \node(start) at (0,0) {};
+	\node[below=0.5cm of start] 	(1a) 		{};
+	\node[ left=1.0cm of 1a]		(1decision) {};
+	\node[below=0.5cm of 1decision]	(1skipn)	{};
+	\node[below=0.5cm of 1skipn]	(1skipp) 	{};
+	\node[below=1.0cm of 1skipp]	(2decision) {};
+	\node[ left=1.0cm of 2decision]	(2a) 		{};
+	
+	\draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (start)     	-- (1a) 		;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (1a) 		-- (1decision) ;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (1decision) 	-- (1skipn)	;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (1skipn)	 	-- (1skipp) 	;
+    \draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (1skipp) 	-- (2decision) ;
+	\draw[-{Kite[length=6pt,width=4pt]}, line width=0.5mm] (2decision) 	-- (2a) 		;
+
+\end{tikzpicture}
+\caption{\textit{Logic tree for <exponent>}}\label{fig:11_01}
 \end{figure}
+
+Since the tokens are 1-byte integers smaller than 32, their 5th, 6th, and 7th bits can serve as flags to indicate their properties. For example, we need to indicate whether a factor was "starred", \ie. whether it represents $(\tr{A} + m_{A}I)$ or $\tr{A}$ , according to the rule
+
+Since the rules are inherently recursive, we push the input string onto a \textbf{stack} before operations commence. What stack? Clearly we need a stack that can hold strings of "arbitrary" length. The strings cannot be \textit{too} long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact, like $\left(\frac{1}{2}N)\right)$\bc{!}.
+
+The pseudocode for the last word of the definition is clearly something like
+
+\begin{lstlisting}
+    : TR(   )get$   \ get a $ -terminated with ")"
+            setup   \ push  $ on $stack
+            parse ;
+\end{lstlisting}
+
+The real work is done by \bc{parse}, whose pseudocode is shown below in Fig. \ref{fig:11_04}; note how recursion simplifies the problem of matching left and right parentheses in the output.
+
+Next we define the underlying data structures. Recursion demands a \textbf{stack} to hold strings in various stages of decomposition and permutation. Since the number of terms grows very rapidly with the number of factors, it will turn out that taking the trace of as many as 20 distinct factors is a matter of some weeks on -say- a 25 Mhz 80386 PC; that is, 14 or 16 factors are the largest practicable number. So if we make provision for expressions 20 factors long, that should be large enough for practical purposes\sepfootnote{11_20}.
+
+\input{Chapter-11/fig_11_04}
+
+How deep an the \$stack get? The algorithm expressed by the rule
+
+\begin{verbatim}
+\ Tr( a/b/prod/) -> a.b ( Tr( prod/) ) - Tr( a/prod/b'/)
+\end{verbatim}
+
+suggests that for an expression of length n=2k, the maximum depth will be k + 1. Thus we should plan for a stack depth of at least 11, perhaps 12 for safety. Assuming factor-names up to three characters long, and strings of up to 20 names, we need $\approx$60 characters per string. My first impulse was to create a dynamic \textbf{\$stack} that could accomodate strings of variable length, meaning that some 330 bytes of storage would be needed, at the cost of some complexity in keeping track of the addresses. This is a big improvement on 720 bytes needed for a 60-wide fixed-width stack, of course. However, the convenience of a fixed-width \$stack led me ultimately to set up a table (array) of 20 names, whose indices would act as tokens; that is, the strings that actually go on the \$stack would be tokenized. The memory cost of the table together with a 12-deep, fixed-width \$stack is thus only 80 + 242 = 322 bytes.
 
 \begin{lstlisting}
 TASK GAMMA
@@ -754,35 +790,6 @@ ASCII - '[sign] 1+ C!
         ." =" CR             \ for beauty
         parse ;
 \end{lstlisting}
-
-Since the tokens are 1-byte integers smaller than 32, their 5th, 6th, and 7th bits can serve as flags to indicate their properties. For example, we need to indicate whether a factor was "starred", \ie. whether it represents $(\tr{A} + m_{A}I)$ or $\tr{A}$ , according to the rule
-
-Since the rules are inherently recursive, we push the input string onto a \textbf{stack} before operations commence. What stack? Clearly we need a stack that can hold strings of "arbitrary" length. The strings cannot be \textit{too} long because the number of terms of output, hence the operating time, grows with the number of factors N, in fact, like $\left(\frac{1}{2}N)\right)$\bc{!}.
-
-The pseudocode for the last word of the definition is clearly something like
-
-\begin{lstlisting}
-    : TR(   )get$   \ get a $ -terminated with ")"
-            setup   \ push  $ on $stack
-            parse ;
-\end{lstlisting}
-
-The real work is done by \bc{parse}, whose pseudocode is shown below in Fig. \ref{fig:11_04}; note how recursion simplifies the problem of matching left and right parentheses in the output.
-
-Next we define the underlying data structures. Recursion demands a \textbf{stack} to hold strings in various stages of decomposition and permutation. Since the number of terms grows very rapidly with the number of factors, it will turn out that taking the trace of as many as 20 distinct factors is a matter of some weeks on -say- a 25 Mhz 80386 PC; that is, 14 or 16 factors are the largest practicable number. So if we make provision for expressions 20 factors long, that should be large enough for practical purposes\sepfootnote{11_20}.
-
-\begin{figure}
-    \caption{Fig. 11-4 \textit{Pseudocode/flow diagram for "parse"}}
-    \label{fig:11_04}
-\end{figure}
-
-How deep an the \$stack get? The algorithm expressed by the rule
-
-\begin{verbatim}
-\ Tr( a/b/prod/) -> a.b ( Tr( prod/) ) - Tr( a/prod/b'/)
-\end{verbatim}
-
-suggests that for an expression of length n=2k, the maximum depth will be k + 1. Thus we should plan for a stack depth of at least 11, perhaps 12 for safety. Assuming factor-names up to three characters long, and strings of up to 20 names, we need $\approx$60 characters per string. My first impulse was to create a dynamic \textbf{\$stack} that could accomodate strings of variable length, meaning that some 330 bytes of storage would be needed, at the cost of some complexity in keeping track of the addresses. This is a big improvement on 720 bytes needed for a 60-wide fixed-width stack, of course. However, the convenience of a fixed-width \$stack led me ultimately to set up a table (array) of 20 names, whose indices would act as tokens; that is, the strings that actually go on the \$stack would be tokenized. The memory cost of the table together with a 12-deep, fixed-width \$stack is thus only 80 + 242 = 322 bytes.
 
 Since the tokens are 1-byte integers smaller than 32, their 5th, 6th, and 7th bits can serve as flags to indicate their properties. For example, we need to indicate whether a factor was "starred", \ie. whether it represents $(\tr{A} + m_{A}I)$ or $\tr{A}$ , according to the rule
 
@@ -1046,7 +1053,7 @@ This breaks the top expression at the + sign between "\bc{)}" and \bc{Z}. We sho
 
 and
 
-\begin{dd}
+\begin{lstlisting}
     Z/(W-SIN(THETA*PI/180)/4)
 \end{lstlisting}
 

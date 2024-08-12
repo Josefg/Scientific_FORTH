@@ -1,0 +1,86 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[framed, every edge/.style  = {draw,-{Kite[length=6pt,width=4pt]}, line width=0.5mm}]
+    % Start
+    \node[inner sep=0pt, anchor=center] (start) at (0,0) {};
+    
+    % 1st Branch Nodes - first split
+    \node[coordinate,below      =1.0cm of start]                (1branch)   {};
+    \node[coordinate,below right=1.0cm and 1.0cm of 1branch]    (1n)        {};
+    \node[coordinate,below      =0.5cm           of 1n]         (11n)       {};
+    \node[coordinate,below  left=0.0cm  and 1.5cm of 1branch]   (1y)        {};
+    \node[coordinate,below  left=0.75cm and 0.0cm of 1y]        (11y)       {};
+    \node[coordinate,below  left=0.75cm and 0.0cm of 11y]       (111y)      {};
+    
+    % 2nd Branch Nodes - after skip+
+    \node[coordinate,below  left=0.75cm and 0.0cm of 111y]      (2branch)   {};
+    \node[coordinate,below right=1.0cm and 1.0cm of 2branch]    (2n)        {};
+    \node[coordinate,below      =0.5cm           of 2n]         (22n)       {};
+    \node[coordinate,below  left=0.0cm and 1.5cm of 2branch]    (2y)        {};
+    
+    % 3rd Branch Nodes - 
+    \node[coordinate,below  left=0.75cm and 0.0cm of 2y]        (3branch)   {};
+    \node[coordinate,below right=3.0cm and 0.0cm of 3branch]    (3n)        {};
+    \node[coordinate,below  left=0.75cm and 0.75cm of 3branch]  (3y)        {};
+    \node[coordinate,below  left=0.75cm and 0.0cm of 3y]        (33y)       {};
+    \node[coordinate,below right=0.75cm and 0.75cm of 33y]      (333y)      {};
+    
+    % 4th Branch Nodes
+    \node[coordinate,below right=3.0cm and 0.0cm of 3n]         (4n)        {};
+    \node[coordinate,below  left=0.75cm and 0.75cm of 3n]       (4y)        {};
+    \node[coordinate,below  left=0.75cm and 0.0cm of 4y]        (44y)       {};
+    \node[coordinate,below right=0.75cm and 0.75cm of 44y]      (444y)      {};
+    
+    % Start
+    \draw (start)       edge                                (1branch)   ;
+    
+    % 1st Branch edges
+    \draw (1branch)     edge  node[xshift=0.5cm]    {No}    (1n)    ;
+    \draw (1n)          edge                                (11n)   ;
+    \draw (1branch)     edge  node[yshift=0.2cm]    {Yes}   (1y)    ;
+    \draw (1y)          edge                                (11y)   ;
+    \draw (11y)         edge                                (111y)  ;
+    
+    % 2nd Branch edges
+    \draw (111y)        edge                                (2branch)   ;
+    \draw (2branch)     edge node[xshift=0.5cm]     {No}    (2n)        ;
+    \draw (2n)          edge                                (22n)       ;
+    \draw (2branch)     edge node[yshift=0.2cm]     {Yes}   (2y)        ;
+    
+    % 3rd Branch edges
+    \draw (2y)          edge                                (3branch)   ;
+    \draw (3branch)     edge node[xshift=0.5cm]     {No}    (3n)        ;
+    \draw (3branch)     edge node[xshift=-0.3cm, yshift=0.3cm]      {Yes}   (3y)        ;
+    \draw (3y)          edge                                (33y)       ;
+    \draw (33y)         edge                                (333y)      ;
+    
+    % 4th Branch edges
+    \draw (3n)          edge node[xshift=0.5cm]     {No}    (4n)        ;
+    \draw (3n)          edge node[xshift=-0.3cm, yshift=0.3cm]      {Yes}   (4y)        ;
+    \draw (4y)          edge                                (44y)       ;
+    \draw (44y)         edge                                (444y)      ;
+                                    
+    % All Exits
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 11n ] (11nexit) {};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 22n ] (22nexit) {};
+    \node[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, pattern=dots, below=0.0cm of 4n  ] (4nexit)  {};
+    
+    % All Exit text
+    \node[align=left, below right=0.0cm and 0.2cm of 11n] (11nE) {EXIT};
+    \node[align=left, below right=0.0cm and 0.2cm of 22n] (22nE) {EXIT};
+    \node[align=left, below right=0.0cm and 0.2cm of 4n]  (4nE)  {EXIT};
+    
+    % All other text
+    \node[align=left, below right=0.0cm and 0.1cm of start]     (starting)  {eDeE?};
+    \node[align=left, below  left=0.0cm and 0.1cm of 1y ]       (skipn)     {skip-};
+    \node[align=left, below  left=0.0cm and 0.1cm of 11y]       (skipp)     {skip+};
+    \node[align=left, below right=0.0cm and 0.1cm of 111y]      (1digit?)   {digit?};
+    \node[align=left, above right=0.1cm and 0.1cm of 3branch]   (2digit?)   {digit?};
+    \node[align=left, above right=0.1cm and 0.1cm of 3n]        (3digit?)   {digit?};
+    \node[align=left, below  left=0.0cm and 0.1cm of 2y]        (1p)        {1+};
+    \node[align=left, below  left=0.0cm and 0.1cm of 3y]        (2p)        {1+};
+    \node[align=left, below  left=0.0cm and 0.1cm of 4y]        (3p)        {1+};
+    
+\end{tikzpicture}
+\caption{\textit{Logic tree for <floating point \#>}} \label{fig:11_01}
+\end{figure}
