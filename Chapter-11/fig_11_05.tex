@@ -1,0 +1,127 @@
+\begin{figure}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            % Define styles for the shapes to keep the code clean and readable
+            dot/.style      ={circle, fill=black, minimum size=0.5cm},
+            exit_box/.style ={rectangle, draw, thick, pattern=north east lines, pattern color=gray, minimum width=1cm, minimum height=0.3cm, label=below:\textbf{Exit}},
+            main_line/.style={draw, thick, -{Stealth[length=2mm]}}
+                           ]
+            
+            % start
+            \coordinate (starter) at (0,0) {};
+            \node[circle, draw, thick, minimum size=0.5cm] (start) at (starter) {};
+                \draw[thick] (start.north west) -- (start.south east);
+                \draw[thick] (start.north east) -- (start.south west);
+            \node[align=left, anchor=west] at ([yshift=-0.4cm, xshift=1.0cm] start)
+                   {: parse \quad \$pop \quad \quad \textbackslash ~a/b/x/ -> buf\$\\
+                    \quad 1factors ( - - a) \quad ~\textbackslash ~tail -> x\$} ;
+
+            % left side 1
+            \coordinate (left_yes_1)    at ([yshift=-0.5cm, xshift=-1.0cm] start.south) {};
+            \coordinate (left_yes_2)    at ([yshift=-2.0cm, xshift=-1.0cm] start.south) {};
+            \coordinate (left_yes_3)    at ([yshift=-3.5cm, xshift=-1.0cm] start.south) {};
+            \node[exit_box] (exit_l1)   at ([yshift=-1.0cm,] left_yes_3) {};
+            \node[align=left, anchor=west] at ([xshift=-3.0cm] left_yes_1)
+                   {buf\$ empty?\\
+                    if exit then} ;
+            \node[align=left, anchor=west] at ([xshift=-3.0cm, ] left_yes_2)
+                   {x\$ empty?\\
+                    if exit then} ;
+            \node[align=left, anchor=west] at ([xshift=-3.0cm, ] left_yes_3)
+                   {b=b'? \quad \textbackslash done?\\
+                    if exit then} ;
+            
+            \draw[main_line] (start.south) |- (left_yes_1) {};
+            \draw[main_line] (start.south) |- (left_yes_2) {};
+            \draw[main_line] (start.south) |- (left_yes_3) {};
+            \draw[main_line] (left_yes_1)  -- (exit_l1.north) {};
+            
+            % left side 2
+            \coordinate (left2_yes)        at ([yshift=-5.5cm,] start.south) {};
+            \coordinate (left2_dot_c)      at ([yshift=-1.0cm, xshift=-0.75cm] left2_yes) {};
+            \node[dot]  (left2_dot)        at (left2_dot_c) {};
+            \node[exit_box] (left2_exit)   at ([yshift=-1.0cm,] left2_dot) {};
+            \node[align=left, anchor=west] at ([yshift=0.5cm, xshift=-3.25cm,] left2_dot_c)
+                   {twins?\\
+                    x\$ \$push\\
+                    a.b \quad (. recurse ).} ;
+            
+            \draw[main_line] (left2_yes)       -| (left2_dot.north)  {};
+            \draw[main_line] (left2_dot.south) -- (left2_exit.north) {};
+            
+            % right side 1
+            \coordinate     (right1_yes)   at ([yshift=-1.0cm,] start.south) {};
+            \coordinate     (right1_dot_c) at ([yshift=-1.0cm, xshift=1.0cm] right1_yes) {};
+            \coordinate     (right2_dot_c) at ([yshift=-0.75cm, ] right1_dot_c) {};
+            \node[dot]      (right1_dot)   at (right1_dot_c) {};
+            \node[dot]      (right2_dot)   at (right2_dot_c) {};
+            \node[exit_box] (exit_r1)      at ([yshift=-3.5cm, xshift=1.0cm,] start.south) {};
+            \node[align=left, anchor=west] at ([yshift=-1.5cm, xshift=1.5cm,] start.south)
+                   {star? if\\
+                    \quad rearrange*\\
+                    \quad m[a]. (. recurse ).} ;
+            \node[align=left, anchor=west] at ([xshift=0.5cm,] right2_dot_c)
+                   {\quad recurse} ;
+            
+            \draw[main_line] (right1_yes)       -| (right1_dot.north) {};
+            \draw[main_line] (right1_dot.south) -| (right2_dot.north) {};
+            \draw[main_line] (right1_dot.south) -| (exit_r1.north)    {};
+            
+            % right side 2
+            \coordinate     (right21_yes)   at ([yshift=-4.5cm,] start.south) {};
+            \coordinate     (right21_dot_c) at ([yshift=-1.0cm, xshift=1.0cm] right21_yes) {};
+            \coordinate     (right22_dot_c) at ([yshift=-0.75cm, ] right21_dot_c) {};
+            \node[dot]      (right21_dot)   at (right21_dot_c) {};
+            \node[dot]      (right22_dot)   at (right22_dot_c) {};
+            \node[exit_box] (exit_r2)       at ([yshift=-7.0cm, xshift=1.0cm,] start.south) {};
+            \node[align=left, anchor=west]  at ([yshift=-5.0cm, xshift=1.5cm,] start.south)
+                   {star? if\\
+                    \quad rearrange**\\
+                    \quad m[b]. (. recurse ).} ;
+            \node[align=left, anchor=west] at ([xshift=0.5cm,] right22_dot_c)
+                   {\quad recurse} ;
+            
+            \draw[main_line] (right21_yes)       -| (right21_dot.north) {};
+            \draw[main_line] (right21_dot.south) -| (right22_dot.north) {};
+            \draw[main_line] (right21_dot.south) -| (exit_r2.north)     {};
+            
+            % right side 3
+            \coordinate     (right31_yes)   at ([yshift=-8.75cm,] start.south) {};
+            \coordinate     (right31_dot_c) at ([yshift=-1.0cm, xshift=1.5cm] right31_yes) {};
+            \node[dot]      (right31_dot)   at (right31_dot_c) {};
+            \node[exit_box] (exit_r3)       at ([yshift=-1.0cm,] right31_dot_c) {};
+            \node[align=left, anchor=west]  at ([yshift=-8.5cm, xshift=1.5cm,] start.south)
+                   {\quad rearrange\\
+                    \quad buf\$ \$push\\
+                    \quad perps? if} ;
+            \node[align=left, anchor=west] at ([xshift=0cm,] right31_dot_c)
+                   {\quad recurse \quad \quad \textbackslash ~Tr( \~ a/x/b'/)} ;
+            
+            \draw[main_line] (right31_yes)       -| (right31_dot.north) {};
+            \draw[main_line] (right31_dot.south) -| (exit_r3.north)     {};
+            
+            % end
+            \coordinate      (dot_m1_c)    at ([yshift=-1.5cm,] right31_yes) {};
+            \coordinate      (dot_m2_c)    at ([yshift=-1.5cm,] dot_m1_c)    {};
+            \node[dot]       (dot_m1)      at (dot_m1_c) {};
+            \node[dot]       (dot_m2)      at (dot_m2_c) {};
+            \node[exit_box]  (exit_m)      at ([yshift=-1.0cm]   dot_m2)      {};
+            \node[align=left, anchor=west] at ([yshift=-0.5cm, xshift=-4.0cm,] right31_yes)
+                   {x\$ \$push} ;
+            \node[align=left, anchor=west] at ([xshift=-4.0cm,] dot_m1)
+                   {a.b (. recurse ).} ;
+            \node[align=left, anchor=west] at ([xshift=-4.0cm,] dot_m2)
+                   {recurse} ;
+            
+            \draw[main_line] (start.south)  -- (dot_m1.north)  {};
+            \draw[main_line] (dot_m1.south) -- (dot_m2.north)  {};
+            \draw[main_line] (dot_m2.south) -- (exit_m.north)  {};
+
+        \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{Flow diagram of Monte Carlo Integration}}
+    \label{fig:11_05}
+\end{figure}

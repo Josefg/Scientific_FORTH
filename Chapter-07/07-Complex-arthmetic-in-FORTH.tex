@@ -132,11 +132,38 @@ To \textbf{divide} one complex number $z_1$ by another, $z_2$, invert $z_2$ and 
 
 It is easy to prove that even when the coefficients of an n'th degree polynomial are \textbf{complex}, it has n roots that can be represented as complex numbers.
 
-Complex numbers can be used to represent points in the $x$-$y$ plane with $y$ plotted vertically and $x$ horizontally\sepfootnote{07_04}. ( Sometimes this graphical representation is called an \textbf{Argand plot} or \textbf{Argand diagram}. The $x$-$y$ plane is then called the \textbf{Argand plane}.)
+Complex numbers can be used to represent points in the $x$-$y$ plane with $y$ plotted vertically and $x$ horizontally\sepfootnote{07_04}. ( Sometimes this graphical representation is called an \textbf{Argand plot} or \textbf{Argand diagram}\index{Argand!-plot, -diagram, -plane}. The $x$-$y$ plane is then called the \textbf{Argand plane}.)
 
-\begin{figure}
-    \center
-    TODO figure 7.1
+\begin{figure}[h]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[ scale=1.5, ]
+
+            % Axes
+            \draw[-{Stealth[length=2mm]}] (-2.0, 0.0) -- (2.5,0.0) node[below left] {Re(z)};
+            \draw[-{Stealth[length=2mm]}] ( 0.0,-0.5) -- (0.0,2.5) node[below left] {Im(z)};
+
+            % Origin
+            \node[below left] at (0,0) {0};
+
+            % Define complex number z
+            \coordinate (cor) at (1.5,1.5);
+
+            % Projections
+            \draw[dashed] (cor) -- (cor |- 0,0) node[below] {$x$};
+            \draw[dashed] (cor) -- (cor -| 0,0) node[left]  {$y$};
+
+            % Vector from origin to z
+            \draw[very thick, -{Stealth[length=1.2mm]}] (0,0) -- (1.4,1.4) node[midway, above, sloped] {$r$};
+            \fill (cor) circle (1.5pt) node[above right] {$z$};
+
+            % Angle theta
+            \draw[->] (0.7,0) arc[start angle=0, end angle=36.87, radius=0.7] node[midway, left] {$\theta$};
+
+        \end{tikzpicture}
+    \end{minipage}
+    }
     \caption{\textit{Representing a complex number as a point in the Argand plane, in Cartesian and polar coordinates}}
     \label{fig:07_01}
 \end{figure}
@@ -228,6 +255,7 @@ The critical operation of complex $\times$ complex can be defined in high level 
 
 Actually, complex multiplication is sufficiently involved to be worth defining in code. Here is a code definition for the 80x87 family of FPUs. The equivalent for the Motorola 68881/2 family is virtually identical, allowing for minor differences in Intel and Motorola assembler mnemonics, as well as for the fact that the 68881/2 has registers but no stack.
 
+\index{assembler!X*|crafter}
 \begin{lstlisting}
     \ operation     87stack contents
     CODE X*       \ x      y  a  b
@@ -382,8 +410,33 @@ Therefore the principal root is
 That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$) is negative, then Re($w$) will be negative, and \textit{vice versa}.
 
 \begin{figure}
-    \center
-    TODO figure 7.2
+    \fbox{
+        \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+            \centering
+            \begin{tikzpicture}[ scale=1, ]
+                % Axes
+                \draw[-{Stealth[length=2mm]}] (-3, 0.0) -- (3,0) node[below left] {Re(z)};
+                \draw[-{Stealth[length=2mm]}] ( 0,-2.5) -- (0,3) node[below left] {Im(z)};
+
+                % Complex number z in the 3rd quadrant
+                \coordinate (zcor) at (-2,-1.5);
+                \draw[thick, -{Stealth[length=2mm]}] (0,0) -- (zcor) node[below left] {$z$};
+
+                % Projections for z
+                \draw[] (zcor) -- (zcor |- 0,0) node[above] {$x$};
+                \draw[] (zcor) -- (zcor -| 0,0) node[right] {$y$};
+
+                \coordinate (w) at (-0.8, 1.3);
+                \draw[thick, -{Stealth[length=2mm]}] (0,0) -- (w) node[above left] {$w$};
+                \node at (1.75, 1.55) {$w = \sqrt{z}$};
+
+                % Projections for w
+                \draw[] (w) -- (w |- 0,0) node[below] {$a$};
+                \draw[] (w) -- (w -| 0,0) node[right] {$b$};
+
+            \end{tikzpicture}
+        \end{minipage}
+    }
     \caption{\textit{Complex number with negative imaginary part, and its principal square root}}
     \label{fig:07_02}
 \end{figure}
@@ -408,7 +461,8 @@ That is, as we can easily see from the Argand diagram, Fig. 7-2 below, if Im($z$
 
 We test to make sure $\lvert z \rvert > 0$, since we do not want the possibility that $\lvert z \rvert - x$ or $\lvert z \rvert + x$ works out to be negative (albeit small) through roundoff, thereby generating an error in the square root routine.
 
-\section{Complex exponentials and trigonometric functions}
+\section{Complex exponentials and trigonometric functions} \index{complex functions!exponential}\index{complex functions!trigonometric}
+
 \TallC{Complex} exponentials and trigonometric functions are nearly self-explanatory. They are based on \textbf{Euler's theorem},
 
 \begin{equation*}
@@ -457,7 +511,7 @@ Hence the code for the complex trigonometric functions is
       XDUP 1/X X+ X2/ ;
 \end{lstlisting}
 
-\section{Logarithms}
+\section{Logarithms} \index{complex functions!logarithm}
 \TallC{The} logarithm of a complex number must be defined by the polar representation of the number. Thus, using the fact that
 
 \begin{equation}

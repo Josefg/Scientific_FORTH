@@ -1,0 +1,56 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+    % Define coordinates for the main points
+    \coordinate (A) at (0,0);              % Start point
+    \coordinate (M) at ([xshift=5cm,] A);  % Midpoint
+    \coordinate (B) at ([xshift=5cm,] M);  % End point
+
+    % Draw the main horizontal line with tick marks
+    \draw (A) -- (B);
+    \draw (A) -- +(0,0.1) -- +(0,-0.1);
+    \draw (M) -- +(0,0.1) -- +(0,-0.1); % Tick mark at the midpoint
+    \draw (B) -- +(0,0.1) -- +(0,-0.1);
+    % below
+    \node[below=2pt] at (A) {$x_0$};
+    \node[below=2pt] at (M) {$x_1$};
+    \node[below=2pt] at (B) {$x_2$};
+    % above
+    \coordinate (A_star) at ([yshift=.3cm,] A);
+    \coordinate (M_star) at ([xshift=5cm,]  A_star);
+    \coordinate (B_star) at ([xshift=5cm,]  M_star);
+    
+    \node[] (A_label)  at (A_star) {A};
+    \node[] (B_label)  at (B_star) {B};
+    \node[] (I0_label) at ($(A_star)!.25!(B_star)$) {$I'_0$};
+    \node[] (I1_label) at ($(A_star)!.75!(B_star)$) {$I_1$};
+    
+    \draw[-{Stealth[length=1.5mm]}] (I0_label.west) -- (A_label.east);
+    \draw[-{Stealth[length=1.5mm]}] (I0_label.east) -- (M_star);
+    \draw[-{Stealth[length=1.5mm]}] (I1_label.east) -- (B_label.west);
+    \draw[-{Stealth[length=1.5mm]}] (I1_label.west) -- (M_star);
+
+    % Create the table of values using a matrix of nodes
+    \node[matrix of nodes,
+          below right=0.5cm and 1cm of A, % Position the matrix
+          nodes={align=left, anchor=west, inner sep=0.5pt}, % Align text inside nodes to the left
+          column sep=0.0001cm,      % Set separation between columns
+          row    sep=0.0001cm,      % Set separation between rows
+         ] {
+            % Headers
+            \underline{\textbf{X}} & \underline{\textbf{f(x)}} & \underline{\textbf{Integrals}} & \underline{\textbf{Error}} \\
+            % Values
+            $x_0$ & $f_0$ &        &                 \\
+            $x_1$ & $f_1$ & $I'_0$ & \quad $\varepsilon/2$ \\
+            $x_2$ & $f_2$ & $I_1$  & $\varepsilon/2$  \\
+            };
+
+    \begin{scope}[on background layer]
+        \fill[
+            pattern=crosshatcheight, 
+            pattern color=black
+            ] 
+        (current bounding box.south west) rectangle (current bounding box.north east);
+    \end{scope}
+\end{tikzpicture}
+\end{figure}

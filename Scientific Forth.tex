@@ -1,86 +1,205 @@
-\documentclass{book}
-\usepackage[paper=c5paper, top=1.25in, textwidth=5.0in, textheight=7.0in, nomarginpar, showframe]{geometry}
-\setlength\parindent{0pt}
+\documentclass[openany]{book}
+
+% --- 1. Page Layout, Font, and Encoding Setup (Load First) ---
+\usepackage[paper=c5paper, top=1.25in, textwidth=4.0in, textheight=7.0in, nomarginpar,]{geometry}
 \usepackage[T1]{fontenc}
-\usepackage{errata} 
-% begin errata for math mode
-\usepackage{marginnote}
-\makeatletter
-\newcommand{\erratumMathReplace}[4][]{% keyvals, explanation, old, new
-\setkeys{erratum}{#1}\stepcounter{erratum}\record@erratum{#2}%
-\marginnote{Err(\arabic{erratum})}\immediate\typeout{Erratum!}%
-[#4]_r^{\arabic{erratum}}%
-\gdef\erratumMath@new{#2}%
-\gdef\erratumMath@old{#3}}
-\newcommand{\erratumMathPrint}{%
-\footnotetext[\value{erratum}]{\text{{\scshape{Erratum!}}%
-\@ifundefined{erratum@type}{}{(\erratum@type)} \(\erratumMath@new\) (original text was: ``\(\erratumMath@old\)'')}}}
-\makeatother
-%end errata 
-% math formatting
-\usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{multicol,multirow,bigdelim}
-    \setlength{\columnseprule}{1pt}
-% Code formatting
-\usepackage{pxfonts}    % Bold inline code
-\usepackage{fancyvrb}
-\usepackage{listings}
-    \usepackage[scaled]{helvet}
-    \lstset{escapeinside={(*}{*)}, basicstyle=\sffamily, columns=[c]flexible}
-    % Julian specified a Helvetica font for code
-    \makeatletter
-    \def\verbatim@font{\normalfont\ttfamily, escapeinside={(*}{*)}}
-    \makeatother
+\usepackage{amssymb}
+\usepackage{pxfonts} % Main document font
+\usepackage[scaled]{helvet} % For sans-serif font in listings
 
-% Graphics
-\usepackage{graphicx}
-\graphicspath{ {./Images/} }
-    
-% Create box for code in footnote 08_14
-\newsavebox{\LstBox}
-    
-\newcommand{\bc}[1]{\textbf{\lstinline{#1}}}
-\newcommand{\regc}[1]{\lstinline{#1}}
-    % For code in paragraphs use \lstinline$word$
-    % For bolded code in paragraphs use \bc{word}
-    % For code not in paragraphs use \begin{listing} code here \end{listing}
-
-% Extend the footnote line across the page
-\makeatletter
-\renewcommand\footnoterule{%
-  \kern-3\p@
-  \hrule\@width \textwidth
-  \kern2.6\p@}
-\makeatother
-
-\let\cleardoublepage\clearpage
-
-% Separate footnotes to own section
-\usepackage{sepfootnotes}
-
-% Place a blank line with every space between paragraphs
-\edef\restoreparindent{\parindent=\the\parindent\relax}
+% --- 2. Paragraph Spacing ---
+% Use parskip for space between paragraphs and no first-line indent.
 \usepackage{parskip}
-  \restoreparindent
 
-% Have a paragraph's first letter span 2 lines
+% --- 3. Graphics, Color, and Table Packages ---
+%\usepackage{graphicx}
+%\graphicspath{ {./Images/} }
+\usepackage[table]{xcolor}
+\usepackage{pgfplots}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,xparse}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{multicol,multirow,bigdelim}
+\setlength{\columnseprule}{1pt}
+
+% --- 4. Header and Footer Configuration ---
+\usepackage{fancyhdr}
+    \usepackage{calc}
+    \setlength{\headwidth}{\paperwidth}
+    \addtolength{\headwidth}{-\oddsidemargin}
+    \addtolength{\headwidth}{-\evensidemargin}
+    \addtolength{\headwidth}{-1in}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{Chapter \thechapter{} - #1}{}}
+
+    % Re-apply the same three-part header for even and odd pages
+    \fancyhead[LE]{\small \thepage}
+    \fancyhead[CE]{\small \leftmark}
+    \fancyhead[RE]{\small \textit{Scientific Forth}}
+    \fancyhead[LO]{\small \textit{Scientific Forth}}
+    \fancyhead[CO]{\small \leftmark}
+    \fancyhead[RO]{\small \thepage}
+    
+    % Redefine the 'plain' style to match the 'fancy' style
+    \fancypagestyle{plain}{\pagestyle{fancy}}
+
+
+% --- 5. Headings and Table of Contents (titlesec & titletoc) ---
+% The [parskip] option makes titlesec compatible with the parskip package.
+\usepackage{changepage}
+\usepackage{titlesec}
+\usepackage{titletoc}
+    \renewcommand{\thechapter}{\arabic{chapter}}
+    \renewcommand{\thesection}{\arabic{section}}
+    \renewcommand{\thesubsection}{\arabic{subsection}}
+    \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
+    \renewcommand{\thefigure}{\thechapter-\arabic{figure}}
+    
+    \setcounter{tocdepth}{2} % This controls the Table of Contents depth
+    \setcounter{secnumdepth}{3} % <-- ADD THIS to number subsubsections in the text
+
+% --- Main Book Table of Contents Formatting ---
+    % This definition is for unnumbered front matter chapters (like Preface)
+    \titleformat{name=\chapter,numberless}[hang]
+        {\huge\bfseries}
+        {}{0.1em}{}
+
+    % This is a new definition specifically for numbered main matter chapters
+    \titlecontents{chapter}[0.5em]
+        {\addvspace{1em}\bfseries}
+        {Chapter~\thecontentslabel~--~}
+        {\bfseries}
+        {\hfill\thecontentspage}
+    
+    \titlecontents{numberedchapter}[0.5em]
+        {\addvspace{1em}\bfseries}
+        {Chapter \thecontentslabel~--~} % "Chapter X -- "
+        {}
+        {\hfill\thecontentspage}
+        
+    \titlecontents{section}[2.2em]
+        {\normalfont}
+        {\S\thecontentslabel\quad}
+        {}
+        {\hfill\thecontentspage}
+        
+    \titlecontents{subsection}[5.4em]
+        {\normalfont}
+        {\S\S\thecontentslabel\quad}
+        {}
+        {\hfill\thecontentspage}
+
+% Chapter Heading formatting
+    \titleformat{\chapter}[hang]
+        {\huge\bfseries}
+        {}{0.1em}{}
+        [{
+            \startcontents[chapter]
+            \vspace{1em}\noindent\textbf{\normalsize Contents}
+            {\normalfont\small
+            \setlength{\parskip}{0pt}
+            \printcontents[chapter]{l}{1}[2]{}
+            }
+        }]
+        % Chapter Table of Contents 
+        \titlecontents{lsection}[0em]
+            {}{\S\thecontentslabel\quad}
+            {}{\titlerule*[1pc]{}\thecontentspage}
+        \titlecontents{lsubsection}[2em]
+            {}{\S\S\thecontentslabel\quad}
+            {}{\titlerule*[1pc]{}\thecontentspage}
+
+    \titleformat{\section}
+        {\normalfont\bfseries} % Format for the whole heading
+        {\S\thesection}              % The label: § + number
+        {1em}                        % Horizontal space between label and title
+        {}                           % Code before the title (none)
+    \titleformat{\subsection}
+        {\normalfont\bfseries}
+        {\S\S\thesubsection}
+        {1em}
+        {}
+    \titleformat{\subsubsection}
+        {\normalfont\bfseries}
+        {\S\S\thesubsection-\thesubsubsection}
+        {1em}
+        {}
+
+    % Set spacing for body text
+    %   Left        Above                           Below
+    \titlespacing*{\chapter}
+        {-40pt}     {5pt}                           {5pt}
+    \titlespacing*{\section}
+        {-30pt}       {1.5ex plus 1ex minus .2ex}     {2.3ex plus .2ex}          
+    \titlespacing*{\subsection}
+        {-20pt}       {1.25ex plus 1ex minus .2ex}    {1.5ex plus .2ex}
+    \titlespacing*{\subsubsection}
+        {-10pt}       {1.25ex plus 1ex minus .2ex}    {1.5ex plus .2ex}
+
+% --- 6. Code and Verbatim Environments ---
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+% Global settings for all lstlisting environments to remove extra spacing
+\lstset{
+    escapeinside={(*}{*)},
+    basicstyle=\sffamily,
+    columns=[c]flexible,
+    aboveskip=1em,
+    belowskip=1em,
+}
+
+% --- 7. TikZ and Custom Graphics Setup ---
+\usepackage{tikz}
+\usetikzlibrary{matrix, arrows, arrows.meta, decorations.shapes, fit, patterns, positioning, shapes, decorations.pathreplacing, tikzmark, calc, backgrounds}
+
+\pgfdeclarepatternformonly{crosshatchdots}{\pgfpointorigin}{\pgfpoint{2pt}{2pt}}{\pgfpoint{2pt}{2pt}}
+{
+    \pgfpathcircle{\pgfpoint{0.5pt}{0.5pt}}{0.4pt}
+    \pgfpathcircle{\pgfpoint{1.5pt}{1.5pt}}{0.4pt}
+    \pgfusepath{fill}
+}
+\pgfmathparse{4/sqrt(2)}
+\pgfdeclarepatternformonly{crosshatcheight}{\pgfpointorigin}
+    {\pgfpoint{\pgfmathresult pt}{\pgfmathresult pt}}
+    {\pgfpoint{\pgfmathresult pt}{\pgfmathresult pt}}
+{
+    \pgfmathparse{1/sqrt(2)}
+        \pgfpathcircle{\pgfpoint{\pgfmathresult pt}{\pgfmathresult pt}}{0.25pt}
+    \pgfmathparse{3/sqrt(2)}
+        \pgfpathcircle{\pgfpoint{\pgfmathresult pt}{\pgfmathresult pt}}{0.25pt}
+    \pgfusepath{fill}
+}
+
+\tikzset{
+    spanning brace/.style={decorate, decoration={brace, amplitude=2pt}, thick},
+    wordinr1/.style={rectangle, text centered, draw=black},
+    wordinr2/.style={rectangle, text centered, draw=black, minimum width=1.5cm},
+    arrow/.style={thick,->,>=stealth}
+}
+\newcommand{\tikzmarked}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+\newcommand{\Agrandheader}{%
+    \multicolumn{1}{c}{N} & \multicolumn{1}{c}{X} &
+    \multicolumn{2}{c}{F} & \multicolumn{2}{c}{I} &
+    \multicolumn{1}{c}{E}
+                          }
+\newcommand{\dotborder}[1]{%
+    \begin{scope}[on background layer]
+        \node[preg, fit=(#1)] (#1_p) {};
+    \end{scope}%
+}
+
+% --- 8. Miscellaneous Packages ---
+\usepackage{errata}
+\usepackage{marginnote}
+\usepackage{sepfootnotes}
 \usepackage{lettrine}
-    \renewcommand{\LettrineTextFont}{\normalfont}
 \usepackage{xstring}
-    \newcommand{\TallC}[1]{
-        \StrLeft{#1}{1}[\tempA]
-        \StrGobbleLeft{#1}{1}[\tempB]
-        \lettrine[lraise=.25]{\tempA}{\tempB}
-    }
-%% Example: \TallC{The} to create a large "T" and small "he"
-
-% Dotted lines across the page
-\newcommand{\dotrule}[1]{%
-   \parbox[t]{#1}{\dotfill}}
-%% Example: \dotrule{1\textwidth} will make it across the page
-
-% Side bar at some points in the text
+\usepackage{framed}
 \usepackage{framed}
 \renewenvironment{leftbar}[1][\hsize]
 {%
@@ -93,140 +212,87 @@
     \MakeFramed{\hsize#1\advance\hsize-\width\FrameRestore}%
 }
 {\endMakeFramed}
-%% Use \leftbar[1\linewidth] at the beginning
-%% Ues \endleftbar at the end
-
-% Highlight cell color
-\usepackage[table]{xcolor}
-    \newcommand{\lgray }{\cellcolor[HTML]{D3D3D3}}
-    \newcommand{\Aggray}{\cellcolor[HTML]{C0C0C0}}
-    \newcommand{\gray  }{\cellcolor[HTML]{808080}}
-    \newcommand{\dgray }{\cellcolor[HTML]{A9A9A9}}
-    \newcommand{\digray}{\cellcolor[HTML]{696969}}
-% use \cellcolor[HTML]{AA0044} in the prefered cell
-\usepackage[framemethod=tikz]{mdframed}
-
-% Create charts with tikz
-\usepackage{tikz}
-\usetikzlibrary{arrows,shapes,positioning,patterns,arrows.meta}
-\usetikzlibrary{calc,decorations.markings,backgrounds}
-    \tikzstyle{wordinr1} = [rectangle, text centered, draw=black]
-    \tikzstyle{wordinr2} = [rectangle, text centered, draw=black, minimum width=1.5cm]
-    \tikzstyle{arrow}   = [thick,->,>=stealth]
-\usepackage{pgfplots}
+\usepackage{caption}
 \usepackage{float}
-% table cap at top
-% \usepackage{floatrow}
-% \floatsetup[table]{capposition=top}
-
-% Prefixing chapter/section numbers with 
-%\usepackage{cleveref}
- % \crefname{section}{\S}{\S\S}
-  %\Crefname{section}{\S}{\S\S}
-  %\crefformat{section}{\S#2#1#3}
-
-% Table of Contents formatting
-% \usepackage{tocloft}
-
-% Table of contents
-\setcounter{secnumdepth}{3}
-\usepackage{titlesec, titletoc}
-    \renewcommand{\thechapter}{\arabic{chapter}}
-    \renewcommand{\thesection}{\arabic{section}}
-    \renewcommand{\thesubsection}{\arabic{subsection}}
-    \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
-    
-    \titlecontents{chapter}[.5em]
-    {\normalfont\large}
-    {\S\thecontentslabel}
-    {}
-    {\titlerule*[1pc]{ } \thecontentspage}
-    [\addvspace{-0.55em}]
-    \titleformat{\chapter}[hang]
-    {\huge\bfseries}
-    {}{0.1em}{}
-    [{
-    \startcontents[chapter]
-        \printcontents[chapter]{l}{1}[2]{}
-    }]
-
-    \titlecontents{lsection}[.5em]
-    {\normalfont\large}
-    {\S\thecontentslabel}
-    {}
-    {\titlerule*[1pc]{ } \thecontentspage}
-    [\addvspace{-0.55em}]
-    \titlecontents{lsubsection}[2.2em]
-    {\normalfont\large}
-    {\S\thecontentslabel}
-    {}
-    {\titlerule*[1pc]{ } \thecontentspage}
-    [\addvspace{-0.55em}]
-        
-    \titleformat{\section}
-        {\normalfont\large\bfseries}
-        {\S\thesection }{.5em}{}
-    \titleformat{\subsection}
-        {\normalfont\bfseries}
-        {\S\S\thesubsection}{.5em}{}
-    \titleformat{\subsubsection}
-        {\normalfont\bfseries}
-        {\S\S\thesubsection-\thesubsubsection}{.5em}{}
-
-% This is the book table of contents
-    \titlecontents{chapter}[.5em]
-        {\normalfont\large\bfseries}     % above-code
-        {Chapter \thecontentslabel -- }   % numbered-entry-format
-        {}                                  % numberless-entry-format
-        {\titlerule*[1pc]{ }\thecontentspage}% filler-page-format
-        [\addvspace{.5em}]                 % below-code
-
-    \titlecontents{section}[2.2em]
-        {\normalfont\large}                 % above-code
-        {\S\thecontentslabel  }         % numbered-entry-format
-        {}                                % numberless-entry-format
-        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
-
-    \titlecontents{subsection}[5.4em]
-        {\normalfont\large}            % above-code
-        {\S\S\thecontentslabel  }      % numbered-entry-format
-        {}                             % numberless-entry-format
-        {\titlerule*[1pc]{ } \thecontentspage}% filler-page-format
-
-    
-%    Common shorthand                         % Long hand version
-\newcommand{\TF}{\textbf{TF }}                  % Thinking FORTH
-\newcommand{\SF}{\textbf{SF }}                  % Starting FORTH
-\newcommand{\FTR}{\textbf{FTR }}                % FORTH: a Text and Reference
-\newcommand{\eg}{\textit{e.g.}}                 % e.g. in italics
-\newcommand{\ie}{\textit{i.e.}}                 % i.e. in italics
-\newcommand{\etc}{\textit{etc.}}                % etc. in italics
-\newcommand{\Note}{\textbf{\underline{Note}}}   % Note
-
-% References
-\usepackage{hyperref}
-\usepackage{fancyvrb}
-%fancy tables
-\usepackage{array}
-\usepackage{makecell}
-\usepackage{tcolorbox}
-\tcbuselibrary{skins,xparse}
-
+\usepackage{imakeidx}
+    \renewenvironment{theindex}{
+      \begin{adjustwidth}{-\oddsidemargin-.25in}{-\evensidemargin-0.25in}
+        \begin{multicols}{2}[{\indexname}]% The index now uses a chapter-level heading
+          \setlength{\parindent}{0pt}
+          \setlength{\parskip}{0pt plus 0.3pt}
+          \setlength{\columnseprule}{0pt}
+    }{
+        \end{multicols}
+      \end{adjustwidth}
+    }
 \usepackage{centernot}
-    \newcommand{\tr}[1]{{\centernot{#1}}}
-    \newcommand{\Tr}[1]{{Tr(\centernot{#1})}}
 
- \usepackage{makeidx}
- \makeindex
+% --- 9. Custom Commands ---
+\newcommand{\TallC}[1]
+    {\StrLeft{#1}{1}[\tempA]\StrGobbleLeft{#1}{1}[\tempB]\lettrine[lraise=.25]{\tempA}{\tempB}}
+\newcommand{\dotrule}[1]
+    {\parbox[t]{#1}{\dotfill}}
+\newcommand{\lgray}    {\cellcolor[HTML]{D3D3D3}}
+\newcommand{\Aggray}   {\cellcolor[HTML]{C0C0C0}}
+\newcommand{\gray}     {\cellcolor[HTML]{808080}}
+\newcommand{\dgray}    {\cellcolor[HTML]{A9A9A9}}
+\newcommand{\digray}   {\cellcolor[HTML]{696969}}
+\newcommand{\bc}[1]    {\textbf{\lstinline{#1}}}
+\newcommand{\regc}[1]  {\lstinline{#1}}
+\newcommand{\TF}       {\textbf{TF }}
+\newcommand{\SF}       {\textbf{SF }}
+\newcommand{\FTR}      {\textbf{FTR }}
+\newcommand{\eg}       {\textit{e.g.}}
+\newcommand{\ie}       {\textit{i.e.}}
+\newcommand{\etc}      {\textit{etc.}}
+\newcommand{\Note}     {\textbf{\underline{Note}}}
+\newcommand{\tr}[1]    {{\centernot{#1}}}
+\newcommand{\Tr}[1]    {{Tr(\centernot{#1})}}
+\newcommand{\nopage}[1]{}
+\newcommand{\crafter}[1]{#1\vspace{\baselineskip}}
+\newcommand{\npca}[1]{\\[\baselineskip]}
+\newsavebox{\LstBox}
+\newsavebox{\mycodeboxe}
+\newsavebox{\mycodeboxw}
+
+% Custom errata commands
+\makeatletter
+\newcommand{\erratumMathReplace}[4][]{%
+    \setkeys{erratum}{#1}\stepcounter{erratum}\record@erratum{#2}%
+    \marginnote{Err(\arabic{erratum})}\immediate\typeout{Erratum!}%
+    [#4]_r^{\arabic{erratum}}%
+    \gdef\erratumMath@new{#4}%
+    \gdef\erratumMath@old{#3}}
+\newcommand{\erratumMathPrint}{%
+    \footnotetext[\value{erratum}]{\text{{\scshape{Erratum!}}%
+    \@ifundefined{erratum@type}{}{(\erratum@type)} \(\erratumMath@new\) (original text was: ``\(\erratumMath@old\)'')}}}
+\renewcommand\footnoterule{\kern-3\p@\hrule\@width \textwidth\kern2.6\p@}
+\makeatother
+
+% --- 10. Final Setup (Load hyperref Last) ---
+\usepackage{hyperref}
+
+% --- Index and Figure Naming ---
+\makeindex[columns=2, title=, options=-s index_style.ist]
+\renewcommand{\figurename}{Fig.}
+
+\renewcommand{\contentsname}{Scientific FORTH -- Contents}
+\setlength{\floatsep}{12pt plus 2pt minus 2pt}
 
 \begin{document}
-    \tableofcontents
     \frontmatter
-        % \input{Cover/Printing_Page}
-        % \input{Cover/Warning_and_Disclamer_of_Warranty}
-        % \input{Preface/Preface}
+        % \input{Non_chapters/Printing_Page}
+        \pagenumbering{Roman}
+        \input{Non_chapters/Warning_and_Disclamer_of_Warranty}
+        \begin{adjustwidth}{-1cm}{0cm}
+            \tableofcontents
+        \end{adjustwidth}
+            \addcontentsline{toc}{chapter}{Contents}            % toc entry
+        \clearpage
+        \pagenumbering{roman}
+        \input{Non_chapters/Preface}
     \mainmatter
-        \input{footnotes}
+        \input{Non_chapters/footnotes}
         % must include footnotes for all Chapters
         % *** include{chapter on which you are working} ***
         \input{Chapter-01/01-Toward-Scientific-FORTH}
@@ -240,8 +306,12 @@
         \input{Chapter-09/09-Linear-Algebra}
         \input{Chapter-10/10-Strings-and-IO-in-FORTH}
         \input{Chapter-11/11-Symbolic-Programming}
-        % \input{Cover/Backcover}
-        % \printindex
-        % \input{Bibliography/Bibliography}
+        % \input{Non_chapters/Backcover}
+        \input{Non_chapters/index_sciforth}
+            \clearpage
+        \markboth{INDEX}{}
+        \addcontentsline{toc}{chapter}{Index}
+        {\footnotesize \printindex}
+        \input{Non_chapters/Bibliography}
 \VerbatimFootnotes
 \end{document}

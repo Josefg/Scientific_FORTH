@@ -1,0 +1,42 @@
+\begin{figure}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            % Define styles for the shapes to keep the code clean and readable
+            dot/.style      ={circle, fill=black, inner sep=4pt},
+            exit_box/.style ={rectangle, draw, thick, pattern=crosshatcheight, pattern color=black, minimum width=1cm, minimum height=0.3cm, label=below:\textbf{Exit}},
+            main_line/.style={draw, thick, -{Stealth[length=2mm]}}
+                           ]
+
+            \node[circle, draw, thick, minimum size=0.5cm] (start) at (0,0) {};
+            \draw[thick] (start.north west) -- (start.south east);
+            \draw[thick] (start.north east) -- (start.south west);
+            \node[exit_box] (exit)    at (0.0, -4.0) {};
+            \node[dot]      (end_dot) at (1.5, -3.5) {};
+
+            \node[align=left, anchor=north] at (4, 1)
+               {INITIALIZE              \\
+                \\
+                \\
+                BEGIN                   \\
+                \quad (B-A)*sigma > E ? \\
+                WHILE                   \\
+                \quad New.x f(x)        \\
+                \quad N = N + 1         \\
+                \quad $\bar{f}$, Var(f) \\
+                REPEAT                  \\
+                \quad I = (B-A)*<f>} ;
+
+            \coordinate (branch_point) at (0, -1);
+
+            \draw[main_line] (0,1.5)        -- (start.north);
+            \draw[main_line] (start.south)  -- (exit.north);
+            \draw[main_line] (branch_point) -| (end_dot);
+            
+        \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{Flow diagram of Monte Carlo Integration}}
+    \label{fig:08_02}
+\end{figure}

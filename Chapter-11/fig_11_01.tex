@@ -1,4 +1,6 @@
-\begin{figure}[H]
+\begin{center}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
 \centering
 \begin{tikzpicture}[framed, every edge/.style  = {draw,-{Kite[length=6pt,width=4pt]}, line width=0.5mm}]
     % Start
@@ -103,5 +105,8 @@
     \node[rectangle, draw=black, below  right=0.0cm and 0.2cm of r4n] (r4nbexponent) {exponent?};
     
 \end{tikzpicture}
-\caption{\textit{Logic tree for <floating point \#>}} \label{fig:11_01}
-\end{figure}
+    \end{minipage}
+    }
+\captionof{figure}{\textit{Logic tree for <floating point \#>}}
+\label{fig:11_01}
+\end{center}

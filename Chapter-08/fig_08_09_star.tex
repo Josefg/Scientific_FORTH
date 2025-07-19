@@ -1,0 +1,74 @@
+\begin{center}
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            % Define styles for the shapes to keep the code clean and readable
+            dot/.style      ={circle, fill=black, inner sep=4pt},
+            main_line/.style={draw, thick, -{Stealth[length=2mm]}}
+                           ]
+                           
+            \coordinate (cx1) at (0,0);
+            \coordinate (cx2) at ([yshift=-1.5cm, xshift=0.5cm ] cx1);
+            \coordinate (cb1) at ([yshift=-2.75cm,             ] cx2);
+            \coordinate (cx3) at ([yshift=-1.5cm, xshift=0.5cm ] cb1);
+            \coordinate (cb2) at ([yshift=-1.0cm,              ] cx3);
+            \coordinate (cb3) at ([yshift=-1.25cm, xshift=-1.0cm] cb2);
+            
+            \node[circle, draw, thick, minimum size=0.5cm] (x1) at (cx1) {};
+                \draw[thick] (x1.north west) -- (x1.south east);
+                \draw[thick] (x1.north east) -- (x1.south west);
+            \node[circle, draw, thick, minimum size=0.5cm] (x2) at (cx2) {};
+                \draw[thick] (x2.north west) -- (x2.south east);
+                \draw[thick] (x2.north east) -- (x2.south west);
+            \node[dot] (b1) at (cb1){};
+            \node[circle, draw, thick, minimum size=0.5cm] (x3) at (cx3) {};
+                \draw[thick] (x3.north west) -- (x3.south east);
+                \draw[thick] (x3.north east) -- (x3.south west);
+            \node[dot] (b2) at (cb2){};
+            \node[dot] (b3) at (cb3){};
+                
+            \draw[arrow] ([yshift=.5cm,] x1.north) -- (x1.north);
+            \draw[arrow] (x1.south) -- ([yshift=-0.50cm,               ] x1.south);
+            \draw[arrow] (x1.south) |- ([yshift=-0.50cm, xshift=0.5cm  ] x1.south);
+            \draw[arrow] ([yshift=-0.5cm, xshift=0.50cm                ] x1.south) -- (x2.north);
+            \draw[arrow] (x2.south) -- (b1.north);
+            \draw[arrow] (b1.south) -- ([yshift=-0.50cm,               ] b1.south);
+            \draw[arrow] (b1.south) |- ([yshift=-0.50cm, xshift=0.5cm  ] b1.south);
+            \draw[arrow] ([yshift=-0.5cm, xshift=0.50cm                ] b1.south) -- (x3.north);
+            \draw[arrow] (x3.south) -- (b2.north);
+            \draw[arrow] (b2.south) -- ([yshift=-0.25cm,               ] b2.south);
+            \draw[arrow] (b2.south) |- ([yshift=-0.25cm, xshift=-1.0cm ] b2.south);
+            \draw[arrow] ([yshift=-0.25cm, xshift=-1.0cm               ] b2.south) -- (b3.north);
+
+            \node[align=left, anchor=north] at ([yshift=.75cm, xshift=4.75cm] cx1)
+               {Read in points $f_k$, $x_k$ and $w_{k} \equiv \sigma^{2}_{k}$. \\
+                \\
+                DO $n = 1 to N-1$ \quad (outerloop) \\
+                \quad Construct $a_n$ , $c_n$: \\
+                \\
+                \quad DO $k=0 to M-1$ (inner loop) \\
+                \quad\quad $p_{n+1}(x_{k}) = (x_k - a_n)p_{n}(x_k) - c_{n}p_{n-1}(x_k)$ \\
+                \\
+                \quad\quad $sum = sum + (p_{n+1}(x_k))^2 w_{k}$ \\
+                \\
+                \quad\quad $c_{n+1} = c_{n+1} + f_{k}p_{n+1}(x_k)w_{k}$ \\
+                \quad LOOP \quad \quad (end inner loop) \\
+                \quad\quad $c_{n+1} = c_{n+1} /sum$ \\
+                \\ \\
+                \quad DO $k = 0 to M-1$ (normalize) \\
+                \quad\quad $p_{n+1}(x_k) = p_{n+1}(x_k)$ / $\sqrt{sum}$ \\
+                \quad LOOP \\
+                \\ \\
+                LOOP};
+                
+        \end{tikzpicture}
+    \end{minipage}
+    }
+    \captionof{figure}{\textit{Construction of Gram polynomials\textsuperscript{*}}}
+    \label{fig:08_09}
+\end{center}
+\begingroup
+\renewcommand{\thefootnote}{}% Make the number invisible
+\footnotetext{* Originally listed as Fig. 8-5.}
+\endgroup

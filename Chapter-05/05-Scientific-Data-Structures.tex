@@ -112,7 +112,7 @@ Most objections to variables can be resolved by making them local. Local variabl
 
 HS/FORTH\sepfootnote{05_05} provides beheading in a particularly simple form: \bc{BEHEAD' NAME}, or \bc{BEHEAD" NAME1 NAME2}.
 
-Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'} removes \bc{NAME}'s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
+Used after \bc{NAME} has been invoked in the words that need to reference it, \bc{BEHEAD'}\index{beheading!BEHEAD' and BEHEAD""} removes \bc{NAME}'s dictionary entry leaving pointers and code fields intact and recovering the unused dictionary space. The more powerful word \bc{BEHEAD"} does the same for the range of dictionary entries \bc{NAME1 ... NAME2}, inclusive.
 
 Beheading variable or constant names makes them local to the definitions that use them; they cannot be further accessed --or corrupted-- by later definitions. (Pountain\sepfootnote{05_06} has given yet another method for making variables local, using a syntax derived from "object-oriented" languages such as SMALLTALK.)
 
@@ -129,7 +129,7 @@ Variables are essential for scientific programming. Since we must often have mor
 I find the use of \bc{SCALARS} with modifiers and lists more convenient and readable than many repetitions of \bc{SCALAR}. Its resemblance to FORTRAN (thereby helping me live with my FORTRAN-inspired habits) is pure coincidence. Although possible to use a terminator (",\eg) rather than a count (to define the variable list) I feel it is desirable for the programmer to know how many variable names he has supplied, hence the counted version.
 
 \subsection{Generic access}
-\TallC{A} major theme of FORTH is to replace decisions by calculation henever possible\sepfootnote{05_07}. This philosophy usually pays dividends in execution speed and brevity of code.
+\TallC{A} major theme of FORTH is to replace decisions by calculation henever possible\sepfootnote{05_07}. This philosophy usually pays dividends in execution speed and brevity of code. \index{avoiding decisions}
 
 But there is an even more important reason to avoid \bc{IF ... THEN} decisions, especially when working with modern microprocessors. CPUs like 80x86 and MC680x0 achieve their speed in part by pre-fetching instructions and storing them in a queue in high speed on-chip cache memory. A conditional-branch machine instruction (the crux of \bc{IF ... THEN}) empties the queue whenever the branch is taken. Branches should be avoided because they slow execution far more than one might expect based on their clock-counts alone.
 
@@ -417,7 +417,7 @@ The only instance where one might forego the overhead penalty paid for the conve
 
 \TallC{Numerical} arrays represent a frequently encountered characteristic feature of scientific programming. Arrays \textit{per se} are hardly foreign to FORTH. Arrays of typed data are novel, however, and therefore worth elaborating. Following Brodie's advice(\TF, p. 48ff) we first specify the "user interface" (matrix notation) and then proceed to implementation.
 
-\subsection{Improved (FORTRAN-like) array notation}
+\subsection{Improved (FORTRAN-like) array notation}\index{array notation}
 \TallC{Something} like V(15) --the 15'th element of V-- is the commonest notation for array elements in high-level languages because lineprinters and terminals do not easily recognize subscripts. In FORTH, the most natural notation would be postfix (RPN), \bc{15 V} --but this is both hard to read and unintuitive\sepfootnote{05_11}. That is, \bc{15 V} does not say, immediately and unambiguously, "I am the 15th element of the array V !"
 
 FORTH's idiosyncrasies forbid saying V(15) because the parser recognizes V(15) as a single word\sepfootnote{05_12}. Since we want the 15 to be parsed, we would have to modify the FORTRAN-ish notation to $\mathbf V\;\bullet(\;\bullet15)$ or $\mathbf V(\;\bullet15\;\bullet)$, where $\mathbf\bullet$ stands for a blank space (ASCII 32). Unfortunately, "(" is a reserved word. While we might place the matrix definitions in a separate vocabulary --which would let us redefine anything we want-- "(" is too useful as a comment delineator to dispense with.
@@ -453,7 +453,7 @@ where m is the time for 1 multiply and 1 add, and n is the order of the matrix. 
 
 On the 80386/80387 combination running at 25 MHz, the execution time for the same problem should be only 2.3 minutes or so. Thus it would be practical (\ie, execution time $\cong$ 1 hour) on such machines, even without special equipment such as the IIT 80c387, or an array co-processor, or a faster procedure such as Strassen's algorithm (see Ch. 4 \S8), to tackle $10^{3} \times 10^{3}$ dense matrix problems.
 
-The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines -- 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
+The crucial question therefore, is memory. The Intel machines were designed around a segmented memory architecture. That is, to avoid having to use (expensive) 32-bit address registers, the 8086/80286 chips were designed to use 16-bit registers. However, these chips have more than 16 external address lines -- 20 for the 8086, 24 for the 80286. Thus the absolute address is compounded of two numbers: a \textbf{segment descriptor} and an \textbf{offset}, which must be present in appropriate registers. The segment descriptor is the \textbf{absolute address}\index{absolute address} of a l6-byte \textbf{paragraph}, divided by 16. The offset is any (unsigned) integer from 0 to $2^{16}-1 = 65,535$ that can fit in a 16-bit register.
 
 The chips contain 4 segment registers: SS (stack segment), CS (code segment), DS (data segment) and ES (extra segment). Five registers, BP, SP, SI, DI, and BX, can be used for offsets, although they are not entirely interchangeable (some have specific functions in some of the more complex machine instructions, such as string operations). Manifestly, since the 8086 can address
 

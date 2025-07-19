@@ -1,0 +1,163 @@
+\begin{center}
+    \begin{minipage}{12cm}
+        \centering
+        \fbox{
+        \begin{tikzpicture}[
+            % Define styles for the shapes to keep the code clean and readable
+            dot/.style      ={circle, fill=black, inner sep=4pt},
+            black_square/.style ={rectangle, draw, thick, fill=black, minimum width=0.5cm, minimum height=0.5cm,},
+            main_line/.style={draw, thick, -{Stealth[length=2mm]}},
+            done_box/.style ={rectangle, pattern=crosshatchdots, pattern color=black, minimum width=1cm, minimum height=0.1cm, label=above:\textbf{DONE}},
+            box/.style    = {draw, rectangle, align=center,},
+                           ]
+
+            \node[circle, draw, thick, minimum size=0.5cm] (start) at (0,0) {};
+                \draw[thick] (start.north west) -- (start.south east);
+                \draw[thick] (start.north east) -- (start.south west);
+            \coordinate (b_done)  at ([yshift=-.75cm,] start.south);
+            \node[done_box]     (done_bx)  at ([yshift=-.90cm, xshift=-1cm] b_done){};
+            \coordinate (first_yes) at ([yshift=-2.25cm] start.south);
+            
+            \draw[arrow] ([yshift=0.75cm] start.north) -- (start.north);
+            \draw[arrow] (start.south)   -- (b_done.north);
+            \draw[arrow] (b_done.west)   -| ([yshift=.40cm] done_bx.north);
+            \draw[arrow] (start.south)   -- (first_yes);
+            
+            % Left side
+            \coordinate (adouble)   at ([yshift=-.25cm, xshift=-1cm] first_yes);
+                \coordinate (yesdouble) at ($(first_yes)!.37!(adouble)$);
+                \node[below=.5pt] at (yesdouble) {Yes};
+            \node[] (double)  at ([yshift=-.75cm,] adouble){DOUBLE};
+            \node[] (x2check) at ([yshift=-1cm,] double){$f(x'') \leq f(best.pt) ~?$};
+            \coordinate (leq_x2_split) at ([yshift=-.75cm,] x2check);
+            % yes
+            \coordinate (leq_x2_y)  at ([yshift=-.25cm, xshift=-1cm] leq_x2_split);
+                \coordinate (leq_x2_yY) at ($(leq_x2_split)!.37!(leq_x2_y)$);
+                \node[below=.5pt] at (leq_x2_yY) {Y};
+                \node[] (l_store_x2)   at ([yshift=-.75cm,]  leq_x2_y){Store x''};
+                \coordinate (l_store_x2_b) at ([yshift=-.75cm,] l_store_x2);
+            % no
+            \coordinate (leq_x2_n)  at ([yshift=-.25cm, xshift=1cm] leq_x2_split);
+                \coordinate (leq_x2_nN) at ($(leq_x2_split)!.37!(leq_x2_n)$);
+                \node[below=.5pt] at (leq_x2_nN) {N};
+                \node[] (l_store_x1)   at ([yshift=-.75cm,]  leq_x2_n){Store x'};
+                \coordinate (l_store_x1_b) at ([yshift=-.75cm,] l_store_x1);
+            % to repeat
+            \coordinate (join_x2_x1) at ([yshift=-.25cm, xshift=1cm] l_store_x2_b);
+            \node[dot] (l_x2_repeat) at ([yshift=-.75cm] join_x2_x1){};
+                \node[right=4pt] at (l_x2_repeat.north east)  {\textbf{REPEAT}};
+            
+            \draw[arrow] (first_yes)     -- (adouble);
+            \draw[arrow] (adouble)       -| (double.north);
+            \draw[arrow] (double.south)  -- (x2check.north);
+            \draw[arrow] (x2check.south) -- (leq_x2_split);
+            % yes
+            \draw[arrow] (leq_x2_split)  -- (leq_x2_y);
+            \draw[arrow] (leq_x2_y)      -- (l_store_x2);
+            \draw[arrow] (l_store_x2)    -- (l_store_x2_b);
+            \draw[arrow] (l_store_x2_b)  -- (join_x2_x1);
+            % no
+            \draw[arrow] (leq_x2_split)  -- (leq_x2_n);
+            \draw[arrow] (leq_x2_n)      -- (l_store_x1);
+            \draw[arrow] (l_store_x1)    -- (l_store_x1_b);
+            \draw[arrow] (l_store_x1_b)  -- (join_x2_x1);
+            % to reapeat
+            \draw[arrow] (join_x2_x1)  -- (l_x2_repeat.north);
+            
+            % right side
+            \coordinate (mid_no) at ([xshift=3cm,] first_yes);
+                \coordinate (mid_no_c) at ($(first_yes)!.5!(mid_no)$);
+                \node[below=.5pt] at (mid_no_c) {No};
+            \node[] (geq_x1) at ([yshift=-.5cm, xshift=6cm,] first_yes){$f(x') \geq f(2worst.pt) ~?$};
+            
+            %% left branch
+            \coordinate (geq_x1_n)   at ([yshift=-.5cm, xshift=-1.5cm] geq_x1.south);
+                \coordinate (geq_x1_nN) at ($(geq_x1)!.37!(geq_x1_n)$);
+                \node[below=4.1pt] at (geq_x1_nN) {N};
+            \node[] (r_store_x1) at ([yshift=-1cm] geq_x1_n) {Store x'};
+            \node[dot] (r_x1_repeat) at ([yshift=-.75cm] r_store_x1){};
+                \node[left=4pt] at (r_x1_repeat.north west)  {\textbf{REPEAT}};
+            
+            \draw[arrow] (first_yes)        -- (mid_no);
+            \draw[arrow] (first_yes)        -| (geq_x1.north);
+            \draw[arrow] (geq_x1.south)     -- (geq_x1_n);
+            \draw[arrow] (geq_x1_n)         -- (r_store_x1.north);
+            \draw[arrow] (r_store_x1.south) -- (r_x1_repeat.north);
+            
+            %% right branch
+            \coordinate (geq_x1_y)   at ([yshift=-.5cm, xshift=1.5cm] geq_x1.south);
+                \coordinate (geq_x1_yY) at ($(geq_x1)!.37!(geq_x1_y)$);
+                \node[below=4.1pt] at (geq_x1_yY) {Y};
+            \node[] (leq_w1) at ([yshift=-.75cm,] geq_x1_y){$f(x1) \geq f(2worst.pt) ~?$};
+            \node[] (halve)  at ([yshift=-2cm,] leq_w1.south)  {HALVE};
+            \coordinate (mid_halve) at ($(leq_w1.south)!.5!(halve)$);
+            \coordinate (1q_store)   at ($(leq_w1.south)!.25!(halve)$);
+            \coordinate (3q_store)   at ($(leq_w1.south)!.75!(halve)$);
+            \node[box] (store_box)   at ([xshift=1cm] mid_halve.east) {Store x'};
+            
+            \node[] (lt_x2) at ([yshift=-.75cm,] halve){$f(x'') \leq f(worst.pt) ~?$};
+            \coordinate (lt_x2_split) at ([yshift=-.75cm,] lt_x2);
+            %%% yes
+            \coordinate (lt_x2_y)  at ([yshift=-.25cm, xshift=-1cm] lt_x2_split);
+                \coordinate (lt_x2_yY) at ($(lt_x2_split)!.37!(lt_x2_y)$);
+                \node[below=.5pt] at (lt_x2_yY) {Y};
+                \node[] (lt_store_x2)   at ([yshift=-.75cm,]  lt_x2_y){Store x''};
+                \coordinate (lt_store_x2_b) at ([yshift=-.75cm,] lt_store_x2);
+            %%% no
+            \coordinate (lt_x2_n)  at ([yshift=-.25cm, xshift=1cm] lt_x2_split);
+                \coordinate (lt_x2_nN) at ($(lt_x2_split)!.37!(lt_x2_n)$);
+                \node[below=.5pt] at (lt_x2_nN) {N};
+                \node[] (lt_store_x1)   at ([yshift=-.75cm,]  lt_x2_n){SHRINK};
+                \coordinate (lt_store_x1_b) at ([yshift=-.75cm,] lt_store_x1);
+            %% to repeat
+            \coordinate (join_x2_shr) at ([yshift=-.25cm, xshift=1cm] lt_store_x2_b);
+            \node[dot] (lt_x2_repeat) at ([yshift=-.75cm] join_x2_shr){};
+                \node[right=4pt] at (lt_x2_repeat.north east)  {\textbf{REPEAT}};
+            
+            
+            \draw[arrow] (geq_x1.south)     -- (geq_x1_y);
+            \draw[arrow] (geq_x1_y)         -- (leq_w1.north);
+            \draw[arrow] (leq_w1.south)     -- (mid_halve);
+            \draw[arrow] (leq_w1.south)     -- (halve);
+            \draw[arrow] (1q_store)         -- (store_box.north);
+            \draw[arrow] (3q_store)         -- (store_box.south);
+            \draw[arrow] (halve)            -- (lt_x2);
+            \draw[arrow] (lt_x2)            -- (lt_x2_split);
+            % yes 
+            \draw[arrow] (lt_x2_split)      -- (lt_x2_y);
+            \draw[arrow] (lt_x2_y)          -- (lt_store_x2);
+            \draw[arrow] (lt_store_x2)      -- (lt_store_x2_b);
+            \draw[arrow] (lt_store_x2_b)    -- (join_x2_shr);
+            % no    
+            \draw[arrow] (lt_x2_split)      -- (lt_x2_n);
+            \draw[arrow] (lt_x2_n)          -- (lt_store_x1);
+            \draw[arrow] (lt_store_x1)      -- (lt_store_x1_b);
+            \draw[arrow] (lt_store_x1_b)    -- (join_x2_shr);
+            % to reapeat
+            \draw[arrow] (join_x2_shr)       -- (lt_x2_repeat.north);
+            
+            % Yes text
+            % \node[above=.5pt] at ([xshift=-0.75cm] yes_pt)  {\textbf{Yes}};
+            % \coordinate (no_only) at ($(first_a)!.80!([yshift=-3.5cm] first_a)$);
+            % \node[left=.5pt] at (no_only) {\textbf{No}};
+            
+            \node[align=left, anchor=north] at (4.75,1.10)
+               {INITIALIZE \quad \textbackslash~choose simplex, M is dim of param. space\\
+                \\
+                BEGIN                   \\
+                \quad Converged? NOT \quad N N.max $\leq$ \\
+                WHILE                   \\
+                \quad REFLECT \textbackslash~worst point thru geocenter of other points \\
+                \quad $f(x') \leq f(best.pt) ~?$
+                };
+        \end{tikzpicture}
+        }
+        \captionof{figure}{\textit{Flow dlagram of the slmplex algorithm\textsuperscript{*}}}
+    \end{minipage}
+    %\caption{\textit{Flow dlagram of the slmplex algorithm}}
+    \label{fig:08_08}
+\end{center}
+\begingroup
+\renewcommand{\thefootnote}{}% Make the number invisible
+\footnotetext{* Originally listed as Fig. 8-8.}
+\endgroup

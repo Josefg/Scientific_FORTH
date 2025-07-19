@@ -1,0 +1,52 @@
+\begin{figure}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            node distance = 0.7cm and 1.5cm, % Vertical and horizontal spacing between nodes
+            box/.style    = {draw, rectangle, pattern=crosshatcheight, pattern color=black, align=left, text width=3.8cm, minimum height=2cm},
+            arrow/.style  = {-{Stealth[length=2.5mm]}}
+                            ]
+
+        \node (yes_box) [box] {
+            Accumulate: \\
+            $I_{tot} = I_{tot} + I'_{N-1} + I_N$ \\
+            $N = N - 2$
+        };
+
+        \node (no_box) [box, right=of yes_box] {
+            Subdivide right-most \\
+            interval \\
+            $N = N + 1$ \\
+            Move everything down
+        };
+
+        % --- Define coordinates for the top decision structure ---
+        \coordinate (mid_point_top) at ($(yes_box.north)!.5!(no_box.north)$);
+        \coordinate (decision_point) at ([yshift=0.5cm] mid_point_top);
+        \coordinate (path_yes) at ($(mid_point_top)!.5!(yes_box.north)$);
+        \coordinate (path_no)  at ($(mid_point_top)!.5!( no_box.north)$);
+        % --- Draw the top part of the flowchart ---
+        \draw[arrow] ([yshift=0.5cm] decision_point) -- (decision_point);
+        \draw[arrow] (decision_point) -| ( no_box.north);
+        \draw[arrow] (decision_point) -| (yes_box.north);
+        \node[above=14pt] at (path_no)  {\textbf{No}};
+        \node[above=14pt] at (path_yes) {\textbf{Yes}};
+
+        % --- Draw the bottom part of the flowchart ---
+        \coordinate (mid_point_bottom) at ($(yes_box.south)!.5!(no_box.south)$);
+        \coordinate (merge_point) at ([yshift=-.5cm] mid_point_bottom);
+        
+        % Draw the arrows coming from the boxes
+        \draw[arrow] (merge_point) -- ([yshift=-1cm] merge_point);
+        \draw[arrow] ( no_box.south) -- ([yshift=-0.5cm]  no_box.south);
+        \draw[arrow] (yes_box.south) -- ([yshift=-0.5cm] yes_box.south);
+        \draw[arrow] ([yshift=-0.5cm]  no_box.south) -| ([yshift=-1cm] merge_point);
+        \draw[arrow] ([yshift=-0.5cm] yes_box.south) -| ([yshift=-1cm] merge_point);
+
+        \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\bc{SUBDIVIDE} \textit{branch in adaptive integration}}
+    \label{fig:08_03}
+\end{figure}

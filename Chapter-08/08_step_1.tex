@@ -1,0 +1,40 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+    % Define coordinates for the main line endpoints
+    \coordinate (A) at ( 0,0);
+    \coordinate (B) at (10,0);
+
+    % Draw the main horizontal line with tick marks
+    \draw (A) -- (B);
+    \draw (A) -- +(0,0.1) -- +(0,-0.1);
+    \draw (B) -- +(0,0.1) -- +(0,-0.1);
+
+    % Place the labels above and below the line
+    \node[above=2pt] at (A) {A};
+    \node[below=2pt] at (A) {$x_0$};
+    \node[above=2pt] at (B) {B};
+    \node[below=2pt] at (B) {$x_1$};
+
+    % Create the table of values using a matrix of nodes
+    \node[matrix of nodes,
+          below right=0.5cm and 1cm of A, % Position the matrix
+          nodes={align=left, anchor=west, inner sep=0.5pt}, % Align text inside nodes to the left
+          column sep=0.0001cm,      % Set separation between columns
+          row    sep=0.0001cm,      % Set separation between rows
+         ] {
+            % Headers:
+            \underline{\textbf{X}} & \underline{\textbf{f(x)}} & \underline{\textbf{Integrals}} & \underline{\textbf{Error}} \\
+            % Values:
+            $x_0$ & $f_0$ &       &               \\
+            $x_1$ & $f_1$ & $I_0$ & $\varepsilon$ \\
+            };
+    \begin{scope}[on background layer]
+        \fill[
+            pattern=crosshatcheight, 
+            pattern color=black
+            ] 
+        (current bounding box.south west) rectangle (current bounding box.north east);
+    \end{scope}
+\end{tikzpicture}
+\end{figure}

@@ -8,13 +8,9 @@
 We begin by defining the definite integral of a function $f(x)$. Then we discuss some methods for (numerically) approximating the integral. This process is called \textbf{numerical integration} or \textbf{numerical quadrature}. Finally, we write some FORTH programs based on the various methods we describe.
 
 \subsection{The Integral of a function}
-The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in
+The definite integral $\int_{a}^{b}f(x) dx$ is the area between the graph of the function and the x-axis as shown below in \ref{fig:08_01}:
 
-\begin{equation} \label{fig:08_01}
-x=5
-\end{equation}
-
-Fig. \ref{fig:08_01}: \textit{The integral of a function is the area under the curve.}
+\input{Chapter-08/fig_08_01}
 
 We estimate the integral by breaking up the area into narrow rectangles of width $w$ that approximate the height of the curve at that point and then adding the areas of the rectangles\sepfootnote{08_01}. For rectangles of non-zero width the method gives an approximation. If we calculate with rectangles that consistently protrude above the curve (assume for simplicity the curve lies above the x-axis), and with rectangles that consistently lie below the curve, we capture the exact area between two approximations. We say that we have \textbf{bounded} the integral above and below. In mathematical language,
 
@@ -113,8 +109,8 @@ Since the error decreases only as $\frac{1}{\sqrt{N}}$, whereas even so crude a 
 
 Monte-Carlo methods come into their own for multidimensional integrals, where they are much faster than multiple one-dimensional integration subroutines based on deterministic rules.
 
-\subsubsection{A slmple Monte-Carlo program}\label{chap:08_01_03_02}
-Following the function protocol and naming convention developed in Ch. \ref{06_03_02} 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
+\subsubsection{A simple Monte-Carlo program}\label{chap:08_01_03_02}
+Following the function protocol and naming convention developed in Ch. 6 \S1\S\S3.2, we invoke the integration routine \textit{via}
 
 \begin{lstlisting}
     USE( F.name % L.lim % U.lim % err )MONTE
@@ -134,22 +130,9 @@ The program uses one of the pseudo-random number generators (\textbf{prng}'s) fr
     : NEW.X RANDOM B-A G@ F* A G@ F+ ;
 \end{lstlisting}
 
-The program is described by the simple flow diagram of Fig. \label{fig:08_02} \ref{fig:08_02} below:
+The program is described by the simple flow diagram of Fig. \ref{fig:08_02} below:
 
-\begin{lstlisting}
-Diagram yo:
-    INITIALIZE
-    BEGIN
-        (B-A)*sigma > E ?
-    WHILE
-        New.x f(x)
-        N = N + 1
-        \bar{f} Var(f)
-    REPEAT
-        I = (B-A)*<f>
-\end{lstlisting}
-
-Fig. \ref{fig:08_02} \textit{Flow diagram of Monte Carlo Integration}
+\input{Chapter-08/fig_08_02}
 
 From the flow diagram we see we have to recompute $\bar{f}$ and $Var(\bar{f})$ at each step. From Eq. \ref{eq:08_05} we see that
 
@@ -236,8 +219,8 @@ To apply adaptive methods to Monte Carlo integration, we need an algorithm that 
 
 However, adaptive methods can be applied quite easily to deterministic quadrature formulae such as the \textbf{trapezoidal rule} or \textbf{Simpson’s rule}. Adaptive quadrature is both interesting in its own right and illustrates a new class of programming techniques, so we pursue it in some detail.
 
-\subsection{Adaptive integration on the real line}
-\TallC{We} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision specified in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. \ref{chap:06_03_02}:
+\subsection{Adaptive integration on the real line} \index{adaptive integration!recursive version}
+\TallC{We} are now going to write an adaptive program to integrate an arbitrary function $f(x)$, specified at run-time, over an arbitrary interval of the $x$-axis, with an absolute precision specified in advance. We write the integral as a function of several arguments, once again to be invoked following Ch. 6 \S1.3.2:
 
 \begin{lstlisting}
     USE( F.name % L.lim % U.lim % err )INTEGRAL
@@ -270,35 +253,40 @@ That is, the problem of finding the gcd of $u$ and $v$ can be replaced by the pr
 
 Here is a sample of \bc{GCD} in action, using \bc{TRACE}\sepfootnote{08_11} to exhibit the rstack (in hex) and stack (in decimal):
 
-\begin{lstlisting}
-784 48 TRACE GCD
-                            (*\underline{rstack}*)       (*\underline{stack}*)
-: GCD                                   784 48
-    DUP                                 784 48  48
-    0=                                  784 48  0
-    0BRANCH< 8 >0                       784 48
-    UNDER                               48  784 48
-    MOD                                 48  16
-    : GCD                               48  16
-      DUP                   4B76        48  16  16
-      0=                    4B76        48  16  0
-      0BRANCH< 8 >0         4B76        48  16
-      UNDER                 4B76        16  48  16
-        MOD                 4B76        16  0
-        : GCD               4B76        16  0
-          DUP               4B76 4B76   16  0   0
-          0=                4B76 4B76   16  0   65535
-          0BRANCH<8>-1    4B76 4B76   16  0
-          DROP              4B76 4B76   16
-        EXIT                4B76        16
-    EXIT                                16
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \normalsize
+    \setlength{\tabcolsep}{.4em}
+    \begin{tabular}{>{\ttfamily}l ll}
+    \multicolumn{3}{l}{784 48 TRACE GCD} \\
+    \quad & \underline{rstack} & \underline{stack}  \\
+    : GCD                                     &           &  784 48        \\
+    \quad DUP                                 &           &  784 48  48    \\
+    \quad 0$=$4                               &           &  784 48  0     \\
+    \quad 0BRANCH$<$ 8 $>$0                   &           &  784 48        \\
+    \quad UNDER                               &           &  48  784 48    \\
+    \quad MOD                                 &           &  48  16        \\
+    \quad : GCD                               &           &  48  16        \\
+    \quad \quad  DUP                          & 4B76      &  48  16  16    \\
+    \quad \quad  0$=$                         & 4B76      &  48  16  0     \\
+    \quad \quad  0BRANCH$<$ 8 $>$0            & 4B76      &  48  16        \\
+    \quad \quad  UNDER                        & 4B76      &  16  48  16    \\
+    \quad \quad \quad MOD                     & 4B76      &  16  0         \\
+    \quad \quad \quad : GCD                   & 4B76      &  16  0         \\
+    \quad \quad \quad \quad DUP               & 4B76 4B76 &  16  0   0     \\
+    \quad \quad \quad \quad 0$=$              & 4B76 4B76 &  16  0   65535 \\
+    \quad \quad \quad \quad 0BRANCH$<$8$>$-1  & 4B76 4B76 &  16  0         \\
+    \quad \quad \quad \quad DROP              & 4B76 4B76 &  16            \\
+    \quad EXIT                                & 4B76      &  16            \\
+    EXIT                                      &           &  16            \\
+    \end{tabular}
+\end{figure}
 
 Note how \bc{GCD} successively calls itself, placing the same address (displayed in hexadecimal notation) on the rstack, until the stopping criterion is satisfied.
 
 Recursion can get into difficulties by exhausting the stack or rstack. Since the stack in \bc{GCD} never contains more than three numbers, only the rstack must be worried about in this example.
 
-\TallC{Recursive} programming possesses an undeserved reputation for slow execution, compared with nonrecursive equivalent programs\sepfootnote{08_12}. Compiled languages that permit recursion --\eg, BASIC, C, Pascal-- generally waste time passing arguments to subroutines, \ie recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
+\TallC{Recursive} programming possesses an undeserved reputation for slow execution, compared with nonrecursive equivalent programs\sepfootnote{08_12}. Compiled languages that permit recursion --\eg, BASIC, C, Pascal-- generally waste time passing arguments to subroutines, \ie~recursive routines in these languages are slowed by parasitic calling overhead. FORTH does not suffer from this speed penalty, since it uses the stack directly.
 
 Nevertheless, not all algorithms should be formulated recursively. A disastrous example is the Fibonacci sequence
 
@@ -391,7 +379,7 @@ below.
 
 Clearly, there is no obligation to use Simpson's rule on the sub-intervals: any favorite algorithm will do.
 
-To translate the above into FORTH, we decompose into smaller parts. The name of the function representing the integrand (actually its execution address or \textbf{cfa}) is placed on the stack by \bc{USE(}, as in Ch. \ref{chap:08_01_03_02} 8 \S\ 1.3.2 above. Thence it can be saved in a local variable --either on the rstack or in a \bc{VAR} or \bc{VARIABLE} that can be \bc{BEHEAD}ed-- so the corresponding phrases
+To translate the above into FORTH, we decompose into smaller parts. The name of the function representing the integrand (actually its execution address or \textbf{cfa}) is placed on the stack by \bc{USE(}, as in Ch. 8 \S\ 1.3.2 above. Thence it can be saved in a local variable --either on the rstack or in a \bc{VAR} or \bc{VARIABLE} that can be \bc{BEHEAD}ed-- so the corresponding phrases
 
 \begin{lstlisting}
     R@   EXECUTE  \rstack
@@ -406,7 +394,7 @@ The program then takes the form\sepfootnote{08_13} shown on p. 171 below.
 Note that in going from the pseudocode to FORTH we replaced \bc{)INTEGRAL} by \bc{RECURSE} inside the word \bc{)INTEGRAL}. The need for this arises from an ideosyncrasy of FORTH: normally words do not refer to themselves, hence a word being defined is hidden from the dictionary search mechanism (compiler) until the final \bc{;} is reached. The word \bc{RECURSE} unhides the current name, and compiles its \textbf{cfa} in the proper spot\sepfootnote{08_14}.
 
 \begin{multicols}{2}
-    \tiny
+    \scriptsize
     \begin{lstlisting}
 : USE( [COMPILE] ' CFA LITERAL ;
     IMMEDIATE
@@ -475,185 +463,38 @@ The simplest quadrature formula that satisfies these criteria is the \textbf{tra
 To clarify what we are going to do, let us visualize the interval of integration, and mark the mesh points (where we evaluate $f(x)$ with \bc{+}:
 
 Step 1: N=1
+\input{Chapter-08/08_step_1}
 
 We now save (temporarily) $I_0$ and divide the interval in two, computing $I_{0}'$ and $I_1$, on the halves, as shown. This will be one fundamental operation in the algorithm.
 
 Step 2: N = N + 1 = 2
+\input{Chapter-08/08_step_2}
 
 We next compare $I'_0 + I_1$ with $I'_0$, The results can be expressed as a branch in a flow diagram, shown below.
 
-Yes I No
-Accumulate: Subdivide right-most
-Move everything down
-
-Fig. 8-3 \bc{SUBDIVIDE} \textit{branch in adaptive integration}
+\input{Chapter-08/fig_08_03}
 
 If the two integrals disagree, we subdivide again, as in Step 3 and
 Step 4 below:
 
-Step3: N=N+1=3
+Step 3: N=N+1=3
+\input{Chapter-08/08_step_3}
 
 Step 4: N=N+1=4
+\input{Chapter-08/08_step_4}
 
 Now suppose the last two sub-integrals $(I_3 + I'_2)$ in Step 4 agreed with their predecessor $(I_2)$; we then accumulate the part computed so far, and begin again with the (leftward) remainder of the interval, as in Step 5:
-Step 5:
 
-The flow diagram of the algorithm now looks like Fig. 8-4 below:
+Step 5: N=N-2=2 \quad I=I+($I'_2$+$I_3$)+($I'_2$+$I_3$-$I_2$)/3
+\input{Chapter-08/08_step_5}
 
-Fig. 8-4 \textit{Non-recursive adaptive quadrature}
+The flow diagram of the algorithm now looks like Fig. \ref{fig:08_04} below:
+
+\input{Chapter-08/fig_08_04}
 
 and the resulting FORTH program is\sepfootnote{08_15}:
 
-\begin{multicols}{2}
-    \tiny
-    \begin{lstlisting}
-\ COPYRIGHT 1991 JUUAN V. NOBLE
-TASK IN1EGRAL
-FIND CP@L 0= ? ( FLOAD COMPLEX )
-\ define data-type tokens if not already
-FIND REAL*4 0= ?(((
-    0 CONSTANT REAL*4
-    1 CONSTANT REAL*8
-    2 CONSTANT COMPLEX
-    3 CONSTANT DCOMPLEX )))
-
-FIND 1ARRAY 0= ?( FLOAD MATRIX.HSF )
-\ function usage
-: USE( [OOMPILE] ' CFA ; IMMEDIATE
-
-\ BEHEADing starts here
-0 VAR N
-
-: inc.N N 1 + IS N ;
-: dec.N N 2 - IS N ;
-
-0 VAR type
-
-\ define "stack"
-20 LONG REAL*8   1ARRAY X{
-20 LONG REAL*4   1ARRAY E{
-20 LONG DCOMPLEX 1ARRAY F{
-20 LONG DCOMPLEX 1ARRAY I{
-
-2 DCOMPIEXSCALARS old.I final.I
-: )imegral ( n-- ) \ trapezoidal rule
-    X{ OVER    } G@L
-    X{ OVER 1- } G@L
-    F- F2/
-    F{ OVER    } G@L
-    F{ OVER 1- } G@L
-    type2 AND
-    IF   X+ FROT X*F
-    ELSE F+ F* THEN
-    I{ SWAP 1- } G!L ;
-0 VAR f.name
-: f(x) fname EXECUTE ;
-
-: INITIALIZE
-    IS type   \ store type
-    type F{ !
-    type I{ ! \ set types for function
-    type ' old.I   !
-    type ' final.I ! \ and integral(s)
-    type 1 AND X{  !
-            \ set type for indep. var.
-    E{ 0 } G!L \ store error
-    X{ 1 } G!L \ store B
-    X{ 0 } G!L \ store A
-    IS f.name  \ ! cfa of f(x)
-    X{ 0 } G@L f(x) F{ 0 } G!L
-    X{ 1 } G@L f(x) F{  1} G!L
-    1 IS N
-    N )integral
-    type 2 AND IF F=0 THEN
-    F=0 final.I G!L
-    FINIT ;
-
-: E/2 E{ N 1- } G@L F2/ E{ N 1- } G!L ;
-
-: }move.down     ( adr n--)
-    } \#BYTES >R ( --seg off )
-    DDUP R@ +
-                 ( --s.seg S.off d.seg d.off )
-    R> CMOVEL ;
-
-: MOVEDOWN
-    E{ N 1- }move.down
-    X{ N    }move.down
-    F{ N    }mova.dcmn ;
-
-: new.X ( 87:--x' )
-    X{ N } G@L  X{ N 1- } G@L
-    F+ F2/ FDUP X{ N    } G!L ;
-
-\ cont'd. ...
-
-\ INTEGRAL cont'd
-: GF.   1 > IF FSWAP E. THEN E. ;
-: F@.   DUP>R G@L R> GF. ;
-: .STACKS CR ." N"
-     8 CTAB  ." X"
-    19 CTAB  ." Re[F(X)]"
-    31 CTAB  ." Im[F(X)]"
-    45 CTAB  ." Re[I]"
-    57 CTAB  ." Im[I]"
-    71 CTAB  ." E"
-    N 2 + 0 DO CR I .
-         3 CTAB X{ I } F@
-        16 CTAB F{ I } F@
-        42 CTAB I{ I } F@
-        65 CTAB E{ I } F@
-    LOOP
-    CR 5 SPACES ." old.I ="     old.I F@.
-       5 SPACES ." final.I =" final.I F@. CR ;
-CASE: <DEBUG> NEXT .STACKS ;CASE
-0 VAR (DEBUG)
-: DEBUG-ON  1 IS (DEBUG) 5 #PLACES
-: DEBUG-OFF 0 IS (DEBUG) 7 #PLACES
-: DEBUG (DEBUG) <DEBUG> ;
-
-: SUBDIVIDE
-    N 19 > ABORT" Too many subdivisions!"
-    E/2 MOVE.DOWN
-    I{ N 1- } DROP old.I #BYTES CMOVEL
-        new.X f(x) F{ N } G!L
-    N )integral N 1 + )integral ;
-
-: CONVERGED? ( 87:--I[N]+I'[N-1]-I[N-1]:--f )
-    I{ N } G@L I{ N 1- } G@L old.I G@L
-    type 2 AND
-    IF   CP- CP+ CPDUP CPABS
-    ELSE  F-  F+  FDUP  FABS
-    THEN
-    E{ N 1- } G@L F2* F< ;
-
-CASE: g*6 CP*F F* ;CASE
-4 S->F 3 S->F F/ FCONSTANT F=4/3
-
-: INTERPOLATE ( 87:I[N]=I'[N-1]-I[N-1]-- )
-    F=4/3 type 2/ g*f
-    old.I G@L final.I G@L
-    type 2 AND
-    IF   CP+ CP+
-    ELSE  F+  F+ THEN
-    final.I G!L ;
-\ BEHEADing ends here
-
-: )INTEGRAL ( 97:A B ERR--I[A,B] )
-    INITIALIZE
-    BEGIN N 0>
-    WHILE   SUBDIVIDE   DEBUG
-        CONVERGED?     inc.N
-        IF INTERPOLATE dec.N
-        ELSE type 2 AND
-            IF   FDROP
-            THEN FDROP
-        THEN
-    REPEAT final.I G@L ;
-BEHEAD" N INTERPOLATE   \ optional
-\ USE( F.name % A % B % E type )INTEGRAL
-    \end{lstlisting}
-\end{multicols}
+\input{Chapter-08/08_code_task_integral}
 
 The nonrecursive program obviously requires \textit{much} more code than the recursive version. This is the chief disadvantage of a nonrecursive method\sepfootnote{08_16}.
 
@@ -663,70 +504,7 @@ The nonrecursive program obviously requires \textit{much} more code than the rec
 USE( FSQRT % 1. % 2. % 1.E-3 REAL*4 )INTEGRAL E.
 \end{lstlisting}
 
-\begin{figure}
-    \scriptsize
-    {\setlength{\tabcolsep}{.4em}
-    \begin{tabular}{l|l}
-        \begin{tabular}{lllll}
-\multicolumn{1}{l}{N} & \multicolumn{1}{c}{X} &
-\multicolumn{1}{c}{F} & \multicolumn{1}{c}{I} &
-\multicolumn{1}{c}{E} \\
-0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
-1 & 1.5000E+00 & 1.2247E+00 & 6.5973E-01 & 5.0000E-04 \\
-2 & 2.0000E+00 & 1.4142E+00 & 1.4983E-01 & 1.2500E-04 \\
-\multicolumn{2}{l}{old.I = 1.2071E+00}   &
-\multicolumn{2}{l}{final.I = 0.0000E+00} & \\
-\\
-0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
-1 & 1.5000E+00 & 1.2247E+00 & 3.1845E-01 & 2.5000E-04 \\
-2 & 1.7500E+00 & 1.3228E+00 & 3.4213E-01 & 2.5000E-04 \\
-3 & 2.0000E+00 & 1.4142E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 6.5973E-01}   &
-\multicolumn{2}{c}{final.I = 0.0000E+00} & \\
-\\
-0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
-1 & 1.5000E+00 & 1.2247E+00 & 3.1845E-01 & 2.5000E-04 \\
-2 & 1.7500E+00 & 1.3228E+00 & 1.6826E-01 & 1.2500E-04 \\
-3 & 1.8750E+00 & 1.3693E+00 & 1.7396E-01 & 1.2500E-04 \\
-4 & 2.0000E+00 & 1.4142E+00 & 0.0000E+00 & 0.0000E+04 \\
-\multicolumn{2}{c}{old.I = 3.4213E-01}   &
-\multicolumn{2}{c}{final.I = 0.0000E+00} \\
-\\
-0 & 1.0000E+00 & 1.0000E+00 & 5.5618E-01 & 5.0000E-04 \\
-1 & 1.5000E+00 & 1.2247E+00 & 1.5621E-01 & 1.2500E-04 \\
-2 & 1.6250E+00 & 1.2747E+00 & 1.6235E-01 & 1.2500E-04 \\
-3 & 1.7500E+00 & 1.3228E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 3.1845E-01}   &
-\multicolumn{2}{c}{final.I = 3.4226E+00} \\
-        \end{tabular}
-      &
-        \begin{tabular}{ccccc}
-\multicolumn{1}{c}{N} & \multicolumn{1}{c}{X} &
-\multicolumn{1}{c}{F} & \multicolumn{1}{c}{I} &
-\multicolumn{1}{c}{E} \\
-0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
-1 & 1.2500E+00 & 1.1180E+00 & 2.9284E-01 & 2.5000E-04 \\
-2 & 1.5000E+00 & 1.2247E+00 & 1.6235E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 5.5618E-01}   &
-\multicolumn{2}{c}{final.I = 6.6087E+00} \\
-\\
-0 & 1.0000E+00 & 1.0000E+00 & 2.6475E-01 & 2.5000E-04 \\
-1 & 1.2500E+00 & 1.1180E+00 & 1.4316E-01 & 1.2500E-04 \\
-2 & 1.3750E+00 & 1.1726E+00 & 1.4983E-01 & 1.2500E-04 \\
-3 & 1.5000E+00 & 1.2247E+00 & 1.7396E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 2.9284E-01}   &
-\multicolumn{2}{c}{final.I = 6.6067E+00} \\
-\\
-0 & 1.0000E+00 & 1.0000E+00 & 1.2879E-01 & 1.2500E-04 \\
-1 & 1.1250E+00 & 1.0606E+00 & 1.3616E-01 & 1.2500E-04 \\
-2 & 1.2500E+00 & 1.1180E+00 & 1.4983E-01 & 1.2500E-04 \\
-\multicolumn{2}{c}{old.I = 2.6475E-01}   &
-\multicolumn{2}{c}{final.I = 9.5392E-01} \\
-1.2189E+00
-\\ \\ \\ \\ \\ \\ \\ \\
-        \end{tabular}
-    \end{tabular}}
-\end{figure}
+\input{Chapter-08/Table_08_5_4_Integral_in_use}
 
 \begin{equation*}
 \int_{1}^{2}dx\sqrt{x} = \frac{2}{3} \left( 2^{3/2} - 1 \right)
@@ -769,7 +547,7 @@ of the \textit{real} variable $t$.
 
 Here is an example of complex integration: we integrate the function $f(z) = e^{1/z}$ around the unit circle in the counter-clock-wise (positive) direction.
 
-The calculus of residues (Cauchy's theorem) gives
+The calculus of residues (Cauchy's theorem) gives\index{Cauchy's theorem!calculus of residues}
 
 \begin{equation}
 \oint_{ \vert z \vert =1} dz e^{1/z} = 2\pi i
@@ -793,183 +571,15 @@ For reasons of space, we exhibit only the first and last few iterationst
     USE( G(T) % 0 % 1 % 1.E-2 COMPLEX )INTEGRAL X.
 \end{lstlisting}
 
-\begin{figure}
-    \tiny
-    \setlength{\tabcolsep}{.2em}
-    \begin{tabular}{l|l}
-
-        \begin{tabular}{cccllll}
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000 & .58760 & 0.0000 & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000 & .58760 & 0.0000 & .0049999 \\
-            2 & 1.0000 & 2.7182  &  0.0000 & .00000 & .00000 & .0000000 \\
-            \multicolumn{3}{l}{old.I = 2.7182 0.0000} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000 & .58760 & 0.0000   & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000 & .59198 & -.067537 & .0024999 \\
-            2 & .75000 & .84147  & -.54030 & .44496 & -.067537 & .0024999 \\
-            3 & 1.0000 & 2.7182  &  0.0000 & .00000 & .00000   & .0000000 \\
-            \multicolumn{3}{l}{old.I = .58760 0.0000} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000 & .58760  & 0.0000   & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000 & .059198 & -.067537 & .0024999 \\
-            2 & .75000 & .84147  & -.54030 & .17896  & -.043682 & .0012499 \\
-            3 & .87500 & .20219  & -.15862 & .29626  & -.009914 & .0012499 \\
-            4 & 1.0000 & 2.7182  & 0.0000  & .00000  &  .000000 & .0000000 \\
-            \multicolumn{3}{l}{old.I = .44496 -.06537} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000  & .58760  & 0.0000   & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000  & .059198 & -.067537 & .0024999 \\
-            2 & .75000 & .84147  & -.54030  & .17896  & -.043682 & .0012499 \\
-            3 & .87500 & 2.0219  & -.15862  & .14190  & -.005745 & .00062499 \\
-            4 & .93750 & 2.5189  & -.025229 & .16366  & -.000788 & .00062499 \\
-            5 & 1.0000 & 2.7182  & 0.0000   & .000000 &  .000000 & .00000000 \\
-            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \end{tabular}
-      &
-        \begin{tabular}{cccllll}
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000   & .58760  & 0.0000    & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000   & .059198 & -.067537  & .00249999 \\
-            2 & .75000 &  .84147 & -.54030   & .17896  & -.043682  & .0012499 \\
-            3 & .87500 & 2.0219  & -.15862   & .14190  & -.005745  & .00062499 \\
-            4 & .93750 & 2.5189  & -.025229  & .081022 & -.0004467 & .00031249 \\
-            5 & .96875 & 2.6665  & -.0033577 & .08414  & -.0000525 & .00031249 \\
-            6 & 1.0000 & 2.7182  & 0.0000    & .000000 &  .000000  & .000000000 \\
-            \multicolumn{3}{l}{old.I = .16366 -.00078842} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000    & .58760  & 0.0000    & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000    & .059198 & -.067537  & .0024999 \\
-            2 & .75000 &  .84147 &  -.54030   & .14896  & -.043682  & .0012499 \\
-            3 & .87500 & 2.0219  &  -.15862   & .14190  & -.0057453 & .00062499 \\
-            4 & .93750 & 2.5189  &  -.025229  & .08102  & -.0004467 & .00031249 \\
-            5 & .96875 & 2.6665  &  -.0033577 & .04197  & -.0000296 & .00015624 \\
-            6 & .98437 & 2.7052  &  -.000426  & .042371 & -.0000033 & .00015624 \\
-            7 & 1.0000 & 2.7182  &  0.0000    & 0.0000  & 0.0000    & 0.0000 \\
-            \multicolumn{3}{l}{old.I = .084137 -.000052465} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000}     \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & 2.7182  &  0.0000   & .58760  & 0.0000    & .0049999 \\
-            1 & .50000 & -.36787 & -0.0000   & .059198 & -.067537  & .0024999 \\
-            2 & .75000 &  .84147 &  -.54030  & .14896  & -.043682  & .0012499 \\
-            3 & .87500 & 2.0219  &  -.15862  & .14190  & -.005745  & .00062499 \\
-            4 & .93750 & 2.5189  &  -.025229 & .040020 & -.0002833 & .00015624 \\
-            5 & .95312 & 2.6036  &  -.011038 & .041173 & -.0001125 & .00015624 \\
-            6 & .96875 & 2.6665  &  -.003358 & .042371 & -.0000033 & .00015624 \\
-            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
-            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
-        \end{tabular}
-    \end{tabular}
-\end{figure}
-
-\begin{figure}
-    \tiny
-    \setlength{\tabcolsep}{.2em}
-    \begin{tabular}{l|l}
-
-        \begin{tabular}{cccllll}
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = 2.7182 0.0000} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .58760 0.0000} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .44496 -.06537} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .29626 -.0099138} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \end{tabular}
-      &
-        \begin{tabular}{cccllll}
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\ 
-            \multicolumn{3}{l}{old.I = .16366 -.00078842} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\ 
-            \multicolumn{3}{l}{old.I = .084137 -.000052465} & &
-            \multicolumn{3}{r}{final.I = 0.0000 0.0000}     \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
-            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
-        \\
-            \multicolumn{1}{c}{N}        & \multicolumn{1}{c}{X} &           \multicolumn{1}{c}{Re[F(X)]} & \multicolumn{1}{l}{Im[F(X)]} & 
-            \multicolumn{1}{l}{Re[I]}    & \multicolumn{1}{l}{Im[I]} &
-            \multicolumn{1}{c}{E} \\
-            0 & 0.0000 & & & & & \\
-            \multicolumn{3}{l}{old.I = .081022 -.00044667} & &
-            \multicolumn{3}{r}{final.I = .084404 -.000026372} \\
-        \end{tabular}
-    \end{tabular}
-\end{figure}
-
-box this in yo!
-Note:
-    answer = 1
+\input{Chapter-08/Table_08_6_Argand_1}
+\input{Chapter-08/Table_08_6_Argand_2}
 
 \section{Fitting functions to data}
 \TallC{One} of the, most important applications of numerical analysis is the representation of numerical data in functional form. This includes fitting, smoothing, filtering, interpolating, \etc
 
 A typical example is the problem of table lookup: a program requires values of some mathematical function --sin(x), say-- for arbitrary values of $x$. The function is moderately or extremely time-consuming to compute directly. According to the Intel timings for the 80x87 chip, this operation should take about 8 times longer than a floating point multiply. In some real-time applcations this may be too slow.
 
-There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent sin(x) by a simple polynomial\sepfootnote{08_18}
+There are several ways to speed up the computation of a function. They are all based on compact representations of the funtion --either in tabular form or as coefficients of functions that are faster to evaluate. For example, we might represent sin(x) by a simple polynomial\sepfootnote{08_18}\index{Abramowitz, M. and Stegun, I.A.}
 
 \begin{equation}
 sin(x) \approx x \left( 0.994108 - 0.147207x\right),
@@ -1013,7 +623,7 @@ function such as sin(x) that is built into the fast co-processor. However, if we
     used in Fourier-series representation. \textbf{Gram polynomials}, discussed below, comprise a third useful complete set.
 \end{itemize}
 
-\TallC{The} representation in Eq. \ref{eq:08_25} is called \textbf{linear} because the unknown coefficients $c_{m}$ appear to their first power. Thus, if all the data were to double, we see immediately that the $c_{m}$'s would have to be multiplied by the same factor, 2. Sometimes, as in the example of the measurement of g above, the unknown parameters appear in more complicated fashion. The problem of fitting with these more general functional forms is called \textbf{nonlinear} for obvious reasons. The \textbf{simplex algorithm} of Ch. \ref{chap:08_02_03} below is an example of a nonlinear fitting procedure.
+\TallC{The} representation in Eq. \ref{eq:08_25} is called \textbf{linear} because the unknown coefficients $c_{m}$ appear to their first power. Thus, if all the data were to double, we see immediately that the $c_{m}$'s would have to be multiplied by the same factor, 2. Sometimes, as in the example of the measurement of g above, the unknown parameters appear in more complicated fashion. The problem of fitting with these more general functional forms is called \textbf{nonlinear} for obvious reasons. The \textbf{simplex algorithm} of Ch. 8 \S2.3 below is an example of a nonlinear fitting procedure.
 
 We are now going to write programs to fit both linear and non-linear functions to data. The first and conceptually simplest of these is the \textbf{Fourier transform}, namely representing a function as a sum of sines and cosines.
 
@@ -1103,11 +713,13 @@ whose solution is
 \tau_{N} = \lambda N \log_{2}(N).
 \end{equation}
 
-Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. \ref{eq:08_30}: we work out the case for 16 coefficients, exhibiting them in Table 8-1 below, writing only the indices:
+Although the FFT algorithm can be programmed recursively, it almost never is. To see why, imagine how the coefficients would be re-shuffled by Eq. \ref{eq:08_30}: we work out the case for 16 coefficients, exhibiting them in Table \ref{table:08_01} below, writing only the indices:
 
-Table \ref{table:08_01} Bit-reversal for re-ordering discrete data
-
-\begin{figure}
+\begin{table}[h]
+    \caption{Bit-reversal for re-ordering discrete data}
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+    \centering
     \setlength{\tabcolsep}{1em}
     \begin{tabular}{llllll}
         \multicolumn{1}{c}{Start}  &
@@ -1134,13 +746,15 @@ Table \ref{table:08_01} Bit-reversal for re-ordering discrete data
         15 &      15 &    15 &    15 &    1111 & 1111
     \end{tabular}
     \label{table:08_01}
-\end{figure}
+    \end{minipage}
+    }
+\end{table}
 
 The crucial columns are "Start" and "Step 3". Unfortunately, they are written in decimal notation, which conceals a fact that becomes glaringly obvious in binary notation. So we re-write them in binary in the columns Bin\textsubscript{0} and Bin\textsubscript{3}, --and see that the final order can be obtained from the initial order simply by reversing the order of the bits, from left to right!
 
 \TallC{A standard} FORTRAN program for complex FFT is shown below. We shall simply translate the FORTRAN into FORTH as expeditiously as possible, using some of FORTH's simplifications.
 
-\TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program. Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overflow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
+\TallC{One} such improvement is a word to reverse the bits in a given integer. Note how clumsily this was done in the FORTRAN program.
 
 \begin{multicols}{2}
     \tiny
@@ -1169,17 +783,22 @@ C  DATA IS THE (COMPLEX) ARRAY OF DISCRETE INPUT
       GO TO 1
     ENDIF
     J = J + M
-11  CONTINUE              \ end bit.reversal
-      MMAX=1              \ begin Danielson-Lancszos section
-2     IF (N.GT.MMAX) THEN
-           ISTEP=2*MMAX   \ executed lg(N) times
-                          \ init trig recurrence
+11  CONTINUE                  \ end bit.reversal
+    \end{verbatim}
+    \begin{verbatim}
+    
+    
+      MMAX=1                  \ begin Danielson-Lancszos section
+2     IF (N.GT.MMAX) THEN     
+           ISTEP=2*MMAX       \ executed lg(N) times
+                              \ init trig recurrence
+
     THETA=3.14159265358979D0/(ISING*MMAX)
     W4=CEXP(THETA)
     W =DCMPLX(1.D0,0.D0)
-    DO 13 M=1,MMAX,2      \ outer loop
-      DO 12 I = M,N,ISTEP \ inner loop
-        J = I+MMAX        \ total = N times
+    DO 13 M=1,MMAX,2          \ outer loop
+      DO 12 I = M,N,ISTEP     \ inner loop
+        J = I+MMAX            \ total = N times
         TEMP = DATA(J)*W
         DATA(J) = DATA(I)-TEMP
         DATA(I) = DATA(I)+TEMP
@@ -1190,12 +809,14 @@ C
 13  CONTINUE                  \ end outer loop
     MMAX=ISTEP
     GO TO 2
-  ENDIF
+  ENDIF         \ end Danielson-Lancszos section
   RETURN
     \end{verbatim}
 \end{multicols}
 
-Fig. 8-5 \textit{Pictorial representation of bit-reversal}
+Since practically every microprocessor permits right-shifting a register one bit at a time and feeding the overflow into another register from the right, \bc{B.R} can be programmed easily in machine code for speed. Our fast bit-reversal procedure \bc{B.R} may be represented pictorially as in Fig. 8-5 below.
+
+\input{Chapter-08/fig_08_05}
 
 Bit-reversal can be accomplished in high-level FORTH \textit{via}
 
@@ -1215,9 +836,9 @@ Note: \bc{N.BITS} is a \bc{VAR}, previously set to $v = \log_{2}(N)$
 
 We will use \bc{B.R} to re-order the actual data array (even though this is slightly more time-consuming than setting up a list of scrambled pointers, leaving the data alone). We forego indirection for two reasons: first, we have to divide by N (N steps) when inverse-transforming, so we might as well combine this with bit-reversal; second, there are N steps in rearranging and dividing by N the input vector, whereas the FFT itself takes $N\log_{2}(N)$ steps, \ie the execution time for the preliminary N steps is unimportant.
 
-Now, how do we go about evaluating the sub-polynomials to get the answer? First, let us write the polynomials (for our case N = 16) corresponding to taking the (bit-reversed) addresses off the stack in succession, as in Fig. 8-6 below.
+Now, how do we go about evaluating the sub-polynomials to get the answer? First, let us write the polynomials (for our case N = 16) corresponding to taking the (bit-reversed) addresses off the stack in succession, as in Fig. \ref{fig:08_06} below.
 
-Fig. 8-6 \textit{The order of evaluating a 16 pt. FFT}
+\input{Chapter-08/fig_08_06}
 
 We see that $w_{n}^{8}$ (for N=16) has only two possible values, $\pm1$. Thus we must evaluate not $16\times8$ terms like $f_{i} + w^{8}f_{i+8}$, but only $16\times2$. Similarly, we do not need to evaluate $16\times4$ terms of form $f_{i} + w^{4}f_{i+4}$f, but only $4\times4$, since there are only 4 possible values of $w^{4}$. Thus the total number of multiplications is
 
@@ -1235,218 +856,18 @@ We list the FFT program on page 191 below. Since \bc{\}FFT} transforms a one-dim
 
 where \bc{V\{} is the name of the (complex) array to be transformed, \bc{n.pts} (a power of 2) is the size of the array, and the flag-setting words \bc{FORWARD} or \bc{INVERSE} determine whether we are taking a FFT or inverting one.
 
-\TallC{Now} we test the program. Table 8-2 on page 192 contains the weekly stock prices of IBM stock, for the year 1983 (the 52 values have been made complex numbers by adding $0i$, and the table padded out to 64 entries (the nearest power of 2) with complex zeros)\sepfootnote{08_22}. The first two entries (2,64) are the type and length of the file. (The file reads from left to right.)
+\TallC{Now} we test the program. Table \ref{table:08_02} on page~\pageref{table:08_02} contains the weekly stock prices of IBM stock, for the year 1983 (the 52 values have been made complex numbers by adding $0i$, and the table padded out to 64 entries (the nearest power of 2) with complex zeros)\sepfootnote{08_22}. The first two entries (2,64) are the type and length of the file. (The file reads from left to right.)
 
-We FFl‘ Table 8- 2 using the phrase \bc{IBM\{ 64 DIRECT \}FFT}. The power spectrum of the resulting FFT (Table 8-3) is shown in Fig. 8-7 on page 192 below.
+We FFl‘ Table \ref{table:08_02} using the phrase \bc{IBM\{ 64 DIRECT \}FFT}. The power spectrum of the resulting FFT (Table 8-3) is shown in Fig. \ref{fig:08_07} on page~\pageref{fig:08_07} below.
 
-\begin{lstlisting}
-\ Complex Fast Fourier Transform
-\ Usage: Vector.name{ N FORWARD ( INVERSE ) }FFT
+\input{Chapter-08/08_code_Complex_FFT}
 
-TASK FFT
-FIND  C+        0= ?( FLOAD COMPLEX )
-FIND  1ARRAY    0= ?( FLOAD MATRIX.HSF )
-FIND  FILL      0= ?( FLOAD FILEIO.FTH )
-FIND  TRIG      0= ?( FLOAD TRIG )
-\ if not there
-DECIMAL
-\ = = = = = = = = = = = = = = = = = = = = = = = = = =
-\ auxiliary words
-  CODE  SHR  BX 1 SHR.  END-CODE
-  : LG2 ( n -- lg2[n]) 0 SWAP ( -- 0 n)  SHR
-    BEGIN   ?DUP 0>
-    WHILE   SHR   SWAP 1+  SWAP  REPEAT  ;
+\TallC{How} do we know the FFT program actually worked? The simplest method is to inverse-transform the transform, and compare with the input file. The FFT and inverse FFT are given, respectively, in Tables \ref{table:08_03} and \ref{table:08_04} on page~\pageref{table:08_02} below. Within roundoff error, Table \ref{table:08_04} agrees with Table \ref{table:08_02} on page~\pageref{table:08_02}.
 
-0 VAR DIRECTION?
-: FORWARD   0 IS DIRECTION? ;
-: INVERSE  -1 IS DIRECTION? ;
-
-    0 VAR N.BITS            \ some VARs
-    0 VAR N
-    0 VAR MMAX
-    0 VAR f{
-
-: C/N    N S->F  C/F  ;
-: NORMALIZE    DIRECTION?
-    IF   C/N  CPSWAP  C/N   CPSWAP   THEN ;
-\ end auxiliary words ;
-\ = = = = = = = = = = = = = = = = = = = = = = = = = =
-\ key bit-reveral routine!
-0 VAR I.R
-: B.R  ( n -- n')             \ reverses order of bits
-     0  SWAP   ( -- 0 n )     \ set up stack
-     N.BITS 0 DO  DUP  1 AND  \ pick out 1's bit
-            ROT  2* +     \ double sum and add 1's bit
-            SWAP  2/      \ n -> n/2
-     LOOP  DROP ;
-
-: BIT.REVERSE  0 IS I.R
-     N 0  DO   I B.R   IS  I.R
-       I.R  I  < NOT   ( I.R >=I ?)
-       IF  f{ I.R } G@L  f{ I }  G@L  NORMALIZE
-           f{ I.R } G!L  f{ I }  G!L  THEN
-     LOOP ;
-\ end bit-reversal (N times)
-
-\ = = = = = = = = = = = = = = = = = = = = = = = = = =
-                                    \ main algorithm
-CODE C-+   2 FLD.   1 FXCH.  3 FSUBR".
-    1 FADDP.  1 FXCH. 3 FLD.
-    1 FXCH.  4 FSUBR".  1 FADDP.  1 FXCH.  END-CODE
-    ( 87: w z -- w-z  w+z)
-
-: THETA   F=PI  MMAX  S->F  F/  DIRECTION? FSIGN ;
-
-CREATE  WP  16  ALLOT OKLW
-: INIT.TRIG   FINIT  THETA  EXP(I*PHI)  WP  DCP!  C=1 ;
-
-: NEW.W   ( 87: w -- w')  WP DCP@ C* ;
-
-0 VAR ISTEP
-
-: DO.INNER.LOOP
-    DO  MMAX I +  IS I.R
-        CPDUP  f{ I.R } G@L  C*   f{ I } G@L
-        CPSWAP  C-+ f{ I } G!L  f{ I.R } G!L
-    ISTEP +LOOP ;
-
-: }FFT ( adr n -- ) IS N IS f{
-    1 IS MMAX
-    N LG2 IS N.BITS
-    FINIT
-    BIT.REVERSE
-    BEGIN
-      N MMAX >
-    WHILE
-      INIT.TRIG  MMAX  2* IS ISTEP
-      MMAX 0 DO
-        N I  DO.INNER.LOOP   NEW.W
-      LOOP
-      ISTEP IS MMAX
-    REPEAT  CPDROP  ;
-
-: POWER  0 DO  f{ I } G@L  CABS  CR  I .  F.  LOOP ;
-\ power spectrum of FFT            \ end of fft code
-\ = = = = = = = = = = = = = = = = = = = = = = = = = =
-                                   \ an example
-64 LONG COMPLEX 1ARRAY A{
-: INIT.A  A{ $" IBM.EX" OPEN-INPUT FILL CLOSE-INPUT  ;
-INIT.A
-A{ 64 DIRECT }FFT
-                                   \ end of example
-\ = = = = = = = = = = = = = = = = = = = = = = = = = =
-\end{lstlisting}
-
-\TallC{How} do we know the FFT program actually worked? The simplest method is to inverse-transform the transform, and compare with the input file. The FFT and inverse FFT are given, respectively, in Tables 8-3 and 8-4 on page 193 below. Within roundoff error, Table 8-4 agrees with Table 8-2 on page 192.
-
-Table 8-2 \textit{Weekly IBM common stock prices, 1983}
-\begin{figure}
-    \setlength{\tabcolsep}{1em}
-    \begin{tabular}{rlrlrlrl}
-             2 & 64  &        &     &        &     &        &     \\
-         96.63 & 0.0 &  99.13 & 0.0 &  94.63 & 0.0 &  97.38 & 0.0 \\
-         97.38 & 0.0 &  96.38 & 0.0 &  98.63 & 0.0 & 100.38 & 0.0 \\
-        102.25 & 0.0 & 100.75 & 0.0 &  99.88 & 0.0 & 102.13 & 0.0 \\
-        101.63 & 0.0 & 103.88 & 0.0 & 110.13 & 0.0 & 117.25 & 0.0 \\
-        117.00 & 0.0 & 117.63 & 0.0 & 116.50 & 0.0 & 110.63 & 0.0 \\
-        113.00 & 0.0 & 114.00 & 0.0 & 114.25 & 0.0 & 121.13 & 0.0 \\
-        123.00 & 0.0 & 121.00 & 0.0 & 121.50 & 0.0 & 120.13 & 0.0 \\
-        124.38 & 0.0 & 120.38 & 0.0 & 119.75 & 0.0 & 118.50 & 0.0 \\
-        122.50 & 0.0 & 117.83 & 0.0 & 119.75 & 0.0 & 122.25 & 0.0 \\
-        123.13 & 0.0 & 126.63 & 0.0 & 126.88 & 0.0 & 132.25 & 0.0 \\
-        131.75 & 0.0 & 127.00 & 0.0 & 128.00 & 0.0 & 122.25 & 0.0 \\
-        126.88 & 0.0 & 123.50 & 0.0 & 121.00 & 0.0 & 117.88 & 0.0 \\
-        122.25 & 0.0 & 120.88 & 0.0 & 123.63 & 0.0 & 122.00 & 0.0 \\
-           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 \\
-           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 \\
-           0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0 &    0.0 & 0.0
-    \end{tabular}
-    \label{table:08_02}
-\end{figure}
-
-Fig. 8-7 \textit{Power spectrum of FFT of 1983 IBM prices (from Table 63)}
-
-Table 8-3 \textit{FFT of IBM weekly stock prices, 1983}
-\begin{figure}
-    \setlength{\tabcolsep}{1em}
-    \begin{tabular}{lrrlrr}
-         0 &  5989.4599 &  0.0000000 & 32 &  3.1601562 &  0.0000000 \\ 
-         1 & -1356.9239 &  562.94860 & 33 &  13.450067 &  44.866729 \\
-         2 & -374.28417 &  956.64282 & 34 &  89.175987 &  32.346035 \\
-         3 &  305.66314 &  634.45819 & 35 &  99.756584 & -25.042837 \\
-         4 &  327.40542 &  177.60118 & 36 &  39.756885 & -83.410888 \\
-         5 &  125.21042 & -8.0063304 & 37 & -30.826173 & -14.841442 \\
-         6 & -178.28504 &  39.630813 & 38 &  19.293210 &  29.322504 \\
-         7 & -90.525482 &  226.27159 & 39 &  86.785362 &  22.908525 \\
-         8 &  150.24264 &  260.91506 & 40 &  107.71731 & -34.415077 \\
-         9 &  191.18481 &  128.15400 & 41 &  44.172229 & -110.77391 \\
-        10 &  80.279541 & -33.341926 & 42 & -11.327768 & -52.313049 \\
-        11 & -49.475231 & -5.4212093 & 43 &  1.8497861 &  37.864341 \\
-        12 & -49.510669 &  147.45129 & 44 &  87.868354 &  24.258874 \\
-        13 &  84.502433 &  165.21282 & 45 &  119.02930 & -71.422492 \\
-        14 &  146.10401 &  64.187637 & 46 &  68.084251 & -117.80709 \\
-        15 &  69.775169 & -29.838697 & 47 & -27.548482 & -81.061904 \\
-        
-        16 &  7.2500000 & -15.170043 & 48 &  7.2500000 &  15.170043 \\
-        17 & -27.548482 &  81.061904 & 49 &  69.775169 &  29.838697 \\
-        18 &  68.084251 &  117.80709 & 50 &  146.10401 & -64.187637 \\
-        19 &  119.02930 &  71.422492 & 51 &  84.502433 & -165.21282 \\
-        20 &  87.868354 & -24.258874 & 52 & -49.510669 & -147.45129 \\
-        21 &  1.8497861 & -37.864341 & 53 & -49.475231 &  5.4212093 \\
-        22 & -11.327768 &  52.313049 & 54 &  80.279541 &  33.341926 \\
-        23 &  44.172229 &  110.77391 & 55 &  191.18481 & -128.15400 \\
-        24 &  107.71731 &  34.415077 & 56 &  150.24264 & -260.91406 \\
-        25 &  86.785362 & -22.908525 & 57 & -90.525482 & -226.27159 \\
-        26 &  19.293210 & -29.322504 & 58 & -178.28504 & -39.630813 \\
-        27 & -30.826173 &  14.841442 & 59 &  125.21042 &  8.0063304 \\
-        28 &  39.756885 &  83.410888 & 60 &  327.40542 & -177.60118 \\
-        29 &  99.756584 &  25.042837 & 61 &  305.66314 & -634.45819 \\
-        30 &  89.175987 & -32.346035 & 62 & -374.28417 & -956.64282 \\
-        31 &  13.450067 & -44.866729 & 63 & -1356.9239 & -562.94860 \\
-    \end{tabular}
-    \label{table:08_03}
-\end{figure}
-
-Table 8-4 \textit{Reconstructed IBM prices (inverse FFT)}
-\begin{figure}
-    \setlength{\tabcolsep}{1em}
-    \begin{tabular}{lrrlrr}
-         0 &  96.630 &  0.0000     & 32 &  122.50 &  0.0000     \\
-         1 &  99.129 &  .000000705 & 33 &  117.82 & -.000000245 \\
-         2 &  94.629 &  .000000023 & 34 &  119.75 &  .000000148 \\
-         3 &  97.379 &  .000000227 & 35 &  122.24 & -.000000379 \\
-         4 &  97.380 &  .000000385 & 36 &  123.13 & -.000000385 \\
-         5 &  96.397 & -.000000362 & 37 &  126.62 &  .000000796 \\
-         6 &  98.630 &  .000001697 & 38 &  126.88 & -.000000851 \\
-         7 &  100.38 &  .000002158 & 39 &  132.25 & -.000001661 \\
-         8 &  102.25 & -.000000000 & 40 &  131.75 & -.000000000 \\
-         9 &  100.75 &  .000000799 & 41 &  127.00 & -.000000373 \\
-        10 &  99.880 & -.000000271 & 42 &  128.00 &  .000000401 \\
-        11 &  102.12 & -.000000078 & 43 &  122.24 & -.000001011 \\
-        12 &  101.62 &  .000000316 & 44 &  126.87 & -.000000316 \\
-        13 &  103.88 & -.000000043 & 45 &  123.50 &  .000000390 \\
-        14 &  110.13 & -.000001615 & 46 &  121.00 &  .000001937 \\
-        15 &  117.25 & -.000002237 & 47 &  117.87 &  .000001164 \\
-        
-        16 &  117.00 & -.000000000 & 48 &  122.25     &  .000000000 \\
-        17 &  117.62 & -.000000518 & 49 &  120.87     &  .000000132 \\
-        18 &  116.50 & -.000000119 & 50 &  123.63     & -.000000052 \\
-        19 &  110.62 &  .000001375 & 51 &  121.99     & -.000000944 \\
-        20 &  113.00 &  .000001076 & 52 &  .000012664 & -.000001076 \\
-        21 &  114.00 &  .000000975 & 53 & -.000001277 & -.000001434 \\
-        22 &  114.25 &  .000000378 & 54 & -.000003880 & -.000001224 \\
-        23 &  121.12 &  .000000317 & 55 & -.000005683 & -.000000815 \\
-        24 &  123.00 &  .000000000 & 56 & -.000001602 & -.000000000 \\
-        25 &  121.00 &  .000001130 & 57 & -.000002995 & -.000001630 \\
-        26 &  121.50 & -.000001469 & 58 & -.000010348 &  .000001339 \\
-        27 &  120.12 &  .000002522 & 59 & -.000005928 & -.000001711 \\
-        28 &  124.37 &  .000000027 & 60 & -.000003016 & -.000000027 \\
-        29 &  120.38 &  .000001261 & 61 & -.000002253 & -.000001583 \\
-        30 &  119.75 & -.000000618 & 62 & -.000003121 &  .000000295 \\
-        31 &  118.49 &  .000000573 & 63 & -.000003713 &  .000000500
-    \end{tabular}
-    \label{table:08_04}
-\end{figure}
+    \input{Chapter-08/Table_08_02}
+    \input{Chapter-08/fig_08_07}
+    \input{Chapter-08/Table_08_03}
+    \input{Chapter-08/Table_08_04}
 
 \subsection{Gram polynomials}
 \TallC{Gram} polynomials are useful in fitting data by the linear least-squares method. The usual method is based on the following question: What is the "best" polynomial,
@@ -1457,7 +878,7 @@ P_N(x) = \sum_{n=0}^N \gamma_n x^n
 
 (of order N) that I can use to fit some set of M pairs of data points,
 
-\begin{equation}
+\begin{equation*}
     \left \{
       \begin{tabular}{c}
       $x_{k}$ \\
@@ -1465,7 +886,7 @@ P_N(x) = \sum_{n=0}^N \gamma_n x^n
       \end{tabular}
     \right \}
     , k=0,1, ... , M-1
-\end{equation}
+\end{equation*}
 
 (with M > N) where f(x) is measured at M distinct values of the independent variable x ?
 
@@ -1485,21 +906,21 @@ From the differential calculus we know that a function's first derivative vanish
 
 where (the symbol $\triangleq$ means “is defined by”)
 
-\begin{equation}
-A_{nm} \triangleq \sum{k=0}^{M-1}(x_{k})^{n+m} \frac{1}{\sigma_{k}^{2}}
-\end{equation}
-
+\begin{subequations}
+    \begin{equation}
+    A_{nm} \triangleq \sum{k=0}^{M-1}(x_{k})^{n+m} \frac{1}{\sigma_{k}^{2}}
+    \end{equation}
 and
-
-\begin{equation}
-\beta_{nm} \triangleq \sum_{k=0}^{M-1}x_{k}^{n}f_{k}\frac{1}{\sigma_{k}^{2}}
-\end{equation}
+    \begin{equation}
+    \beta_{nm} \triangleq \sum_{k=0}^{M-1}x_{k}^{n}f_{k}\frac{1}{\sigma_{k}^{2}}
+    \end{equation}
+\end{subequations}
 
 In Chapter 9 we develop methods for solving linear equations. Unfortunately, they cannot be applied to Eq. 36 for $N \geq 9$ cause the matrix $A_{nm}$ approximates a Hilbert matrix,
 
-\begin{equation}
+\begin{equation*}
 H_{nm} = \frac{const.}{n+m+1} ,
-\end{equation}
+\end{equation*}
 
 a particularly virulent example of an exponentially \textbf{ill-conditioned matrix}. That is, the round off error in solving 36 grows exponentially with $N$, and is generally unacceptable We can avoid roundolf problems by expanding in polynomials rather than monomials:
 
@@ -1568,14 +989,14 @@ p_{n+1}(x) = (a_{n} + xb_{n} ) p_{n}(x) + c_{n}p_{n-1}
 
 Now apply Eq. 41: assume we have calculated $p_{n}$ and $p_{n-1}$ and want to calculate $p_{n+1}$. Clearly, the orthogonality property gives
 
-\begin{equation}
+\begin{equation*}
 (p_{n+1},p_{n}) = (p_{n+1},p_{n-1}) = (p_{n},p_{n-1}) = 0,
-\end{equation}
+\end{equation*}
 
 and the assumed normalization gives
-\begin{equation}
+\begin{equation*}
 (p_{n},p_{n}) = 1.
-\end{equation}
+\end{equation*}
 
 These relations yields two equations for the three unknowns, $a_{n}$, $b_{n}$, and $c_{n}$:
 
@@ -1618,9 +1039,9 @@ But we know that any polynomial of degree N-l can be expressed as a linear combi
 
 and (by hypothesis) $p_{n} \perp$ every term of the rhs of Eq. \ref{eq:08_44}, hence it follows (by mathematical induction) that
 
-\begin{equation}
+\begin{equation*}
 p_{n+1} \perp \{ p_{n-2} , p_{n-3} , ... \}.
-\end{equation}
+\end{equation*}
 
 Let us illustrate the process for Legendre polynomials, defined by weight $w(x) = 1$, interval $[-1,1]$:
 
@@ -1653,33 +1074,13 @@ they can be evaluated without solving any coupled linear equations, ill-conditio
 
 The algorithm for fitting data with Gram polynomials may in expressed in flow-diagram form:
 
-*** Diagram ***
-neodhpomt...x.¢mw. 1.1/0.3.
-DOn-ttoN-t (outerloop)
-Construct an , cn :
-DO k=o to M1 (inner loop)
-pn+t(xlr) = (XI: " 8n)Pn(Xu) - crpn-1(Xtr)
-
-sum = sum + (p0,,(x.)) 2w.
-
-Com = an + ft Pn+1(Xk) Wk
-LOOP (and inner loop)
-cn+1 = cn+1 /sum
-
-DO k =0 to M-1 (normalize)
-’ Pn+1(xk) = pn+1(xk)/ mm
-LOOP
-
-LOOP
-*** Diagram ***
-
-Fig. 8-5 \textit{Construction of Gram polynomials}
+\input{Chapter-08/fig_08_09_star}
 
 The required storage is 5 vectors of length M to hold $x_{k}$, $p_{n}(x_{k})$, $f_{k}$, and $w_{k} \equiv 1\/\sigma_{k}^{2}$. We also need to store the coefficients $a_{n}$, $c_{n}$, and the normalizations $b_{n}$ --that is, 3 vectors of length $N<<M$-- in case they should be needed to interpolate. The time involved is approximately 7M multiplications and additions for each n, giving 7NM. Since N can be no greater than M-l (M data determine at most a polynomial of degree M-l), the maximum possible running time is $7M^{2}$, which is much less than the time to solve M linear equations.
 
 In practice, we would never wish to fit a polynomial of order comparable to the number of data, since this would include the noise as well as the significant information.
 
-We therefore calculate a statistic called $\chi^{2}$/(textit{degrce of freedom})\sepfootnote{08_24} With M data points and an N'th order polynomial, there are M-N-l degrees of freedom. That is, we evaluate Eq. \ref{eq:08_38} for fixed N, and divide by M-N-l. We then increase N by l and do it again The value of N to stop at is the one where
+We therefore calculate a statistic called $\chi^{2}$/(textit{degrce of freedom})\sepfootnote{08_24}\index{chi-squared/degree of freedom} With M data points and an N'th order polynomial, there are M-N-l degrees of freedom. That is, we evaluate Eq. \ref{eq:08_38} for fixed N, and divide by M-N-l. We then increase N by l and do it again The value of N to stop at is the one where
 
 \begin{equation*}
 \delta_{M,N}^{2} = \frac{\chi_{M,N}^{2}}{M-N-1}
@@ -1751,10 +1152,7 @@ used in the format
 
 Fleshing out the details is a --by now-- familiar process, so we leave the program \textit{per se} to Appendix 8.5. We also include there a FORTRAN subroutine for the simplex algorithm, taken from
 
-\begin{lstlisting}
-
-Fig. 8-8 \textit{Flow dlagram of the slmplex algorithm}
-\end{lstlisting}
+\input{Chapter-08/fig_08_08}
 
 \textit{Numerical Recipes}\sepfootnote{08_26}, as an example of just how indecipherable traditional languages can be.
 
@@ -1766,7 +1164,7 @@ Fig. 8-8 \textit{Flow dlagram of the slmplex algorithm}
 
 \begin{equation}\label{eq:08_50}
 I = \int_{A}^{B} dx \sigma(x)f(x) \approx \sum_{n=1}^{N} w_{n}f(\xi_{n} ?
-\end{equation})
+\end{equation}
 
 In Eq. \ref{eq:08_50} $\sigma(x)$ is a (known) positive function and $f(x)$ is the function we want to integrate. This problem can actually be solved, and leads to tables of points $\xi_n$ and weight coefficients $w_{n}$ specific to a particular interval [A,B] and weight function $\sigma(x)$. \textbf{Gauss-Legendre} integration pertains to [-1,+1] and $\sigma(x) = 1$. (Note any interval can be transformed into [-1, + 1].)
 
@@ -1777,8 +1175,8 @@ Finally, we note that the more common integration formulae such as Simpson’s r
 For given N Gaussian formulae can be more accurate than equally-spaced rules, as they have twice as many parameters to play with.
 
 Some FORTH words for 5-point Gauss-Legendre integration:
-
-\begin{lstlisting}
+\begin{multicols}{2}
+    \begin{lstlisting}[basicstyle=\scriptsize,]
 % 0.906179845938664     FCONSTANT   x2
 % 0.538469310105683     FCONSTANT   x1
 % 0.588888888888889     FCONSTANT   w0
@@ -1788,7 +1186,8 @@ Some FORTH words for 5-point Gauss-Legendre integration:
 : scale ( 87: A B -- [A+B]/2 [B-A]/2 )
     FOVER F- F2/ FUNDER F+ ;
 : rescale ( 87: a b x -- a+b*x ) F* F+ ;
-: F3R+ ( 87: a b c x -- a+x b c ) F3R F+ F-ROT ;
+: F3R+ ( 87: a b c x -- a+x b c )
+    F3R F+ F-ROT ;
 
 : }integral ( 87: A B -- I )
     scale ( 87: A B -- [A+B]/2 [B-A]/2 )
@@ -1799,19 +1198,18 @@ Some FORTH words for 5-point Gauss-Legendre integration:
     XDUP x2 rescale F(X) w2 F* F3R+
     XDUP x2 FNEGATE rescale
     F(X) w2 F* F3R+
-\end{lstlisting}
+    \end{lstlisting}
+\end{multicols}
 
 \subsection{The trapezoidal rule}
 
 \TallC{Recall} (Ch. 8, \S1.1) how we approximated the area under a curve by capturing it between rectangles consistently higher-- and lower than the curve; and calculating the areas of the two sets of rectangles. In practice we use a better approximation: we average the rectangular upper and lower bounds. The errors tend to
 cancel, resulting in\sepfootnote{08_27}
 
-\begin{equation}
-  \begin{split}
-    \frac{w}{2} \sum_{n=0}^{(B-A)/w} \left( f(A+nw) + f(A+nw+w)\right) \\
+\begin{align}
+    & \frac{w}{2} \sum_{n=0}^{(B-A)/w} \left( f(A+nw) + f(A+nw+w)\right) \\
     & \approx \int_{A}^{B} dx f(x) + \frac{1}{12} \left( \frac{(B-A)}{w} \right) w^{3} \text{max}_{A<x<B} \vert f''(x) \vert
-  \end{split}
-\end{equation}
+\end{align}
 
 Now the error is much smaller\sepfootnote{08_28} --of order $w^{2}$-- so if we double the number of points, we ecrease the error four-fold. Yet this so-called \textbf{trapezoidal rule} requires no more effort (in terms of the number of function evaluations) than the rectangle rule.
 
@@ -1843,413 +1241,10 @@ Equation \ref{eq:08_53} is exactly what appears in \bc{INTERPOLATE}.
 Here is a FORTH program for implementing the algorithm
 I derived in \S2\S\S2 above.
 
-\begin{lstlisting}
-TASK GRAM1
-
-\         CODEed words to simplify fstack management
-\ ---------------------------------------------------------------
-CODE G(N+1)  4 FMUL.  FCHS.  2 FLD.  6 FSUB.
-    2 FMUL.  1 FADDP.
-    DX DS MOV.  DS POP.   R64  DS: [BX] FST.
-    DS DX MOV.  BX POP.   END-CODE
-( seg off -- 87: s a b w x g[n] g[n-1] -- s a b w x g[n] g[n+1] )
-
-CODE  B(N+1)  2 FXCH.  2 FMUL.  3 FMUL.
-    1 FXCH.  1 FMUL. DX DS MOV. DS POP.
-    R64  DS: [BX]  FADD.  DS: [BX] FSTP.
-    DS DX MOV.  BX POP.  END-CODE
-( seg off --)
-(87: s a b w x g[n] g[n+1] -- s a b w g[n+1] w x g[n+1] )
-
-CODE  A(N+1)  1 FMUL.  DX DS MOV.  DS POP.
-    R64  DS: [BX] FADD.
-    DS: [BX] FSTP.    DS DX MOV.  BX POP.  END-CODE
-( seg off -- 87: s a b w g[n+1] wxg[n+1] -- s a b w g[n+1] )
-
-CODE C(N+1)  1 FXCH. 2 FMUL".  2 FMUL.
-    2 FXCH.  1 FMULP.
-    DX DS MOV.  DS POP.
-    R64  DS: [BX] FADD.  DS: [BX] FSTP.
-    DS DX MOV.  BX POP.  3 FADDP.  END-CODE
-( seg off -- 87: s a b w g[n+1] f -- s=s+wg[n+1]**2  a  b )
-
-\------------------------------------Gram polynomial coding
-REAL*8 SCALAR  DELTA
-0 VAR Nmax
-\ Usage:      A{ B{ C{ G{{ Nmax }FIT
-
-: FIRST.AB's   F=0 a{ 0 } G!    F=0 b{ 0 } G!  ;
-
-: INIT.DELTA   ( 87: -- g{{ 1 I }} )    F=0  F=0
-    M 0 DO  w{ I 0} G@  y{ I 0} G@   F**2  FOVER  F* 
-    ( 87:s s' -- s s' w w*f^2)
-    FROT  F+   F-ROT  F+  FSWAP
-    ( 87:-- s=s+w  s'=s'+wf^2 )
-    LOOP    DELTA G!  FSQRT  1/F  ;
-
-: FIRST.G's  ( 87: g{{ 1 I }} -- g{{ 1 I }} ) 
-     M 0 DO  F=0  g{{ 0 I }} G!  FDUP  g{{ 1 I }} G!  LOOP  ;
-
-: SECOND.AB's   ( 87: g{{ 1 I }} -- g{{ 1 I }} )
-     F=0 b{ 1 0}  G!   FDUP  F**2
-     F=0  M 0 DO  w{ I 0} G@ x{ I 0} G@  F*  F+  LOOP  
-     F*  a{ 1 0} G! ;
-
-: FIRST.&.SECOND.C's  ( 87: g{{ 1 I }} -- )
-     F=0 c{ 0 0} G!  F=0
-     M 0 DO  w{ I 0} G@  y{ I 0} G@  F*  F+   LOOP
-     F*  c{ 1 0} G! ;
-
-: INITIALIZE   FINIT   IS Nmax  IS g{{  IS c{ IS b{  IS a{
-     FIRST.AB's   INIT.DELTA   FIRST.G's  SECOND.AB's
-     FIRST.&.SECOND.C's  ;
-
-0 VAR N    0 VAR N+1
-: inc.N    N+1  DUP  IS N   1+  IS N+1 ;
-: DISPOSE  R  DDUP  R@ G@ R ;
-: inc.OFF  #BYTES DROP + ;
-: ZERO.L   DDUP  F=0 R64!L ;
-
-: START.Next.G
-( -- [c{n+1}] [a{n+1}] [b{n+1}] 87: -- s=0 a{n} b{n} )
-        FINIT   F=0   c{ N+1 0} DROP ZERO.L
-        a{ N 0} DISPOSE   inc.OFF  ZERO.L
-        b{ N 0} DISPOSE   inc.OFF  ZERO.L  ;
-
-: SET.FSTACK  w{ I' 0} G@  x{ I' 0} G@ g{{ N I' }} G@
-    g{{ N 1-I' }} G@ ;
-
-: }@*!  ( adr n -- 87:x -- x)  FDUP  0}  DISPOSE  F*  G! ;
-
-: NORMALIZE    ( 87: sum -- )  
-      1/F  a{ N+1 }@*!   FSQRT
-      b{ N+1 }@*!   c{ N+1 }@*!
-      M 0 DO  FDUP  g{{ N+1 I }}  DISPOSE   F*  G!  LOOP
-      FDROP  ;
-
-CODE 6DUP  OPT" 6 PICK  6 PICK  6 PICK
-                6 PICK  6 PICK  6 PICK " END-CODE
-CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
-
-: Next.G   START.Next.G 
-    M 0 DO  6DUP    SET.FSTACK
-        g{{ N+1 I }} DROP   G(N+1)   B(N+1)   A(N+1)
-        y{ I 0} G@   C(N+1)
-    LOOP    6DROP   FDROP FDROP   NORMALIZE  ;
-
-: New.DELTA   ( :: -- old.delta new.delta)
-      DELTA G@  FDUP   c{ N 0} G@  F**2  F-   FDUP
-      DELTA G! ;
-
-: NOT.ENUF.G's?   New.DELTA    M N+1 -   S->F
-    FDUP  F=1 F- 
-    ( CR  .FS  ."  NEXT ITERATION?" ?YN  0= IF ABORT THEN )
-        ( :: -- d d' m-n-1  m-n-2 )  
-        FROT  F\   F-ROT   F/   ( :: -- d'/[m-n-2]  d/[m-n-1] )
-        FOVER  F0 IF  F ELSE  FDROP FDROP 0 THEN  ;
-
-: }FIT  ( X{ Y{ S{ Nmax A{ B{ C{ G{{ -- )
-        INITIALIZE    1 IS N   2 IS N+1
-        BEGIN      NOT.ENUF.G's?     N Nmax  AND 
-        WHILE      Next.G   inc.N
-        REPEAT  FINIT ;
-\----------------------------------------------- end of code ;
-
-: RECONSTRUCT  M 0  DO  CR  x{ I 0} G@ F.  y{ I 0} G@ F. 
-        F=0  N+1 1+  1  DO 
-            c{ I 0} G@  g{{ I J }} G@  F* F+ 
-            LOOP   F. 
-        LOOP ;
-\end{lstlisting}
+\input{Chapter-08/08_code_Gram_polynomials}
 
 \subsection{Non-linear least squares: simplex method}
 \TallC{A FORTRAN} program for the simplex method is given below page 209. The FORTH version, as discussed in \S2\S\S3 given on pages 210 and 211.
 
-\begin{lstlisting}
-   SUBROUTINE AMOEBA(P,Y,MP,NP,NDIM,FTOL,FUNK,ITER)
-   PARAMETER (NMAX=20,ALPHA=1.0,
-C     BETA=0.5,GAMMA=2.0,ITMAX=500)
-   DIMENSION P(MP,NP),Y(MP),PR(NMAX),PRR(NMAX),PBAR(NMAX)
-   MPTS=NDIM + 1
-   ITER=0
-1  ILO=1
-   IF(Y(1).GT.5(2))THEN
-    IHI=1
-    INHI=2
-   ELSE
-    IHI=2
-    INHI=1
-   ENDIF
-   DO 11 I=1,MPTS
-    IF(Y(I).LT.Y(ILO)) ILO=I
-    IF(Y(I).GT.Y(IHI)) THEN
-     INHI=IHI
-     IHI=I
-    ELSE IF(Y(I).GT.Y(INHI)) THEN
-     IF(I.NE.IHI) INHI=I
-    ENDIF
-11 CONTINUE
-   RTOL=2.*ABS(Y(IHI).Y(ILO))/(ABS(Y(IHI))+ ABS(Y(ILO)))
-   IF(RTOL.LT.FTOL)rETURN
-   IF(ITER.EQ.ITMAX)PAUSE "Amoeba exceeding maximum iterations.'
-   ITER=ITER + 1
-   DO 12 J=1,NDIM
-    PBAR(J)=0.
-12 CONTINUE
-   DO 14 I=1,MPTS
-    IF(I.NE.IHI)THEN
-     DO 13 J=1,NDIM
-      PBAR(J)=PBAR(J) + P(I,J)
-13    CONTINUE
-   ENDIF
-14 CONTINUE
-   DO 15 J=1,NDIM
-    PBAR(J)=PBAR(J)/NDIM
-    PR(J)=(1.+ALPHA)*PBAR(J)-ALPHA*P(IHI,J)
-15  CONTINUE
-   YPR=FUNK(PR)
-   IF(YPR.LE.Y(ILO))THEN
-     DO 16 J=1,NDIM
-      PRR(J)=GAMMA*PR(J) + (1.-GAMMA)*PBAR(J)
-16    CONTINUE
-    YPRR=FUNK(PRR)
-    IF(YPRR.LT.Y(ILO))THEN
-     DO 17 J=1,NDIM
-      P(IHI,J)=PRR(J)
-17    CONTINUE
-     Y(IHI)=YPRR
-    ELSE
-     DO 18 J=1,NDIM
-      P(IHI,J)=PR(J)
-18    CONTINUE
-       Y(IHI)=YPRR
-    ENDIF
-   ELSE IF(YPR.GEY(INHI))THEN
-    IF(YPR.LT.Y(IHI))THEN
-     DO 19 J=1,NDIM
-      P(IHI,J)=PR(J)
-19    CONTINUE
-       Y(IHI)=YPR
-    ENDIF
-    DO 21 J=1,NDIM
-     PRR(J)=BETA*P(IHI,J)+(1.-BETA)*PBAR(J)
-21   CONTINUE
-    YPRR=FUNK(PRR)
-    IF(YPRR.LT.Y(IHI))THEN
-     DO 22 J=1,NDIM
-      P(IHI,J)=PRR(J)
-22    CONTINUE
-     Y(IHI)=YPRR
-    ELSE
-     DO 24 I=1,MPTS
-      IF(I.NE.ILO)THEN
-       DO 23 J=1,NDIM
-        PR(J)=0.5*(P(I,J)+P(ILO,J))
-        P(I,J)=PR(J)
-23      CONTINUE
-       Y(I)=FUNK(PR)
-      ENDIF
-24    CONTINUE
-    ENDIF
-   ELSE
-    DO 25 J=1,NDIM
-     P(IHI,J)=PR(J)
-25   CONTINUE
-    Y(IHI)=YPRR
-   ENDIF
-   GO TO 1
-   END
-\end{lstlisting}
-
-\begin{lstlisting}
-\ FUNCTION MINIMIZATION BY THE SIMPLEX METHOD
-\ VERSION OF 20:51:19 4/30/1991
-
-TASK AMOEBA
-
-\ ----------------------- FUNCTION NOTATION
-    VARIABLE <F>
-    : USE( [COMPILE] ' CFA <F> I ;
-    : F(X) EXECUTE@ ;
-    BEHEAD' <F>
-\ -------------------- END FUNCTION NOTATION
-
-\ -------------------------- DATA STRUCTURES
-3 VAR Ndim
-0 VAR N
-0 VAR N.max
-
-CREATE SIMPLEX{{ Ndim 4 ( bytes ) * Ndim 1+ ( # points )
-    * ALLOT
-CREATE F{ Ndim 1+ 4 ( bytes ) * ALLOT \ residuals
-CREATE index Ndim 1+ 2* ALLOT \ array for scrambled indices
-
-: >index ( i - i') 2* index + @ ;
-DVARIABLE Residual
-DVARIABLE Residual'
-DVARIABLE Epsilon
-CREATE X{   Ndim 4 ( bytes ) * ALLOT \ trial point
-CREATE XP{  Ndim 4 ( bytes ) * ALLOT \ 2nd trial point
-CREATE Y{   Ndim 4 ( bytes ) * ALLOT \ geocenter
-
-: }  ( adr n - adr + 4n ) 4 * + ; \ part of array notation
-: }} ( adr m n - adr + [m*Ndim + n]*4 ) SWAP Ndim * + } ;
-\ ---------------------- END DATA STRUCTURES
-\ ----------------------------- ACTION WORDS
-: RESIDUALS
-    Ndim 1+ 0 DO SIMPLEX{{ I 0 }} F(X) F(I) R32!
-    LOOP ;
-: <index> Ndim 1+ 0 DO I index I 2* + ! LOOP ; \ fill index
-
-: ORDER     <index>
-    Ndim 1+ DO F{ I >index } R32@
-    I 1+ BEGIN Ndim 1+ OVER
-    WHILE F{ OVER >index } R32@ FOVER FOVER F>
-        IF FSWAP
-            I >index OVER >index
-            index I 2* + ! index 3 PICK 2* + !
-         THEN FDROP 1+
-      REPEAT FDROP FDROP
-    LOOP ;
-CENTER ( - ) FINIT Ndim S-F     ( 87: - Ndim )
-    Ndim 0 DO F=0   \ loop over components
-        Ndim 0 DO   \ average over vectors
-        
-           SIMPLEX{{ I index J }} R32@ F+
-        LOOP FOVER F/
-
-        Y{ I } R32! \ put away
-    LOOP FDROP ;
-\ note: Worst.Point is SIMPLEX{{ Ndim index J }}
-\ -- excluded!
-
-: DONE!     CR ." We're finished." ;
-: TOO.MANY  CR ." Too many iterations." ;
-
-: V.MOVE ( src.adr dest.adr - ) \ move vector
-    Ndim 0 DO OVER I } OVER I } 2 MOVE
-  LOOP DDROP ;
-: STORE ( adr1 adr2 -- ) 0 }
-    SIMPLEX{{ nDIM INDEX 0 }} V.MOVE
-    F{ Ndim index } 2 MOVE ;
-: STORE.X   Residual   X{ STORE ;
-: STORE.XP  Residual' XP{ STORE ;
-
-: New.F X{ F(X) Residual R32! ;
-: EXTRUDE   ( 87: scale.factor -- )
-\ extend pseudopod
-    Ndim 0 DO DUP I } R32@   ( 87: -- s.f x )
-    Y{I} R32@ FUNDER F-  ( 87: -- s.f y x-y )
-    FROT FUNDER F* ( 87: -- y s.f [x-y]*s.f )
-    FROT F+        ( 87: -- s.f y+[x-y]*s.f )
-    X{ I } R32!
-    LOOP DROP FDROP New.F ;
-
-: F=1/2 F=1 FNEGATE F=1 FSCALE FPLUCK ;
-: F=2   F=1 FDUP FSCALE FPLUCK ;
-
-\ --------------------- DEBUGGING CODE
-0 VAR DBG
-: DEBUG-ON  -1 IS DBG ;
-: DEBUG-OFF  0 IS DBG ;
-
-: .V 3 SPACES Ndim 0 DO DUP I } R32@ F.
-    LOOP DROP ;
-: .M ( -- )
-    Ndim 1+ 0 DO DBG CR
-    IF I . 2 SPACES THEN
-    SIMPLEX{{ I index 0 }} .V
-    DBG IF CR X{ .V Residual R32@ F. THEN ;
-
-: .F Ndim 1+ 0 DO CR F{ I index } R32@ F.
-    LOOP ;
-\ ----------------- END DEBUGGING CODE
-: REFLECT CENTER
-    F=1 FNEGATE \ scale.factor = -1
-    SIMPLEX{{ Ndim index 0 }} \ worst pt.
-    EXTRUDE     \ calculate x, f(x)
-    DBG IF CR ." REFLECTING" THEN .M ;
-
-\ AMOEBA, CONT'D
-
-: DOUBLE Residual Residual' 2 MOVE
-    \ save residual
-    X{ XP{ V.MOVE             \ save point
-    FINIT F=2 FNEGATE ( ? )   \ scale.factor = -2
-    SIMPLEX{{ Ndim index 0 }} \ worst pt.
-    EXTRUDE                   \ calculate x, f(x)
-    DBG IF CR ." DOUBLING" THEN .M ;
-
-: HALVE FINIT F=1/2           \ scale factor = 0.5
-    SIMPLEX{{ Ndim index 0 }} \ worst pt.
-    EXTRUDE                   \ calculate x, f(x)
-    DBG IF CR ." HALVING" THEN .M ;
-
-: SHRINK    SIMPLEX{{ 0 >index 0 }} \ best pt.
-    Y{ V.MOVE                 \ save IT
-    Ndim 1+ 1 DO              \ by vector
-      Ndim 0 DO               \ by component
-        SIMPLEX{{ J >index I }} DUP
-        R32@ Y{ I } R32@ FUNDER F-
-        F=1/2 F* F+ R32!
-      LOOP
-    LOOP RESIDUALS ORDER
-    DBG IF CR ." SHRINKING" THEN .M ;
-\ ------------------------- END ACTION WORDS
-\ ------------------------------- TEST WORDS
-: (test) FINIT Residual R32@
-    F{ SWAP >index } R32@ F> NOT ;
-: r>=best? 0   (test) ;
-
-: r<worst?   Ndim    (test) NOT ;
-: r>=2worst? Ndim 1- (test)     ;
-
-: done? F{ Ndim index } R32@
-    F{ 0 index } R32@
-    FOVER FOVER F- F2*
-    F-ROT F+ F/ FABS Epsilon R32@ F> ;
-\ ----------------------------END TEST WORDS
-
-: }MINIMIZE ( n.iter -- 87: error -- )
-    IS N.max Epsilon R32! 0 is N \ initialize
-    RESIDUALS           \ compute residuals
-    ORDER               \ locate best, 2worst, worst
-    BEGIN               \ start iteration
-        done? NOT N N.max < AND
-    WHILE
-      REFLECT r>=best?
-      IF r>=2worst?
-        IF r<worst? IF STORE.X THEN
-            HALVE r<worst?
-            IF STORE.X ELSE SHRINK THEN
-        ELSE STORE.X THEN
-      ELSE DOUBLE
-        r>=best?
-        IF STORE.XP ELSE STORE.X THEN
-      THEN
-      N 1+ IS N ORDER
-    REPEAT DONE! ;
-
-\ --------------------- EXAMPLE FUNCTIONS
-: F1    ( adr -- 87: F ) DUP 0 } R32@ FDUP F**2
-                  DUP 1 } R32@ F**2 F2* F+
-                      2 } R32@ F**2 F2* F2* F+
-        36 S-F F- F**2 F2/ FSWAP 6 S-F F* F- ;
-\ f1 = .5 * (x*x + 2*y*y + 4*z*z - 36) ^2 - 6*x
-
-: F2    ( adr -- 87: F ) DUP DUP 0 }
-      R32@ FDUP F**2 1 } R32@ F**2
-        F2* F+ 36 S-F F- F**2 F2/ FSWAP 6 S-F F* F-
-        DUP 1 } R32@ 0 } R32@ F/ FATAN F2* FCOS
-    F**2 F* ;
-\ f2 = [(x^2 2*y^2 - 36)^2 - 6*x] * cos(2*atan(y/x))^2
-\ Usage:    USE( MYFUNC 10 1.E-3 )MINIMIZE
-FLOATS
- 5. SIMPLEX{{ 0 0 }} R32!    5.  SIMPLEX{{ 1 0 }} R32!
--3. SIMPLEX{{ 0 1 }} R32!    3.  SIMPLEX{{ 1 1 }} R32!
- 7. SIMPLEX{{ 0 2 }} R32!   -1.5 SIMPLEX{{ 1 2 }} R32!
-
--10. SIMPLEX{{ 2 0 }} R32!   5.  SIMPLEX{{ 3 0 }} R32!
-  1. SIMPLEX{{ 2 1 }} R32!   3.  SIMPLEX{{ 3 1 }} R32!
-  3. SIMPLEX{{ 2 2 }} R32!   3.  SIMPLEX{{ 3 2 }} R32!
-\end{lstlisting}
+\input{Chapter-08/08_code_FORTRAN_simplex_method}
+\input{Chapter-08/08_code_minimization_by_simplex_method}

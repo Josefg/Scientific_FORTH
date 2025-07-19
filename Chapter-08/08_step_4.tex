@@ -1,0 +1,72 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+        % Define coordinates for the main points
+    \coordinate (A) at (0,0);                   % Start point
+    \coordinate (M) at ([xshift=5.00cm,] A);
+    \coordinate (N) at ([xshift=2.50cm,] M);
+    \coordinate (O) at ([xshift=1.25cm,] N);
+    \coordinate (B) at ([xshift=1.25cm,] O);
+
+    % Draw the main horizontal line with tick marks
+    \draw (A) -- (B);
+    \draw (A) -- +(0,0.1) -- +(0,-0.1);
+    \draw (M) -- +(0,0.1) -- +(0,-0.1);
+    \draw (N) -- +(0,0.1) -- +(0,-0.1);
+    \draw (O) -- +(0,0.1) -- +(0,-0.1);
+    \draw (B) -- +(0,0.1) -- +(0,-0.1);
+    % below
+    \node[below=2pt] at (A) {$x_0$};
+    \node[below=2pt] at (M) {$x_1$};
+    \node[below=2pt] at (N) {$x_2$};
+    \node[below=2pt] at (O) {$x_3$};
+    \node[below=2pt] at (B) {$x_4$};
+    % above
+    \coordinate (A_star) at ([yshift=0.3cm,] A);
+    \coordinate (M_star) at ([xshift=5.00cm,] A_star);
+    \coordinate (N_star) at ([xshift=2.50cm,] M_star);
+    \coordinate (O_star) at ([xshift=1.25cm,] N_star);
+    \coordinate (B_star) at ([xshift=1.25cm,] O_star);
+    \node[] (A_label)  at (A_star) {A};
+    \node[] (B_label)  at (B_star) {B};
+    \node[] (I0_label) at ($(A_star)!.25!(M_star)$) {$I_0$};
+    \node[] (I1_label) at ($(M_star)!.50!(N_star)$) {$I_1$};
+    \node[] (I2_label) at ($(N_star)!.50!(O_star)$) {$I'_2$};
+    \node[] (I3_label) at ($(O_star)!.50!(B_star)$) {$I_3$};
+
+    \draw[-{Stealth[length=1.5mm]}] (I0_label) -- (A_label.east);
+    \draw[-{Stealth[length=1.5mm]}] (I0_label) -- (M_star);
+    \draw[-{Stealth[length=1.5mm]}] (I1_label) -- (M_star);
+    \draw[-{Stealth[length=1.5mm]}] (I1_label) -- (N_star);
+    \draw[-{Stealth[length=1.5mm]}] (I2_label) -- (N_star);
+    \draw[-{Stealth[length=1.5mm]}] (I2_label) -- (O_star);
+    \draw[-{Stealth[length=1.5mm]}] (I3_label) -- (O_star);
+    \draw[-{Stealth[length=1.5mm]}] (I3_label) -- (B_label.west);
+
+    % Create the table of values using a matrix of nodes
+    \node[matrix of nodes,
+          below right=0.5cm and 1cm of A, % Position the matrix
+          nodes={align=left, anchor=west, inner sep=0.5pt}, % Align text inside nodes to the left
+          column sep=0.0001cm,      % Set separation between columns
+          row    sep=0.0001cm,      % Set separation between rows
+         ] {
+            % Headers
+            \underline{\textbf{X}} & \underline{\textbf{f(x)}} & \underline{\textbf{Integrals}} & \underline{\textbf{Error}} \\
+            % Values
+            $x_0$ & $f_0$ &        &                 \\
+            $x_1$ & $f_1$ & $I_0$  & $\varepsilon/2$ \\
+            $x_2$ & $f_2$ & $I_1$  & $\varepsilon/4$  \\
+            $x_3$ & $f_3$ & $I'_2$ & \quad $\varepsilon/8$  \\
+            $x_4$ & $f_4$ & $I_3$  & $\varepsilon/8$  \\
+            };
+
+    \begin{scope}[on background layer]
+        \fill[
+            pattern=crosshatcheight, 
+            pattern color=black
+            ] 
+        (current bounding box.south west) rectangle (current bounding box.north east);
+    \end{scope}
+    
+\end{tikzpicture}
+\end{figure}

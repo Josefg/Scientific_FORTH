@@ -1,0 +1,72 @@
+\begin{figure}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            % This style for the white box remains the same
+            wreg/.style={
+                rectangle, 
+                draw=none, 
+                thick, 
+                fill=white, 
+                align=center,
+                label={[font=\small]above:#1}
+            },
+            preg/.style={
+                rectangle, 
+                pattern=crosshatchdots,
+                pattern color=black,
+                inner sep=3pt 
+            },
+            % Style for the single bit boxes
+            bitbox/.style = {
+                draw=none, 
+                rectangle, 
+                fill=white, 
+                font=\ttfamily
+            },
+            % Style for the main step arrows
+            step_arrow/.style = {
+                -Stealth, 
+                thick, 
+                draw=black
+            },
+            % Style for the text labels on the arrows
+            arrow_label/.style = {
+                font=\bfseries, 
+                above=2pt
+            }
+        ]
+        % =========== Step 1 ===========
+        \node (regA-start) [wreg={Initial number: Reg A}] {1001101110100011};
+            \dotborder{regA-start};
+        
+        \node (regA-shifted) [wreg={}, right=1.75cm of regA-start] {0100110111010001};
+            \dotborder{regA-shifted};
+        
+        \node (overflow) [bitbox, right=of regA-shifted] {1};
+            \dotborder{overflow};
+            \node [font=\small, anchor=east, align=right, yshift=0.56cm,xshift=.65cm] at (overflow_p.east) {Bit overflow};
+
+        \draw[step_arrow] (regA-start_p) -- (regA-shifted_p) node[midway, arrow_label] {Step 1};
+        \draw[step_arrow] (regA-shifted_p.east) -- (overflow_p.west){};
+        
+        % =========== Step 2 ===========
+        \node (regB-result) [wreg={}, below=.75cm of regA-start, draw=black] {0000000000000001};
+        \node (carry-in)    [bitbox, below=.75cm of regA-shifted.south west] {1};
+            \dotborder{carry-in}
+        \node (regB-start)  [wreg={Initial number: Reg B}, draw=black, right=of carry-in.east] {0000000000000000};
+
+        \draw[step_arrow] (carry-in_p) -- (regB-result) node[midway, arrow_label] {Step 2};
+        % % =========== Step nu ===========
+        \node (dots) [below right=1cm and .01cm of regB-result.south west,] {\textbf{\dots}};
+        \node (reversed) [wreg={Bit-reversed number: Reg B}, draw=black, right=3cm of dots] {110001011011001};
+        
+        \draw[step_arrow] (dots) -- (reversed) node[midway, arrow_label] {Step $\nu$};
+
+    \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{Pictorial representation of bit-reversal}}
+    \label{fig:08_05}
+\end{figure}

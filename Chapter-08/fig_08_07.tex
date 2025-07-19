@@ -1,0 +1,62 @@
+\begin{figure}[H]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+    \centering
+    \small
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar, % This specifies a vertical bar chart
+            width=\textwidth, % Make the plot as wide as the text
+            height=7cm,
+            bar width=1.5pt, % Make the bars thin to look like stems
+            % X-axis settings
+            xmin=0,
+            xmax=55,
+            xtick={0.0, 5.4, 10.8, 16.2, 21.6, 27.0, 32.4, 37.8, 43.2, 48.6, 54.0},
+            xticklabel style={/pgf/number format/.cd, 
+                fixed,     
+                precision=1,
+                fixed zerofill=true,
+            },
+            % Y-axis settings
+            ymin=0,
+            ymax=6000,
+            ytick={0, 600, 1200, 1800, 2400, 3000, 3600, 4200, 4800, 5400, 6000},
+            yticklabel style={ /pgf/number format/.cd, % Change directory into number format options
+                fixed,
+                precision=0,
+                set thousands separator={},
+            },
+            yminorticks=true,              % Enable minor ticks on the y-axis
+            minor y tick num=1,            % Place 1 minor tick between each major one
+            major tick length=4pt,         % Set an explicit length for major ticks
+            minor tick length=2pt,         % Set minor tick length to half
+            axis y line*=right, % Only draw the y-axis line on the left
+            axis x line*=bottom % Only draw the x-axis line on the bottom
+        ]
+        
+        % Add the plot data. The style creates the patterned bars.
+        \addplot+[
+            fill=black,
+            pattern=checkerboard,
+            pattern color=black
+        ] coordinates {
+            % This data is visually estimated from the book image.
+            (0, 5900) (0.8, 1750) (1.6, 1200) (2.4, 800) (3.2, 550) 
+            (4.0, 450) (4.8, 300) (5.6, 250) (6.4, 200) (7.2, 180) 
+            (8.0, 150) (8.8, 140) (9.6, 130) (10.4, 120) (11.2, 110)
+            (12.0, 100) (13.5, 90) (14.8, 110) (16.2, 100) (17.5, 120)
+            (18.5, 90) (20.0, 80) (21.6, 100) (23.0, 95) (24.5, 85)
+            (27.0, 110) (28.0, 90) (30.0, 70) (32.4, 100) (35.0, 80)
+            (37.8, 90) (40.0, 75) (43.2, 80)
+            (45.0, 100) (45.8, 150) (46.6, 120) (47.4, 180) (48.2, 220)
+            (49.0, 150) (49.8, 120) (50.6, 100) (51.4, 80)
+        };
+
+        \end{axis}
+    \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{Power spectrum of FFT of 1983 IBM prices (from Table 8-3)}}
+    \label{fig:08_07}
+\end{figure}

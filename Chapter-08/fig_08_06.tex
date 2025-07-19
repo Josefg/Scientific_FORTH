@@ -1,0 +1,59 @@
+\begin{figure}
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+    \centering
+    \begin{tikzpicture}[
+        spanning brace/.style={
+            decorate,
+            decoration={
+                brace,
+                amplitude=4pt
+            },
+            thick
+        },
+        % A default style for all the equation nodes
+        eq_node/.style={anchor=west}
+    ]
+        % 1. Create a matrix for the FIRST column ONLY to act as a scaffold.
+        \matrix[matrix of nodes, 
+                row sep=0.001cm,      % Vertical space between equations
+                column sep=0.25cm,    % Horizontal space between columns
+                nodes=eq_node
+               ] (mad) {
+        $w^7(f_7 + w^8 f_{15})$ \\ % Row 1
+        $w^3(f_3 + w^8 f_{11})$ \\ % Row 2
+        $w^5(f_5 + w^8 f_{13})$ \\ % Row 3
+        $w^1(f_1 + w^8 f_{9~})$ \\ % Row 4
+        $w^6(f_6 + w^8 f_{14})$ \\ % Row 5
+        $w^2(f_2 + w^8 f_{10})$ \\ % Row 6
+        $w^4(f_4 + w^8 f_{12})$ \\ % Row 7
+        $w^0(f_0 + w^8 f_{8~})$ \\ % Row 8
+        };
+        
+        % 2. Place the nodes for the second column, centered between rows of the first.
+        \node[eq_node, right=1.5cm of $(mad-1-1)!.5!(mad-2-1)$] (a3) {$w^3(a_3 + w^4 a_7)$};
+        \node[eq_node, right=1.5cm of $(mad-3-1)!.5!(mad-4-1)$] (a1) {$w^1(a_1 + w^4 a_5)$};
+        \node[eq_node, right=1.5cm of $(mad-5-1)!.5!(mad-6-1)$] (a2) {$w^2(a_2 + w^4 a_6)$};
+        \node[eq_node, right=1.5cm of $(mad-7-1)!.5!(mad-8-1)$] (a0) {$w^0(a_0 + w^4 a_4)$};
+        
+        % 3. Place the nodes for the third column, centered between nodes from the second.
+        \node[eq_node, right=1.5cm of $(a3)!.5!(a1)$] (b1) {$w^1(b_1 + w^2 b_3)$};
+        \node[eq_node, right=1.5cm of $(a2)!.5!(a0)$] (b0) {$w^0(b_0 + w^2 b_2)$};
+        
+        % 4. Place the final result, centered between nodes from the third.
+        \node[eq_node, right=2cm of $(b1)!.5!(b0)$] (c0) {$c_0 + w c_1$};
+        
+            % --- 5. Draw the spanning braces between the new, correctly placed nodes ---
+        \draw[spanning brace] (mad-1-1.north east) -- (mad-2-1.south east);
+        \draw[spanning brace] (mad-3-1.north east) -- (mad-4-1.south east);
+        \draw[spanning brace] (mad-5-1.north east) -- (mad-6-1.south east);
+        \draw[spanning brace] (mad-7-1.north east) -- (mad-8-1.south east);
+        \draw[spanning brace] (a3.north east) -- (a1.south east);
+        \draw[spanning brace] (a2.north east) -- (a0.south east);
+        \draw[spanning brace] (b1.north east) -- (b0.south east);
+    \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{The order of evaluating a 16 pt. FFT}}
+    \label{fig:08_06}
+\end{figure}

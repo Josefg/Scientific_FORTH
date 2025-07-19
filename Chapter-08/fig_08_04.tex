@@ -1,0 +1,57 @@
+\begin{figure}[h]
+    \fbox{
+    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+        \centering
+        \begin{tikzpicture}[
+            % Define styles for the shapes to keep the code clean and readable
+            dot/.style      ={circle, fill=black, inner sep=4pt},
+            black_square/.style ={rectangle, draw, thick, pattern=crosshatchdots, pattern color=black, minimum width=0.5cm, minimum height=0.5cm,},
+            main_line/.style={draw, thick, -{Stealth[length=2mm]}}
+                           ]
+
+            \node[circle, draw, thick, minimum size=0.5cm] (start) at (0,0) {};
+                \draw[thick] (start.north west) -- (start.south east);
+                \draw[thick] (start.north east) -- (start.south west);
+            \node[black_square] (bsquare) at ([yshift=-2cm] start){};
+            \coordinate (first_a) at ([yshift=-0.5cm, xshift=1.5cm] start.south);
+            \coordinate (last_pt) at ([yshift=-3.5cm, xshift=1.5cm] first_a);
+            \coordinate (yes_pt)  at ([yshift=-2.1cm, xshift=1.5cm] first_a);
+            \node[dot] (ender) at ([yshift=-2.1cm] yes_pt){};
+            
+            % Yes text
+            \node[above=.5pt] at ([xshift=-0.75cm] first_a) {\textbf{Yes}};
+            \node[above=.5pt] at ([xshift=-0.75cm] yes_pt)  {\textbf{Yes}};
+            % No text
+            \coordinate (no_only) at ($(first_a)!.80!([yshift=-3.5cm] first_a)$);
+            \node[left=.5pt] at (no_only) {\textbf{No}};
+            
+            \draw[arrow] ([yshift=0.75cm] start.north) -- (start.north);
+            \draw[arrow] (start.south) -- (bsquare.north);
+            \draw[arrow] (start.south) |- (first_a);
+            \draw[arrow] (first_a)     -- ([yshift=-3.5cm] first_a);
+            \draw[arrow] (first_a)     |- (last_pt);
+            \draw[arrow] (first_a)     |- (yes_pt);
+            \draw[arrow] (first_a)     |- ([xshift=-0.75cm] yes_pt);
+            \draw[arrow] (yes_pt)      -- (ender.north);
+            
+            \node[align=left, anchor=north] at (5.75,0.75)
+               {INITIALIZE              \\
+                \\
+                BEGIN                   \\
+                \quad N 0$>$            \\
+                WHILE                   \\
+                \quad old.I = $I_{N-1}$ \\
+                \quad SUBDIVIDE Converged? \\
+                \\
+                \quad IF \quad Richardson\_interpolate \\ 
+                \quad \quad \quad store last 2 subintegrals \\
+                \quad \quad \quad N=N-2                 \\
+                \quad THEN                              \\
+                \\
+                REPEAT};
+        \end{tikzpicture}
+    \end{minipage}
+    }
+    \caption{\textit{Non-recursive adaptive quadrature}}
+    \label{fig:08_04}
+\end{figure}

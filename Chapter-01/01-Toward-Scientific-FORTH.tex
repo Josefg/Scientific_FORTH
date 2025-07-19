@@ -8,7 +8,7 @@ The resulting dialect has many advantages over more traditional languages, both 
 
 Because FORTH is a \textbf{threaded, interpretive} language\sepfootnote{01_01} its  structure and philosophy differ radically from those of traditional languages like FOTRAN and BASIC. This introductory chapter explains some of the differences by contrasting FORTRAN with FORTH.
 
-\section{Overview of FORTRAN}
+\section{Overview of FORTRAN} \index{compiler!b@compiled languages}
 \TallC{FORTRAN} is a \textbf{compiled} high level language\sepfootnote{01_02}. The programmer writes a \textbf{source code} program using FORTRAN's grammatical rules, data structures and operators; a special computer program (the \textbf{compiler}) then translates the source into a (relocatable) machine language version (\textbf{object code}). Another machine language program (the \textbf{linker}) then links modules of object code into an \textbf{executable} program that can be run under the control of the operating system of the computer.
 
 Compilation produces executable programs that run fast, without the tedium of writing them directly in machine code (or \textbf{assembly language}). The source code will run virtually the same on any machine for which a compiler exists. That is, the source code is \textbf{portable}. Among other things, portability makes possible the development of standard libraries of reusable code for performing standard tasks like solving linear equations or computing Bessel functions.
@@ -50,7 +50,7 @@ keeping in mind that FORTRAN, data types can be declared explicitly or implicitl
     \item Fetch (implicit-REAL) variable \verb|B2| and multiply it by the REAL literal \verb|1.2E-s|;
     \item Add the second product to the contents Of \verb|TEMP|;
     \item Fetch the 3rd element of the (implicit-REAL) array \verb|H|;
-    \item Divide by the DREAL (double-precision) literal \verb|3.14159265358979D-14| ($= \pi$ ), converting to and from DREAL format as necessary;
+    \item Divide by the DREAL (double-precision) literal \\ \mbox{3.14159265358979D-14} ($= \pi$ ), converting to and from DREAL format as necessary;
     \item Convert the dividend to REAL and subtract from \verb|TEMP|;
     \item Convert (implicit) INTEGER variable \verb|K| to REAL and add to \verb|TEMP|;
     \item Move the result from \verb|TEMP| to the memory reserved for \verb|A|.
@@ -71,11 +71,11 @@ Since FORTRAN subroutines can be compiled separately, many a subtle bug has been
 
 FORTRAN provides a limited suite of data types: INTEGER, LONG-INTEGER, REAL, DREAL, COMPLEX, DCOMPLEX, LOGICAL and CHARACTER. It provides no facilities for defining any new types (other than arrays of the above). Arrays must be declared according to a strict format -- up to 3 indices are permitted.
 
-FORTRAN's array notation is simple, logical and follows the conventions of algebra: parentheses replace subscripts \textit{via}
+FORTRAN's array notation\index{arrays!FORTRAN notation@FORTRAN notation} is simple, logical and follows the conventions of algebra: parentheses replace subscripts \textit{via}
 
-\begin{verbatim}
-    A_{ij} => A(I,J).
-\end{verbatim}
+
+\quad $A_{ij}$ => \verb|A(I,J).|
+
 
 \TallC{FORTRAN} provides facilities for initializing constants and variables at run-time: the DATA statement within a program or subroutine, and the BLOCK DATA subprogram for initializing global variables in COMMON.
 
@@ -129,29 +129,30 @@ Worse, because the typical function or subroutine calling sequence wastes memory
 \section{What is FORTH ?}
 \TallC{When} I first encountered FORTH, it appeared to me as Looking Glass Land must have, to Alice. Twenty-five years' experience with FORTRAN colored my perceptions, making FORTH seem very strange indeed.
 
-FORTH makes no essential distinctions between data structures, operators, functions or subroutines. \textit{Every}thing in FORTH is the \textit{same} thing: a \textbf{word}. In appearance, words are strings of text separated by spaces. Functionally, words are \textbf{subroutines}. To execute a word, type its name, then a carriage return. No GOSUBs, CALLs, or RETURNs are needed. This simple grammar is beautiful because it leaves nothing to remember.
+FORTH makes no essential distinctions between data structures, operators, functions or subroutines. \textit{Every}thing in FORTH is the \textit{same} thing: a \textbf{word}. In appearance, words are strings of text separated by spaces. Functionally, words are \textbf{subroutines}. To execute a word, type its name, then a carriage return. No GOSUBs, CALLs, or RETURNs are needed. This simple grammar is beautiful because it leaves nothing to remember.\index{CALL}
 
 Whereas FORTRAN imposes stringent naming conventions --names must begin with a letter, may be no longer than seven characters, and may use only letters and digits-- FORTH has no such restrictions. FORTH names can be much more expressive than those in FORTRAN or even Pascal and C, for that matter.
 
 \TallC{For} a preview of FORTH's flavor, consider the FORTH version of the Legendre polynomial function \sepfootnote{01_04}:
 
 \begin{lstlisting}
-\ Gx are generic operations (Real or Complex)
-: S->FS    S->F    REAL*8    F>FS ;
-: PLEG           ( [z] n -- :: -- p[z, n] )
-    >R DUP>R  >FS    (   -- :: -- z )
-    R@ G=1 R> G=0 R> ( -- n :: -- z P1 P0 )
-    ?DUP IF          \ loop n times, if n >0
-    0 DO             \ begin loop
-       I S->FS G*    (      :: -- z P1 P0*I)
-       FS>F GOVER GOVER
-       G* I 2* 1+  S->FS
-       G* F>FS G-
-       I 1+ S-FS  G/ (      :: -- z P1 P2 )
-       GSWAP         (      :: -- z P2 P1 )
-    LOOP             \ end loop
-    THEN             \ end IF... THEN clause
-    GDROP   GPLUCK ; \ clean up stacks
+
+    \ Gx are generic operations (Real or Complex)
+    : S->FS    S->F    REAL*8    F>FS ;
+    : PLEG           ( [z] n -- :: -- p[z, n] )
+        >R DUP>R  >FS    (   -- :: -- z )
+        R@ G=1 R> G=0 R> ( -- n :: -- z P1 P0 )
+        ?DUP IF          \ loop n times, if n >0
+        0 DO             \ begin loop
+           I S->FS G*    (      :: -- z P1 P0*I)
+           FS>F GOVER GOVER
+           G* I 2* 1+  S->FS
+           G* F>FS G-
+           I 1+ S-FS  G/ (      :: -- z P1 P2 )
+           GSWAP         (      :: -- z P2 P1 )
+        LOOP             \ end loop
+        THEN             \ end IF... THEN clause
+        GDROP   GPLUCK ; \ clean up stacks
 \end{lstlisting}
 
 We note the similarities and differences between the FORTRAN and FORTH versions:

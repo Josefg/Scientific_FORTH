@@ -1,0 +1,136 @@
+\begin{figure}[H]
+    \centering
+    \tiny
+    \setlength{\tabcolsep}{.4em}
+    \begin{tabular}{l|l}
+        \begin{lstlisting}
+TASK GRAM1
+
+\         CODEed words to simplify fstack management
+\ ----------------------------------------------------
+CODE G(N+1)  4 FMUL.  FCHS.  2 FLD.  6 FSUB.
+    2 FMUL.  1 FADDP.
+    DX DS MOV.  DS POP.   R64  DS: [BX] FST.
+    DS DX MOV.  BX POP.   END-CODE
+( seg off -- 87: s a b w x g[n] g[n-1] -- s a b w x g[n] g[n+1] )
+
+CODE  B(N+1)  2 FXCH.  2 FMUL.  3 FMUL.
+    1 FXCH.  1 FMUL. DX DS MOV. DS POP.
+    R64  DS: [BX]  FADD.  DS: [BX] FSTP.
+    DS DX MOV.  BX POP.  END-CODE
+( seg off --)
+(87: s a b w x g[n] g[n+1] -- s a b w g[n+1] w x g[n+1] )
+
+CODE  A(N+1)  1 FMUL.  DX DS MOV.  DS POP.
+    R64  DS: [BX] FADD.
+    DS: [BX] FSTP.    DS DX MOV.  BX POP.  END-CODE
+( seg off -- 87: s a b w g[n+1] wxg[n+1] -- s a b w g[n+1] )
+
+CODE C(N+1)  1 FXCH. 2 FMUL".  2 FMUL.
+    2 FXCH.  1 FMULP.
+    DX DS MOV.  DS POP.
+    R64  DS: [BX] FADD.  DS: [BX] FSTP.
+    DS DX MOV.  BX POP.  3 FADDP.  END-CODE
+( seg off -- 87: s a b w g[n+1] f -- s=s+wg[n+1]**2  a  b )
+
+\------------------------------------Gram polynomial coding
+REAL*8 SCALAR  DELTA
+0 VAR Nmax
+\ Usage:      A{ B{ C{ G{{ Nmax }FIT
+
+: FIRST.AB's   F=0 a{ 0 } G!    F=0 b{ 0 } G!  ;
+
+: INIT.DELTA   ( 87: -- g{{ 1 I }} )    F=0  F=0
+    M 0 DO  w{ I 0} G@  y{ I 0} G@   F**2  FOVER  F* 
+    ( 87:s s' -- s s' w w*f^2)
+    FROT  F+   F-ROT  F+  FSWAP
+    ( 87:-- s=s+w  s'=s'+wf^2 )
+    LOOP    DELTA G!  FSQRT  1/F  ;
+        \end{lstlisting}
+      &
+        \begin{lstlisting}
+: FIRST.G's  ( 87: g{{ 1 I }} -- g{{ 1 I }} ) 
+     M 0 DO  F=0  g{{ 0 I }} G!  FDUP  g{{ 1 I }} G!  LOOP  ;
+
+: SECOND.AB's   ( 87: g{{ 1 I }} -- g{{ 1 I }} )
+     F=0 b{ 1 0}  G!   FDUP  F**2
+     F=0  M 0 DO  w{ I 0} G@ x{ I 0} G@  F*  F+  LOOP  
+     F*  a{ 1 0} G! ;
+
+: FIRST.&.SECOND.C's  ( 87: g{{ 1 I }} -- )
+     F=0 c{ 0 0} G!  F=0
+     M 0 DO  w{ I 0} G@  y{ I 0} G@  F*  F+   LOOP
+     F*  c{ 1 0} G! ;
+
+: INITIALIZE   FINIT   IS Nmax  IS g{{  IS c{ IS b{  IS a{
+     FIRST.AB's   INIT.DELTA   FIRST.G's  SECOND.AB's
+     FIRST.&.SECOND.C's  ;
+
+0 VAR N    0 VAR N+1
+: inc.N    N+1  DUP  IS N   1+  IS N+1 ;
+: DISPOSE  R  DDUP  R@ G@ R ;
+: inc.OFF  #BYTES DROP + ;
+: ZERO.L   DDUP  F=0 R64!L ;
+
+: START.Next.G
+( -- [c{n+1}] [a{n+1}] [b{n+1}] 87: -- s=0 a{n} b{n} )
+        FINIT   F=0   c{ N+1 0} DROP ZERO.L
+        a{ N 0} DISPOSE   inc.OFF  ZERO.L
+        b{ N 0} DISPOSE   inc.OFF  ZERO.L  ;
+
+: SET.FSTACK  w{ I' 0} G@  x{ I' 0} G@ g{{ N I' }} G@
+    g{{ N 1-I' }} G@ ;
+
+: }@*!  ( adr n -- 87:x -- x)  FDUP  0}  DISPOSE  F*  G! ;
+
+: NORMALIZE    ( 87: sum -- )  
+      1/F  a{ N+1 }@*!   FSQRT
+      b{ N+1 }@*!   c{ N+1 }@*!
+      M 0 DO  FDUP  g{{ N+1 I }}  DISPOSE   F*  G!  LOOP
+      FDROP  ;
+
+CODE 6DUP  OPT" 6 PICK  6 PICK  6 PICK
+                6 PICK  6 PICK  6 PICK " END-CODE
+CODE 6DROP OPT" DDROP DDROP DDROP " END-CODE
+        \end{lstlisting}
+    \end{tabular}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{.4em}
+    \begin{tabular}{l}
+        \begin{lstlisting}
+: Next.G   START.Next.G 
+    M 0 DO  6DUP    SET.FSTACK
+        g{{ N+1 I }} DROP   G(N+1)   B(N+1)   A(N+1)
+        y{ I 0} G@   C(N+1)
+    LOOP    6DROP   FDROP FDROP   NORMALIZE  ;
+
+: New.DELTA   ( :: -- old.delta new.delta)
+      DELTA G@  FDUP   c{ N 0} G@  F**2  F-   FDUP
+      DELTA G! ;
+
+: NOT.ENUF.G's?   New.DELTA    M N+1 -   S->F
+    FDUP  F=1 F- 
+    ( CR  .FS  ."  NEXT ITERATION?" ?YN  0= IF ABORT THEN )
+        ( :: -- d d' m-n-1  m-n-2 )  
+        FROT  F\   F-ROT   F/   ( :: -- d'/[m-n-2]  d/[m-n-1] )
+        FOVER  F0 IF  F ELSE  FDROP FDROP 0 THEN  ;
+
+: }FIT  ( X{ Y{ S{ Nmax A{ B{ C{ G{{ -- )
+        INITIALIZE    1 IS N   2 IS N+1
+        BEGIN      NOT.ENUF.G's?     N Nmax  AND 
+        WHILE      Next.G   inc.N
+        REPEAT  FINIT ;
+\----------------------------------------------- end of code ;
+
+: RECONSTRUCT  M 0  DO  CR  x{ I 0} G@ F.  y{ I 0} G@ F. 
+        F=0  N+1 1+  1  DO 
+            c{ I 0} G@  g{{ I J }} G@  F* F+ 
+            LOOP   F. 
+        LOOP ;
+        \end{lstlisting}
+    \end{tabular}
+\end{figure}

@@ -1,6 +1,6 @@
 % 4 -- The 80x87 Family
 
-\chapter{The 80x87 Family}
+\chapter{The 80x87 Family} \index{"!"2@80486DX cpu/fpu} \index{"!"4@80x87 co-processor family}
 
 \TallC{When} we speak of the 80x87 mathematical co-processor family, we include the original Intel chips, the Cyrix D387 and IIT C287 and C387 chips, and the AMD 80287 and 80387 clones, as well as the on-chip floating point unit found on the Intel 80486 chips.
 
@@ -14,14 +14,14 @@ The 80x87 machine code instruction set includes instructions for moving numbers 
 
 Advanced programming methods --such a recursive algorithms-- require an fstack of unlimited depth. The designers of the 8087 anticipated the need for fstack extension and included instructions for this purpose. Unfortunately, the instructions were not well thought out\sepfootnote{04_04} so a moderately complex software fstack extension manager is needed to augment them. We design such a manager in Ch. 4 \S7.
 
-\section{Internal 80x87 and manipulation}
+\section{Internal 80x87 and manipulation} \index{"!"4@87stack}
 \TallC{The} 80x87 is organized around a stack of 8 80-bit registers (the 87stack). The 8-deep stack can be subdivided into smaller stacks for special purposes, but this is only useful when coding in assembler for speed\sepfootnote{04_05}.
 
 We begin with words for performing 80x87 stack manipulation analogous to those defined for parameter stack. These are \bc{FDUP FSWAP FDROP FROT FOVER}.
 
 How are we to define them in terms of machine code primitives?
 
-\subsection{The FORTH assembler}
+\subsection{The FORTH assembler}\index{assembler}
 
 \TallC{Every} FORTH worthy of the name includes an assembler, usually set up as an alternate \textbf{vocabulary}\sepfootnote{04_06} called \bc{ASSEMBLER}. The assembler allows direct definition of a new word in terms of machine codes, which are referred to using standard mnemonics. A typical FORTH assembly language definition (we now specialize to HS/FORTH) for @ would have the form\sepfootnote{04_07}
 
@@ -29,7 +29,7 @@ How are we to define them in terms of machine code primitives?
     CODE  @  BX [BX] MOV. END-CODE
 \end{lstlisting}
 
-A \bc{CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (RET) instructions in the machine code representation of the calling program.
+A \bc{CODE}\index{assembler!CODE~...~END-CODE@CODE~...~END-CODE} definitionis a machine-coded subroutine somewhere in memory. To use it, the compiler has to know where it is and insert appropriate unconditional JUMP (JMP) and RETURN (RET) instructions in the machine code representation of the calling program.
 
 Here is what happened in the \bc{CODE} version of \regc{@} above:
 
@@ -49,6 +49,7 @@ Consider now the word \bc{FROT} whose Intel assembly language definition would b
     FXCH ST(2)  ; swap TOS and ST(2)
     RET         ; return
 \end{lstlisting}
+\index{assembler!FXCH.@FXCH.}
 
 In HS/FORTH assembler, the definition becomes
 
@@ -58,13 +59,13 @@ In HS/FORTH assembler, the definition becomes
 \end{lstlisting}
 
 \leftbar[1\linewidth]
-\Note: the definition includes \regc{FWAIT} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete results\footnotemark.
+\Note: the definition includes \regc{FWAIT}\index{assembler!FWAIT.@FWAIT.} (the same as \regc{WAlT}), an instruction that makes the 8086 CPU wait for the FPU to complete its work before attempting to access the memory. If \regc{WAlT} were omitted and the CPU accessed the memory, it could store incomplete results\footnotemark.
 \endleftbar
 \footnotetext{The design of the 80286, 80386, and 80486 eliminates this problem, consequently \regc{FWAIT} is not required when assembling 80287/80387/80487 machine code. See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Programming the 80386} (Sybex. San Francisco, 1987). HS/FORTH allows the user to choose which class of machine to assemble for, when loading the 80x87 assembler extension. The 80287+ option simply defines \bc{FWAIT.} as a null word.}
 
 \subsection{Using MS-DOS DEBUG}
 
-\TallC{The}FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH systems, in addition to an assembler, provide a way to insert machine codes --hex numbers-- directly into the code field of a word. HS/FORTH, \eg, uses the words \bc{<\%} and \bc{\%>} to enclose the hex codes being inserted.
+\TallC{The}FORTH assembler, with its 80x87 extension, lets us develop machine-coded words while retaining Intel mnemonics for documentation, at the price of loading and compiling the entire \bc{ASSEMBLER} lexicon. But if we know the actual machine code bytes we can bypass the assembler by entering the (hexadecimal) codes directly into a \bc{CODE} definition. Most FORTH systems, in addition to an assembler, provide a way to insert machine codes --hex numbers-- directly into the code field of a word. HS/FORTH, \eg, uses the words \bc{<\%} and \bc{\%>}\index{assembler!$<$\%~...~\%$>$} to enclose the hex codes being inserted.
 
 The problem is, how do we find out what these hex codes are?
 
@@ -117,7 +118,7 @@ whose assembler definitions are:
 can be defined similarly in 8086/8087 machine code using the
 DEBUG program or a reference manual for the chip (\eg\space\textbf{8087P}) to determine the hex codes.
 
-\section{Memory usage (storage and retrieval)}
+\section{Memory usage (storage and retrieval)} \index{assembler!FILD.@FILD.|(}\index{assembler!FISTP.@FISTP.|(}
 
 \TallC{The} 80x87 instruction set includes codes for loading ST(0) from memory and storing ST(0) to memory. The former involeves a "push" and the latter may or may not involve a "pop", from
 the 87stack.
@@ -137,7 +138,7 @@ For the moment we need words to retrieve and store 16-bit integers, short reals 
     END-CODE
 \end{lstlisting}
 
-Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR} with \bc{DWORD-PTR}. To define \bc{I64@} and \bc{I64@} --assuming these are needed-- replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64- and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64!}, \bc{R80@} and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD} and \bc{FISTP} by \bc{FSTP}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR} or \bc{TBYTE-PTR}\sepfootnote{04_10} as appropriate.
+Similarly, \bc{I32@} and \bc{I32!} can be defined by replacing \bc{WORD-PTR}\index{assembler!WORD-PTR@WORD-PTR} with \bc{DWORD-PTR}\index{assembler!DWORD-PTR@DWORD-PTR}. To define \bc{I64@} and \bc{I64@} --assuming these are needed-- replace \bc{DWORD-PTR} with \bc{QWORD-PTR}. The 32-, 64- and 80-bit floating point analogues \bc{R32@}, \bc{R32!}, \bc{R64@}, \bc{R64!}, \bc{R80@} and \bc{R80!} are defined byreplacing \bc{FILD} by \bc{FLD}\index{assembler!FLD.@FLD.} and \bc{FISTP} by \bc{FSTP}\index{assembler!FSTP.@FSTP.}, and using \bc{DWORD-PTR}, \bc{QWORD-PTR}\index{assembler!QWORD-PTR@QWORD-PTR} or \bc{TBYTE-PTR}\sepfootnote{04_10}\index{assembler!TBYTE-PTR@TBYTE-PTR} as appropriate.
 
 \TallC{We} also need words to load the 87stack from the stack and \textit{vice versa}. In HS/FORTH, the top of the parameter stack is actually the BX register on the CPU. There is no machine instruction for loading the 87stack directly from a CPU register. Thus, we must first transfer the contents of BX to memory and thence to the 87stack. The inverse operation also must proceed through a memory location. The data-transfer words are named in an obvious way \bc{S->F} and \bc{F->S}. HS/FORTH defines them directly in machine code, manipulating the CPU register BP that points to the top of the CPU stack. That is, HS/FORTH uses two bytes immediately below NOS as the intermediate memory cell.
 
@@ -172,8 +173,10 @@ These definitions will satisfy our present needs for storing and retrieving from
 32-bit wide transfers\footnotemark.
 \endleftbar
 \footnotetext{See, \eg, John H. Crawford and Patrick P. Gelsinger, \textit{Progumming the 80386} (Sybex, San Francisco, 1987).}
+\index{assembler!FILD.@FILD.|)}
+\index{assembler!FISTP.@FISTP.|)}
 
-\section{Arithmetic words}
+\section{Arithmetic words}\index{"!"1@80486DX cpu/fpu}
 
 \TallC{FPU} (80x87) arithmetic is generally performed with the maximum precision allowed by the (80-bit) size of the registers\sepfootnote{04_13}.
 
@@ -229,10 +232,14 @@ whose definitions are (CODE and END-CODE are assumed)
     \end{center}
 \end{table}
 
-\section{Test words}
+\section{Test words}\index{assembler!FCOMPP.@FCOMPP.|(}
 
 \TallC{We} need to be able to determine the algebraic sign of a floating point number, as well as whether one is larger than another.
 The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FCOM, FCOMP and FCOMPP; they are shown below in Table \ref{tbl:04_02}.
+\index{assembler!FCOM.@FCOM.}
+\index{assembler!FCOMP.@FCOMP.}
+\index{assembler!FTST.@FTST.}
+
 
 % Table 4-2 Machine language floating point tests
 \begin{table}
@@ -252,7 +259,7 @@ The 80x87 chip has 4 instructions for this purpose, whose mnemonics are FTST, FC
     \end{center}
 \end{table}
 
-The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques, the STATUS register must be moved to the parameter stack\sepfootnote{04_14}. This is done with the the 80x87 instruction \regc{FSTSW} \textit{via} the assembler sequence
+The results of these comparisons are encoded as bits C3 (14) and C0 (8) of the 16-bit 80x87 STATUS register. In order to get these bits by bit-masking techniques, the STATUS register must be moved to the parameter stack\sepfootnote{04_14}. This is done with the the 80x87 instruction \regc{FSTSW}\index{assembler!FSTP.@FSTSW.}\index{assembler!FSTP.@FSTP.} \textit{via} the assembler sequence
 
 \begin{lstlisting}
     VARIABLE F.STATUS
@@ -300,7 +307,7 @@ Now we are in a position to define the test words \bc{F0>}, \bc{F0=},
     : F> FCOMPP FSTSW 0100 AND     0> ;
     DECIMAL
 \end{lstlisting}
-
+\index{assembler!FCOMPP.@FCOMPP.|)}
 \section{Mathematical functions}
 
 \TallC{We} now proceed to develop a suite of special functions for the 80x87 FPU. These will include the usual trigonometric functions, logarithms, and exponentials. We retain initial \bc{F}s in the names to remind us the FPU is being used. The functions are given in Table \ref{tbl:04_04} below:
@@ -481,11 +488,11 @@ To calculate the inverse functions, we make use of standard identities (the form
 \Note: the argument of arcsin($x$) or arccos($x$) must be smaller than 1 in absolute value - hence we include a bounds check to avoid taking the square root of a negative number.
 \endleftbar
 
-\section{Extending the intrinsic 80x87 stack}
+\section{Extending the intrinsic 80x87 stack} \index{"!"4@87stack}
 \label{sec:Extending}
 \TallC{As} promised in the beginning of the chapter, we now design a fstack manager in software that allows more than 8 cells. First we examine the structure of the 80x87 stack (\textbf{87stack}).
 
-From \textbf{8087P} we see that the 8 registers in the 87stack are organized as a circular stack. A 3-bit pointer, \regc{ST}, records which physical register is actually TOS. The instruction set allows \regc{ST} to be incremented (\regc{FINCSTP}) or decremented (\regc{FDECSTP}) modulo 8. The 87stack is shown below in Fig. \ref{fig:04_01} on page 81.
+From \textbf{8087P} we see that the 8 registers in the 87stack are organized as a circular stack. A 3-bit pointer, \regc{ST}, records which physical register is actually TOS. The instruction set allows \regc{ST} to be incremented (\regc{FINCSTP})\index{assembler!FINCSTP@FINCSTP} or decremented (\regc{FDECSTP})\index{assembler!FDECSTP.@FDECSTP.} modulo 8. The 87stack is shown below in Fig. \ref{fig:04_01} on page 81.
 
 A \regc{FLD} instruction decrements \regc{ST} (mod 8) before storing whereas a \regc{FSTP} instruction increments \regc{ST}. To build our software fstack we need to do the following things:
 \begin{itemize}

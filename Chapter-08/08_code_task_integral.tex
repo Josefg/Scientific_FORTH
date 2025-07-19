@@ -1,0 +1,159 @@
+\begin{figure}[H]
+\begin{multicols}{2}
+    \scriptsize
+    \begin{lstlisting}
+\ COPYRIGHT 1991 JULIAN V. NOBLE
+TASK INTEGRAL
+FIND CP@L 0= ? ( FLOAD COMPLEX )
+\ define data-type tokens if not already
+FIND REAL*4 0= ?(((
+    0 CONSTANT REAL*4
+    1 CONSTANT REAL*8
+    2 CONSTANT COMPLEX
+    3 CONSTANT DCOMPLEX )))
+
+FIND 1ARRAY 0= ?( FLOAD MATRIX.HSF )
+\ function usage
+: USE( [OOMPILE] ' CFA ; IMMEDIATE
+
+\ BEHEADing starts here
+0 VAR N
+
+: inc.N N 1 + IS N ;
+: dec.N N 2 - IS N ;
+
+0 VAR type
+
+\ define "stack"
+20 LONG REAL*8   1ARRAY X{
+20 LONG REAL*4   1ARRAY E{
+20 LONG DCOMPLEX 1ARRAY F{
+20 LONG DCOMPLEX 1ARRAY I{
+
+2 DCOMPIEXSCALARS old.I final.I
+: )imegral ( n-- ) \ trapezoidal rule
+    X{ OVER    } G@L
+    X{ OVER 1- } G@L
+    F- F2/
+    F{ OVER    } G@L
+    F{ OVER 1- } G@L
+    type2 AND
+    IF   X+ FROT X*F
+    ELSE F+ F* THEN
+    I{ SWAP 1- } G!L ;
+0 VAR f.name
+: f(x) fname EXECUTE ;
+
+: INITIALIZE
+    IS type   \ store type
+    type F{ !
+    type I{ ! \ set types for function
+    type ' old.I   !
+    type ' final.I ! \ and integral(s)
+    type 1 AND X{  !
+            \ set type for indep. var.
+    E{ 0 } G!L \ store error
+    X{ 1 } G!L \ store B
+    X{ 0 } G!L \ store A
+    IS f.name  \ ! cfa of f(x)
+    X{ 0 } G@L f(x) F{ 0 } G!L
+    X{ 1 } G@L f(x) F{  1} G!L
+    1 IS N
+    N )integral
+    type 2 AND IF F=0 THEN
+    F=0 final.I G!L
+    FINIT ;
+
+: E/2 E{ N 1- } G@L F2/ E{ N 1- } G!L ;
+
+: }move.down     ( adr n--)
+    } \#BYTES >R ( --seg off )
+    DDUP R@ +
+                 ( --s.seg S.off d.seg d.off )
+    R> CMOVEL ;
+
+: MOVEDOWN
+    E{ N 1- }move.down
+    X{ N    }move.down
+    F{ N    }mova.dcmn ;
+
+: new.X ( 87:--x' )
+    X{ N } G@L  X{ N 1- } G@L
+    F+ F2/ FDUP X{ N    } G!L ;
+
+\ cont'd. ...
+    \end{lstlisting}
+\end{multicols}
+\end{figure}
+
+\begin{figure}[H]
+\begin{multicols}{2}
+    \scriptsize
+    \begin{lstlisting}
+\ INTEGRAL cont'd
+: GF.   1 > IF FSWAP E. THEN E. ;
+: F@.   DUP>R G@L R> GF. ;
+: .STACKS CR ." N"
+     8 CTAB  ." X"
+    19 CTAB  ." Re[F(X)]"
+    31 CTAB  ." Im[F(X)]"
+    45 CTAB  ." Re[I]"
+    57 CTAB  ." Im[I]"
+    71 CTAB  ." E"
+    N 2 + 0 DO CR I .
+         3 CTAB X{ I } F@.
+        16 CTAB F{ I } F@.
+        42 CTAB I{ I } F@.
+        65 CTAB E{ I } F@.
+    LOOP
+    CR 5 SPACES ." old.I ="     old.I F@.
+       5 SPACES ." final.I =" final.I F@. CR ;
+CASE: <DEBUG> NEXT .STACKS ;CASE
+0 VAR (DEBUG)
+: DEBUG-ON  1 IS (DEBUG) 5 #PLACES
+: DEBUG-OFF 0 IS (DEBUG) 7 #PLACES
+: DEBUG (DEBUG) <DEBUG> ;
+
+: SUBDIVIDE
+    N 19 > ABORT" Too many subdivisions!"
+    E/2 MOVE.DOWN
+    I{ N 1- } DROP old.I #BYTES CMOVEL
+        new.X f(x) F{ N } G!L
+    N )integral N 1 + )integral ;
+
+: CONVERGED? ( 87:--I[N]+I'[N-1]-I[N-1]:--f )
+    I{ N } G@L I{ N 1- } G@L old.I G@L
+    type 2 AND
+    IF   CP- CP+ CPDUP CPABS
+    ELSE  F-  F+  FDUP  FABS
+    THEN
+    E{ N 1- } G@L F2* F< ;
+
+CASE: g*6 CP*F F* ;CASE
+4 S->F 3 S->F F/ FCONSTANT F=4/3
+
+: INTERPOLATE ( 87:I[N]=I'[N-1]-I[N-1]-- )
+    F=4/3 type 2/ g*f
+    old.I G@L final.I G@L
+    type 2 AND
+    IF   CP+ CP+
+    ELSE  F+  F+ THEN
+    final.I G!L ;
+\ BEHEADing ends here
+
+: )INTEGRAL ( 97:A B ERR--I[A,B] )
+    INITIALIZE
+    BEGIN N 0>
+    WHILE   SUBDIVIDE   DEBUG
+        CONVERGED?     inc.N
+        IF INTERPOLATE dec.N
+        ELSE type 2 AND
+            IF   FDROP
+            THEN FDROP
+        THEN
+    REPEAT final.I G@L ;
+BEHEAD" N INTERPOLATE   \ optional
+\ USE( F.name % A % B % E type )INTEGRAL
+    \end{lstlisting}
+\end{multicols}
+\end{figure}

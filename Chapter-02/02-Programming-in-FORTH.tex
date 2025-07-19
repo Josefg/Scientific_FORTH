@@ -4,7 +4,7 @@
 
 \TallC{This} chapter briefly reviews the main ideas of FORTH to let the reader understand the program fragments and subroutines that comprise the meat of this book. We make no pretense to complete coverage of standard FORTH programming methods. \textbf{Chapter 2 is not a programmer’s manual!}
 
-Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \sepfootnote{02_01} and \textit{Thinking FORTH} \sepfootnote{02_02} by Leo Brodie; and \textit{ FORTH: a Text and Reference} \sepfootnote{02_03} by M.Kelly and N.Spies. I strongly recommend reading \FTR or \SF (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
+Suppose the reader is stimulated to try FORTH - how can he proceed? Several excellent FORTH texts and references are available: \textit{Starting FORTH} \sepfootnote{02_01} and \textit{Thinking FORTH} \sepfootnote{02_02} by Leo Brodie\index{Brodie, L.}; and \textit{ FORTH: a Text and Reference} \sepfootnote{02_03} by M.Kelly and N.Spies. I strongly recommend reading \FTR or \SF (or both) before trying to use the ideas from this book on a FORTH system. (Or at least read one concurrently.)
 
 \TallC{The} (commercial) GEnie information network maintains a session devoted to FORTH under the aegis of the Forth Interest Group (fiG).
 
@@ -14,7 +14,7 @@ The Association for Computing Machinery (11 West 42nd St., New York, NY 10036) m
 
 The Institute for Applied FORTH Research (Rochester, NY) publishes the refereed \textit{Journal of FORTH Application and Research}, that serves as a vehicle for more scholarly and theoretical papers dealing with FORTH.
 
-Finally, an attempt to codify and standardize FORTH is underway, so by the time this book appears the first draft of an ANS FORTH and extensions may exist.
+Finally, an attempt to codify and standardize FORTH is underway, so by the time this book appears the first draft of an ANS FORTH\index{ANSII FORTH@ANSII FORTH} and extensions may exist.
 
 \section{The structure of FORTH}\label{chap:02_01}
 
@@ -29,7 +29,7 @@ Finally, an attempt to codify and standardize FORTH is underway, so by the time 
             \node (ok)          [wordinr1, below of = input_1, xshift=1.0cm, yshift=0.5cm] {ok};
             \coordinate[below of=input_1, yshift=0.5cm] (cont_1);
             \coordinate[left  of=cont_1,  xshift=0.5cm] (cont_2);
-            \coordinate[above of=cont_2, yshift=0.5cm] (cont_3);
+            \coordinate[above of=cont_2,  yshift=0.5cm] (cont_3);
             \coordinate[above of=input_1, yshift=-1.0cm] (cont_4);
             \coordinate[below of=input_1, xshift=2.5cm, yshift=0.5cm] (cont_5);
             %Connect left loop
@@ -126,7 +126,7 @@ The initial "\bc{:}" is \bc{EXECUTE}d because it is already in the dictionary. U
     \item The FORTH compiler \bc{EXECUTE}s the last word "\bc{;}" of the definition, by installing code (to return control to the next outer level of the interpreter\sepfootnote{02_07}) then switching back from compile to interpret mode. Most other languages treat tokens like "\bc{;}" as flags (in the input stream) that \textit{trigger} actions, rather than actions in their own right FORTH lets components execute themselves.
 \end{itemize}
 
-In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.
+In FORTH \textit{all} subroutines are words that are invoked when they are named. No explicit CALL or GOSUB statement is required.\index{CALL}
 
 The above definition of \textbf{NEW-WORD} is extremely structured compared with FORTRAN or BASIC. Its definition is just a series of subroutine calls.
 
@@ -333,11 +333,11 @@ Positive numbers smaller than 255 can be placed in single bytes of memory using 
 
 In Chapters 3, 4, 5 and 7 we shall extend the lexicon of \bc{@} and \bc{!} words to include floating point and complex numbers.
 
-\section{Arithmetic operations}
+\section{Arithmetic operations} \index{arithmetic operators}
 
-\TallC{The} 1979 or 1983 standards, not to mention the forthcoming ANSII standard, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ - * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
+\TallC{The} 1979 or 1983 standards, not to mention the forthcoming ANSII standard\index{ANSII FORTH@ANSII FORTH}, require that a conforming FORTH system contain a certain minimum set of predefined words. These consist of arithmetic operators \bc{+ - * / MOD /MOD */} for (usually) 16-bit \textit{signed-integer} (-32767 to +32767) arithmetic, and equivalents for \textit{unsigned} (0 to 65535), double-length and mixed-mode (16- mixed with 32-bit) arithmetic. The list will be found in the glossary accompanying your system, as well as in \SF and \FTR.
 
-\section{Comparing and testlng}
+\section{Comparing and testlng}\index{comparing numbers!b@relational operators}
 
 \TallC{In} addition to arithmetic, FORTH lets us compare numbers on the stack, using relational operators \bc{> < =}.These operators work as follows: the phrase
 
@@ -640,7 +640,7 @@ This is an improvement, but FORTH lets us do even better: here is a simple exten
 
 \TallC{FORTH} includes a technique for switching from compile mode to interpret mode while compiling or interpreting. This is done using the words \bc{]} and \bc{[} . (Contrary to intuition, \bc{]} turns the compiler on, \bc{[} turns it off.)
 
-One use of \bc{]} and \bc{[} is to create an "action table" that allows us to choose which of several actions we would like to perform\sepfootnote{02_22}.
+One use of \bc{]} and \bc{[} is to create an "action table"\index{action table|(} that allows us to choose which of several actions we would like to perform\sepfootnote{02_22}.
 
 For example, suppose we have a series of push-buttons numbered 1-6, and a word \bc{WHAT} to read them.
 
@@ -661,7 +661,7 @@ actions called \bc{BUTTONS} . We define the words as follows:
     : BUTTON 1- 2* BUTTONS + @ EXECUTE ;
 \end{lstlisting}
 
-If, as before, I push \#3, then the action \bc{ENTER} will be executed. Presumably button \#7 is a good one to avoid\sepfootnote{02_23}.
+If, as before, I push \#3, then the action \bc{ENTER} will be executed. Presumably button \#7 is a good one to avoid\sepfootnote{02_23}.\index{CFA!vectored execution}
 
 How does this work?
 \begin{itemize}
@@ -675,6 +675,7 @@ How does this work?
     \item \bc{@} fetches the CFA for \bc{EXECUTE} to execute.
     \item \bc{EXECUTE} executes the word corresponding to the button pushed. Simple!
 \end{itemize}
+\index{action table|)}
 
 You may well ask "Why bother with all this indirection, pointers, pointers to pointers, tables of pointers to tables of pointers, and the like?" Why not just have nested \bc{IF...ELSE...THEN} constructs, as in Pascal?
 
@@ -795,7 +796,7 @@ To illustrate the problem information hiding is intended to solve, consider a FO
 There are two ways to pass the arguments from MAIN to SUB1, and FORTRAN can use both methods.
 
 \begin{itemize}
-    \item Copy the arguments from where they are stored in MAIN into locations in the address space of SUBl (set aside for them during compilation). If the STATEMENTS change the values X1,...,Xn during execution of SUBl, the original values in the callin program will not be affected (because they are stored elsew ere and were copied during the CALL).
+    \item Copy the arguments from where they are stored in MAIN into locations in the address space of SUBl (set aside for them during compilation). If the STATEMENTS change the values X1,...,Xn during execution of SUBl, the original values in the callin program will not be affected (because they are stored elsew ere and were copied during the CALL).\index{CALL}
     \item Let SUBl have the addresses of the arguments where they are stored in MAIN. This method is dangerous because if the arguments are changed during execution of SUBl, they are changed in MAIN and are forever corrupted. If these changes were unintended, they can produce remarkable bugs.
 \end{itemize}
 
@@ -806,7 +807,7 @@ What has this to do with FORTH?
 \begin{itemize}
     \item FORTH uses linked lists of addresses, compiled into a dictionary to which all words have equal right of access.
     \item Since everything in FORTH is a word --constants, variables, numerical operations, I/O procedures-- it might seem impossible to hide information in the sense described above.
-    \item Fortunately, word-names can be erased from the dictionary after their CFAs have been compiled into words that call them. (This erasure is called "beheading".)
+    \item Fortunately, word-names can be erased from the dictionary after their CFAs have been compiled into words that call them. (This erasure is called "beheading".)\index{beheading!d@headerless words}
     \item Erasing the names of variables arantees they can be neither accessed nor corrupted by unauthorized words (except through a calamity so drea ful the program crashes).
 \end{itemize}
 
@@ -821,7 +822,7 @@ FORTH offers a programmer who takes the trouble a goodly array of tools for adeq
 \subsubsection{Parenthesized remarks}
 The word ( --a left parenthesis followed by a space-- says "disregard all following text up until the next right parenthesis\sepfootnote{02_30} in the input stream. Thus we can intersperse explanatory remarks within colon definitions. This method was used to comment the Legendre polynomial example program in Ch. 1.
 
-\subsubsection{Stack comments}
+\subsubsection{Stack comments}\index{commenting!c@stack comments}
 A particular form of parenthesized remark describes the effect of a word on the stack (or on the floating point fstack in Ch. 3). For example, the stack-effect comment (stack comment, for short)
 
 \begin{lstlisting}
@@ -835,7 +836,7 @@ The corresponding comment for \bc{!} would be
     ( n adr --).
 \end{lstlisting}
 
-An fstack comment is prefaced by a double colon :: as
+An fstack comment\index{commenting!b@fstack comment} is prefaced by a double colon :: as
 \begin{lstlisting}
     (::x -- f[x]).
 \end{lstlisting}
@@ -848,7 +849,7 @@ With some standard conventions for names\sepfootnote{02_31}, and standard abbrev
 The word \textbackslash (back-slash followed by space) has gained favor as a method for including longer comments. It simply means "drop everything in the input stream until the next carriage return". Instructions to the user, clarifications or usage examples are most naturally expressed in an included block of text with each line set off\sepfootnote{02_32} by \textbackslash .
 
 \subsubsection{Self-documenting code}
-By eliminating ungrammatical phrases like \regc{CALL} or \regc{GOSUB}, FORTH presents the opportunity --\textit{via} telegraphic names\sepfootnote{02_33} for words-- to make code almost as self-documenting and transparent as a simple English or German sentence. Thus, for example, a robot control program could contain a phrase like
+By eliminating ungrammatical phrases like \regc{CALL}\index{CALL} or \regc{GOSUB}, FORTH presents the opportunity --\textit{via} telegraphic names\sepfootnote{02_33} for words-- to make code almost as self-documenting and transparent as a simple English or German sentence. Thus, for example, a robot control program could contain a phrase like
 
 \begin{lstlisting}
     2 TIMES LEFT EYE WINK
@@ -862,11 +863,10 @@ which is clear (although it sounds like a stage direction for Brunhilde to vamp 
 
 \subsection{Safety}
 
-Some high level languages perform automatic bounds checking on arrays, or automatic type checking, thereby lending them a spurious air of reliability. FORTH has almost no error checking
-of any sort, especially at run time. Nevertheless FORTH is a remarkably safe language since it fosters fine-grained decomposition into small, simple subroutines. And each subroutine can be checked as soon as it is defined. This combination of simplicity and immediacy can actually produce safer, more predictable code than languages like Ada, that are ostensibly \textit{designed} for safety.
+Some high level languages perform automatic bounds checking on arrays, or automatic type checking, thereby lending them a spurious air of reliability. FORTH has almost no error checking of any sort, especially at run time. Nevertheless FORTH is a remarkably safe language since it fosters fine-grained decomposition into small, simple subroutines. And each subroutine can be checked as soon as it is defined. This combination of simplicity and immediacy can actually produce safer, more predictable code than languages like Ada, that are ostensibly \textit{designed} for safety.
 \\
 
 \leftbar[1\linewidth]
-Nonetheless, error checking \textbf{--especialiy array bounds-checking--} can be a good idea during debugging. FORTH lets us include checks in an unobtrusive manner, by placing all the safety mechanisms in a word or words that can be "vectored" in or out as desired\footnotemark.
+Nonetheless, error checking \textbf{--especialiy array bounds-checking--}\index{arrays!bounds checking} can be a good idea during debugging. FORTH lets us include checks in an unobtrusive manner, by placing all the safety mechanisms in a word or words that can be "vectored" in or out as desired\footnotemark.
 \endleftbar
 \footnotetext{See \FTR for a more thorough discussion of vectoring. Brodie, \TF, sugests a nice construct called \bc{DOER...MAKE} that can be used for graceful vectoring.}
